@@ -1,5 +1,7 @@
 var React = require("react");
+var PropTypes = React.PropTypes;
 var Header = require("../components/Header");
+var CellLineSelectContainer = require("./CellLineSelectContainer");
 
 // Dummy information
 var cellLines = [
@@ -8,26 +10,18 @@ var cellLines = [
 ];
 
 var HeaderContainer = React.createClass ({
-  getInitialState: function () {
-    return {
-      cellLine: ""
-    };
-  },
-  handleChangeCellLine: function (e) {
-    e.preventDefault();
-
-    this.setState({
-      cellLine: e.target.value
-    });
-
-    console.log(e.target.value);
+  propTypes: {
+    header: PropTypes.string.isRequired
   },
   render: function () {
     return (
-      <Header
-        header="Cell Cycle Browser"
-        cellLines={cellLines}
-        onChangeCellLine={this.handleChangeCellLine} />
+      <div className="jumbotron col-sm-12 text-center">
+        <Header
+          header={this.props.header} />
+        <CellLineSelectContainer
+          label="Cell line: "
+          cellLines={cellLines} />
+      </div>
     );
   }
 });
