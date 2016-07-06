@@ -1,12 +1,5 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
+var React = require("react");
+var ReactDOM = require("react-dom");
+var HeaderContainer = require("./containers/HeaderContainer");
 
-var Hello = React.createClass({
-  render: function () {
-    return (
-      <div>Cell Cycle Browser!</div>
-    )
-  }
-});
-
-ReactDOM.render(<Hello />, document.getElementById('app'));
+ReactDOM.render(<HeaderContainer header="Cell Cycle Browser"/>, document.getElementById("app"));
