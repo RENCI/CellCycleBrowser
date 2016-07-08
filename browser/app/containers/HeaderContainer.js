@@ -15,12 +15,14 @@ var HeaderContainer = React.createClass ({
   },
   render: function () {
     return (
-      <div className="jumbotron col-sm-12 text-center">
-        <Header
-          header={this.props.header} />
-        <CellLineSelectContainer
-          label="Cell line: "
-          cellLines={cellLines} />
+      <div className="jumbotron text-center">
+        <div className="container-fluid">
+          <Header
+            header={this.props.header} />
+          <CellLineSelectContainer
+            label="Cell line: "
+            cellLines={cellLines} />
+          </div>
       </div>
     );
   }

@@ -9,6 +9,10 @@ function option(v, i) {
          </option>
 }
 
+var marginTop = {
+  marginTop: "40px"
+};
+
 var minWidth = {
   minWidth: 0,
   width: "auto",
@@ -18,13 +22,15 @@ var minWidth = {
 function CellLineSelect(props) {
   return (
     <div>
-      <h2>Cell line: </h2>
-      <select
-        className="form-control"
-        style={minWidth}
-        onChange={props.onChangeCellLine}>
-          {props.cellLines.map(option)}
-      </select>
+      <p style={marginTop}>
+        <lead>Cell line: </lead>
+        <select
+          className="form-control"
+          style={minWidth}
+          onChange={props.onChangeCellLine}>
+            {props.cellLines.map(option)}
+        </select>
+      </p>
     </div>
   );
 }
