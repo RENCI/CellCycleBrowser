@@ -1,0 +1,22 @@
+var React = require("react");
+var PropTypes = React.PropTypes;
+var MapVisualizationContainer = require("./MapVisualizationContainer");
+
+var MapContainer = React.createClass ({
+  propTypes: {
+    data: React.PropTypes.array,
+    domain: React.PropTypes.object
+  },
+  render: function() {
+    return (
+      <div>
+        <h2>Map</h2>
+        <MapVisualizationContainer
+          data={this.props.data}
+          domain={this.props.domain} />
+      </div>
+    );
+  }
+});
+
+module.exports = MapContainer;
