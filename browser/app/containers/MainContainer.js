@@ -2,7 +2,7 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 var MapContainer = require("./MapContainer");
 var BrowserContainer = require("./BrowserContainer");
-//var ControlsContainer = require("./ControlsContainer");
+var ControlsContainer = require("./ControlsContainer");
 
 var domain = {x: [0, 30], y: [0, 100]};
 
@@ -25,7 +25,7 @@ var MainContainer = React.createClass ({
               domain={domain} />
             </div>
           <div className="col-md-3 text-center">
-            <h2>Controls</h2>
+            <ControlsContainer />
           </div>
         </div>
       </div>
