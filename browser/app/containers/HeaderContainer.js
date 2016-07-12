@@ -1,17 +1,13 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var Header = require("../components/Header");
+var CellLineStore = require("../stores/CellLineStore");
 var CellLineSelectContainer = require("./CellLineSelectContainer");
-
-// Dummy information
-var cellLines = [
-  {value: "cellLine1", name: "Cell line 1"},
-  {value: "cellLine2", name: "Cell line 2"}
-];
 
 var HeaderContainer = React.createClass ({
   propTypes: {
-    header: PropTypes.string.isRequired
+    header: PropTypes.string.isRequired,
+    cellLines: PropTypes.arrayOf(PropTypes.object).isRequired
   },
   render: function () {
     return (
@@ -21,7 +17,7 @@ var HeaderContainer = React.createClass ({
             header={this.props.header} />
           <CellLineSelectContainer
             label="Cell line: "
-            cellLines={cellLines} />
+            cellLines={this.props.cellLines} />
           </div>
       </div>
     );

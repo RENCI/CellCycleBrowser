@@ -1,15 +1,11 @@
 var AppDispatcher = require("../dispatcher/AppDispatcher");
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
+var Constants = require("../constants/Constants");
 
 var CHANGE_EVENT = "change";
 
-var cellLines = {
-  cellLine1: "Hello 1!",
-  cellLine2: "Hello 2!"
-};
-
-var data = cellLines.cellLine1;
+var data = [];
 
 var DataStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
@@ -21,19 +17,15 @@ var DataStore = assign({}, EventEmitter.prototype, {
   removeChangeListener: function (callback) {
     this.removeListener(CHANGE_EVENT, callback);
   },
-  getAll: function () {
+  getData: function () {
     return data;
   }
 });
 
-AppDispatcher.register(function(action) {
+AppDispatcher.register(function (action) {
   switch (action.actionType) {
-    // XXX: Change to using constants
-    case "CHANGE_CELL_LINE":
-      data = cellLines[action.cellLine.cellLine];
-
-      console.log(data);
-
+    case Constants.RECEIVE_DATA:
+      data = action.data;
       DataStore.emitChange();
       break;
   }

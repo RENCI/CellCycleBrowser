@@ -1,7 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CellLineSelect = require("../components/CellLineSelect");
-var CellCycleBrowserActions = require("../actions/CellCycleBrowserActions");
+var UserActionCreators = require("../actions/UserActionCreators");
 
 var CellLineSelectContainer = React.createClass ({
   propTypes: {
@@ -9,9 +9,7 @@ var CellLineSelectContainer = React.createClass ({
     cellLines: PropTypes.arrayOf(React.PropTypes.object).isRequired
   },
   handleChangeCellLine: function (e) {
-    CellCycleBrowserActions.changeCellLine({
-      cellLine: e.target.value
-    });
+    UserActionCreators.selectCellLine(e.target.value);
   },
   render: function () {
     return (

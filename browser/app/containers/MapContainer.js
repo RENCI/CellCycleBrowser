@@ -4,8 +4,8 @@ var MapVisualizationContainer = require("./MapVisualizationContainer");
 
 var MapContainer = React.createClass ({
   propTypes: {
-    data: React.PropTypes.array,
-    domain: React.PropTypes.object
+    data: PropTypes.array.isRequired,
+    domain: PropTypes.object.isRequired
   },
   render: function() {
     return (
