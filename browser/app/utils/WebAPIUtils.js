@@ -5,16 +5,16 @@ var ServerActionCreators = require("../actions/ServerActionCreators");
 
 module.exports = {
   getCellLines: function () {
-    var cellLines = JSON.parse(localStorage.getItem("cellLines"));
-
     setTimeout(function() {
+      var cellLines = JSON.parse(localStorage.getItem("cellLines"));
+
       ServerActionCreators.receiveCellLines(cellLines);
     }, 0);
   },
   getData: function (cellLine) {
-    var data = JSON.parse(localStorage.getItem("data"))[cellLine];
-
     setTimeout(function() {
+      var data = JSON.parse(localStorage.getItem("data"))[cellLine];
+
       ServerActionCreators.receiveData(data);
     }, 0);
   }
