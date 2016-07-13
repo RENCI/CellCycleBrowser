@@ -3,44 +3,63 @@ var d3 = require("d3");
 var ChordMap = {};
 
 ChordMap.create = function(element, props, state) {
+  // Create skeletal chart
   var svg = d3.select(element).append("svg")
-      .attr("class", "d3")
+      .attr("class", "chordMap")
       .attr("width", props.width)
       .attr("height", props.height);
 
-  svg.append("g")
-      .attr("class", "d3-points");
+  var g = svg.append("g");
+
+  g.append("g")
+      .attr("class", "groups");
+
+  g.append("g")
+      .attr("class", "ribbons");
 
   this.update(element, state);
 };
 
 ChordMap.update = function(element, state) {
-  // Re-compute the scales, and render the data points
-  var scales = this._scales(element, state.domain);
-  this._drawPoints(element, scales, state.data);
+  var svg = d3.select(element).select(".chordMap");
+//      .attr("width", props.width)
+//      .attr("height", props.height);
+
+  var layout = this._layout(svg, state.map);
+
+  this._draw(svg, layout, state.map);
 };
 
-ChordMap._scales = function(element, domain) {
-  if (!domain) {
-    return null;
-  }
+ChordMap._layout = function(svg, map) {
+  var width = parseInt(svg.style("width"), 10),
+      height = parseInt(svg.style("height"), 10),
+      outerRadius = Math.min(width, height) * 0.5 - 40,
+      innerRadius = outerRadius * 0.9;
 
-  var width = element.offsetWidth;
-  var height = element.offsetHeight;
+      console.log(svg);
+            console.log(width, height);
 
-  var x = d3.scaleLinear()
-    .range([0, width])
-    .domain(domain.x);
+  var chord = d3.chord()
+      .padAngle(0.05)
+      .sortSubgroups(d3.descending);
 
-  var y = d3.scaleLinear()
-    .range([height, 0])
-    .domain(domain.y);
+  var arc = d3.arc()
+      .innerRadius(innerRadius)
+      .outerRadius(outerRadius);
 
-  var z = d3.scaleLinear()
-    .range([5, 20])
-    .domain([1, 10]);
+  var ribbon = d3.ribbon()
+      .radius(innerRadius);
 
-  return {x: x, y: y, z: z};
+  var color = d3.scaleOrdinal()
+      .domain(d3.range(map.matrix.length))
+      .range(["#000000", "#FFDD89", "#957244", "#F26223", "#446"]);
+
+  return {
+    chord: chord,
+    arc: arc,
+    ribbon: ribbon,
+    color: color
+  };
 };
 
 ChordMap.destroy = function(element) {
@@ -48,22 +67,38 @@ ChordMap.destroy = function(element) {
   // in this example there is nothing to do
 };
 
-ChordMap._drawPoints = function(element, scales, data) {
-  var g = d3.select(element).selectAll(".d3-points");
+ChordMap._draw = function(svg, layout, map) {
+  var width = parseInt(svg.style("width"), 10),
+      height = parseInt(svg.style("height"), 10);
 
-  var point = g.selectAll(".d3-point")
-    .data(data, function(d) { return d.id; });
+      console.log(width, height);
 
-  // Enter + update
-  point.enter().append("circle")
-      .attr("class", "d3-point")
-   .merge(point)
-      .attr("cx", function(d) { return scales.x(d.x); })
-      .attr("cy", function(d) { return scales.y(d.y); })
-      .attr("r", function(d) { return scales.z(d.z); });
+  var g = svg.select("g")
+      .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")")
+      .datum(layout.chord(map.matrix));
 
-  // Exit
-  point.exit().remove();
+  var group = g.select(".groups").selectAll("path")
+      .data(function(chords) { return chords.groups; });
+
+  group.enter().append("path")
+    .merge(group)
+      .style("fill", function(d) { return layout.color(d.index); })
+      .style("stroke", function(d) { return d3.rgb(layout.color(d.index)).darker(); })
+      .attr("d", layout.arc);
+
+  group.exit().remove();
+
+  var ribbon = g.select(".ribbons").selectAll("path")
+      .data(function(chords) { return chords; });
+
+  ribbon.enter().append("path")
+    .merge(ribbon)
+      .attr("d", layout.ribbon)
+      .style("fill", function(d) { return layout.color(d.target.index); })
+      .style("stroke", function(d) { return d3.rgb(layout.color(d.target.index)).darker(); })
+      .style("fill-opacity", 0.67);
+
+  ribbon.exit().remove();
 };
 
 module.exports = ChordMap;

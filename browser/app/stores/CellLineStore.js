@@ -36,9 +36,6 @@ AppDispatcher.register(function(action) {
 
     case Constants.SELECT_CELL_LINE:
       cellLine = action.cellLine;
-
-console.log("store", cellLine);
-
       CellLineStore.emitChange();
       break;
   }

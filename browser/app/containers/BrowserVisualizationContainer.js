@@ -1,7 +1,7 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
-var ChordMap = require("../visualizations/ChordMap");
+var PointTest = require("../visualizations/PointTest");
 
 // XXX: Should share with MapVisualizationContainer
 var divStyle = {
@@ -12,13 +12,14 @@ var divStyle = {
   borderRadius: 5
 };
 
+var domain = {x: [0, 30], y: [0, 100]};
+
 var BrowserVisualizationContainer = React.createClass ({
   propTypes: {
-    data: React.PropTypes.array,
-    domain: React.PropTypes.object
+    data: React.PropTypes.array
   },
   componentDidMount: function() {
-    ChordMap.create(
+    PointTest.create(
       ReactDOM.findDOMNode(this),
       {
         width: "100%",
@@ -28,16 +29,16 @@ var BrowserVisualizationContainer = React.createClass ({
     );
   },
   componentDidUpdate: function() {
-    ChordMap.update(ReactDOM.findDOMNode(this), this.getChartState());
+    PointTest.update(ReactDOM.findDOMNode(this), this.getChartState());
   },
   getChartState: function() {
     return {
       data: this.props.data,
-      domain: this.props.domain
+      domain: domain
     };
   },
   componentWillUnmount: function() {
-    ChordMap.destroy(ReactDOM.findDOMNode(this));
+    PointTest.destroy(ReactDOM.findDOMNode(this));
   },
   render: function() {
     return <div className="Browser" style={divStyle}></div>

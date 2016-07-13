@@ -5,7 +5,13 @@ var Constants = require("../constants/Constants");
 
 var CHANGE_EVENT = "change";
 
-var data = [];
+// Empty data skeleton
+var data = {
+  map: {
+    matrix: []
+  },
+  cells: []
+};
 
 var DataStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
@@ -16,6 +22,9 @@ var DataStore = assign({}, EventEmitter.prototype, {
   },
   removeChangeListener: function (callback) {
     this.removeListener(CHANGE_EVENT, callback);
+  },
+  getMap: function() {
+    return map;
   },
   getData: function () {
     return data;

@@ -4,16 +4,13 @@ var BrowserVisualizationContainer = require("./BrowserVisualizationContainer");
 
 var BrowserContainer = React.createClass ({
   propTypes: {
-    data: PropTypes.array.isRequired,
-    domain: PropTypes.object.isRequired
+    data: PropTypes.array.isRequired
   },
   render: function() {
     return (
       <div>
         <h2>Browser</h2>
-        <BrowserVisualizationContainer
-          data={this.props.data}
-          domain={this.props.domain} />
+        <BrowserVisualizationContainer data={this.props.data} />
       </div>
     );
   }
