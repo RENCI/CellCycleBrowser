@@ -1,0 +1,12 @@
+*.pyc
+*.pyo
+*.db
+.coverage
+.DS_Store
+.idea
+/celery
+/cellcycle/local_settings.py
+/static
+/log
+/static
+celeryd.pid
