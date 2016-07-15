@@ -10,3 +10,6 @@
 /log
 /static
 celeryd.pid
+/browser/dist
+/browser/node_modules
+npm-debug*
