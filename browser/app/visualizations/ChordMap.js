@@ -36,9 +36,6 @@ ChordMap._layout = function(svg, map) {
       outerRadius = Math.min(width, height) * 0.5 - 40,
       innerRadius = outerRadius * 0.9;
 
-      console.log(svg);
-            console.log(width, height);
-
   var chord = d3.chord()
       .padAngle(0.05)
       .sortSubgroups(d3.descending);
