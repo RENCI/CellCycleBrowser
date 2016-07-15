@@ -71,34 +71,44 @@ ChordMap._draw = function(svg, layout, map) {
   var width = parseInt(svg.style("width"), 10),
       height = parseInt(svg.style("height"), 10);
 
-      console.log(width, height);
-
   var g = svg.select("g")
       .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")")
       .datum(layout.chord(map.matrix));
 
+  // Arcs for groups
   var group = g.select(".groups").selectAll("path")
       .data(function(chords) { return chords.groups; });
 
   group.enter().append("path")
-    .merge(group)
+      .style("fill", "white")
+      .style("stroke", "white")
+    .merge(group).transition()
       .style("fill", function(d) { return layout.color(d.index); })
       .style("stroke", function(d) { return d3.rgb(layout.color(d.index)).darker(); })
       .attr("d", layout.arc);
 
-  group.exit().remove();
+  group.exit()
+      .style("fill", "white")
+      .style("stroke", "white")
+      .remove();
 
+  // Ribbons for chords
   var ribbon = g.select(".ribbons").selectAll("path")
       .data(function(chords) { return chords; });
 
   ribbon.enter().append("path")
-    .merge(ribbon)
+      .style("fill", "white")
+      .style("stroke", "white")
+    .merge(ribbon).transition()
       .attr("d", layout.ribbon)
       .style("fill", function(d) { return layout.color(d.target.index); })
       .style("stroke", function(d) { return d3.rgb(layout.color(d.target.index)).darker(); })
       .style("fill-opacity", 0.67);
 
-  ribbon.exit().remove();
+  ribbon.exit()
+      .style("fill", "white")
+      .style("stroke", "white")
+      .remove();
 };
 
 module.exports = ChordMap;

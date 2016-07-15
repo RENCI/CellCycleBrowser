@@ -57,13 +57,22 @@ PointTest._drawPoints = function(element, scales, data) {
   // Enter + update
   point.enter().append("circle")
       .attr("class", "d3-point")
-   .merge(point)
-      .attr("cx", function(d) { return scales.x(d.x); })
-      .attr("cy", function(d) { return scales.y(d.y); })
-      .attr("r", function(d) { return scales.z(d.z); });
+      .attr("r", 0)
+      .call(position)
+    .merge(point).transition()
+      .attr("r", function(d) { return scales.z(d.z); })
+      .call(position);
 
   // Exit
-  point.exit().remove();
+  point.exit().transition()
+      .attr("r", 0)
+      .remove();
+
+  function position(selection) {
+    selection
+       .attr("cx", function(d) { return scales.x(d.x); })
+       .attr("cy", function(d) { return scales.y(d.y); })
+  }
 };
 
 module.exports = PointTest;
