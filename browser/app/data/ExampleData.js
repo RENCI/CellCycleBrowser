@@ -16,6 +16,42 @@ var data = {
         [1013,   990,  940,    0]
       ]
     },
+    features: [
+      {
+        name: "f1",
+        cells: [
+          {
+            name: "c1",
+            values: [ 0, 0, 1, 1, 0]
+          },
+          {
+            name: "c2",
+            values: [ 0, 0, 1, 1, 0]
+          },
+          {
+            name: "c3",
+            values: [ 0, 0, 1, 1, 0]
+          }
+        ]
+      },
+      {
+        name: "f2",
+        cells: [
+          {
+            name: "c1",
+            values: [ 0, 0, 1, 1, 0]
+          },
+          {
+            name: "c2",
+            values: [ 0, 0, 1, 1, 0]
+          },
+          {
+            name: "c3",
+            values: [ 0, 0, 1, 1, 0]
+          }
+        ]
+      }
+    ],
     cells: [
       { id: "5fbmzmtc", x: 7, y: 41, z: 6 },
       { id: "s4f8phwm", x: 11, y: 45, z: 9 }
