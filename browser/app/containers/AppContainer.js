@@ -2,8 +2,8 @@
 // the stores and passes the new data to its children.
 
 var React = require("react");
-var HeaderContainer = require("../containers/HeaderContainer");
-var MainContainer = require("../containers/MainContainer");
+var HeaderSection = require("../components/HeaderSection");
+var MainSection = require("../components/MainSection");
 var CellLineStore = require("../stores/CellLineStore");
 var DataStore = require("../stores/DataStore");
 var WebAPIUtils = require("../utils/WebAPIUtils");
@@ -17,7 +17,7 @@ function getStateFromStores() {
   };
 }
 
-var CellCycleBrowser = React.createClass({
+var AppContainer = React.createClass({
   getInitialState: function () {
     return getStateFromStores();
   },
@@ -40,14 +40,14 @@ var CellCycleBrowser = React.createClass({
   render: function () {
     return (
       <div>
-        <HeaderContainer
+        <HeaderSection
           header="Cell Cycle Browser"
           cellLines={this.state.cellLines} />
-        <MainContainer
+        <MainSection
           data={this.state.data} />
       </div>
     );
   }
 });
 
-module.exports = CellCycleBrowser;
+module.exports = AppContainer;

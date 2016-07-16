@@ -2,7 +2,7 @@
 
 var React = require("react");
 var ReactDOM = require("react-dom");
-var CellCycleBrowser = require("./components/CellCycleBrowser");
+var AppContainer = require("./containers/AppContainer");
 var ExampleData = require("./data/ExampleData");
 var WebAPIUtils = require("./utils/WebAPIUtils");
 
@@ -13,6 +13,6 @@ ExampleData.init();
 WebAPIUtils.getCellLines();
 
 ReactDOM.render(
-  <CellCycleBrowser />,
+  <AppContainer />,
   document.getElementById("app")
 );

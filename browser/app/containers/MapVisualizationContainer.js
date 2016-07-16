@@ -3,6 +3,7 @@ var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
 var ChordMap = require("../visualizations/ChordMap");
 
+// TODO: Move to css file
 var divStyle = {
   backgroundColor: "white",
   borderColor: "#ddd",

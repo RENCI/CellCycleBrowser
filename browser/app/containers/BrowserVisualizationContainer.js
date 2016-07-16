@@ -3,7 +3,7 @@ var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
 var PointTest = require("../visualizations/PointTest");
 
-// XXX: Should share with MapVisualizationContainer
+// TODO: Move to css file
 var divStyle = {
   backgroundColor: "white",
   borderColor: "#ddd",
@@ -12,6 +12,7 @@ var divStyle = {
   borderRadius: 5
 };
 
+// TODO: Only needed for temporary point visualization
 var domain = {x: [0, 30], y: [0, 100]};
 
 var BrowserVisualizationContainer = React.createClass ({
