@@ -10,6 +10,7 @@ var data = {
   map: {
     matrix: []
   },
+  features: [],
   cells: []
 };
 

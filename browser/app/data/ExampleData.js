@@ -22,15 +22,11 @@ var data = {
         cells: [
           {
             name: "c1",
-            values: [ 0, 0, 1, 1, 0]
+            values: [0, 0, 0, 1, 1, 1]
           },
           {
             name: "c2",
-            values: [ 0, 0, 1, 1, 0]
-          },
-          {
-            name: "c3",
-            values: [ 0, 0, 1, 1, 0]
+            values: [0, 0, 0, 1, 1, 1]
           }
         ]
       },
@@ -39,22 +35,14 @@ var data = {
         cells: [
           {
             name: "c1",
-            values: [ 0, 0, 1, 1, 0]
+            values: [0, 0, 0, 1, 1, 1]
           },
           {
             name: "c2",
-            values: [ 0, 0, 1, 1, 0]
-          },
-          {
-            name: "c3",
-            values: [ 0, 0, 1, 1, 0]
+            values: [0, 0, 0, 1, 1, 1]
           }
         ]
       }
-    ],
-    cells: [
-      { id: "5fbmzmtc", x: 7, y: 41, z: 6 },
-      { id: "s4f8phwm", x: 11, y: 45, z: 9 }
     ]
   },
   cellLine2: {
@@ -67,10 +55,58 @@ var data = {
         [0, 1, 3, 8, 0]
       ]
     },
-    cells: [
-      { id: "5fbmzmtc", x: 7, y: 30, z: 6 },
-      { id: "s4f8phwm", x: 3, y: 35, z: 4 },
-      { id: "adfdfdf", x: 14, y: 26, z: 6 }
+    features: [
+      {
+        name: "f1",
+        cells: [
+          {
+            name: "c1",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c2",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c3",
+            values: [0, 0, 0, 1, 1, 1]
+          }
+        ]
+      },
+      {
+        name: "f2",
+        cells: [
+          {
+            name: "c1",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c2",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c3",
+            values: [0, 0, 0, 1, 1, 1]
+          }
+        ]
+      },
+      {
+        name: "f3",
+        cells: [
+          {
+            name: "c1",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c2",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c3",
+            values: [0, 0, 0, 1, 1, 1]
+          }
+        ]
+      }
     ]
   },
   cellLine3: {
@@ -82,11 +118,91 @@ var data = {
           [2, 4, 6, 0]
       ]
     },
-    cells: [
-      { id: "5fbmzmtc", x: 7, y: 41, z: 6 },
-      { id: "s4f8phwm", x: 6, y: 48, z: 3 },
-      { id: "adfdfdf", x: 14, y: 41, z: 6 },
-      { id: "adffdfm", x: 20, y: 50, z: 2 }
+    features: [
+      {
+        name: "f1",
+        cells: [
+          {
+            name: "c1",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c2",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c3",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c4",
+            values: [0, 0, 0, 1, 1, 1]
+          }
+        ]
+      },
+      {
+        name: "f2",
+        cells: [
+          {
+            name: "c1",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c2",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c3",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c4",
+            values: [0, 0, 0, 1, 1, 1]
+          }
+        ]
+      },
+      {
+        name: "f3",
+        cells: [
+          {
+            name: "c1",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c2",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c3",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c4",
+            values: [0, 0, 0, 1, 1, 1]
+          }
+        ]
+      },
+      {
+        name: "f4",
+        cells: [
+          {
+            name: "c1",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c2",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c3",
+            values: [0, 0, 0, 1, 1, 1]
+          },
+          {
+            name: "c4",
+            values: [0, 0, 0, 1, 1, 1]
+          }
+        ]
+      }
     ]
   }
 };
