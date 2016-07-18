@@ -11,7 +11,9 @@ var divStyle = {
 };
 
 function Feature(props) {
+  // Generate paragraphs with textual representations of cells
   var cells = props.cells.map(function (cell, i) {
+    // Randomize values
     var values = cell.values.slice().sort(function () {
       return 0.5 - Math.random();
     });
