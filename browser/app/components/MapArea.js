@@ -11,7 +11,7 @@ function MapArea(props) {
   );
 }
 
-propTypes = {
+MapArea.propTypes = {
   map: PropTypes.object.isRequired
 };
 

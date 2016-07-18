@@ -4,7 +4,12 @@ var Feature = require("../components/Feature");
 
 function BrowserArea(props) {
   var features = props.features.map(function (feature, i) {
-    return <Feature feature={feature} key={i} />
+    return (
+      <Feature
+        key={i}
+        name={feature.name}
+        cells={feature.cells} />
+    );
   });
 
   return (
@@ -15,7 +20,7 @@ function BrowserArea(props) {
   );
 }
 
-propTypes = {
+BrowserArea.propTypes = {
   features: PropTypes.array.isRequired
 };
 

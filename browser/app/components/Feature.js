@@ -11,7 +11,7 @@ var divStyle = {
 };
 
 function Feature(props) {
-  var cells = props.feature.cells.map(function (cell, i) {
+  var cells = props.cells.map(function (cell, i) {
     var values = cell.values.slice().sort(function () {
       return 0.5 - Math.random();
     });
@@ -21,14 +21,15 @@ function Feature(props) {
 
   return (
     <div style={divStyle}>
-      <h3>Feature {props.feature.name}</h3>
+      <h3>Feature {props.name}</h3>
       {cells}
     </div>
   );
 }
 
-propTypes = {
-  feature: PropTypes.object.isRequired
+Feature.propTypes = {
+  name: PropTypes.string.isRequired,
+  cells: PropTypes.array.isRequired
 };
 
 module.exports = Feature;
