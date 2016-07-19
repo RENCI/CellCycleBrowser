@@ -10,7 +10,7 @@ var WebAPIUtils = require("./utils/WebAPIUtils");
 ExampleData.init();
 
 // Get initial data from local storage
-WebAPIUtils.getCellLines();
+//WebAPIUtils.getCellLines();
 
 ReactDOM.render(
   <AppContainer />,

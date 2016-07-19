@@ -12,9 +12,6 @@ var divStyle = {
   borderRadius: 5
 };
 
-// TODO: Only needed for temporary point visualization
-var domain = {x: [0, 30], y: [0, 100]};
-
 var BrowserVisualizationContainer = React.createClass ({
   propTypes: {
     data: React.PropTypes.array

@@ -5,7 +5,6 @@ var Constants = require("../constants/Constants");
 
 var CHANGE_EVENT = "change";
 
-var cellLines = [];
 var cellLine = "";
 
 var CellLineStore = assign({}, EventEmitter.prototype, {
@@ -18,9 +17,6 @@ var CellLineStore = assign({}, EventEmitter.prototype, {
   removeChangeListener: function (callback) {
     this.removeListener(CHANGE_EVENT, callback);
   },
-  getCellLines: function () {
-    return cellLines;
-  },
   getCellLine: function () {
     return cellLine;
   }
@@ -28,12 +24,6 @@ var CellLineStore = assign({}, EventEmitter.prototype, {
 
 AppDispatcher.register(function(action) {
   switch (action.actionType) {
-    case Constants.RECEIVE_CELL_LINES:
-      cellLines = action.cellLines;
-      if (cellLine === "") cellLine = cellLines[0].value;
-      CellLineStore.emitChange();
-      break;
-
     case Constants.SELECT_CELL_LINE:
       cellLine = action.cellLine;
       CellLineStore.emitChange();

@@ -24,9 +24,6 @@ var DataStore = assign({}, EventEmitter.prototype, {
   removeChangeListener: function (callback) {
     this.removeListener(CHANGE_EVENT, callback);
   },
-  getMap: function() {
-    return map;
-  },
   getData: function () {
     return data;
   }
