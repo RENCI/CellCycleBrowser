@@ -6,13 +6,13 @@ function MapArea(props) {
   return (
     <div>
       <h2>Map</h2>
-      <MapVisualizationContainer map={props.map} />
+      <MapVisualizationContainer map={props.maps[0]} />
     </div>
   );
 }
 
 MapArea.propTypes = {
-  map: PropTypes.object.isRequired
+  maps: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
 module.exports = MapArea;

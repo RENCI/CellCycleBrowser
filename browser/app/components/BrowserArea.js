@@ -3,7 +3,11 @@ var PropTypes = React.PropTypes;
 var Species = require("../components/Species");
 
 function BrowserArea(props) {
-  var species = props.species.map(function (species, i) {
+  var speciesData = props.cellData.length > 0
+                  ? props.cellData[0].species
+                  : [];
+
+  var species = speciesData.map(function (species, i) {
     return (
       <Species
         key={i}
@@ -21,7 +25,7 @@ function BrowserArea(props) {
 }
 
 BrowserArea.propTypes = {
-  species: PropTypes.array.isRequired
+  cellData: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
 module.exports = BrowserArea;

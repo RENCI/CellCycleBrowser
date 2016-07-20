@@ -5,14 +5,8 @@ var Constants = require("../constants/Constants");
 
 var CHANGE_EVENT = "change";
 
-// Empty data skeleton
-var data = {
-  map: {
-    matrix: []
-  },
-  species: [],
-  cells: []
-};
+// Empty data object
+var data = {};
 
 var DataStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {

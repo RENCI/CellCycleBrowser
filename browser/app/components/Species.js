@@ -32,11 +32,14 @@ function Species(props) {
   // Generate paragraphs with textual representations of cells
   var cells = props.cells.map(function (cell, i) {
     // Randomize values
-    var values = cell.values.slice().sort(function () {
-      return 0.5 - Math.random();
-    });
+    var values = cell.features[0].values;
 
-    return <p key={i}>Cell {cell.name}: {values.toString()}</p>
+    return (
+      <div key={i}>
+        <p>{cell.name}:</p>
+        <p>{values.join(", ")}</p>
+      </div>
+    );
   });
 
   var id = props.name;
@@ -53,7 +56,7 @@ function Species(props) {
             +
         </button>
         <span className="lead">
-            Species {props.name}
+            Species: {props.name}
         </span>
       </div>
       <div
