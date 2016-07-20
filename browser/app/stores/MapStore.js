@@ -5,10 +5,11 @@ var Constants = require("../constants/Constants");
 
 var CHANGE_EVENT = "change";
 
-// Empty data object
-var data = {};
+// Map data
+var maps = [];
+var map = {};
 
-var DataStore = assign({}, EventEmitter.prototype, {
+var MapStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
     this.emit(CHANGE_EVENT);
   },
@@ -18,30 +19,27 @@ var DataStore = assign({}, EventEmitter.prototype, {
   removeChangeListener: function (callback) {
     this.removeListener(CHANGE_EVENT, callback);
   },
-  getData: function () {
-    return data;
+  getMaps: function () {
+    return maps;
+  },
+  getMap: function () {
+    return map;
   }
 });
 
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
-    /*
-    case Constants.SELECT_DATA_SET:
-      dataSet = action.dataSet;
-      DataStore.emitChange();
+    case Constants.SELECT_MAP:
+      map = maps[action.mapIndex];
+      MapStore.emitChange();
       break;
 
-    case Constants.RECEIVE_DATA_SETS:
-      dataSets = action.dataSets;
-      if (dataSet === "") dataSet = dataSets[0].value;
-      DataStore.emitChange();
-      break;
-*/
     case Constants.RECEIVE_DATA:
-      data = action.data;
-      DataStore.emitChange();
+      maps = action.data.maps;
+      map = maps.length > 0 ? maps[0] : {};
+      MapStore.emitChange();
       break;
   }
 });
 
-module.exports = DataStore;
+module.exports = MapStore;

@@ -1,6 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
-var MapArea = require("../components/MapArea");
+var MapContainer = require("../containers/MapContainer");
 var BrowserArea = require("../components/BrowserArea");
 var ControlsArea = require("../components/ControlsArea");
 
@@ -19,7 +19,7 @@ function MainSection(props) {
       <div className={className}>
         <div className="row">
           <div className="col-md-3 text-center">
-            <MapArea maps={props.data.maps} />
+            <MapContainer />
           </div>
           <div className="col-md-6 text-center">
             <BrowserArea cellData={props.data.cellData} />
@@ -36,7 +36,7 @@ function MainSection(props) {
       <div className={className}>
         <div className="row">
           <div className="col-md-3 col-md-offset-3 text-center">
-            <MapArea maps={props.data.maps} />
+            <MapContainer />
           </div>
           <div className="col-md-3 text-center">
             <ControlsArea />

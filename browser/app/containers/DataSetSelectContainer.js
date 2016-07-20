@@ -1,20 +1,19 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var ItemSelect = require("../components/ItemSelect");
-var UserActionCreators = require("../actions/UserActionCreators");
+var ViewActionCreators = require("../actions/ViewActionCreators");
 
 var DataSetSelectContainer = React.createClass ({
   propTypes: {
-    label: PropTypes.string.isRequired,
     dataSets: PropTypes.arrayOf(React.PropTypes.object).isRequired
   },
   handleChangeDataSet: function (e) {
-    UserActionCreators.selectDataSet(e.target.value);
+    ViewActionCreators.selectDataSet(e.target.value);
   },
   render: function () {
     return (
       <ItemSelect
-        label={this.props.label}
+        label="Data set: "
         options={this.props.dataSets}
         onChange={this.handleChangeDataSet} />
     );

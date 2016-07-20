@@ -11,7 +11,6 @@ function HeaderSection(props) {
         <Header
           header={props.header} />
         <DataSetSelectContainer
-          label="Data set: "
           dataSets={props.dataSets} />
         <DataSetDescription
           description={props.description} />
@@ -24,6 +23,6 @@ HeaderSection.propTypes = {
   header: PropTypes.string.isRequired,
   dataSets: PropTypes.arrayOf(PropTypes.object).isRequired,
   description: PropTypes.string.isRequired
-},
+};
 
 module.exports = HeaderSection;

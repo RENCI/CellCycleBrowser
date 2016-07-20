@@ -22,19 +22,13 @@ var AppContainer = React.createClass({
     return getStateFromStores();
   },
   componentDidMount: function () {
-    DataSetStore.addChangeListener(this.onDataSetChange);
     DataStore.addChangeListener(this.onDataChange);
 
     // Get initial data from local storage
     WebAPIUtils.getDataSets();
   },
   componentWillUnmount: function() {
-    DataSetStore.addChangeListener(this.onDataSetChange);
     DataStore.removeChangeListener(this.onDataChange);
-  },
-  onDataSetChange: function () {
-    // Data set has changed, so fetch new data
-    WebAPIUtils.getData(DataSetStore.getDataSet());
   },
   onDataChange: function () {
     // Data has changed, so set state to force a render
@@ -42,8 +36,7 @@ var AppContainer = React.createClass({
   },
   render: function () {
     var description = this.state.data.description ?
-                      this.state.data.description :
-                      "";
+                      this.state.data.description : "";
 
     return (
       <div>
