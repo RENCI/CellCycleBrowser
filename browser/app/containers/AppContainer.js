@@ -24,6 +24,9 @@ var AppContainer = React.createClass({
   componentDidMount: function () {
     CellLineStore.addChangeListener(this.onCellLineChange);
     DataStore.addChangeListener(this.onDataChange);
+
+    // Get initial data from local storage
+    WebAPIUtils.getCellLines();
   },
   componentWillUnmount: function() {
     CellLineStore.addChangeListener(this.onCellLineChange);
