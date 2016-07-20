@@ -1,10 +1,52 @@
 // Use localStorage as a proxy for getting data from a server
+var d3 = require("d3");
 
 var dataSets = [
   { value: "dataSet1", name: "Dataset 1" },
   { value: "dataSet2", name: "Dataset 2" },
   { value: "dataSet3", name: "Dataset 3" },
 ];
+
+d3.csv("data/PCNA_53BP1_transpose.csv", function(error, data) {
+  if (error) {
+    console.log(error);
+    return;
+  }
+
+  // Nest by species, cell, and feature
+  var nest = d3.nest()
+      .key(function(d) { return d.Species; })
+      .key(function(d) { return d.Cell; })
+      .key(function(d) { return d.Feature; })
+      .entries(data);
+
+  // Get keys for time samples
+  var timeKeys = data.columns.filter(function(d) {
+    return d !== "Species" && d !== "Cell" && d !== "Feature";
+  });
+
+  // Reformat data
+  species = nest.map(function(d) {
+    return {
+      species: d.key,
+      cells: d.values.map(function(d) {
+        return {
+          cell: d.key,
+          features: d.values.map(function(d) {
+            return {
+              feature: d.key,
+              values: timeKeys.map(function(key) {
+                return +d.values[0][key];
+              }).filter(function(d) {
+                return !isNaN(d);
+              })
+            }
+          })
+        }
+      })
+    };
+  });
+});
 
 var data = {
   dataSet1: {
