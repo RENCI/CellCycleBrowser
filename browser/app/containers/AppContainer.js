@@ -11,6 +11,7 @@ var WebAPIUtils = require("../utils/WebAPIUtils");
 // Retrieve the current state from the stores
 function getStateFromStores() {
   return {
+    cellLines: CellLineStore.getCellLines(),
     cellLine: CellLineStore.getCellLine(),
     data: DataStore.getData()
   };
@@ -40,7 +41,8 @@ var AppContainer = React.createClass({
     return (
       <div>
         <HeaderSection
-          header="Cell Cycle Browser" />
+          header="Cell Cycle Browser"
+          cellLines={this.state.cellLines} />
         <MainSection
           data={this.state.data} />
       </div>
