@@ -7,9 +7,13 @@ var ControlsArea = require("../components/ControlsArea");
 var className = "container-fluid well well-sm";
 
 function MainSection(props) {
-  var hasMaps = props.data.maps && props.data.maps.length > 0;
-  var hasCellData = props.data.cellData && props.data.cellData.length > 0;
+  // Check for maps and cell data
+  var hasMaps = props.data.maps &&
+                props.data.maps.length > 0;
+  var hasCellData = props.data.cellData &&
+                    props.data.cellData.length > 0;
 
+  // Render conditionally
   if (hasMaps && hasCellData) {
     return (
       <div className={className}>

@@ -41,11 +41,16 @@ var AppContainer = React.createClass({
     this.setState(getStateFromStores());
   },
   render: function () {
+    var description = this.state.data.description ?
+                      this.state.data.description :
+                      "";
+
     return (
       <div>
         <HeaderSection
           header="Cell Cycle Browser"
-          dataSets={this.state.dataSets} />
+          dataSets={this.state.dataSets}
+          description={description} />
         <MainSection
           data={this.state.data} />
       </div>
