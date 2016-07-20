@@ -19,26 +19,26 @@ var minWidth = {
   display: "inline"
 };
 
-function CellLineSelect(props) {
+function DataSetSelect(props) {
   return (
     <div>
       <p style={marginTop}>
-        <lead>Cell line: </lead>
+        <lead>Data set: </lead>
         <select
           className="form-control"
           style={minWidth}
-          onChange={props.onChangeCellLine}>
-            {props.cellLines.map(option)}
+          onChange={props.onChangeDataSet}>
+            {props.dataSets.map(option)}
         </select>
       </p>
     </div>
   );
 }
 
-CellLineSelect.propTypes = {
+DataSetSelect.propTypes = {
   label: PropTypes.string.isRequired,
-  cellLines: PropTypes.arrayOf(React.PropTypes.object).isRequired,
-  onChangeCellLine: PropTypes.func.isRequired
+  dataSets: PropTypes.arrayOf(React.PropTypes.object).isRequired,
+  onChangeDataSet: PropTypes.func.isRequired
 };
 
-module.exports = CellLineSelect;
+module.exports = DataSetSelect;

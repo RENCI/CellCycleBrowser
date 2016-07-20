@@ -1,13 +1,13 @@
 // Use localStorage as a proxy for getting data from a server
 
-var cellLines = [
-  { value: "cellLine1", name: "Cell line 1" },
-  { value: "cellLine2", name: "Cell line 2" },
-  { value: "cellLine3", name: "Cell line 3" },
+var dataSets = [
+  { value: "dataSet1", name: "Dataset 1" },
+  { value: "dataSet2", name: "Dataset 2" },
+  { value: "dataSet3", name: "Dataset 3" },
 ];
 
 var data = {
-  cellLine1: {
+  dataSet1: {
     map: {
       matrix: [
         [   0,  5871, 8916, 2868],
@@ -16,9 +16,9 @@ var data = {
         [1013,   990,  940,    0]
       ]
     },
-    features: [
+    species: [
       {
-        name: "f1",
+        name: "s1",
         cells: [
           {
             name: "c1",
@@ -31,7 +31,7 @@ var data = {
         ]
       },
       {
-        name: "f2",
+        name: "s2",
         cells: [
           {
             name: "c1",
@@ -45,7 +45,7 @@ var data = {
       }
     ]
   },
-  cellLine2: {
+  dataSet2: {
     map: {
       matrix: [
         [0, 5, 7, 2, 0],
@@ -55,9 +55,9 @@ var data = {
         [0, 1, 3, 8, 0]
       ]
     },
-    features: [
+    species: [
       {
-        name: "f1",
+        name: "s1",
         cells: [
           {
             name: "c1",
@@ -74,7 +74,7 @@ var data = {
         ]
       },
       {
-        name: "f2",
+        name: "s2",
         cells: [
           {
             name: "c1",
@@ -91,7 +91,7 @@ var data = {
         ]
       },
       {
-        name: "f3",
+        name: "s3",
         cells: [
           {
             name: "c1",
@@ -109,7 +109,7 @@ var data = {
       }
     ]
   },
-  cellLine3: {
+  dataSet3: {
     map: {
       matrix: [
           [0, 5, 7, 2],
@@ -118,9 +118,9 @@ var data = {
           [2, 4, 6, 0]
       ]
     },
-    features: [
+    species: [
       {
-        name: "f1",
+        name: "s1",
         cells: [
           {
             name: "c1",
@@ -141,7 +141,7 @@ var data = {
         ]
       },
       {
-        name: "f2",
+        name: "s2",
         cells: [
           {
             name: "c1",
@@ -162,7 +162,7 @@ var data = {
         ]
       },
       {
-        name: "f3",
+        name: "s3",
         cells: [
           {
             name: "c1",
@@ -183,7 +183,7 @@ var data = {
         ]
       },
       {
-        name: "f4",
+        name: "s4",
         cells: [
           {
             name: "c1",
@@ -210,7 +210,7 @@ var data = {
 module.exports = {
   init: function () {
     localStorage.clear();
-    localStorage.setItem("cellLines", JSON.stringify(cellLines));
+    localStorage.setItem("dataSets", JSON.stringify(dataSets));
     localStorage.setItem("data", JSON.stringify(data));
   }
 }

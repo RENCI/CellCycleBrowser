@@ -10,7 +10,7 @@ var data = {
   map: {
     matrix: []
   },
-  features: [],
+  species: [],
   cells: []
 };
 

@@ -6,7 +6,7 @@ var outerDivStyle = {
   marginBottom: 20
 };
 
-var featureStyle = {
+var speciesStyle = {
   backgroundColor: "white",
   borderColor: "#ddd",
   borderStyle: "solid",
@@ -28,7 +28,7 @@ var buttonStyle = {
   float: "left"
 }
 
-function Feature(props) {
+function Species(props) {
   // Generate paragraphs with textual representations of cells
   var cells = props.cells.map(function (cell, i) {
     // Randomize values
@@ -43,7 +43,7 @@ function Feature(props) {
 
   return (
     <div style={outerDivStyle}>
-      <div style={featureStyle}>
+      <div style={speciesStyle}>
         <button
           type="button"
           className="btn btn-info"
@@ -53,7 +53,7 @@ function Feature(props) {
             +
         </button>
         <span className="lead">
-            Feature {props.name}
+            Species {props.name}
         </span>
       </div>
       <div
@@ -67,9 +67,9 @@ function Feature(props) {
   );
 }
 
-Feature.propTypes = {
+Species.propTypes = {
   name: PropTypes.string.isRequired,
   cells: PropTypes.array.isRequired
 };
 
-module.exports = Feature;
+module.exports = Species;

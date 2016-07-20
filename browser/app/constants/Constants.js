@@ -1,7 +1,7 @@
 var keyMirror = require("keymirror");
 
 module.exports = keyMirror({
-  SELECT_CELL_LINE: null,
-  RECEIVE_CELL_LINES: null,
+  SELECT_DATA_SET: null,
+  RECEIVE_DATA_SETS: null,
   RECEIVE_DATA: null
 });

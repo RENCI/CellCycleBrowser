@@ -12,7 +12,7 @@ function MainSection(props) {
           <MapArea map={props.data.map} />
         </div>
         <div className="col-md-6 text-center">
-          <BrowserArea features={props.data.features} />
+          <BrowserArea species={props.data.species} />
         </div>
         <div className="col-md-3 text-center">
           <ControlsArea />

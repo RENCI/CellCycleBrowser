@@ -4,16 +4,16 @@ var ServerActionCreators = require("../actions/ServerActionCreators");
 // method of getting data from the server.
 
 module.exports = {
-  getCellLines: function () {
+  getDataSets: function () {
     setTimeout(function() {
-      var cellLines = JSON.parse(localStorage.getItem("cellLines"));
+      var dataSets = JSON.parse(localStorage.getItem("dataSets"));
 
-      ServerActionCreators.receiveCellLines(cellLines);
+      ServerActionCreators.receiveDataSets(dataSets);
     }, 0);
   },
-  getData: function (cellLine) {
+  getData: function (dataSet) {
     setTimeout(function() {
-      var data = JSON.parse(localStorage.getItem("data"))[cellLine];
+      var data = JSON.parse(localStorage.getItem("data"))[dataSet];
 
       ServerActionCreators.receiveData(data);
     }, 0);

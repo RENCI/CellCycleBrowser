@@ -1,27 +1,27 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
-var Feature = require("../components/Feature");
+var Species = require("../components/Species");
 
 function BrowserArea(props) {
-  var features = props.features.map(function (feature, i) {
+  var species = props.species.map(function (species, i) {
     return (
-      <Feature
+      <Species
         key={i}
-        name={feature.name}
-        cells={feature.cells} />
+        name={species.name}
+        cells={species.cells} />
     );
   });
 
   return (
     <div>
       <h2>Browser</h2>
-        {features}
+        {species}
     </div>
   );
 }
 
 BrowserArea.propTypes = {
-  features: PropTypes.array.isRequired
+  species: PropTypes.array.isRequired
 };
 
 module.exports = BrowserArea;

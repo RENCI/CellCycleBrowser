@@ -1,7 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var Header = require("../components/Header");
-var CellLineSelectContainer = require("../containers/CellLineSelectContainer");
+var DataSetSelectContainer = require("../containers/DataSetSelectContainer");
 
 function HeaderSection(props) {
   return (
@@ -9,9 +9,9 @@ function HeaderSection(props) {
       <div className="container-fluid">
         <Header
           header={props.header} />
-        <CellLineSelectContainer
-          label="Cell line: "
-          cellLines={props.cellLines} />
+        <DataSetSelectContainer
+          label="Data set: "
+          dataSets={props.dataSets} />
       </div>
     </div>
   );
@@ -19,7 +19,7 @@ function HeaderSection(props) {
 
 HeaderSection.propTypes = {
   header: PropTypes.string.isRequired,
-  cellLines: PropTypes.arrayOf(PropTypes.object).isRequired
+  dataSets: PropTypes.arrayOf(PropTypes.object).isRequired
 },
 
 module.exports = HeaderSection;
