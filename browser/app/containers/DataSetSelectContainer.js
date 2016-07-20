@@ -1,6 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
-var DataSetSelect = require("../components/DataSetSelect");
+var ItemSelect = require("../components/ItemSelect");
 var UserActionCreators = require("../actions/UserActionCreators");
 
 var DataSetSelectContainer = React.createClass ({
@@ -13,10 +13,10 @@ var DataSetSelectContainer = React.createClass ({
   },
   render: function () {
     return (
-      <DataSetSelect
+      <ItemSelect
         label={this.props.label}
-        dataSets={this.props.dataSets}
-        onChangeDataSet={this.handleChangeDataSet} />
+        options={this.props.dataSets}
+        onChange={this.handleChangeDataSet} />
     );
   }
 });

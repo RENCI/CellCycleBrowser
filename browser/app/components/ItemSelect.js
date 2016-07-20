@@ -19,26 +19,34 @@ var minWidth = {
   display: "inline"
 };
 
-function DataSetSelect(props) {
+function ItemSelect(props) {
+  var options = props.options.map(function(option, i) {
+    return <option
+             key={i}
+             value={option.value}>
+               {option.name}
+           </option>
+  });
+
   return (
     <div>
       <p style={marginTop}>
-        <lead>Data set: </lead>
+        <lead>{props.label}</lead>
         <select
           className="form-control"
           style={minWidth}
-          onChange={props.onChangeDataSet}>
-            {props.dataSets.map(option)}
+          onChange={props.onChange}>
+            {options}
         </select>
       </p>
     </div>
   );
 }
 
-DataSetSelect.propTypes = {
+ItemSelect.propTypes = {
   label: PropTypes.string.isRequired,
-  dataSets: PropTypes.arrayOf(React.PropTypes.object).isRequired,
-  onChangeDataSet: PropTypes.func.isRequired
+  options: PropTypes.arrayOf(React.PropTypes.object).isRequired,
+  onChange: PropTypes.func.isRequired
 };
 
-module.exports = DataSetSelect;
+module.exports = ItemSelect;
