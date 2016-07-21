@@ -7,7 +7,7 @@ var MapVisualizationContainer = require("../containers/MapVisualizationContainer
 
 function getStateFromStore() {
   return {
-    maps: MapStore.getMaps(),
+    mapList: MapStore.getMapList(),
     map: MapStore.getMap()
   };
 }
@@ -26,21 +26,19 @@ var MapContainer = React.createClass({
     this.setState(getStateFromStore());
   },
   render: function () {
-    var maps = this.state.maps.map(function (map, i) {
-      return {
-        value: i,
-        name: map.name
-      };
-    });
-
-    return (
-      <div>
-        <h2>Map</h2>
-        <MapSelectContainer
-          maps={maps}/>
-        <MapVisualizationContainer map={this.state.map} />
-      </div>
-    );
+    if (this.state.mapList.length === 0) {
+      return null;
+    }
+    else {
+      return (
+        <div>
+          <h2>Map</h2>
+          <MapSelectContainer
+            mapList={this.state.mapList}/>
+          <MapVisualizationContainer map={this.state.map} />
+        </div>
+      );
+    }
   }
 });
 

@@ -3,18 +3,24 @@ var Constants = require("../constants/Constants");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
 module.exports = {
-  selectDataSet: function(dataSet) {
+  selectDataSet: function(dataSetKey) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_DATA_SET,
-      dataSet: dataSet
+      dataSetKey: dataSetKey
     });
 
-    WebAPIUtils.getData(dataSet);
+    WebAPIUtils.getData(dataSetKey);
   },
-  selectMap: function(mapIndex) {
+  selectMap: function(mapKey) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_MAP,
-      mapIndex: mapIndex
+      mapKey: mapKey
+    });
+  },
+  selectCellData: function(cellDataKey) {
+    AppDispatcher.dispatch({
+      actionType: Constants.SELECT_CELL_DATA,
+      cellDataKey: cellDataKey
     });
   }
 };

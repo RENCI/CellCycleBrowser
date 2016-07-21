@@ -1,8 +1,8 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var MapContainer = require("../containers/MapContainer");
-var BrowserArea = require("../components/BrowserArea");
-var ControlsArea = require("../components/ControlsArea");
+var BrowserContainer = require("../containers/BrowserContainer");
+var ControlsArea = require("./ControlsArea");
 
 var className = "container-fluid well well-sm";
 
@@ -22,7 +22,7 @@ function MainSection(props) {
             <MapContainer />
           </div>
           <div className="col-md-6 text-center">
-            <BrowserArea cellData={props.data.cellData} />
+            <BrowserContainer />
           </div>
           <div className="col-md-3 text-center">
             <ControlsArea />
@@ -50,7 +50,7 @@ function MainSection(props) {
       <div className={className}>
         <div className="row">
           <div className="col-md-6 col-md-offset-3 text-center">
-            <BrowserArea cellData={props.data.cellData} />
+            <BrowserContainer />
           </div>
         </div>
       </div>

@@ -12,4 +12,5 @@
 celeryd.pid
 /browser/dist
 /browser/node_modules
+/browser/data
 npm-debug*
