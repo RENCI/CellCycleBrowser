@@ -23,20 +23,20 @@ var CellDataStore = assign({}, EventEmitter.prototype, {
     return cellDataList;
   },
   getCellData: function () {
-    return map;
+    return cellData;
   }
 });
 
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.SELECT_CELL_DATA:
-      cellData = cellDataList[action.cellDataIndex];
+      cellData = cellDataList[action.cellDataKey];
       CellDataStore.emitChange();
       break;
 
     case Constants.RECEIVE_DATA:
-      cellDataList = action.data.cellDataList;
-      cellData = maps.length > 0 ? cellDataList[0] : {};
+      cellDataList = action.data.cellData;
+      cellData = cellDataList.length > 0 ? cellDataList[0] : {};
       CellDataStore.emitChange();
       break;
   }

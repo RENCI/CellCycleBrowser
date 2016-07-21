@@ -6,7 +6,7 @@ var Constants = require("../constants/Constants");
 var CHANGE_EVENT = "change";
 
 // Map data
-var maps = [];
+var mapList = [];
 var map = {};
 
 var MapStore = assign({}, EventEmitter.prototype, {
@@ -19,8 +19,8 @@ var MapStore = assign({}, EventEmitter.prototype, {
   removeChangeListener: function (callback) {
     this.removeListener(CHANGE_EVENT, callback);
   },
-  getMaps: function () {
-    return maps;
+  getMapList: function () {
+    return mapList;
   },
   getMap: function () {
     return map;
@@ -30,13 +30,13 @@ var MapStore = assign({}, EventEmitter.prototype, {
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.SELECT_MAP:
-      map = maps[action.mapIndex];
+      map = mapList[action.mapKey];
       MapStore.emitChange();
       break;
 
     case Constants.RECEIVE_DATA:
-      maps = action.data.maps;
-      map = maps.length > 0 ? maps[0] : {};
+      mapList = action.data.maps;
+      map = mapList.length > 0 ? mapList[0] : {};
       MapStore.emitChange();
       break;
   }

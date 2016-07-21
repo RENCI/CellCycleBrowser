@@ -25,18 +25,6 @@ var DataStore = assign({}, EventEmitter.prototype, {
 
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
-    /*
-    case Constants.SELECT_DATA_SET:
-      dataSet = action.dataSet;
-      DataStore.emitChange();
-      break;
-
-    case Constants.RECEIVE_DATA_SETS:
-      dataSets = action.dataSets;
-      if (dataSet === "") dataSet = dataSets[0].value;
-      DataStore.emitChange();
-      break;
-*/
     case Constants.RECEIVE_DATA:
       data = action.data;
       DataStore.emitChange();
