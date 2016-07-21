@@ -5,7 +5,7 @@ var ViewActionCreators = require("../actions/ViewActionCreators");
 
 var DataSetSelectContainer = React.createClass ({
   propTypes: {
-    dataSets: PropTypes.arrayOf(React.PropTypes.object).isRequired
+    dataSetList: PropTypes.arrayOf(React.PropTypes.object).isRequired
   },
   handleChangeDataSet: function (e) {
     ViewActionCreators.selectDataSet(e.target.value);
@@ -14,7 +14,7 @@ var DataSetSelectContainer = React.createClass ({
     return (
       <ItemSelect
         label="Data set: "
-        options={this.props.dataSets}
+        options={this.props.dataSetList}
         onChange={this.handleChangeDataSet} />
     );
   }

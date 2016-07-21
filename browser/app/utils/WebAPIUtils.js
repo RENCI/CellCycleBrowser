@@ -4,11 +4,11 @@ var ServerActionCreators = require("../actions/ServerActionCreators");
 // method of getting data from the server.
 
 module.exports = {
-  getDataSets: function () {
+  getDataSetList: function () {
     setTimeout(function() {
-      var dataSets = JSON.parse(localStorage.getItem("dataSets"));
+      var dataSetList = JSON.parse(localStorage.getItem("dataSetList"));
 
-      ServerActionCreators.receiveDataSets(dataSets);
+      ServerActionCreators.receiveDataSetList(dataSetList);
     }, 0);
   },
   getData: function (dataSet) {

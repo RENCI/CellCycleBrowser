@@ -11,7 +11,7 @@ var WebAPIUtils = require("../utils/WebAPIUtils");
 // Retrieve the current state from the stores
 function getStateFromStores() {
   return {
-    dataSets: DataSetStore.getDataSets(),
+    dataSetList: DataSetStore.getDataSetList(),
     dataSet: DataSetStore.getDataSet(),
     data: DataStore.getData()
   };
@@ -24,8 +24,8 @@ var AppContainer = React.createClass({
   componentDidMount: function () {
     DataStore.addChangeListener(this.onDataChange);
 
-    // Get initial data from local storage
-    WebAPIUtils.getDataSets();
+    // Get initial data set list from local storage
+    WebAPIUtils.getDataSetList();
   },
   componentWillUnmount: function() {
     DataStore.removeChangeListener(this.onDataChange);
@@ -42,7 +42,7 @@ var AppContainer = React.createClass({
       <div>
         <HeaderSection
           header="Cell Cycle Browser"
-          dataSets={this.state.dataSets}
+          dataSetList={this.state.dataSetList}
           description={description} />
         <MainSection
           data={this.state.data} />

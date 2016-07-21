@@ -11,7 +11,7 @@ function HeaderSection(props) {
         <Header
           header={props.header} />
         <DataSetSelectContainer
-          dataSets={props.dataSets} />
+          dataSetList={props.dataSetList} />
         <DataSetDescription
           description={props.description} />
       </div>
@@ -21,7 +21,7 @@ function HeaderSection(props) {
 
 HeaderSection.propTypes = {
   header: PropTypes.string.isRequired,
-  dataSets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  dataSetList: PropTypes.arrayOf(PropTypes.object).isRequired,
   description: PropTypes.string.isRequired
 };
 

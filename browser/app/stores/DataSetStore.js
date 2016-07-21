@@ -5,7 +5,7 @@ var Constants = require("../constants/Constants");
 
 var CHANGE_EVENT = "change";
 
-var dataSets = [];
+var dataSetList = [];
 var dataSet = "";
 
 var DataSetStore = assign({}, EventEmitter.prototype, {
@@ -18,19 +18,20 @@ var DataSetStore = assign({}, EventEmitter.prototype, {
   removeChangeListener: function (callback) {
     this.removeListener(CHANGE_EVENT, callback);
   },
-  getDataSets: function () {
-    return dataSets;
+  getDataSetList: function () {
+    return dataSetList;
   },
   getDataSet: function () {
     return dataSet;
   }
 });
 
-AppDispatcher.register(function(action) {
+AppDispatcher.register(function(action) {  
   switch (action.actionType) {
-    case Constants.RECEIVE_DATA_SETS:
-      dataSets = action.dataSets;
-      if (dataSet === "") dataSet = dataSets[0].value;
+    case Constants.RECEIVE_DATA_SET_LIST:
+      dataSetList = action.dataSetList;
+      // TODO: Move to data set select?
+      dataSet = dataSetList[0].value;
       DataSetStore.emitChange();
       break;
 

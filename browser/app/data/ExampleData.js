@@ -2,7 +2,7 @@
 var WebAPIUtils = require("../utils/WebAPIUtils");
 var d3 = require("d3");
 
-var dataSets = [
+var dataSetList = [
   { value: "dataSet1", name: "Dataset 1" },
   { value: "dataSet2", name: "Dataset 2" },
   { value: "dataSet3", name: "Dataset 3" },
@@ -116,16 +116,16 @@ d3.csv("data/PCNA_53BP1_transpose.csv", function(error, data) {
   };
 
   localStorage.clear();
-  localStorage.setItem("dataSets", JSON.stringify(dataSets));
+  localStorage.setItem("dataSetList", JSON.stringify(dataSetList));
   localStorage.setItem("data", JSON.stringify(data));
 
-  WebAPIUtils.getData(dataSets[0].value);
+  WebAPIUtils.getData(dataSetList[0].value);
 });
 
 module.exports = {
   init: function () {
     localStorage.clear();
-    localStorage.setItem("dataSets", JSON.stringify(dataSets));
+    localStorage.setItem("dataSetList", JSON.stringify(dataSetList));
     localStorage.setItem("data", JSON.stringify(data));
   }
 }

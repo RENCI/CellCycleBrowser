@@ -2,10 +2,10 @@ var AppDispatcher = require("../dispatcher/AppDispatcher");
 var Constants = require("../constants/Constants");
 
 module.exports = {
-  receiveDataSets: function(dataSets) {
+  receiveDataSetList: function(dataSetList) {
     AppDispatcher.dispatch({
-      actionType: Constants.RECEIVE_DATA_SETS,
-      dataSets: dataSets
+      actionType: Constants.RECEIVE_DATA_SET_LIST,
+      dataSetList: dataSetList
     });
   },
   receiveData: function(data) {
