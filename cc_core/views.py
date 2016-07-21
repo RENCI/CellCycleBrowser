@@ -16,7 +16,7 @@ def serve_data(request, filename, *args, **kwargs):
     fp = open('data/'+filename, 'rb')
     data = csv.reader(fp)
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="PCNA_53BP1_transpose.csv"'
+    response['Content-Disposition'] = 'attachment; filename="'+filename+'"'
     writer = csv.writer(response)
     for row in data:
         writer.writerow(row)
