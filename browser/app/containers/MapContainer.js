@@ -26,21 +26,26 @@ var MapContainer = React.createClass({
     this.setState(getStateFromStore());
   },
   render: function () {
-    var maps = this.state.maps.map(function (map, i) {
-      return {
-        value: i,
-        name: map.name
-      };
-    });
+    if (this.state.maps.length === 0) {
+      return null;
+    }
+    else {
+      var maps = this.state.maps.map(function (map, i) {
+        return {
+          value: i,
+          name: map.name
+        };
+      });
 
-    return (
-      <div>
-        <h2>Map</h2>
-        <MapSelectContainer
-          maps={maps}/>
-        <MapVisualizationContainer map={this.state.map} />
-      </div>
-    );
+      return (
+        <div>
+          <h2>Map</h2>
+          <MapSelectContainer
+            maps={maps}/>
+          <MapVisualizationContainer map={this.state.map} />
+        </div>
+      );
+    }
   }
 });
 

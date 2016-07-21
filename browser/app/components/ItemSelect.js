@@ -1,11 +1,11 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
-function option(v, i) {
+function option(option, i) {
   return <option
            key={i}
-           value={v.value}>
-             {v.name}
+           value={option.value}>
+             {option.name}
          </option>
 }
 
@@ -20,14 +20,6 @@ var minWidth = {
 };
 
 function ItemSelect(props) {
-  var options = props.options.map(function(option, i) {
-    return <option
-             key={i}
-             value={option.value}>
-               {option.name}
-           </option>
-  });
-
   return (
     <div>
       <p style={marginTop}>
@@ -36,7 +28,7 @@ function ItemSelect(props) {
           className="form-control"
           style={minWidth}
           onChange={props.onChange}>
-            {options}
+            {props.options.map(option)}
         </select>
       </p>
     </div>
