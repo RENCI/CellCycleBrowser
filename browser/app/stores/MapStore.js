@@ -34,8 +34,8 @@ AppDispatcher.register(function (action) {
       MapStore.emitChange();
       break;
 
-    case Constants.RECEIVE_DATA:
-      mapList = action.data.maps;
+    case Constants.RECEIVE_DATA_SET:
+      mapList = action.dataSet.maps;
       map = mapList.length > 0 ? mapList[0] : {};
       MapStore.emitChange();
       break;

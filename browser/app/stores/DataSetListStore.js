@@ -7,7 +7,7 @@ var CHANGE_EVENT = "change";
 
 var dataSetList = [];
 
-var DataSetStore = assign({}, EventEmitter.prototype, {
+var DataSetListStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
     this.emit(CHANGE_EVENT);
   },

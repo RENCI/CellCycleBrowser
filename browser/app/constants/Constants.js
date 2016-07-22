@@ -6,5 +6,5 @@ module.exports = keyMirror({
   SELECT_CELL_DATA: null,
 
   RECEIVE_DATA_SET_LIST: null,
-  RECEIVE_DATA: null
+  RECEIVE_DATA_SET: null
 });

@@ -4,16 +4,13 @@
 var React = require("react");
 var HeaderContainer = require("../containers/HeaderContainer");
 var MainSection = require("../components/MainSection");
-//var DataSetStore = require("../stores/DataSetStore");
-var DataStore = require("../stores/DataStore");
+var DataSetStore = require("../stores/DataSetStore");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
 // Retrieve the current state from the stores
 function getStateFromStores() {
   return {
-    //dataSetList: DataSetStore.getDataSetList(),
-    //dataSet: DataSetStore.getDataSet(),
-    data: DataStore.getData()
+    dataSet: DataSetStore.getDataSet()
   };
 }
 
@@ -22,13 +19,13 @@ var AppContainer = React.createClass({
     return getStateFromStores();
   },
   componentDidMount: function () {
-    DataStore.addChangeListener(this.onDataChange);
+    DataSetStore.addChangeListener(this.onDataChange);
 
     // Get initial data set list from local storage
     WebAPIUtils.getDataSetList();
   },
   componentWillUnmount: function() {
-    DataStore.removeChangeListener(this.onDataChange);
+    DataSetStore.removeChangeListener(this.onDataChange);
   },
   onDataChange: function () {
     // Data has changed, so set state to force a render
@@ -38,7 +35,7 @@ var AppContainer = React.createClass({
     return (
       <div>
         <HeaderContainer header="Cell Cycle Browser" />
-        <MainSection  data={this.state.data}/>
+        <MainSection dataSet={this.state.dataSet}/>
       </div>
     );
   }

@@ -34,8 +34,8 @@ AppDispatcher.register(function (action) {
       CellDataStore.emitChange();
       break;
 
-    case Constants.RECEIVE_DATA:
-      cellDataList = action.data.cellData;
+    case Constants.RECEIVE_DATA_SET:
+      cellDataList = action.dataSet.cellData;
       cellData = cellDataList.length > 0 ? cellDataList[0] : {};
       CellDataStore.emitChange();
       break;

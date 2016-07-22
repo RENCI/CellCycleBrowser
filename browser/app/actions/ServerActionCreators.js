@@ -8,10 +8,10 @@ module.exports = {
       dataSetList: dataSetList
     });
   },
-  receiveData: function(data) {
+  receiveData: function(dataSet) {
     AppDispatcher.dispatch({
-      actionType: Constants.RECEIVE_DATA,
-      data: data
+      actionType: Constants.RECEIVE_DATA_SET,
+      dataSet: dataSet
     });
   }
 };

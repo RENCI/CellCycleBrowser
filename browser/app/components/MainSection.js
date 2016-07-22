@@ -8,10 +8,10 @@ var className = "container-fluid well well-sm";
 
 function MainSection(props) {
   // Check for maps and cell data
-  var hasMaps = props.data.maps &&
-                props.data.maps.length > 0;
-  var hasCellData = props.data.cellData &&
-                    props.data.cellData.length > 0;
+  var hasMaps = props.dataSet.maps &&
+                props.dataSet.maps.length > 0;
+  var hasCellData = props.dataSet.cellData &&
+                    props.dataSet.cellData.length > 0;
 
   // Render conditionally
   if (hasMaps && hasCellData) {
@@ -62,7 +62,7 @@ function MainSection(props) {
 }
 
 MainSection.propTypes = {
-  data: PropTypes.object.isRequired
+  dataSet: PropTypes.object.isRequired
 };
 
 module.exports = MainSection;

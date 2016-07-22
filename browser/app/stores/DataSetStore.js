@@ -5,10 +5,10 @@ var Constants = require("../constants/Constants");
 
 var CHANGE_EVENT = "change";
 
-// Empty data object
-var data = {};
+// Empty data set object
+var dataSet = {};
 
-var DataStore = assign({}, EventEmitter.prototype, {
+var DataSetStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
     this.emit(CHANGE_EVENT);
   },
@@ -18,18 +18,18 @@ var DataStore = assign({}, EventEmitter.prototype, {
   removeChangeListener: function (callback) {
     this.removeListener(CHANGE_EVENT, callback);
   },
-  getData: function () {
-    return data;
+  getDataSet: function () {
+    return dataSet;
   }
 });
 
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
-    case Constants.RECEIVE_DATA:
-      data = action.data;
-      DataStore.emitChange();
+    case Constants.RECEIVE_DATA_SET:
+      dataSet = action.dataSet;
+      DataSetStore.emitChange();
       break;
   }
 });
 
-module.exports = DataStore;
+module.exports = DataSetStore;
