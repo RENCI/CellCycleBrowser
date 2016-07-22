@@ -4,7 +4,7 @@ var MapContainer = require("../containers/MapContainer");
 var BrowserContainer = require("../containers/BrowserContainer");
 var ControlsArea = require("./ControlsArea");
 
-var className = "container-fluid well well-sm";
+var divClass = "container-fluid well well-sm";
 
 function MainSection(props) {
   // Check for maps and cell data
@@ -16,7 +16,7 @@ function MainSection(props) {
   // Render conditionally
   if (hasMaps && hasCellData) {
     return (
-      <div className={className}>
+      <div className={divClass}>
         <div className="row">
           <div className="col-md-3 text-center">
             <MapContainer />
@@ -33,7 +33,7 @@ function MainSection(props) {
   }
   else if (hasMaps) {
     return (
-      <div className={className}>
+      <div className={divClass}>
         <div className="row">
           <div className="col-md-3 col-md-offset-3 text-center">
             <MapContainer />
@@ -47,7 +47,7 @@ function MainSection(props) {
   }
   else if (hasCellData) {
     return (
-      <div className={className}>
+      <div className={divClass}>
         <div className="row">
           <div className="col-md-6 col-md-offset-3 text-center">
             <BrowserContainer />
@@ -57,7 +57,7 @@ function MainSection(props) {
     );
   }
   else {
-    return <div className={className} />
+    return <div className={divClass} />
   }
 }
 
