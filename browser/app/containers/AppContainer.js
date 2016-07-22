@@ -2,17 +2,17 @@
 // the stores and passes the new data to its children.
 
 var React = require("react");
-var HeaderSection = require("../components/HeaderSection");
+var HeaderContainer = require("../containers/HeaderContainer");
 var MainSection = require("../components/MainSection");
-var DataSetStore = require("../stores/DataSetStore");
+//var DataSetStore = require("../stores/DataSetStore");
 var DataStore = require("../stores/DataStore");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
 // Retrieve the current state from the stores
 function getStateFromStores() {
   return {
-    dataSetList: DataSetStore.getDataSetList(),
-    dataSet: DataSetStore.getDataSet(),
+    //dataSetList: DataSetStore.getDataSetList(),
+    //dataSet: DataSetStore.getDataSet(),
     data: DataStore.getData()
   };
 }
@@ -35,17 +35,10 @@ var AppContainer = React.createClass({
     this.setState(getStateFromStores());
   },
   render: function () {
-    var description = this.state.data.description ?
-                      this.state.data.description : "";
-
     return (
       <div>
-        <HeaderSection
-          header="Cell Cycle Browser"
-          dataSetList={this.state.dataSetList}
-          description={description} />
-        <MainSection
-          data={this.state.data} />
+        <HeaderContainer header="Cell Cycle Browser" />
+        <MainSection  data={this.state.data}/>
       </div>
     );
   }

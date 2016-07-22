@@ -7,6 +7,7 @@ var CHANGE_EVENT = "change";
 
 var dataSetList = [];
 var dataSet = {};
+var dataSetDescription = "";
 
 var DataSetStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
@@ -23,11 +24,19 @@ var DataSetStore = assign({}, EventEmitter.prototype, {
   },
   getDataSet: function () {
     return dataSet;
+  },
+  getDataSetDescription () {
+    return dataSetDescription;
   }
 });
 
 AppDispatcher.register(function(action) {
   switch (action.actionType) {
+    case Constants.SELECT_DATA_SET:
+      dataSet = dataSetList[action.dataSetKey];
+      DataSetStore.emitChange();
+      break;
+
     case Constants.RECEIVE_DATA_SET_LIST:
       dataSetList = action.dataSetList;
       // TODO: Move to data set select?
@@ -35,8 +44,8 @@ AppDispatcher.register(function(action) {
       DataSetStore.emitChange();
       break;
 
-    case Constants.SELECT_DATA_SET:
-      dataSet = dataSetList[action.dataSetKey];
+    case Constants.RECEIVE_DATA:
+      dataSetDescription = action.data.description;      
       DataSetStore.emitChange();
       break;
   }
