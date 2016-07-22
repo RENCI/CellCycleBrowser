@@ -25,54 +25,67 @@ var cellStyle = {
 }
 
 var buttonStyle = {
-  float: "left"
+  float: "left",
+  width: 35
 }
 
-function Species(props) {
-  // Generate paragraphs with textual representations of cells
-  var cells = props.cells.map(function (cell, i) {
-    // Randomize values
-    var values = cell.features[0].values;
+var Species = React.createClass({
+  propTypes: {
+    name: PropTypes.string.isRequired,
+    cells: PropTypes.array.isRequired
+  },
+  getInitialState: function () {
+    return {
+      buttonText: "-"
+    }
+  },
+  onClick: function () {
+    this.setState({
+      buttonText: this.state.buttonText === "-" ? "+" : "-"
+    });
+  },
+  render: function () {
+    // Generate paragraphs with textual representations of cells
+    var cells = this.props.cells.map(function (cell, i) {
+      // Randomize values
+      var values = cell.features[0].values;
+
+      return (
+        <div key={i}>
+          <p>{cell.name}:</p>
+          <p>{values.join(", ")}</p>
+        </div>
+      );
+    });
+
+    var id = this.props.name;
 
     return (
-      <div key={i}>
-        <p>{cell.name}:</p>
-        <p>{values.join(", ")}</p>
+      <div style={outerDivStyle}>
+        <div style={speciesStyle}>
+          <button
+            type="button"
+            className="btn btn-info"
+            data-toggle="collapse"
+            data-target={"#" + id}
+            style={buttonStyle}
+            onClick={this.onClick}>
+              {this.state.buttonText}
+          </button>
+          <span className="lead">
+              Species: {this.props.name}
+          </span>
+        </div>
+        <div
+          className="in"
+          id={id}
+          style={cellStyle}>
+            <p/>
+            {cells}
+        </div>
       </div>
     );
-  });
-
-  var id = props.name;
-
-  return (
-    <div style={outerDivStyle}>
-      <div style={speciesStyle}>
-        <button
-          type="button"
-          className="btn btn-info"
-          data-toggle="collapse"
-          data-target={"#" + id}
-          style={buttonStyle}>
-            +
-        </button>
-        <span className="lead">
-            Species: {props.name}
-        </span>
-      </div>
-      <div
-        className="in"
-        id={id}
-        style={cellStyle}>
-          <p/>
-          {cells}
-      </div>
-    </div>
-  );
-}
-
-Species.propTypes = {
-  name: PropTypes.string.isRequired,
-  cells: PropTypes.array.isRequired
-};
+  }
+});
 
 module.exports = Species;
