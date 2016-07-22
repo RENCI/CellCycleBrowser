@@ -1,14 +1,12 @@
-// The main controller-view for the application. It listens for changes in
-// the stores and passes the new data to its children.
+// Controller-view for the application that stores the current data set
 
 var React = require("react");
-var HeaderContainer = require("../containers/HeaderContainer");
+var HeaderSection = require("../components/HeaderSection");
 var MainSection = require("../components/MainSection");
 var DataSetStore = require("../stores/DataSetStore");
-var WebAPIUtils = require("../utils/WebAPIUtils");
 
-// Retrieve the current state from the stores
-function getStateFromStores() {
+// Retrieve the current state from the store
+function getStateFromStore() {
   return {
     dataSet: DataSetStore.getDataSet()
   };
@@ -16,25 +14,21 @@ function getStateFromStores() {
 
 var AppContainer = React.createClass({
   getInitialState: function () {
-    return getStateFromStores();
+    return getStateFromStore();
   },
   componentDidMount: function () {
-    DataSetStore.addChangeListener(this.onDataChange);
-
-    // Get initial data set list from local storage
-    WebAPIUtils.getDataSetList();
+    DataSetStore.addChangeListener(this.onDataSetChange);
   },
   componentWillUnmount: function() {
-    DataSetStore.removeChangeListener(this.onDataChange);
+    DataSetStore.removeChangeListener(this.onDataSetChange);
   },
-  onDataChange: function () {
-    // Data has changed, so set state to force a render
-    this.setState(getStateFromStores());
+  onDataSetChange: function () {
+    this.setState(getStateFromStore());
   },
   render: function () {
     return (
       <div>
-        <HeaderContainer header="Cell Cycle Browser" />
+        <HeaderSection dataSet={this.state.dataSet}/>
         <MainSection dataSet={this.state.dataSet}/>
       </div>
     );

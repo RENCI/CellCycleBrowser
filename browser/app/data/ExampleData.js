@@ -40,7 +40,7 @@ var maps = [
 ];
 
 var cellData = [];
-var data = {};
+var dataSets = {};
 
 d3.csv("data/PCNA_53BP1_transpose.csv", function(error, data) {
   if (error) {
@@ -97,7 +97,7 @@ d3.csv("data/PCNA_53BP1_transpose.csv", function(error, data) {
     }
   ];
 
-  data = {
+  dataSets = {
     dataSet1: {
       description: "Data and maps",
       maps: maps.slice(),
@@ -115,17 +115,17 @@ d3.csv("data/PCNA_53BP1_transpose.csv", function(error, data) {
     }
   };
 
-  localStorage.clear();
   localStorage.setItem("dataSetList", JSON.stringify(dataSetList));
-  localStorage.setItem("data", JSON.stringify(data));
+  localStorage.setItem("dataSets", JSON.stringify(dataSets));
 
-  WebAPIUtils.getData(dataSetList[0].value);
+  // Re-fire event chain once data is loaded
+  WebAPIUtils.getDataSet(dataSetList[0].value);
 });
 
 module.exports = {
   init: function () {
     localStorage.clear();
     localStorage.setItem("dataSetList", JSON.stringify(dataSetList));
-    localStorage.setItem("data", JSON.stringify(data));
+    localStorage.setItem("dataSets", JSON.stringify(dataSets));
   }
 }

@@ -1,11 +1,30 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var DataSetListStore = require("../stores/DataSetListStore");
 var ItemSelect = require("../components/ItemSelect");
 var ViewActionCreators = require("../actions/ViewActionCreators");
+var WebAPIUtils = require("../utils/WebAPIUtils");
+
+function getStateFromStore() {
+  return {
+    dataSetList: DataSetListStore.getDataSetList()
+  };
+}
 
 var DataSetSelectContainer = React.createClass ({
-  propTypes: {
-    dataSetList: PropTypes.arrayOf(React.PropTypes.object).isRequired
+  getInitialState: function () {
+    return getStateFromStore();
+  },
+  componentDidMount: function () {
+    DataSetListStore.addChangeListener(this.onDataSetListChange);
+
+    // Get initial data set list from local storage
+    WebAPIUtils.getDataSetList();
+  },
+  componentWillUnmount: function() {
+    DataSetListStore.removeChangeListener(this.onDataSetListChange);
+  },
+  onDataSetListChange: function () {
+    this.setState(getStateFromStore());
   },
   handleChangeDataSet: function (e) {
     ViewActionCreators.selectDataSet(e.target.value);
@@ -14,7 +33,7 @@ var DataSetSelectContainer = React.createClass ({
     return (
       <ItemSelect
         label="Data set: "
-        options={this.props.dataSetList}
+        options={this.state.dataSetList}
         onChange={this.handleChangeDataSet} />
     );
   }

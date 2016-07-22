@@ -26,6 +26,7 @@ AppDispatcher.register(function(action) {
   switch (action.actionType) {
     case Constants.RECEIVE_DATA_SET_LIST:
       dataSetList = action.dataSetList;
+      DataSetListStore.emitChange();
       break;
   }
 });

@@ -11,11 +11,11 @@ module.exports = {
       ServerActionCreators.receiveDataSetList(dataSetList);
     }, 0);
   },
-  getData: function (dataSet) {
+  getDataSet: function (dataSetKey) {
     setTimeout(function() {
-      var data = JSON.parse(localStorage.getItem("data"))[dataSet];
+      var dataSet = JSON.parse(localStorage.getItem("dataSets"))[dataSetKey];
 
-      ServerActionCreators.receiveData(data);
+      ServerActionCreators.receiveDataSet(dataSet);
     }, 0);
   }
 }

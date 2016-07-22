@@ -9,7 +9,7 @@ module.exports = {
       dataSetKey: dataSetKey
     });
 
-    WebAPIUtils.getData(dataSetKey);
+    WebAPIUtils.getDataSet(dataSetKey);
   },
   selectMap: function(mapKey) {
     AppDispatcher.dispatch({

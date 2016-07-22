@@ -8,7 +8,7 @@ module.exports = {
       dataSetList: dataSetList
     });
   },
-  receiveData: function(dataSet) {
+  receiveDataSet: function(dataSet) {
     AppDispatcher.dispatch({
       actionType: Constants.RECEIVE_DATA_SET,
       dataSet: dataSet
