@@ -2,8 +2,8 @@
 
 var React = require("react");
 var MapStore = require("../stores/MapStore");
-var MapSelectContainer = require("../containers/MapSelectContainer");
-var MapVisualizationContainer = require("../containers/MapVisualizationContainer");
+var MapSelectContainer = require("./MapSelectContainer");
+var MapVisualizationContainer = require("./MapVisualizationContainer");
 
 function getStateFromStore() {
   return {
@@ -33,8 +33,7 @@ var MapContainer = React.createClass({
       return (
         <div>
           <h2>Map</h2>
-          <MapSelectContainer
-            mapList={this.state.mapList}/>
+          <MapSelectContainer mapList={this.state.mapList} />
           <MapVisualizationContainer map={this.state.map} />
         </div>
       );

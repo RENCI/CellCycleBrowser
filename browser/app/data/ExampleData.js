@@ -3,9 +3,9 @@ var WebAPIUtils = require("../utils/WebAPIUtils");
 var d3 = require("d3");
 
 var dataSetList = [
-  { value: "dataSet1", name: "Dataset 1" },
-  { value: "dataSet2", name: "Dataset 2" },
-  { value: "dataSet3", name: "Dataset 3" },
+  { value: "dataSet1", name: "Data set 1" },
+  { value: "dataSet2", name: "Data set 2" },
+  { value: "dataSet3", name: "Data set 3" },
 ];
 
 var maps = [
@@ -84,16 +84,16 @@ d3.csv("data/PCNA_53BP1_transpose.csv", function(error, data) {
 
   cellData = [
     {
-      name: "Cell Data 1",
+      name: "Cell data 1",
       species: species.slice()
     },
     {
-      name: "Cell Data 2",
-      species: species[0]
+      name: "Cell data 2",
+      species: [species[0]]
     },
     {
-      name: "Cell Data 3",
-      species: species[1]
+      name: "Cell data 3",
+      species: [species[1]]
     }
   ];
 

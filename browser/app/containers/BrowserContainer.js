@@ -3,7 +3,7 @@
 var React = require("react");
 var CellDataStore = require("../stores/CellDataStore");
 var MapStore = require("../stores/MapStore");
-//var CellDataSelectContainer = require("../containers/CellDataSelectContainer");
+var CellDataSelectContainer = require("./CellDataSelectContainer");
 var Species = require("../components/Species");
 
 function getStateFromStores() {
@@ -62,7 +62,8 @@ var BrowserContainer = React.createClass({
     return (
       <div>
         <h2>Browser</h2>
-          {species}
+        <CellDataSelectContainer cellDataList={this.state.cellDataList} />
+        {species}
       </div>
     );
   }
