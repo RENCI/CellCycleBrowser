@@ -13,7 +13,7 @@ function MainSection(props) {
   var hasCellData = props.dataSet.cellData &&
                     props.dataSet.cellData.length > 0;
 
-  // Render conditionally
+  // Render conditionally based on presence of map and cell data
   if (hasMaps && hasCellData) {
     return (
       <div className={divClass}>
@@ -57,7 +57,7 @@ function MainSection(props) {
     );
   }
   else {
-    return <div className={divClass} />
+    return null;
   }
 }
 
