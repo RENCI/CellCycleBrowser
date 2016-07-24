@@ -3,30 +3,17 @@
 var React = require("react");
 var CellDataStore = require("../stores/CellDataStore");
 var MapStore = require("../stores/MapStore");
-var CellDataSelectContainer = require("./CellDataSelectContainer");
-var FeatureSelectContainer = require("./FeatureSelectContainer");
+var FeatureStore = require("../stores/FeatureStore");
+var BrowserControls = require("../components/BrowserControls");
 var Species = require("../components/Species");
-
-function species(species, i) {
-  return (
-    <Species
-      key={i}
-      name={species.name}
-      cells={species.cells} />
-  );
-}
-
-function features(cellData) {
-  if (cellData.species.length === 0) return [];
-
-  return cellData.species[0].cells[0].features;
-}
 
 function getStateFromStores() {
   return {
     cellDataList: CellDataStore.getCellDataList(),
     cellData: CellDataStore.getCellData(),
-    map: MapStore.getMap()
+    map: MapStore.getMap(),
+    featureList: FeatureStore.getFeatureList(),
+    featureKey: FeatureStore.getFeatureKey()
   };
 }
 
@@ -43,6 +30,13 @@ function getStateFromMapStore() {
   };
 }
 
+function getStateFromFeatureStore() {
+  return {
+    featureList: FeatureStore.getFeatureList(),
+    featureKey: FeatureStore.getFeatureKey()
+  };
+}
+
 var BrowserContainer = React.createClass({
   getInitialState: function () {
     return getStateFromStores();
@@ -50,10 +44,12 @@ var BrowserContainer = React.createClass({
   componentDidMount: function () {
     CellDataStore.addChangeListener(this.onCellDataChange);
     MapStore.addChangeListener(this.onMapChange);
+    FeatureStore.addChangeListener(this.onFeatureChange);
   },
   componentWillUnmount: function() {
     CellDataStore.removeChangeListener(this.onCellDataChange);
     MapStore.removeChangeListener(this.onMapChange);
+    FeatureStore.removeChangeListener(this.onFeatureChange);
   },
   onCellDataChange: function () {
     this.setState(getStateFromCellDataStore());
@@ -61,23 +57,31 @@ var BrowserContainer = React.createClass({
   onMapChange: function () {
     this.setState(getStateFromMapStore());
   },
-  handleFeatureChange: function (e) {
-    console.log(e);
+  onFeatureChange: function () {
+    this.setState(getStateFromFeatureStore());
   },
   render: function() {
     var speciesData = this.state.cellDataList.length > 0
                     ? this.state.cellData.species
                     : [];
 
+    var species = speciesData.map(function (species, i) {
+      return (
+        <Species
+          key={i}
+          name={species.name}
+          cells={species.cells}
+          featureKey={this.state.featureKey} />
+      );
+    }.bind(this));
+
     return (
       <div>
         <h2>Browser</h2>
-        <CellDataSelectContainer
-          cellDataList={this.state.cellDataList} />
-        <FeatureSelectContainer
-          featureList={features(this.state.cellData)}
-          onChange={this.handleFeatureChange} />
-        {speciesData.map(species)}
+        <BrowserControls
+          cellDataList={this.state.cellDataList}
+          featureList={this.state.featureList} />
+        {species}
       </div>
     );
   }

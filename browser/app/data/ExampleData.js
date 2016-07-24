@@ -119,6 +119,8 @@ d3.csv("data/PCNA_53BP1_transpose.csv", function(error, data) {
   localStorage.setItem("dataSets", JSON.stringify(dataSets));
 
   // Re-fire event chain once data is loaded
+  // TODO: Will need to move elsewhere, probably by firing select event
+  // in DataSetSelectContainer
   WebAPIUtils.getDataSet(dataSetList[0].value);
 });
 

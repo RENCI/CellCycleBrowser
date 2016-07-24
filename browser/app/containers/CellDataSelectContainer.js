@@ -10,6 +10,12 @@ var cellDataOption = function (cellData, i) {
   };
 }
 
+var divStyle = {
+  display: "inline-block",
+  marginLeft: 20,
+  marginRight: 20
+};
+
 var CellDataSelectContainer = React.createClass ({
   propTypes: {
     cellDataList: PropTypes.arrayOf(React.PropTypes.object).isRequired
@@ -19,10 +25,12 @@ var CellDataSelectContainer = React.createClass ({
   },
   render: function () {
     return (
-      <ItemSelect
-        label="Cell data: "
-        options={this.props.cellDataList.map(cellDataOption)}
-        onChange={this.handleChangeCellData} />
+      <div style={divStyle}>
+        <ItemSelect
+          label="Cell data: "
+          options={this.props.cellDataList.map(cellDataOption)}
+          onChange={this.handleChangeCellData} />
+      </div>
     );
   }
 });

@@ -27,7 +27,7 @@ var CellDataStore = assign({}, EventEmitter.prototype, {
   }
 });
 
-AppDispatcher.register(function (action) {
+CellDataStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.SELECT_CELL_DATA:
       cellData = cellDataList[action.cellDataKey];

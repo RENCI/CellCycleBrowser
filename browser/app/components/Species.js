@@ -32,7 +32,8 @@ var buttonStyle = {
 var Species = React.createClass({
   propTypes: {
     name: PropTypes.string.isRequired,
-    cells: PropTypes.array.isRequired
+    cells: PropTypes.arrayOf(PropTypes.object).isRequired,
+    featureKey: PropTypes.string.isRequired
   },
   getInitialState: function () {
     return {
@@ -47,8 +48,7 @@ var Species = React.createClass({
   render: function () {
     // Generate paragraphs with textual representations of cells
     var cells = this.props.cells.map(function (cell, i) {
-      // Randomize values
-      var values = cell.features[0].values;
+      var values = cell.features[this.props.featureKey].values;
 
       return (
         <div key={i}>
@@ -56,7 +56,7 @@ var Species = React.createClass({
           <p>{values.join(", ")}</p>
         </div>
       );
-    });
+    }.bind(this));
 
     var id = this.props.name;
 

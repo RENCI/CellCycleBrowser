@@ -22,5 +22,11 @@ module.exports = {
       actionType: Constants.SELECT_CELL_DATA,
       cellDataKey: cellDataKey
     });
+  },
+  selectFeature: function(featureKey) {
+    AppDispatcher.dispatch({
+      actionType: Constants.SELECT_FEATURE,
+      featureKey: featureKey
+    });
   }
 };
