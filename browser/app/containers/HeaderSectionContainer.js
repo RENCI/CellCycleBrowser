@@ -6,36 +6,28 @@ var DataSetListStore = require("../stores/DataSetListStore");
 var DataSetStore = require("../stores/DataSetStore")
 var HeaderSection = require("../components/HeaderSection");
 
-function getStateFromStores () {
+function getStateFromStore () {
   return {
-    dataSetList: DataSetListStore.getDataSetList(),
     dataSet: DataSetStore.getDataSet()
   };
 }
 
 var HeaderSectionContainer = React.createClass({
   getInitialState: function () {
-    return getStateFromStores();
+    return getStateFromStore();
   },
   componentDidMount: function () {
-    DataSetListStore.addChangeListener(this.onDataSetListChange);
     DataSetStore.addChangeListener(this.onDataSetChange);
   },
   componentWillUnmount: function() {
-    DataSetListStore.removeChangeListener(this.onDataSetListChange);
     DataSetStore.addChangeListener(this.onDataSetChange);
-  },
-  onDataSetListChange: function () {
-    this.setState(getStateFromStores());
   },
   onDataSetChange: function () {
     this.setState(getStateFromStores());
   },
   render: function () {
     return (
-      <HeaderSection
-        dataSetList={this.state.dataSetList}
-        description={this.state.dataSet.description} />
+      <HeaderSection dataSet={this.state.dataSet} />
     );
   }
 });
