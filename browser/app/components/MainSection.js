@@ -2,7 +2,7 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 var MapContainer = require("../containers/MapContainer");
 var BrowserContainer = require("../containers/BrowserContainer");
-var ControlsArea = require("./ControlsArea");
+var ControlsContainer = require("../containers/ControlsContainer");
 
 var divClass = "container-fluid well well-sm";
 
@@ -25,7 +25,7 @@ function MainSection(props) {
             <BrowserContainer />
           </div>
           <div className="col-md-3 text-center">
-            <ControlsArea />
+            <ControlsContainer />
           </div>
         </div>
       </div>
