@@ -1,6 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
+var HeatMapContainer = require("../containers/HeatMapContainer");
 
 var outerStyle = {
   backgroundColor: "white",
@@ -18,31 +19,18 @@ var speciesLableStyle = {
 };
 
 var visPlaceholder1 = {
-  backgroundColor: "linen",
+  backgroundColor: "#fff",
   height: 35,
   width: "100%"
 };
 
-var visPlaceholder2 = {
-  backgroundColor: "lightcyan",
-  height: 250,
-  width: "100%"
-};
-
 function Species(props) {
-/*
-  // Generate paragraphs with textual representations of cells
-  var cells = props.cells.map(function (cell, i) {
-    var values = cell.features[props.featureKey].values;
+  // Generate feature data
+  var featureData = props.cells.map(function (cell, i) {
+    return cell.features[props.featureKey].values;
+  });
 
-    return (
-      <div key={i}>
-        {cell.name}
-      </div>
-    );
-  }.bind(this));
-*/
-  var collapseId = props.name; 
+  var collapseId = props.name;
 
   return (
     <div className="row text-left" style={outerStyle}>
@@ -59,7 +47,7 @@ function Species(props) {
       </div>
       <div className="row in" id={collapseId} >
         <div className="col-sm-9 col-sm-offset-3">
-          <div style={visPlaceholder2} />
+          <HeatMapContainer data={featureData} />
         </div>
       </div>
     </div>
