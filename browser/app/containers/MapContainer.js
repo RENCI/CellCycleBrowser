@@ -3,7 +3,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var MapStore = require("../stores/MapStore");
-var MapSelectContainer = require("./MapSelectContainer");
+var MapControls = require("../components/MapControls");
 var MapVisualizationContainer = require("./MapVisualizationContainer");
 
 function getStateFromStore() {
@@ -35,7 +35,7 @@ var MapContainer = React.createClass({
     return (
       <div>
         <h2>Map</h2>
-        <MapSelectContainer mapList={this.state.mapList} />
+        <MapControls mapList={this.state.mapList} />
         <MapVisualizationContainer map={this.state.map} />
       </div>
     );

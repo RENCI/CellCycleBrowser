@@ -5,9 +5,12 @@ var FeatureSelectContainer = require("../containers/FeatureSelectContainer");
 
 var divStyle = {
   display: "inline-block",
-  marginTop: -10,
+  verticalAlign: "top",
+
   marginLeft: 20,
-  marginRight: 20
+  marginRight: 20,
+  marginTop: 5,
+  marginBottom: 20
 };
 
 function BrowserControls(props) {

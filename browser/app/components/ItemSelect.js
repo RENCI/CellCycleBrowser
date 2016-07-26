@@ -11,11 +11,6 @@ function option(option, i) {
   );
 }
 
-var divStyle = {
-  marginTop: "20px",
-  marginBottom: "20px"
-};
-
 var selectStyle = {
   minWidth: 0,
   width: "auto",
@@ -24,7 +19,7 @@ var selectStyle = {
 
 function ItemSelect(props) {
   return (
-    <div style={divStyle}>
+    <div>
       <span className="lead">
         {props.label}
       </span>
