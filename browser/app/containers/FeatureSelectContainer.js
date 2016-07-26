@@ -10,12 +10,6 @@ var featureOption = function (feature, i) {
   };
 }
 
-var divStyle = {
-  display: "inline-block",
-  marginLeft: 20,
-  marginRight: 20
-};
-
 var FeatureSelectContainer = React.createClass ({
   propTypes: {
     featureList: PropTypes.arrayOf(React.PropTypes.string).isRequired,
@@ -25,12 +19,10 @@ var FeatureSelectContainer = React.createClass ({
   },
   render: function () {
     return (
-      <div style={divStyle}>
-        <ItemSelect
-          label="Feature: "
-          options={this.props.featureList.map(featureOption)}
-          onChange={this.handleChangeFeature} />
-      </div>
+      <ItemSelect
+        label="Feature: "
+        options={this.props.featureList.map(featureOption)}
+        onChange={this.handleChangeFeature} />
     );
   }
 });

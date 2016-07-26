@@ -19,7 +19,7 @@ var DataSetSelectContainer = React.createClass ({
   componentDidMount: function () {
     DataSetListStore.addChangeListener(this.onDataSetListChange);
 
-    // Get initial data set list from local storage
+    // Get initial data set list
     WebAPIUtils.getDataSetList();
   },
   componentWillUnmount: function() {

@@ -3,13 +3,24 @@ var PropTypes = React.PropTypes;
 var CellDataSelectContainer = require("../containers/CellDataSelectContainer");
 var FeatureSelectContainer = require("../containers/FeatureSelectContainer");
 
+var divStyle = {
+  display: "inline-block",
+  marginTop: -10,
+  marginLeft: 20,
+  marginRight: 20
+};
+
 function BrowserControls(props) {
   return (
     <div>
-      <CellDataSelectContainer
-        cellDataList={props.cellDataList} />
-      <FeatureSelectContainer
-        featureList={props.featureList} />
+      <div style={divStyle}>
+        <CellDataSelectContainer
+          cellDataList={props.cellDataList} />
+      </div>
+      <div style={divStyle}>
+        <FeatureSelectContainer
+          featureList={props.featureList} />
+      </div>
     </div>
   );
 }
