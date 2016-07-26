@@ -17,7 +17,7 @@ var MapSelectContainer = React.createClass ({
   handleChangeMap: function (e) {
     ViewActionCreators.selectMap(e.target.value);
   },
-  render: function () {    
+  render: function () {
     return (
       <ItemSelect
         label="Map: "

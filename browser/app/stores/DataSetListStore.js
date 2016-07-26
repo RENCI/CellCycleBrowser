@@ -19,10 +19,13 @@ var DataSetListStore = assign({}, EventEmitter.prototype, {
   },
   getDataSetList: function () {
     return dataSetList;
+  },
+  getDefaultDataSet: function () {
+    return dataSetList[0];
   }
 });
 
-AppDispatcher.register(function(action) {
+DataSetListStore.dispatchToken = AppDispatcher.register(function(action) {
   switch (action.actionType) {
     case Constants.RECEIVE_DATA_SET_LIST:
       dataSetList = action.dataSetList;

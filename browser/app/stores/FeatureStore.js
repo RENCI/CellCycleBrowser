@@ -46,14 +46,14 @@ AppDispatcher.register(function (action) {
     case Constants.SELECT_CELL_DATA:
       AppDispatcher.waitFor([CellDataStore.dispatchToken]);
       featureList = getFeatureList(CellDataStore.getCellData());
-      featureKey = "0";
+      featureKey = featureList.length > 0 ? "0" : "";
       FeatureStore.emitChange();
       break;
 
     case Constants.RECEIVE_DATA_SET:
       AppDispatcher.waitFor([CellDataStore.dispatchToken]);
       featureList = getFeatureList(CellDataStore.getCellData());
-      featureKey = "0";
+      featureKey = featureList.length > 0 ? "0" : "";
       FeatureStore.emitChange();
       break;
   }

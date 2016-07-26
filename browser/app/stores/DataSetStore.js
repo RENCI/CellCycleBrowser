@@ -23,7 +23,7 @@ var DataSetStore = assign({}, EventEmitter.prototype, {
   }
 });
 
-AppDispatcher.register(function (action) {
+DataSetStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_DATA_SET:
       dataSet = action.dataSet;

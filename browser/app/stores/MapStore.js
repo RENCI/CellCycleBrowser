@@ -2,6 +2,7 @@ var AppDispatcher = require("../dispatcher/AppDispatcher");
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
 var Constants = require("../constants/Constants");
+var DataSetStore = require("./DataSetStore");
 
 var CHANGE_EVENT = "change";
 
@@ -35,7 +36,9 @@ AppDispatcher.register(function (action) {
       break;
 
     case Constants.RECEIVE_DATA_SET:
-      mapList = action.dataSet.maps;
+      AppDispatcher.waitFor([DataSetStore.dispatchToken]);
+      var dataSet = DataSetStore.getDataSet();
+      mapList = dataSet.maps ? dataSet.maps : [];
       map = mapList.length > 0 ? mapList[0] : {};
       MapStore.emitChange();
       break;

@@ -25,6 +25,12 @@ var DataSetSelectContainer = React.createClass ({
   },
   onDataSetListChange: function () {
     this.setState(getStateFromStore());
+
+    // Load first dataSet
+    // TODO: Currently called from ExampleData
+    // TODO: Is this the best place for this? Better to have server send
+    // along with data set list?
+//    WebAPIUtils.getDataSet(DataSetListStore.getDefaultDataSet().value);
   },
   handleChangeDataSet: function (e) {
     ViewActionCreators.selectDataSet(e.target.value);

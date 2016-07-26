@@ -2,6 +2,7 @@ var AppDispatcher = require("../dispatcher/AppDispatcher");
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
 var Constants = require("../constants/Constants");
+var DataSetStore = require("./DataSetStore");
 
 var CHANGE_EVENT = "change";
 
@@ -35,7 +36,9 @@ CellDataStore.dispatchToken = AppDispatcher.register(function (action) {
       break;
 
     case Constants.RECEIVE_DATA_SET:
-      cellDataList = action.dataSet.cellData;
+      AppDispatcher.waitFor([DataSetStore.dispatchToken]);
+      var dataSet = DataSetStore.getDataSet();
+      cellDataList = dataSet.cellData ? dataSet.cellData : [];
       cellData = cellDataList.length > 0 ? cellDataList[0] : {};
       CellDataStore.emitChange();
       break;

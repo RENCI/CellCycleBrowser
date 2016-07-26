@@ -61,6 +61,8 @@ var BrowserContainer = React.createClass({
     this.setState(getStateFromFeatureStore());
   },
   render: function() {
+    if (!this.state.featureKey) return null;
+
     var speciesData = this.state.cellDataList.length > 0
                     ? this.state.cellData.species
                     : [];

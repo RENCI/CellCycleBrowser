@@ -19,7 +19,7 @@ function MainSection(props) {
       <div className={divClass}>
         <div className="row">
           <div className="col-md-3 text-center">
-            <MapContainer />
+            <MapContainer/>
           </div>
           <div className="col-md-6 text-center">
             <BrowserContainer />
@@ -36,10 +36,10 @@ function MainSection(props) {
       <div className={divClass}>
         <div className="row">
           <div className="col-md-3 col-md-offset-3 text-center">
-            <MapContainer />
+            <MapContainer/>
           </div>
           <div className="col-md-3 text-center">
-            <ControlsArea />
+            <ControlsContainer />
           </div>
         </div>
       </div>
