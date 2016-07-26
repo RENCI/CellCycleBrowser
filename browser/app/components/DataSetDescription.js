@@ -1,8 +1,12 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
+var style = {
+  marginTop: 10
+};
+
 function DataSetDescription(props) {
-  return <div>{props.description}</div>
+  return <div style={style}>{props.description}</div>
 }
 
 DataSetDescription.propTypes = {
