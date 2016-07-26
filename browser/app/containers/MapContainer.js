@@ -15,7 +15,10 @@ function getStateFromStore() {
 
 var MapContainer = React.createClass({
   getInitialState: function () {
-    return getStateFromStore();
+    return {
+      mapList: [],
+      map: null
+    };
   },
   componentDidMount: function () {
     MapStore.addChangeListener(this.onMapChange);
@@ -27,7 +30,7 @@ var MapContainer = React.createClass({
     this.setState(getStateFromStore());
   },
   render: function () {
-    if (this.state.mapList.length === 0) return null;
+    if (!this.state.map) return null;
 
     return (
       <div>

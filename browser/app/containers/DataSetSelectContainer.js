@@ -12,7 +12,9 @@ function getStateFromStore() {
 
 var DataSetSelectContainer = React.createClass ({
   getInitialState: function () {
-    return getStateFromStore();
+    return {
+      dataSetList: []
+    };
   },
   componentDidMount: function () {
     DataSetListStore.addChangeListener(this.onDataSetListChange);

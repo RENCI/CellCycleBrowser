@@ -14,7 +14,9 @@ function getStateFromStore() {
 
 var AppContainer = React.createClass({
   getInitialState: function () {
-    return getStateFromStore();
+    return {
+      dataSet: null
+    };
   },
   componentDidMount: function () {
     DataSetStore.addChangeListener(this.onDataSetChange);
@@ -26,6 +28,8 @@ var AppContainer = React.createClass({
     this.setState(getStateFromStore());
   },
   render: function () {
+    if (!this.state.dataSet) return null;
+
     return (
       <div>
         <HeaderSection dataSet={this.state.dataSet}/>

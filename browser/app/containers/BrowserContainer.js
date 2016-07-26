@@ -7,16 +7,6 @@ var FeatureStore = require("../stores/FeatureStore");
 var BrowserControls = require("../components/BrowserControls");
 var Species = require("../components/Species");
 
-function getStateFromStores() {
-  return {
-    cellDataList: CellDataStore.getCellDataList(),
-    cellData: CellDataStore.getCellData(),
-    map: MapStore.getMap(),
-    featureList: FeatureStore.getFeatureList(),
-    featureKey: FeatureStore.getFeatureKey()
-  };
-}
-
 function getStateFromCellDataStore() {
   return {
     cellDataList: CellDataStore.getCellDataList(),
@@ -39,7 +29,13 @@ function getStateFromFeatureStore() {
 
 var BrowserContainer = React.createClass({
   getInitialState: function () {
-    return getStateFromStores();
+    return {
+      cellDataList: [],
+      cellData: null,
+      map: null,
+      featureList: [],
+      featureKey: ""
+    }
   },
   componentDidMount: function () {
     CellDataStore.addChangeListener(this.onCellDataChange);
