@@ -23,7 +23,7 @@ var HeatMapContainer = React.createClass ({
       ReactDOM.findDOMNode(this),
       {
         width: "100%",
-        height: this.props.data.length * 20
+        height: "100%"
       },
       this.getChartState()
     );
@@ -41,7 +41,13 @@ var HeatMapContainer = React.createClass ({
     HeatMap.destroy(ReactDOM.findDOMNode(this));
   },
   render: function() {
-    return <div className="heatMap"></div>
+    var style = {
+      height: this.props.data.length * 20,
+      borderLeft: "2px solid #ddd",
+      borderTop: "2px solid #ddd"
+    };
+
+    return <div className="heatMap" style={style}></div>
   }
 });
 

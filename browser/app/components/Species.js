@@ -46,7 +46,7 @@ function Species(props) {
           <HeatLineContainer data={featureData} />
         </div>
       </div>
-      <div className="row in" id={collapseId} >
+      <div className="row in" id={collapseId}>
         <div className="col-sm-9 col-sm-offset-3">
           <HeatMapContainer data={featureData} />
         </div>

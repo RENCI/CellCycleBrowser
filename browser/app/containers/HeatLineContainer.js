@@ -4,6 +4,13 @@ var PropTypes = React.PropTypes;
 var d3 = require("d3");
 var HeatLine = require("../visualizations/HeatLine");
 
+// TODO: Magic number for height. Percentage doesn't work, perhaps read
+// from container element?
+var style = {
+  height: 34,
+  borderLeft: "2px solid #ddd"
+};
+
 function colorScale(data) {
   return d3.scaleQuantize()
       .domain(d3.extent(data))
@@ -46,7 +53,7 @@ var HeatLineContainer = React.createClass ({
       ReactDOM.findDOMNode(this),
       {
         width: "100%",
-        height: 35
+        height: "100%"
       },
       this.getChartState()
     );
@@ -66,7 +73,7 @@ var HeatLineContainer = React.createClass ({
     HeatLine.destroy(ReactDOM.findDOMNode(this));
   },
   render: function() {
-    return <div className="heatLine"></div>
+    return <div className="heatLine" style={style}></div>
   }
 });
 
