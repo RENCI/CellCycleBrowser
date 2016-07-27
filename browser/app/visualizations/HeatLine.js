@@ -58,6 +58,7 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("x", function(d, i) { return layout.xScale(i); })
       .attr("width", layout.xScale.bandwidth())
       .attr("height", height)
+      .attr("shape-rendering", "crispEdges")
       .attr("data-toggle", "tooltip")
       .attr("title", function(d) { return d.toPrecision(3); })
       .style("fill", "white")

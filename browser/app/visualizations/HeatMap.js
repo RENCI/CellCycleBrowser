@@ -81,17 +81,16 @@ HeatMap.draw = function(svg, layout, state) {
         .attr("x", function(d, i) { return layout.xScale(i); })
         .attr("width", layout.xScale.bandwidth())
         .attr("height", layout.yScale.bandwidth())
+        .attr("shape-rendering", "crispEdges")
         .attr("data-toggle", "tooltip")
         .attr("title", function(d) { return d; })
         .style("fill", "white")
-        .style("stroke", "white")
       .merge(cell).transition()
         .attr("x", function(d, i) { return layout.xScale(i); })
         .attr("width", layout.xScale.bandwidth())
         .attr("height", layout.yScale.bandwidth())
         .attr("title", function(d) { return d; })
-        .style("fill", function(d) { return state.colorScale(d); })
-        .style("stroke", function(d) { return state.colorScale(d); });
+        .style("fill", function(d) { return state.colorScale(d); });
 
     cell.exit().transition()
         .style("fill", "white")
