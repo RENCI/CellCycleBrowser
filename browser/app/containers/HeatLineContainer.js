@@ -19,6 +19,14 @@ function colorScale(data) {
       .range(["#edf8fb", "#b2e2e2", "#66c2a4", "#2ca25f", "#006d2c"]);
 }
 
+// Enable bootstrap tooltips
+function tooltips() {
+  $(".cell").tooltip({
+    container: "body",
+    placement: "top"
+  });
+}
+
 function averageData(data) {
   var maxLength = d3.max(data, function(d) { return d.length; });
 
@@ -57,9 +65,13 @@ var HeatLineContainer = React.createClass ({
       },
       this.getChartState()
     );
+
+    tooltips();
   },
   componentDidUpdate: function() {
     HeatLine.update(ReactDOM.findDOMNode(this), this.getChartState());
+
+    tooltips();
   },
   getChartState: function() {
     var average = averageData(this.props.data);

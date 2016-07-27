@@ -14,6 +14,14 @@ function colorScale(data) {
       .range(["#edf8fb", "#b2e2e2", "#66c2a4", "#2ca25f", "#006d2c"]);
 }
 
+// Enable bootstrap tooltips
+function tooltips() {
+  $(".cell").tooltip({
+    container: "body",
+    placement: "top"
+  });
+}
+
 var HeatMapContainer = React.createClass ({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired
@@ -27,9 +35,13 @@ var HeatMapContainer = React.createClass ({
       },
       this.getChartState()
     );
+
+    tooltips();
   },
   componentDidUpdate: function() {
-    HeatMap.update(ReactDOM.findDOMNode(this), this.getChartState());
+    HeatMap.update(ReactDOM.findDOMNode(this), this.getChartState());      // Enable bootstrap tooltips
+
+    tooltips();
   },
   getChartState: function() {
     return {

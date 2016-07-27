@@ -58,11 +58,14 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("x", function(d, i) { return layout.xScale(i); })
       .attr("width", layout.xScale.bandwidth())
       .attr("height", height)
+      .attr("data-toggle", "tooltip")
+      .attr("title", function(d) { return d.toPrecision(3); })
       .style("fill", "white")
     .merge(cell).transition()
       .attr("x", function(d, i) { return layout.xScale(i); })
       .attr("width", layout.xScale.bandwidth())
       .attr("height", height)
+      .attr("title", function(d) { return d; })
       .style("fill", function(d) { return state.colorScale(d); });
 
   cell.exit().transition()
