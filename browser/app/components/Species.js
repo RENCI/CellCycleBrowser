@@ -1,6 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
+var HeatLineContainer = require("../containers/HeatLineContainer");
 var HeatMapContainer = require("../containers/HeatMapContainer");
 
 var outerStyle = {
@@ -42,7 +43,7 @@ function Species(props) {
           </div>
         </div>
         <div className="col-sm-9">
-          <div style={visPlaceholder1} />
+          <HeatLineContainer data={featureData} />
         </div>
       </div>
       <div className="row in" id={collapseId} >

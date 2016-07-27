@@ -5,14 +5,10 @@ var d3 = require("d3");
 var HeatMap = require("../visualizations/HeatMap");
 
 function colorScale(data) {
+  // TODO: Currently normalizing per heatmap. Probably want this to be global
+  // across all heatmaps
   return d3.scaleQuantize()
-      .domain([
-        d3.min(data, function(d) {
-          return d3.min(d);
-        }),
-        d3.max(data, function(d) {
-          return d3.max(d);
-        })])
+      .domain(d3.extent(d3.merge(data)))
       //.range(["#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"]);
       //.range(["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"]);
       .range(["#edf8fb", "#b2e2e2", "#66c2a4", "#2ca25f", "#006d2c"]);
@@ -27,7 +23,7 @@ var HeatMapContainer = React.createClass ({
       ReactDOM.findDOMNode(this),
       {
         width: "100%",
-        height: 300
+        height: this.props.data.length * 20
       },
       this.getChartState()
     );

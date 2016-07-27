@@ -85,7 +85,7 @@ HeatMap.draw = function(svg, layout, state) {
       .merge(cell).transition()
         .attr("x", function(d, i) { return layout.xScale(i); })
         .attr("width", layout.xScale.bandwidth())
-        .attr("height",layout.yScale.bandwidth())
+        .attr("height", layout.yScale.bandwidth())
         .style("fill", function(d) { return state.colorScale(d); });
 
     cell.exit().transition()
