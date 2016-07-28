@@ -19,14 +19,6 @@ function colorScale(data) {
         .domain(d3.extent(d3.merge(data)));
 }
 
-// Enable bootstrap tooltips
-function tooltips() {
-  $(".cell").tooltip({
-    container: "body",
-    placement: "top"
-  });
-}
-
 var HeatMapContainer = React.createClass ({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired
@@ -40,13 +32,9 @@ var HeatMapContainer = React.createClass ({
       },
       this.getChartState()
     );
-
-    tooltips();
   },
   componentDidUpdate: function() {
-    HeatMap.update(ReactDOM.findDOMNode(this), this.getChartState());      // Enable bootstrap tooltips
-
-    tooltips();
+    HeatMap.update(ReactDOM.findDOMNode(this), this.getChartState());
   },
   getChartState: function() {
     return {
