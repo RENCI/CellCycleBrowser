@@ -31,7 +31,8 @@ function getStateFromFeatureStore() {
 function tooltips() {
   $('[data-toggle="tooltip"]').tooltip({
     container: "body",
-    placement: "top"
+    placement: "auto top",
+    animation: false
   });
 }
 
