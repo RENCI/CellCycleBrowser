@@ -27,6 +27,15 @@ function getStateFromFeatureStore() {
   };
 }
 
+// Enable bootstrap tooltips
+function tooltips() {
+  $('[data-toggle="tooltip"]').tooltip({
+    container: "body",
+    placement: "auto top",
+    animation: false
+  });
+}
+
 var BrowserContainer = React.createClass({
   getInitialState: function () {
     return {
@@ -41,11 +50,15 @@ var BrowserContainer = React.createClass({
     CellDataStore.addChangeListener(this.onCellDataChange);
     MapStore.addChangeListener(this.onMapChange);
     FeatureStore.addChangeListener(this.onFeatureChange);
+    tooltips();
   },
   componentWillUnmount: function() {
     CellDataStore.removeChangeListener(this.onCellDataChange);
     MapStore.removeChangeListener(this.onMapChange);
     FeatureStore.removeChangeListener(this.onFeatureChange);
+  },
+  componentDidUpdate: function () {
+    tooltips();
   },
   onCellDataChange: function () {
     this.setState(getStateFromCellDataStore());

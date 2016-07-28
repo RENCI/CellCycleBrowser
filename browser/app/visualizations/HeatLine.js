@@ -62,6 +62,31 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("data-toggle", "tooltip")
       .attr("title", function(d) { return d.toPrecision(3); })
       .style("fill", "white")
+      .style("stroke-width", 2)
+      .on("mouseover", function() {
+        // Raise parent row
+        d3.select(this.parentNode)
+            .raise();
+
+        // Raise this cell and show border
+        d3.select(this)
+            .style("stroke", function(d) {
+              return highlightColor(state.colorScale(d));
+            })
+            .raise();
+
+        function highlightColor(color) {
+          var hcl = d3.hcl(color);
+          var l = hcl.l > 50 ? hcl.l - 25 : hcl.l + 25;
+
+          return d3.hcl(0, 0, l);
+        }
+      })
+      .on("mouseout", function() {
+        // Remove border
+        d3.select(this)
+            .style("stroke", "none");
+      })
     .merge(cell).transition()
       .attr("x", function(d, i) { return layout.xScale(i); })
       .attr("width", layout.xScale.bandwidth())

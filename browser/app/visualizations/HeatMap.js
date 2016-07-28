@@ -11,8 +11,7 @@ HeatMap.create = function(element, props, state) {
 
   var g = svg.append("g");
 
-  g.append("g")
-      .attr("class", "rows");
+  g.append("g").attr("class", "rows");
 
   this.update(element, state);
 };
@@ -72,10 +71,11 @@ HeatMap.draw = function(svg, layout, state) {
   row.exit().remove();
 
   function cell(selection) {
-    // Cells
+    // Bind cell data
     var cell = selection.selectAll(".cell")
         .data(function(d) { return d; });
 
+    // Enter + update
     cell.enter().append("rect")
         .attr("class", "cell")
         .attr("x", function(d, i) { return layout.xScale(i); })
@@ -85,6 +85,31 @@ HeatMap.draw = function(svg, layout, state) {
         .attr("data-toggle", "tooltip")
         .attr("title", function(d) { return d; })
         .style("fill", "white")
+        .style("stroke-width", 2)
+        .on("mouseover", function() {
+          // Raise parent row
+          d3.select(this.parentNode)
+              .raise();
+
+          // Raise this cell and show border
+          d3.select(this)
+              .style("stroke", function(d) {
+                return highlightColor(state.colorScale(d));
+              })
+              .raise();
+
+          function highlightColor(color) {
+            var hcl = d3.hcl(color);
+            var l = hcl.l > 50 ? hcl.l - 25 : hcl.l + 25;
+
+            return d3.hcl(0, 0, l);
+          }
+        })
+        .on("mouseout", function() {
+          // Remove border
+          d3.select(this)
+              .style("stroke", "none");
+        })
       .merge(cell).transition()
         .attr("x", function(d, i) { return layout.xScale(i); })
         .attr("width", layout.xScale.bandwidth())
@@ -92,6 +117,7 @@ HeatMap.draw = function(svg, layout, state) {
         .attr("title", function(d) { return d; })
         .style("fill", function(d) { return state.colorScale(d); });
 
+    // Exit
     cell.exit().transition()
         .style("fill", "white")
         .remove();

@@ -26,14 +26,6 @@ function colorScale(data) {
       .domain(d3.extent(data));
 }
 
-// Enable bootstrap tooltips
-function tooltips() {
-  $(".cell").tooltip({
-    container: "body",
-    placement: "top"
-  });
-}
-
 function averageData(data) {
   var maxLength = d3.max(data, function(d) { return d.length; });
 
@@ -72,13 +64,9 @@ var HeatLineContainer = React.createClass ({
       },
       this.getChartState()
     );
-
-    tooltips();
   },
   componentDidUpdate: function() {
     HeatLine.update(ReactDOM.findDOMNode(this), this.getChartState());
-
-    tooltips();
   },
   getChartState: function() {
     var average = averageData(this.props.data);
