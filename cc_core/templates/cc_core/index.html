@@ -12,7 +12,10 @@
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 </head>
 <body>
-  <div id="main"> {{ text_to_display }} </div>
+  <div id="main"> {{ text_to_display }}
+    <button type="button" class="btn btn-default" onclick="request_dataset_list_ajax(); return false;">Request datasetList</button>
+  </div>
+
   <div id="app"></div>
   <script type="text/javascript" src="{% static 'cc_core/js/index_bundle.js' %}"></script>
 </body>
