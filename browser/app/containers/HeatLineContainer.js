@@ -15,15 +15,17 @@ var style = {
 // TODO: Use a shared range/sequence for line and heat maps. Perhaps refactor
 // to include a SpeciesVisualizationContainer that handles this.
 function colorScale(data) {
+  // TODO: Currently normalizing per heatmap. Might want this to be global
+  // across all heatmaps
 /*
   return d3.scaleQuantize()
-      .domain(d3.extent(data))
+      .domain(d3.extent(d3.merge(data)))
       //.range(["#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"]);
       //.range(["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"]);
       .range(["#edf8fb", "#b2e2e2", "#66c2a4", "#2ca25f", "#006d2c"]);
 */
-  return d3.scaleSequential(d3ScaleChromatic.interpolateBuGn)
-      .domain(d3.extent(data));
+    return d3.scaleSequential(d3ScaleChromatic.interpolateBuGn)
+        .domain(d3.extent(d3.merge(data)));
 }
 
 function averageData(data) {
@@ -73,7 +75,7 @@ var HeatLineContainer = React.createClass ({
 
     return {
       data: average,
-      colorScale: colorScale(average)
+      colorScale: colorScale(this.props.data)
     };
   },
   componentWillUnmount: function() {
