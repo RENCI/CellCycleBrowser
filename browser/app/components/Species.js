@@ -19,12 +19,6 @@ var speciesLableStyle = {
   marginLeft: 10
 };
 
-var visPlaceholder1 = {
-  backgroundColor: "#fff",
-  height: 35,
-  width: "100%"
-};
-
 function Species(props) {
   // Generate feature data
   var featureData = props.cells.map(function (cell, i) {
@@ -34,7 +28,7 @@ function Species(props) {
   var collapseId = props.name;
 
   return (
-    <div className="row text-left" style={outerStyle}>
+    <div className="text-left" style={outerStyle}>
       <div className="row">
         <div className="col-sm-3">
           <CollapseButtonContainer targetId={collapseId} />
