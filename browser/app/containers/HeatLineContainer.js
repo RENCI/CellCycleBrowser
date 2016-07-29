@@ -39,12 +39,20 @@ function averageData(data) {
     var count = 0;
 
     for (var j = 0; j < data.length; j++) {
-      var d = data[j];
+      var d = data[j],
+          offset = maxLength - d.length,
+          i2 = i - offset;
 
-      if (i < d.length) {
+      if (i2 >= 0) {
+        average[i] += d[i2];
+        count++;
+      }
+/*
+      if (i < d.length ) {
         average[i] += d[i];
         count++;
       }
+*/
     }
 
     average[i] /= count;

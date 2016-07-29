@@ -28,5 +28,13 @@ module.exports = {
       actionType: Constants.SELECT_FEATURE,
       featureKey: featureKey
     });
+  },
+  selectAlignment: function(alignment) {
+    console.log(alignment);
+
+    AppDispatcher.dispatch({
+      actionType: Constants.SELECT_ALIGNMENT,
+      alignment: alignment
+    });
   }
 };
