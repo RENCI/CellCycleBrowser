@@ -7,10 +7,6 @@ from django.template import loader
 
 # Create your views here.
 def index(request):
-    import sys
-    sys.path.append("/home/docker/pycharm-debug")
-    import pydevd
-    pydevd.settrace('192.168.0.114', port=21000, suspend=False)
     template = loader.get_template('cc_core/index.html')
     context = {
     'text_to_display': "This Cell Cycle Browser allows exploration and simulation of the human cell cycle.",
