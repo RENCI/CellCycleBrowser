@@ -2,9 +2,12 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 
 var buttonStyle = {
-  height: 20,
-  padding: 0
-}
+padding: 2
+};
+
+var iconStyle = {
+  color: "#aaa"
+};
 
 function AlignmentSelect(props) {
   return (
@@ -18,7 +21,10 @@ function AlignmentSelect(props) {
               style={buttonStyle}
               value="left"
               onClick={props.onClick}>
-                Left
+                <span
+                  className="glyphicon glyphicon-align-left"
+                  style={iconStyle}>
+                </span>
             </button>
           </div>
           <div className="btn-group" role="group">
@@ -28,7 +34,10 @@ function AlignmentSelect(props) {
             style={buttonStyle}
             value="stretch"
             onClick={props.onClick}>
-              Stretch
+              <span
+                className="glyphicon glyphicon-align-justify"
+                style={iconStyle}>
+              </span>
           </button>
           </div>
           <div className="btn-group" role="group">
@@ -38,7 +47,10 @@ function AlignmentSelect(props) {
             style={buttonStyle}
             value="right"
             onClick={props.onClick}>
-              Right
+              <span
+                className="glyphicon glyphicon-align-right"
+                style={iconStyle}>
+              </span>
           </button>
           </div>
         </div>
