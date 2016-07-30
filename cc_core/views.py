@@ -32,7 +32,7 @@ def get_dataset_list(request):
     dataset_list = []
     for i in range(1, 4):
         dataset_obj = {}
-        dataset_obj['name'] = 'Dataset ' + str(i)
+        dataset_obj['name'] = 'Cell Cycle Profile ' + str(i)
         dataset_obj['description'] = 'Data and models ' + str(i)
         dataset_obj['value'] = 'data/PCNA_53BP1_transpose.csv'
         dataset_list.append(dataset_obj)
