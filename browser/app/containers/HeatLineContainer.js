@@ -28,7 +28,7 @@ function colorScale(data) {
         .domain(d3.extent(d3.merge(data)));
 }
 
-function averageData(data) {
+function averageData(data, alignment) {
   var maxLength = d3.max(data, function(d) { return d.length; });
 
   var average = [];
@@ -40,19 +40,13 @@ function averageData(data) {
 
     for (var j = 0; j < data.length; j++) {
       var d = data[j],
-          offset = maxLength - d.length,
+          offset = alignment === "right" ? maxLength - d.length : 0,
           i2 = i - offset;
 
-      if (i2 >= 0) {
+      if (i2 >= 0 && i2 < d.length) {
         average[i] += d[i2];
         count++;
       }
-/*
-      if (i < d.length ) {
-        average[i] += d[i];
-        count++;
-      }
-*/
     }
 
     average[i] /= count;
@@ -63,7 +57,8 @@ function averageData(data) {
 
 var HeatLineContainer = React.createClass ({
   propTypes: {
-    data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired
+    data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+    alignment: PropTypes.string.isRequired
   },
   componentDidMount: function() {
     HeatLine.create(
@@ -79,11 +74,12 @@ var HeatLineContainer = React.createClass ({
     HeatLine.update(ReactDOM.findDOMNode(this), this.getChartState());
   },
   getChartState: function() {
-    var average = averageData(this.props.data);
+    var average = averageData(this.props.data, this.props.alignment);
 
     return {
       data: average,
-      colorScale: colorScale(this.props.data)
+      colorScale: colorScale(this.props.data),
+      alignment: this.props.alignment
     };
   },
   componentWillUnmount: function() {

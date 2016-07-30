@@ -30,8 +30,6 @@ module.exports = {
     });
   },
   selectAlignment: function(alignment) {
-    console.log(alignment);
-
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_ALIGNMENT,
       alignment: alignment

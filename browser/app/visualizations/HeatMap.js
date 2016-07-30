@@ -73,7 +73,9 @@ HeatMap.draw = function(svg, layout, state) {
   function cell(row) {
     var domain = layout.xScale.domain(),
         maxRowLength = domain[domain.length - 1],
-        offset = maxRowLength - row.length + 1;
+        offset = state.alignment === "right" ?
+                 maxRowLength - row.length + 1 :
+                 0;
 
     function x(d, i) {
       return layout.xScale(i + offset);

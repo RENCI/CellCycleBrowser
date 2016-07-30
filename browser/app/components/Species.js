@@ -37,12 +37,16 @@ function Species(props) {
           </div>
         </div>
         <div className="col-sm-9">
-          <HeatLineContainer data={featureData} />
+          <HeatLineContainer
+            data={featureData}
+            alignment={props.alignment} />
         </div>
       </div>
       <div className="row in" id={collapseId}>
         <div className="col-sm-9 col-sm-offset-3">
-          <HeatMapContainer data={featureData} />
+          <HeatMapContainer
+            data={featureData}
+            alignment={props.alignment} />
         </div>
       </div>
     </div>
@@ -52,7 +56,8 @@ function Species(props) {
 Species.propTypes = {
     name: PropTypes.string.isRequired,
     cells: PropTypes.arrayOf(PropTypes.object).isRequired,
-    featureKey: PropTypes.string.isRequired
+    featureKey: PropTypes.string.isRequired,
+    alignment: PropTypes.string.isRequired
   },
 
 module.exports = Species;
