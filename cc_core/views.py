@@ -7,6 +7,10 @@ from django.template import loader
 
 # Create your views here.
 def index(request):
+    import sys
+    sys.path.append("/home/docker/pycharm-debug")
+    import pydevd
+    pydevd.settrace('192.168.0.114', port=21000, suspend=False)
     template = loader.get_template('cc_core/index.html')
     context = {
     'text_to_display': "This Cell Cycle Browser allows exploration and simulation of the human cell cycle.",
@@ -29,10 +33,14 @@ def get_dataset_list(request):
     It is invoked by an AJAX call, so it returns json object that holds data set list
     """
     return_object = {}
-
-    return_object['name'] = ''
-    return_object['description'] = ''
-    return_object['cell_file_name'] = ''
+    dataset_list = []
+    for i in range(1, 4):
+        dataset_obj = {}
+        dataset_obj['name'] = 'Dataset ' + str(i)
+        dataset_obj['description'] = 'Data and models ' + str(i)
+        dataset_obj['value'] = 'data/PCNA_53BP1_transpose.csv'
+        dataset_list.append(dataset_obj)
+    return_object['datasetlist'] = dataset_list
     jsondump = json.dumps(return_object)
     return HttpResponse(
         jsondump,

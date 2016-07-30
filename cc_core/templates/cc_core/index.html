@@ -10,11 +10,14 @@
   <link rel="stylesheet" type="text/css" href="{% static 'cc_core/css/style.css' %}" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="{% static 'cc_core/js/data_ajax.js' %}"></script>
 </head>
 <body>
-  <div id="main"> {{ text_to_display }}
-    <button type="button" class="btn btn-default" onclick="request_dataset_list_ajax(); return false;">Request datasetList</button>
-  </div>
+  <div id="main"> {{ text_to_display }}</div>
+    <form action="" method="post">
+      {% csrf_token %}
+      Test AJAX request and response: <button type="button" class="btn btn-default" onclick="request_dataset_list_ajax(); return false;">Request datasetList</button>
+    </form>
 
   <div id="app"></div>
   <script type="text/javascript" src="{% static 'cc_core/js/index_bundle.js' %}"></script>
