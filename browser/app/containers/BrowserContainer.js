@@ -4,6 +4,7 @@ var React = require("react");
 var CellDataStore = require("../stores/CellDataStore");
 var MapStore = require("../stores/MapStore");
 var FeatureStore = require("../stores/FeatureStore");
+var AlignmentStore = require("../stores/AlignmentStore");
 var BrowserControls = require("../components/BrowserControls");
 var Species = require("../components/Species");
 
@@ -27,6 +28,12 @@ function getStateFromFeatureStore() {
   };
 }
 
+function getStateFromAlignmentStore() {
+  return {
+    alignment: AlignmentStore.getAlignment()
+  }
+}
+
 // Enable bootstrap tooltips
 function tooltips() {
   $('[data-toggle="tooltip"]').tooltip({
@@ -43,19 +50,22 @@ var BrowserContainer = React.createClass({
       cellData: null,
       map: null,
       featureList: [],
-      featureKey: ""
+      featureKey: "",
+      alignment: getStateFromAlignmentStore().alignment
     }
   },
   componentDidMount: function () {
     CellDataStore.addChangeListener(this.onCellDataChange);
     MapStore.addChangeListener(this.onMapChange);
     FeatureStore.addChangeListener(this.onFeatureChange);
+    AlignmentStore.addChangeListener(this.onAlignmentChange);
     tooltips();
   },
   componentWillUnmount: function() {
     CellDataStore.removeChangeListener(this.onCellDataChange);
     MapStore.removeChangeListener(this.onMapChange);
     FeatureStore.removeChangeListener(this.onFeatureChange);
+    AlignmentStore.removeChangeListener(this.onAlignmentChange);
   },
   componentDidUpdate: function () {
     tooltips();
@@ -68,6 +78,9 @@ var BrowserContainer = React.createClass({
   },
   onFeatureChange: function () {
     this.setState(getStateFromFeatureStore());
+  },
+  onAlignmentChange: function () {
+    this.setState(getStateFromAlignmentStore());
   },
   render: function() {
     if (!this.state.featureKey) return null;
@@ -82,7 +95,8 @@ var BrowserContainer = React.createClass({
           key={i}
           name={species.name}
           cells={species.cells}
-          featureKey={this.state.featureKey} />
+          featureKey={this.state.featureKey}
+          alignment={this.state.alignment} />
       );
     }.bind(this));
 

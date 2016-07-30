@@ -19,12 +19,6 @@ var speciesLableStyle = {
   marginLeft: 10
 };
 
-var visPlaceholder1 = {
-  backgroundColor: "#fff",
-  height: 35,
-  width: "100%"
-};
-
 function Species(props) {
   // Generate feature data
   var featureData = props.cells.map(function (cell, i) {
@@ -34,7 +28,7 @@ function Species(props) {
   var collapseId = props.name;
 
   return (
-    <div className="row text-left" style={outerStyle}>
+    <div className="text-left" style={outerStyle}>
       <div className="row">
         <div className="col-sm-3">
           <CollapseButtonContainer targetId={collapseId} />
@@ -43,12 +37,16 @@ function Species(props) {
           </div>
         </div>
         <div className="col-sm-9">
-          <HeatLineContainer data={featureData} />
+          <HeatLineContainer
+            data={featureData}
+            alignment={props.alignment} />
         </div>
       </div>
       <div className="row in" id={collapseId}>
         <div className="col-sm-9 col-sm-offset-3">
-          <HeatMapContainer data={featureData} />
+          <HeatMapContainer
+            data={featureData}
+            alignment={props.alignment} />
         </div>
       </div>
     </div>
@@ -58,7 +56,8 @@ function Species(props) {
 Species.propTypes = {
     name: PropTypes.string.isRequired,
     cells: PropTypes.arrayOf(PropTypes.object).isRequired,
-    featureKey: PropTypes.string.isRequired
+    featureKey: PropTypes.string.isRequired,
+    alignment: PropTypes.string.isRequired
   },
 
 module.exports = Species;

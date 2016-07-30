@@ -66,19 +66,29 @@ HeatMap.draw = function(svg, layout, state) {
       .attr("transform", function(d, i) {
         return "translate(0," + layout.yScale(i) + ")";
       })
-      .call(cell);
+      .each(cell);
 
   row.exit().remove();
 
-  function cell(selection) {
+  function cell(row) {
+    var domain = layout.xScale.domain(),
+        maxRowLength = domain[domain.length - 1],
+        offset = state.alignment === "right" ?
+                 maxRowLength - row.length + 1 :
+                 0;
+
+    function x(d, i) {
+      return layout.xScale(i + offset);
+    }
+
     // Bind cell data
-    var cell = selection.selectAll(".cell")
+    var cell = d3.select(this).selectAll(".cell")
         .data(function(d) { return d; });
 
     // Enter + update
     cell.enter().append("rect")
         .attr("class", "cell")
-        .attr("x", function(d, i) { return layout.xScale(i); })
+        .attr("x", x)
         .attr("width", layout.xScale.bandwidth())
         .attr("height", layout.yScale.bandwidth())
         .attr("shape-rendering", "crispEdges")
@@ -111,7 +121,7 @@ HeatMap.draw = function(svg, layout, state) {
               .style("stroke", "none");
         })
       .merge(cell).transition()
-        .attr("x", function(d, i) { return layout.xScale(i); })
+        .attr("x", x)
         .attr("width", layout.xScale.bandwidth())
         .attr("height", layout.yScale.bandwidth())
         .attr("title", function(d) { return d; })

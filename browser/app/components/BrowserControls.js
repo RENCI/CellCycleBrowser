@@ -2,11 +2,11 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 var CellDataSelectContainer = require("../containers/CellDataSelectContainer");
 var FeatureSelectContainer = require("../containers/FeatureSelectContainer");
+var AlignmentSelectContainer = require("../containers/AlignmentSelectContainer")
 
 var divStyle = {
   display: "inline-block",
   verticalAlign: "top",
-
   marginLeft: 20,
   marginRight: 20,
   marginTop: 5,
@@ -24,6 +24,7 @@ function BrowserControls(props) {
         <FeatureSelectContainer
           featureList={props.featureList} />
       </div>
+      <AlignmentSelectContainer />
     </div>
   );
 }

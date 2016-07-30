@@ -21,7 +21,8 @@ function colorScale(data) {
 
 var HeatMapContainer = React.createClass ({
   propTypes: {
-    data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired
+    data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+    alignment: PropTypes.string.isRequired
   },
   componentDidMount: function() {
     HeatMap.create(
@@ -39,7 +40,8 @@ var HeatMapContainer = React.createClass ({
   getChartState: function() {
     return {
       data: this.props.data,
-      colorScale: colorScale(this.props.data)
+      colorScale: colorScale(this.props.data),
+      alignment: this.props.alignment
     };
   },
   componentWillUnmount: function() {
