@@ -5,3 +5,9 @@ li a {
 #main {
     color: blue;
 }
+
+.btn-default {
+	background-color: #eee;
+	background-image: -webkit-linear-gradient(#fcfcfc, #eee);
+	background-image: linear-gradient(#fcfcfc, #eee);
+}

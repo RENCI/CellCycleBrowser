@@ -1,4 +1,5 @@
 import csv
+import json
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -22,3 +23,18 @@ def serve_data(request, filename, *args, **kwargs):
         writer.writerow(row)
     
     return response
+
+def get_dataset_list(request):
+    """
+    It is invoked by an AJAX call, so it returns json object that holds data set list
+    """
+    return_object = {}
+
+    return_object['name'] = ''
+    return_object['description'] = ''
+    return_object['cell_file_name'] = ''
+    jsondump = json.dumps(return_object)
+    return HttpResponse(
+        jsondump,
+        content_type="application/json"
+    )
