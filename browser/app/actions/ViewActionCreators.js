@@ -3,13 +3,13 @@ var Constants = require("../constants/Constants");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
 module.exports = {
-  selectDataSet: function(dataSetKey) {
+  selectProfile: function(profileKey) {
     AppDispatcher.dispatch({
-      actionType: Constants.SELECT_DATA_SET,
-      dataSetKey: dataSetKey
+      actionType: Constants.SELECT_PROFILE,
+      profileKey: profileKey
     });
 
-    WebAPIUtils.getDataSet(dataSetKey);
+    WebAPIUtils.getProfile(profileKey);
   },
   selectMap: function(mapKey) {
     AppDispatcher.dispatch({

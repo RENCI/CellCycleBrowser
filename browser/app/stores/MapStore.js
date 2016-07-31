@@ -2,7 +2,7 @@ var AppDispatcher = require("../dispatcher/AppDispatcher");
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
 var Constants = require("../constants/Constants");
-var DataSetStore = require("./DataSetStore");
+var ProfileStore = require("./ProfileStore");
 
 var CHANGE_EVENT = "change";
 
@@ -35,10 +35,10 @@ AppDispatcher.register(function (action) {
       MapStore.emitChange();
       break;
 
-    case Constants.RECEIVE_DATA_SET:
-      AppDispatcher.waitFor([DataSetStore.dispatchToken]);
-      var dataSet = DataSetStore.getDataSet();
-      mapList = dataSet.maps ? dataSet.maps : [];
+    case Constants.RECEIVE_PROFILE:
+      AppDispatcher.waitFor([ProfileStore.dispatchToken]);
+      var profile = ProfileStore.getProfile();
+      mapList = profile.maps ? profile.maps : [];
       map = mapList.length > 0 ? mapList[0] : {};
       MapStore.emitChange();
       break;

@@ -3,16 +3,16 @@ var Constants = require("../constants/Constants");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
 module.exports = {
-  receiveDataSetList: function(dataSetList) {
+  receiveProfileList: function(profileList) {
     AppDispatcher.dispatch({
-      actionType: Constants.RECEIVE_DATA_SET_LIST,
-      dataSetList: dataSetList
+      actionType: Constants.RECEIVE_PROFILE_LIST,
+      profileList: profileList
     });
   },
-  receiveDataSet: function(dataSet) {
+  receiveProfile: function(profile) {
     AppDispatcher.dispatch({
-      actionType: Constants.RECEIVE_DATA_SET,
-      dataSet: dataSet
+      actionType: Constants.RECEIVE_PROFILE,
+      profile: profile
     });
   }
 };

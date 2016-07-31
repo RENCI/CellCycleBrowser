@@ -5,9 +5,10 @@ var Constants = require("../constants/Constants");
 
 var CHANGE_EVENT = "change";
 
-var dataSetList = [];
+// List of available profiles
+var profileList = [];
 
-var DataSetListStore = assign({}, EventEmitter.prototype, {
+var ProfileListStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
     this.emit(CHANGE_EVENT);
   },
@@ -17,21 +18,21 @@ var DataSetListStore = assign({}, EventEmitter.prototype, {
   removeChangeListener: function (callback) {
     this.removeListener(CHANGE_EVENT, callback);
   },
-  getDataSetList: function () {
-    return dataSetList;
+  getProfileList: function () {
+    return profileList;
   },
-  getDefaultDataSet: function () {
-    return dataSetList[0];
+  getDefaultProfile: function () {
+    return profileList[0];
   }
 });
 
-DataSetListStore.dispatchToken = AppDispatcher.register(function(action) {
+ProfileListStore.dispatchToken = AppDispatcher.register(function(action) {
   switch (action.actionType) {
-    case Constants.RECEIVE_DATA_SET_LIST:
-      dataSetList = action.dataSetList;
-      DataSetListStore.emitChange();
+    case Constants.RECEIVE_PROFILE_LIST:
+      profileList = action.profileList;
+      ProfileListStore.emitChange();
       break;
   }
 });
 
-module.exports = DataSetListStore;
+module.exports = ProfileListStore;

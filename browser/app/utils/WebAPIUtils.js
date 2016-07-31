@@ -4,18 +4,18 @@ var ServerActionCreators = require("../actions/ServerActionCreators");
 // method of getting data from the server.
 
 module.exports = {
-  getDataSetList: function () {
+  getProfileList: function () {
     setTimeout(function() {
-      var dataSetList = JSON.parse(localStorage.getItem("dataSetList"));
+      var profileList = JSON.parse(localStorage.getItem("profileList"));
 
-      ServerActionCreators.receiveDataSetList(dataSetList);
+      ServerActionCreators.receiveProfileList(profileList);
     }, 0);
   },
-  getDataSet: function (dataSetKey) {
+  getProfile: function (profileKey) {
     setTimeout(function() {
-      var dataSet = JSON.parse(localStorage.getItem("dataSets"))[dataSetKey];
+      var profile = JSON.parse(localStorage.getItem("profiles"))[profileKey];
 
-      ServerActionCreators.receiveDataSet(dataSet);
+      ServerActionCreators.receiveProfile(profile);
     }, 0);
   }
 }

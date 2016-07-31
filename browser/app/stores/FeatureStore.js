@@ -50,7 +50,7 @@ AppDispatcher.register(function (action) {
       FeatureStore.emitChange();
       break;
 
-    case Constants.RECEIVE_DATA_SET:
+    case Constants.RECEIVE_PROFILE:
       AppDispatcher.waitFor([CellDataStore.dispatchToken]);
       featureList = getFeatureList(CellDataStore.getCellData());
       featureKey = featureList.length > 0 ? "0" : "";

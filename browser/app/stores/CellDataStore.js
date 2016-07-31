@@ -2,7 +2,7 @@ var AppDispatcher = require("../dispatcher/AppDispatcher");
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
 var Constants = require("../constants/Constants");
-var DataSetStore = require("./DataSetStore");
+var ProfileStore = require("./ProfileStore");
 
 var CHANGE_EVENT = "change";
 
@@ -35,10 +35,10 @@ CellDataStore.dispatchToken = AppDispatcher.register(function (action) {
       CellDataStore.emitChange();
       break;
 
-    case Constants.RECEIVE_DATA_SET:
-      AppDispatcher.waitFor([DataSetStore.dispatchToken]);
-      var dataSet = DataSetStore.getDataSet();
-      cellDataList = dataSet.cellData ? dataSet.cellData : [];
+    case Constants.RECEIVE_PROFILE:
+      AppDispatcher.waitFor([ProfileStore.dispatchToken]);
+      var profile = ProfileStore.getProfile();
+      cellDataList = profile.cellData ? profile.cellData : [];
       cellData = cellDataList.length > 0 ? cellDataList[0] : {};
       CellDataStore.emitChange();
       break;
