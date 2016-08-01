@@ -11,7 +11,15 @@ HeatMap.create = function(element, props, state) {
 
   var g = svg.append("g");
 
-  g.append("g").attr("class", "rows");
+  g.append("g")
+      .attr("class", "rows");
+  g.append("rect")
+      .attr("class", "highlight")
+      .attr("shape-rendering", "crispEdges")
+      .attr("pointer-events", "none")
+      .style("fill", "none")
+      .style("stroke", "none")
+      .style("stroke-width", 2);
 
   this.update(element, state);
 };
@@ -70,7 +78,7 @@ HeatMap.draw = function(svg, layout, state) {
 
   row.exit().remove();
 
-  function cell(row) {
+  function cell(row, rowIndex) {
     var domain = layout.xScale.domain(),
         maxRowLength = domain[domain.length - 1],
         offset = state.alignment === "right" ?
@@ -96,17 +104,13 @@ HeatMap.draw = function(svg, layout, state) {
         .attr("title", function(d) { return d; })
         .style("fill", "white")
         .style("stroke-width", 2)
-        .on("mouseover", function() {
-          // Raise parent row
-          d3.select(this.parentNode)
-              .raise();
-
-          // Raise this cell and show border
-          d3.select(this)
-              .style("stroke", function(d) {
-                return highlightColor(state.colorScale(d));
-              })
-              .raise();
+        .on("mouseover", function(d, i) {
+          g.select(".highlight")
+              .attr("x", x(d, i))
+              .attr("y", layout.yScale(rowIndex))
+              .attr("width", layout.xScale.bandwidth())
+              .attr("height", layout.yScale.bandwidth())
+              .style("stroke", highlightColor(state.colorScale(d)));
 
           function highlightColor(color) {
             var hcl = d3.hcl(color);
@@ -117,7 +121,7 @@ HeatMap.draw = function(svg, layout, state) {
         })
         .on("mouseout", function() {
           // Remove border
-          d3.select(this)
+          g.select(".highlight")
               .style("stroke", "none");
         })
       .merge(cell).transition()

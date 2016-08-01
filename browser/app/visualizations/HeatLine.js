@@ -11,6 +11,16 @@ HeatLine.create = function(element, props, state) {
 
   var g = svg.append("g");
 
+  g.append("g")
+      .attr("class", "row");
+  g.append("rect")
+      .attr("class", "highlight")
+      .attr("shape-rendering", "crispEdges")
+      .attr("pointer-events", "none")
+      .style("fill", "none")
+      .style("stroke", "none")
+      .style("stroke-width", 2);
+
   this.update(element, state);
 };
 
@@ -46,11 +56,11 @@ HeatLine.draw = function(svg, layout, state) {
   var width = parseInt(svg.style("width"), 10),
       height = parseInt(svg.style("height"), 10);
 
-  var g = svg.select("g")
+  var row = svg.select("g").select(".row")
       .datum(state.data);
 
   // Cells
-  var cell = g.selectAll(".cell")
+  var cell = row.selectAll(".cell")
       .data(function(d) { return d; });
 
   cell.enter().append("rect")
@@ -63,17 +73,12 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("title", function(d) { return d.toPrecision(3); })
       .style("fill", "white")
       .style("stroke-width", 2)
-      .on("mouseover", function() {
-        // Raise parent row
-        d3.select(this.parentNode)
-            .raise();
-
-        // Raise this cell and show border
-        d3.select(this)
-            .style("stroke", function(d) {
-              return highlightColor(state.colorScale(d));
-            })
-            .raise();
+      .on("mouseover", function(d, i) {
+        svg.select(".highlight")
+            .attr("x", layout.xScale(i))
+            .attr("width", layout.xScale.bandwidth())
+            .attr("height", height)
+            .style("stroke", highlightColor(state.colorScale(d)));
 
         function highlightColor(color) {
           var hcl = d3.hcl(color);
@@ -84,7 +89,7 @@ HeatLine.draw = function(svg, layout, state) {
       })
       .on("mouseout", function() {
         // Remove border
-        d3.select(this)
+        svg.select(".highlight")
             .style("stroke", "none");
       })
     .merge(cell).transition()
