@@ -33,6 +33,7 @@ function AlignmentSelect(props) {
             className="btn btn-default"
             style={buttonStyle}
             value="stretch"
+            disabled
             onClick={props.onClick}>
               <span
                 className="glyphicon glyphicon-align-justify"
