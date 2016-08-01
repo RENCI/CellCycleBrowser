@@ -7,14 +7,14 @@ var ControlsContainer = require("../containers/ControlsContainer");
 var divClass = "container-fluid well well-sm";
 
 function MainSection(props) {
-  // Check for maps and cell data
-  var hasMaps = props.profile.maps &&
-                props.profile.maps.length > 0;
+  // Check for models and cell data
+  var hasModels = props.profile.models &&
+                props.profile.models.length > 0;
   var hasCellData = props.profile.cellData &&
                     props.profile.cellData.length > 0;
 
-  // Render conditionally based on presence of map and cell data
-  if (hasMaps && hasCellData) {
+  // Render conditionally based on presence of model and cell data
+  if (hasModels && hasCellData) {
     return (
       <div className={divClass}>
         <div className="row">
@@ -31,7 +31,7 @@ function MainSection(props) {
       </div>
     );
   }
-  else if (hasMaps) {
+  else if (hasModels) {
     return (
       <div className={divClass}>
         <div className="row">

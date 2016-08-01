@@ -8,9 +8,9 @@ var profileList = [
   { value: "profile3", name: "Profile 3" },
 ];
 
-var maps = [
+var models = [
   {
-    name: "Map 1",
+    name: "Model 1",
     matrix: [
       [   0,  5871, 8916, 2868],
       [1951,     0, 2060, 6171],
@@ -19,7 +19,7 @@ var maps = [
     ]
   },
   {
-    name: "Map 2",
+    name: "Model 2",
     matrix: [
       [0, 5, 7, 2, 0],
       [5, 0, 3, 4, 1],
@@ -29,7 +29,7 @@ var maps = [
     ]
   },
   {
-    name: "Map 3",
+    name: "Model 3",
     matrix: [
       [0, 5, 7, 2],
       [5, 0, 3, 4],
@@ -99,18 +99,18 @@ d3.csv("data/PCNA_53BP1_transpose.csv", function(error, data) {
 
   profiles = {
     profile1: {
-      description: "Data and maps",
-      maps: maps.slice(),
+      description: "Data and models",
+      models: models.slice(),
       cellData: cellData.slice()
     },
     profile2: {
-      description: "Just data, no maps",
-      maps: [],
+      description: "Just data, no models",
+      models: [],
       cellData: cellData.slice()
     },
     profile3: {
-      description: "Just maps, no data",
-      maps: maps.slice(),
+      description: "Just models, no data",
+      models: models.slice(),
       cellData: []
     }
   };

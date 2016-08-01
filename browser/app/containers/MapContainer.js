@@ -2,41 +2,41 @@
 
 var React = require("react");
 var PropTypes = React.PropTypes;
-var MapStore = require("../stores/MapStore");
+var ModelStore = require("../stores/ModelStore");
 var MapControls = require("../components/MapControls");
 var MapVisualizationContainer = require("./MapVisualizationContainer");
 
 function getStateFromStore() {
   return {
-    mapList: MapStore.getMapList(),
-    map: MapStore.getMap()
+    modelList: ModelStore.getModelList(),
+    model: ModelStore.getModel()
   };
 }
 
 var MapContainer = React.createClass({
   getInitialState: function () {
     return {
-      mapList: [],
-      map: null
+      modelList: [],
+      model: null
     };
   },
   componentDidMount: function () {
-    MapStore.addChangeListener(this.onMapChange);
+    ModelStore.addChangeListener(this.onModelChange);
   },
   componentWillUnmount: function() {
-    MapStore.removeChangeListener(this.onMapChange);
+    ModelStore.removeChangeListener(this.onModelChange);
   },
-  onMapChange: function () {
+  onModelChange: function () {
     this.setState(getStateFromStore());
   },
   render: function () {
-    if (!this.state.map) return null;
+    if (!this.state.model) return null;
 
     return (
       <div>
         <h2>Map</h2>
-        <MapControls mapList={this.state.mapList} />
-        <MapVisualizationContainer map={this.state.map} />
+        <MapControls modelList={this.state.modelList} />
+        <MapVisualizationContainer model={this.state.model} />
       </div>
     );
   }

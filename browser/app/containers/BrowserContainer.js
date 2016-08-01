@@ -2,7 +2,7 @@
 
 var React = require("react");
 var CellDataStore = require("../stores/CellDataStore");
-var MapStore = require("../stores/MapStore");
+var ModelStore = require("../stores/ModelStore");
 var FeatureStore = require("../stores/FeatureStore");
 var AlignmentStore = require("../stores/AlignmentStore");
 var BrowserControls = require("../components/BrowserControls");
@@ -15,9 +15,9 @@ function getStateFromCellDataStore() {
   };
 };
 
-function getStateFromMapStore() {
+function getStateFromModelStore() {
   return {
-    map: MapStore.getMap()
+    model: ModelStore.getModel()
   };
 }
 
@@ -48,7 +48,7 @@ var BrowserContainer = React.createClass({
     return {
       cellDataList: [],
       cellData: null,
-      map: null,
+      model: null,
       featureList: [],
       featureKey: "",
       alignment: getStateFromAlignmentStore().alignment
@@ -56,14 +56,14 @@ var BrowserContainer = React.createClass({
   },
   componentDidMount: function () {
     CellDataStore.addChangeListener(this.onCellDataChange);
-    MapStore.addChangeListener(this.onMapChange);
+    ModelStore.addChangeListener(this.onModelChange);
     FeatureStore.addChangeListener(this.onFeatureChange);
     AlignmentStore.addChangeListener(this.onAlignmentChange);
     tooltips();
   },
   componentWillUnmount: function() {
     CellDataStore.removeChangeListener(this.onCellDataChange);
-    MapStore.removeChangeListener(this.onMapChange);
+    ModelStore.removeChangeListener(this.onModelChange);
     FeatureStore.removeChangeListener(this.onFeatureChange);
     AlignmentStore.removeChangeListener(this.onAlignmentChange);
   },
@@ -73,8 +73,8 @@ var BrowserContainer = React.createClass({
   onCellDataChange: function () {
     this.setState(getStateFromCellDataStore());
   },
-  onMapChange: function () {
-    this.setState(getStateFromMapStore());
+  onModelChange: function () {
+    this.setState(getStateFromModelStore());
   },
   onFeatureChange: function () {
     this.setState(getStateFromFeatureStore());

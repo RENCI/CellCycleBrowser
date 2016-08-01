@@ -14,7 +14,7 @@ var divStyle = {
 
 var MapVisualizationContainer = React.createClass ({
   propTypes: {
-    map: PropTypes.object.isRequired
+    model: PropTypes.object.isRequired
   },
   componentDidMount: function() {
     ChordMap.create(
@@ -31,7 +31,7 @@ var MapVisualizationContainer = React.createClass ({
   },
   getChartState: function() {
     return {
-      map: this.props.map
+      model: this.props.model
     };
   },
   componentWillUnmount: function() {

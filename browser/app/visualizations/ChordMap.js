@@ -25,12 +25,12 @@ ChordMap.update = function(element, state) {
 //      .attr("width", props.width)
 //      .attr("height", props.height);
 
-  var layout = this._layout(svg, state.map);
+  var layout = this._layout(svg, state.model);
 
-  this._draw(svg, layout, state.map);
+  this._draw(svg, layout, state.model);
 };
 
-ChordMap._layout = function(svg, map) {
+ChordMap._layout = function(svg, model) {
   var width = parseInt(svg.style("width"), 10),
       height = parseInt(svg.style("height"), 10),
       outerRadius = Math.min(width, height) * 0.5 - 40,
@@ -48,7 +48,7 @@ ChordMap._layout = function(svg, map) {
       .radius(innerRadius);
 
   var color = d3.scaleOrdinal()
-      .domain(d3.range(map.matrix.length))
+      .domain(d3.range(model.matrix.length))
       .range(["#000000", "#FFDD89", "#957244", "#F26223", "#446"]);
 
   return {
@@ -64,13 +64,13 @@ ChordMap.destroy = function(element) {
   // in this example there is nothing to do
 };
 
-ChordMap._draw = function(svg, layout, map) {
+ChordMap._draw = function(svg, layout, model) {
   var width = parseInt(svg.style("width"), 10),
       height = parseInt(svg.style("height"), 10);
 
   var g = svg.select("g")
       .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")")
-      .datum(layout.chord(map.matrix));
+      .datum(layout.chord(model.matrix));
 
   // Arcs for groups
   var group = g.select(".groups").selectAll("path")

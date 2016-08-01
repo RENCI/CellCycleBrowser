@@ -11,10 +11,10 @@ module.exports = {
 
     WebAPIUtils.getProfile(profileKey);
   },
-  selectMap: function(mapKey) {
+  selectModel: function(modelKey) {
     AppDispatcher.dispatch({
-      actionType: Constants.SELECT_MAP,
-      mapKey: mapKey
+      actionType: Constants.SELECT_MODEL,
+      modelKey: modelKey
     });
   },
   selectCellData: function(cellDataKey) {

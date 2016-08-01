@@ -1,6 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
-var MapSelectContainer = require("../containers/MapSelectContainer");
+var ModelSelectContainer = require("../containers/ModelSelectContainer");
 
 // TODO: Need to update manually to align with BrowserControls because of its
 // inline-block style. Is there a better way to handle this?
@@ -13,14 +13,14 @@ var divStyle = {
 function MapControls(props) {
   return (
     <div style={divStyle}>
-      <MapSelectContainer
-        mapList={props.mapList} />
+      <ModelSelectContainer
+        modelList={props.modelList} />
     </div>
   );
 }
 
 MapControls.propTypes = {
-  mapList: PropTypes.arrayOf(React.PropTypes.object).isRequired
+  modelList: PropTypes.arrayOf(React.PropTypes.object).isRequired
 };
 
 module.exports = MapControls;
