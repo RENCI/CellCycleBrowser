@@ -6,7 +6,8 @@ padding: 2
 };
 
 var iconStyle = {
-  color: "#aaa"
+  color: "#aaa",
+  pointerEvents: "none"
 };
 
 function AlignmentSelect(props) {
@@ -23,6 +24,7 @@ function AlignmentSelect(props) {
               onClick={props.onClick}>
                 <span
                   className="glyphicon glyphicon-align-left"
+                  aria-hidden="true"
                   style={iconStyle}>
                 </span>
             </button>
