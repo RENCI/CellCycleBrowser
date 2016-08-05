@@ -1,6 +1,7 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
+var d3 = require("d3");
 var ChordMap = require("../visualizations/ChordMap");
 
 // TODO: Move to css file
@@ -16,18 +17,20 @@ var MapVisualizationContainer = React.createClass ({
   propTypes: {
     model: PropTypes.object.isRequired
   },
+  getInitialState: function () {
+    return {
+      chordMap: ChordMap()
+    };
+  },
   componentDidMount: function() {
-    ChordMap.create(
-      ReactDOM.findDOMNode(this),
-      {
-        width: "100%",
-        height: "300px"
-      },
-      this.getChartState()
-    );
+    d3.select(ReactDOM.findDOMNode(this))
+        .datum(this.props.model)
+        .call(this.state.chordMap);
+
+    this.state.chordMap.onSpeciesSelect = this.handleSpeciesSelect;
   },
   componentDidUpdate: function() {
-    ChordMap.update(ReactDOM.findDOMNode(this), this.getChartState());
+    this.state.chordMap.update();
   },
   getChartState: function() {
     return {
@@ -36,7 +39,7 @@ var MapVisualizationContainer = React.createClass ({
     };
   },
   componentWillUnmount: function() {
-    ChordMap.destroy(ReactDOM.findDOMNode(this));
+//    ChordMap.destroy(ReactDOM.findDOMNode(this));
   },
   handleSpeciesSelect: function (species) {
     console.log(species);
