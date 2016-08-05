@@ -12,10 +12,10 @@ ChordMap.create = function(element, props, state) {
   var g = svg.append("g");
 
   g.append("g")
-      .attr("class", "groups");
+    .attr("class", "ribbons");
 
   g.append("g")
-      .attr("class", "ribbons");
+      .attr("class", "groups");
 
   this.update(element, state);
 };
@@ -27,7 +27,7 @@ ChordMap.update = function(element, state) {
 
   var layout = this._layout(svg, state.model);
 
-  this._draw(svg, layout, state.model);
+  this._draw(svg, layout, state);
 };
 
 ChordMap._layout = function(svg, model) {
@@ -64,13 +64,13 @@ ChordMap.destroy = function(element) {
   // in this example there is nothing to do
 };
 
-ChordMap._draw = function(svg, layout, model) {
+ChordMap._draw = function(svg, layout, state) {
   var width = parseInt(svg.style("width"), 10),
       height = parseInt(svg.style("height"), 10);
 
   var g = svg.select("g")
       .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")")
-      .datum(layout.chord(model.matrix));
+      .datum(layout.chord(state.model.matrix));
 
   // Arcs for groups
   var group = g.select(".groups").selectAll("path")
@@ -79,6 +79,15 @@ ChordMap._draw = function(svg, layout, model) {
   group.enter().append("path")
       .style("fill", "white")
       .style("stroke", "white")
+      .on("click", function(d) {
+        state.onSpeciesSelect(d.index);
+      })
+      .on("mouseover", function() {
+        d3.select(this).style("stroke-width", 2);
+      })
+      .on("mouseout", function() {
+        d3.select(this).style("stroke-width", null);
+      })
     .merge(group).transition()
       .style("fill", function(d) { return layout.color(d.index); })
       .style("stroke", function(d) { return d3.rgb(layout.color(d.index)).darker(); })

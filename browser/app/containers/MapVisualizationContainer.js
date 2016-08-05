@@ -31,11 +31,15 @@ var MapVisualizationContainer = React.createClass ({
   },
   getChartState: function() {
     return {
-      model: this.props.model
+      model: this.props.model,
+      onSpeciesSelect: this.handleSpeciesSelect
     };
   },
   componentWillUnmount: function() {
     ChordMap.destroy(ReactDOM.findDOMNode(this));
+  },
+  handleSpeciesSelect: function (species) {
+    console.log(species);
   },
   render: function() {
     return <div className="Map" style={divStyle}></div>
