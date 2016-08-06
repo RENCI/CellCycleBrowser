@@ -13,42 +13,47 @@ var divStyle = {
   borderRadius: 5
 };
 
+var chordMap = ChordMap();
+
 var MapVisualizationContainer = React.createClass ({
   propTypes: {
     model: PropTypes.object.isRequired
   },
-  getInitialState: function () {
-    return {
-      chordMap: ChordMap()
-    };
-  },
   componentDidMount: function() {
-    d3.select(ReactDOM.findDOMNode(this))
-        .datum(this.props.model)
-        .call(this.state.chordMap);
+    chordMap.on("selectSpecies", this.handleSelectSpecies);
 
-    this.state.chordMap.onSpeciesSelect = this.handleSpeciesSelect;
-  },
-  componentDidUpdate: function() {
-    d3.select(ReactDOM.findDOMNode(this))
-        .datum(this.props.model)
-        .call(this.state.chordMap);
+    this.drawMap(this.props.model);
 
-        console(d3.select("svg").attr("width"));
+    window.addEventListener("resize", function() {
+      this.forceUpdate();
+    }.bind(this));
   },
-  getChartState: function() {
+  componentWillUpdate: function (props) {
+    this.drawMap(props.model);
+
+    return false;
+  },
+  drawMap: function (model) {
+    var node = ReactDOM.findDOMNode(this);
+    var size = node.offsetWidth;
+
+    chordMap
+        .width(size)
+        .height(size);
+
+    d3.select(node)
+        .datum(model)
+        .call(chordMap);
+  },
+  getChartState: function () {
     return {
-      model: this.props.model,
-      onSpeciesSelect: this.handleSpeciesSelect
+      model: this.props.model
     };
   },
-  componentWillUnmount: function() {
-//    ChordMap.destroy(ReactDOM.findDOMNode(this));
-  },
-  handleSpeciesSelect: function (species) {
+  handleSelectSpecies: function (species) {
     console.log(species);
   },
-  render: function() {
+  render: function () {
     return <div className="Map" style={divStyle}></div>
   }
 });

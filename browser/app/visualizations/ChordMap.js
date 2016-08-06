@@ -1,10 +1,10 @@
 var d3 = require("d3");
 
 ChordMap = function() {
-  var data = {},
+  var width = 200,
+      height = 200,
       svg = d3.select(),
-
-      onSpeciesSelect = function () {};
+      dispatcher = d3.dispatch("selectSpecies");
 
   function cm(selection) {
     selection.each(function(d) {
@@ -15,8 +15,6 @@ ChordMap = function() {
 
       var svgEnter = svg.enter().append("svg")
           .attr("class", "chordMap")
-          .attr("width", "100%")
-          .attr("height", "300px")
           .on("mousedown", function() {
             // Stop text highlighting
             d3.event.preventDefault();
@@ -37,8 +35,8 @@ ChordMap = function() {
   }
 
   function draw(layout) {
-    var width = parseInt(svg.style("width"), 10),
-        height = parseInt(svg.style("height"), 10);
+    svg .attr("width", width)
+        .attr("height", height);
 
     var g = svg.select("g")
         .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")")
@@ -52,7 +50,7 @@ ChordMap = function() {
         .style("fill", "white")
         .style("stroke", "white")
         .on("click", function(d) {
-          onSpeciesSelect(d.index);
+          dispatcher.call("selectSpecies", this, "Species: " + d.index);
         })
         .on("mouseover", function() {
           d3.select(this).style("stroke-width", 2);
@@ -60,7 +58,7 @@ ChordMap = function() {
         .on("mouseout", function() {
           d3.select(this).style("stroke-width", null);
         })
-      .merge(group).transition()
+      .merge(group).transition().duration(0)
         .style("fill", function(d) { return layout.color(d.index); })
         .style("stroke", function(d) { return d3.rgb(layout.color(d.index)).darker(); })
         .attr("d", layout.arc);
@@ -77,7 +75,7 @@ ChordMap = function() {
     ribbon.enter().append("path")
         .style("fill", "white")
         .style("stroke", "white")
-      .merge(ribbon).transition()
+      .merge(ribbon).transition().duration(0)
         .attr("d", layout.ribbon)
         .style("fill", function(d) { return layout.color(d.target.index); })
         .style("stroke", function(d) { return d3.rgb(layout.color(d.target.index)).darker(); })
@@ -87,14 +85,10 @@ ChordMap = function() {
         .style("fill", "white")
         .style("stroke", "white")
         .remove();
-
-        console.log(svg.attr("width"));
   }
 
   function layout() {
-    var width = parseInt(svg.style("width"), 10),
-        height = parseInt(svg.style("height"), 10),
-        outerRadius = Math.min(width, height) * 0.5 - 40,
+    var outerRadius = Math.min(width, height) * 0.5 - 40,
         innerRadius = outerRadius * 0.9;
 
     var chord = d3.chord()
@@ -129,8 +123,21 @@ ChordMap = function() {
     // in this example there is nothing to do
   };
 
-  cm.onSpeciesSelect = function (_) {
-    onSpeciesSelect = _;
+  cm.width = function(_) {
+    if (!arguments.length) return width;
+    width = _;
+    return cm;
+  };
+
+  cm.height = function(_) {
+    if (!arguments.length) return height;
+    height = _;
+    return cm;
+  };
+
+  cm.on = function() {
+    var value = dispatcher.on.apply(dispatcher, arguments);
+    return value === dispatcher ? cm : value;
   };
 
   return cm;
