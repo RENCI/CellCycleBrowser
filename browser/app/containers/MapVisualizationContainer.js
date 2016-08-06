@@ -30,7 +30,11 @@ var MapVisualizationContainer = React.createClass ({
     this.state.chordMap.onSpeciesSelect = this.handleSpeciesSelect;
   },
   componentDidUpdate: function() {
-    this.state.chordMap.update();
+    d3.select(ReactDOM.findDOMNode(this))
+        .datum(this.props.model)
+        .call(this.state.chordMap);
+
+        console(d3.select("svg").attr("width"));
   },
   getChartState: function() {
     return {

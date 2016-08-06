@@ -37,8 +37,8 @@ ChordMap = function() {
   }
 
   function draw(layout) {
-    var width = parseInt(svg.attr("width"), 10),
-        height = parseInt(svg.attr("height"), 10);
+    var width = parseInt(svg.style("width"), 10),
+        height = parseInt(svg.style("height"), 10);
 
     var g = svg.select("g")
         .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")")
@@ -87,14 +87,16 @@ ChordMap = function() {
         .style("fill", "white")
         .style("stroke", "white")
         .remove();
+
+        console.log(svg.attr("width"));
   }
 
   function layout() {
-    var width = parseInt(svg.attr("width"), 10),
-        height = parseInt(svg.attr("height"), 10),
+    var width = parseInt(svg.style("width"), 10),
+        height = parseInt(svg.style("height"), 10),
         outerRadius = Math.min(width, height) * 0.5 - 40,
         innerRadius = outerRadius * 0.9;
-console.log(height);
+
     var chord = d3.chord()
         .padAngle(0.05)
         .sortSubgroups(d3.descending);
