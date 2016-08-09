@@ -1,6 +1,7 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
+var ModelStore = require("../stores/ModelStore");
 var d3 = require("d3");
 var ChordMap = require("../visualizations/ChordMap");
 
@@ -15,25 +16,43 @@ var divStyle = {
 
 var chordMap = ChordMap();
 
+function getStateFromStore() {
+  return {
+    model: ModelStore.getModel()
+  };
+}
+
 var MapVisualizationContainer = React.createClass ({
-  propTypes: {
-    model: PropTypes.object.isRequired
+  getInitialState: function () {
+    return {
+      model: null
+    };
   },
   componentDidMount: function() {
+    ModelStore.addChangeListener(this.onModelChange);
+
     chordMap.on("selectSpecies", this.handleSelectSpecies);
 
-    this.drawMap(this.props.model);
+    this.drawMap(this.state.model);
 
     window.addEventListener("resize", function() {
       this.forceUpdate();
     }.bind(this));
   },
-  componentWillUpdate: function (props) {
-    this.drawMap(props.model);
+  componentWillUnmount: function () {
+    ModelStore.removeChangeListener(this.onModelChange);
+  },
+  componentWillUpdate: function (props, state) {
+    this.drawMap(state.model);
 
     return false;
   },
+  onModelChange: function () {
+    this.setState(getStateFromStore());
+  },
   drawMap: function (model) {
+    if (!model) return;
+
     var node = ReactDOM.findDOMNode(this);
     var size = node.offsetWidth;
 

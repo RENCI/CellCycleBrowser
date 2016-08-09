@@ -1,5 +1,4 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
 var ModelSelectContainer = require("../containers/ModelSelectContainer");
 
 // TODO: Need to update manually to align with BrowserControls because of its
@@ -13,14 +12,9 @@ var divStyle = {
 function MapControls(props) {
   return (
     <div style={divStyle}>
-      <ModelSelectContainer
-        modelList={props.modelList} />
+      <ModelSelectContainer />
     </div>
   );
 }
-
-MapControls.propTypes = {
-  modelList: PropTypes.arrayOf(React.PropTypes.object).isRequired
-};
 
 module.exports = MapControls;

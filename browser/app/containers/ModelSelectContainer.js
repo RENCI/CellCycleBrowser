@@ -1,18 +1,33 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var ModelStore = require("../stores/ModelStore");
 var ItemSelect = require("../components/ItemSelect");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
-var modelOption = function (model, i) {
+function modelOption(model, i) {
   return {
     value: i,
     name: model.name
   };
 }
 
+function getStateFromStore() {
+  return {
+    modelList: ModelStore.getModelList()
+  };
+}
+
 var ModelSelectContainer = React.createClass ({
-  propTypes: {
-    modelList: PropTypes.arrayOf(React.PropTypes.object).isRequired
+  getInitialState: function () {
+    return getStateFromStore();
+  },
+  componentDidMount: function () {
+    ModelStore.addChangeListener(this.onModelListChange);
+  },
+  componentWillUnmount: function () {
+    ModelStore.removeChangeListener(this.onModelListChange);
+  },
+  onModelListChange: function () {
+    this.setState(getStateFromStore());
   },
   handleChangeModel: function (e) {
     ViewActionCreators.selectModel(e.target.value);
@@ -21,7 +36,7 @@ var ModelSelectContainer = React.createClass ({
     return (
       <ItemSelect
         label="Model: "
-        options={this.props.modelList.map(modelOption)}
+        options={this.state.modelList.map(modelOption)}
         onChange={this.handleChangeModel} />
     );
   }
