@@ -31,12 +31,19 @@ var MapVisualizationContainer = React.createClass ({
   componentDidMount: function() {
     ModelStore.addChangeListener(this.onModelChange);
 
-    chordMap.on("selectSpecies", this.handleSelectSpecies);
+    var size = this.getSize();
+
+    chordMap
+        .width(size.width)
+        .height(size.width)
+        .on("selectSpecies", this.handleSelectSpecies);
 
     this.drawMap(this.state.model);
 
     window.addEventListener("resize", function() {
-      this.forceUpdate();
+      // TODO: Create a store with window resize. Move event listener to
+      // top-level container and create a view action there
+      this.onResize();
     }.bind(this));
   },
   componentWillUnmount: function () {
@@ -50,17 +57,19 @@ var MapVisualizationContainer = React.createClass ({
   onModelChange: function () {
     this.setState(getStateFromStore());
   },
+  onResize: function () {
+    var size = this.getSize();
+
+    chordMap
+        .width(size.width)
+        .height(size.width);
+
+    this.drawMap(this.state.model);
+  },
   drawMap: function (model) {
     if (!model) return;
 
-    var node = ReactDOM.findDOMNode(this);
-    var size = node.offsetWidth;
-
-    chordMap
-        .width(size)
-        .height(size);
-
-    d3.select(node)
+    d3.select(this.getNode())
         .datum(model)
         .call(chordMap);
   },
@@ -69,11 +78,23 @@ var MapVisualizationContainer = React.createClass ({
       model: this.props.model
     };
   },
+  getNode: function () {
+    return ReactDOM.findDOMNode(this);
+  },
+  getSize: function () {
+    var node = this.getNode();
+
+    return {
+      width: node.offsetWidth,
+      height: node.offsetHeight
+    }
+  },
   handleSelectSpecies: function (species) {
     console.log("Container, " + species);
     chordMap.selectSpecies(species);
   },
   render: function () {
+    console.log("render");
     return <div className="Map" style={divStyle}></div>
   }
 });
