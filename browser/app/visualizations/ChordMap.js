@@ -1,12 +1,12 @@
 var d3 = require("d3");
 
-ChordMap = function() {
+module.exports = function() {
   var width = 200,
       height = 200,
       svg = d3.select(),
       dispatcher = d3.dispatch("selectSpecies");
 
-  function cm(selection) {
+  function chordMap(selection) {
     selection.each(function(d) {
       data = d;
 
@@ -114,33 +114,40 @@ ChordMap = function() {
     };
   }
 
-  cm.update = function() {
+  chordMap.update = function() {
     draw(layout());
   };
 
-  cm.destroy = function(element) {
+  chordMap.destroy = function(element) {
     // Any clean-up would go here
     // in this example there is nothing to do
   };
 
-  cm.width = function(_) {
+  chordMap.width = function(_) {
     if (!arguments.length) return width;
     width = _;
-    return cm;
+    return chordMap;
   };
 
-  cm.height = function(_) {
+  chordMap.height = function(_) {
     if (!arguments.length) return height;
     height = _;
-    return cm;
+    return chordMap;
   };
 
-  cm.on = function() {
+  // For registering event callbacks
+  chordMap.on = function() {
     var value = dispatcher.on.apply(dispatcher, arguments);
-    return value === dispatcher ? cm : value;
+    return value === dispatcher ? chordMap : value;
   };
 
-  return cm;
-}
+  // Initialize event callbacks
+  chordMap.selectSpecies = function(_) {
+    console.log("ChordMap, " + _);
+    return chordMap;
+  }
 
-module.exports = ChordMap;
+  chordMap.on("selectSpecies", chordMap.selectSpecies);
+
+  return chordMap;
+}

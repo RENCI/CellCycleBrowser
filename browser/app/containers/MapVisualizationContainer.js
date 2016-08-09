@@ -51,7 +51,8 @@ var MapVisualizationContainer = React.createClass ({
     };
   },
   handleSelectSpecies: function (species) {
-    console.log(species);
+    console.log("Container, " + species);
+    chordMap.selectSpecies(species);
   },
   render: function () {
     return <div className="Map" style={divStyle}></div>
