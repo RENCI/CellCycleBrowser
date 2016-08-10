@@ -1,5 +1,6 @@
 FROM python:2.7.11
 MAINTAINER Hong Yi <hongyi@renci.org>
+# Adapted from https://github.com/hydroshare/hs_docker_base/blob/develop/Dockerfile
 
 RUN apt-get update && apt-get install -y apt-transport-https
 COPY docker.list /etc/apt/sources.list.d/

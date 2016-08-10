@@ -1,9 +1,9 @@
-postgis:
-  image: mjstealey/hs_postgres:9.4.7
-  container_name: postgis
+db:
+  image: postgres:9.4
+  container_name: cc-db
 rabbitmq:
   image: rabbitmq:3.5
-  container_name: rabbitmq
+  container_name: cc-rabbitmq
 cellcycle:
   build: .
   container_name: cellcycle
@@ -11,17 +11,14 @@ cellcycle:
     - SYS_ADMIN
   privileged: true
   environment:
-    POSTGIS_HOST: postgis
-    POSTGIS_PORT: 5432
-    POSTGIS_PASSWORD: postgres
-    POSTGIS_DB: postgres
-    POSTGIS_USER: postgres
-    PGPASSWORD: postgres
+    POSTGRES_PASSWORD: postgres
+    POSTGRES_USER: postgres
+    POSTGRES_DB: postgres
   volumes:
     # cellcycle repository
-    - "/home/ccbuild/CellCycleBrowser:/home/docker/cellcycle"
+    - "./CellCycleBrowser:/home/docker/cellcycle"
     # log files
-    - "/home/ccbuild/CellCycleBrowser/log:/var/log/cellcycle"
+    - "./CellCycleBrowser/log:/var/log/cellcycle"
     # shared location for uwsgi.sock between containers
     - "/var/run"
     # temp directory shared with celery workers
@@ -30,24 +27,29 @@ cellcycle:
     - "1338:22"
     - "8000:8000"
   links:
-    - postgis:postgis
+    - db:db
     - rabbitmq:rabbitmq
   command: /bin/bash init
 defaultworker:
   build: .
   container_name: defaultworker
   environment:
-    POSTGIS_HOST: postgis
-    POSTGIS_PORT: 5432
-    POSTGIS_PASSWORD: postgres
-    POSTGIS_DB: postgres
-    PGPASSWORD: postgres
     C_FORCE_ROOT: 1
   volumes_from:
     - cellcycle
   volumes:
     - "/var/run/docker.sock:/docker.sock"
   links:
-    - postgis:postgis
+    - db:db
     - rabbitmq:rabbitmq
   command: ./run_celery.sh
+nginx:
+  container_name: cc-nginx
+  image: nginx:1.9
+  volumes_from:
+    - cellcycle
+  ports:
+    - "80:80"
+    - "443:443"
+  links:
+    - cellcycle:cellcycle

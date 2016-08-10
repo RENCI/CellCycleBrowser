@@ -1,0 +1,13 @@
+### Hostname ###
+FQDN_OR_IP: localhost
+
+### Application configuration ###
+CC_PATH: /home/ccbuild/CellCycleBrowser
+CC_DATABASE: pg.cc-testing.sql
+CC_MEDIA_FILES: media.cc-testing.tar.gz
+
+### Nginx configuration ###
+USE_NGINX: true
+NGINX_DIR: nginx
+
+### REQUIRES BLANK LINE AFTER LAST VARIABLE DEFINITION ###

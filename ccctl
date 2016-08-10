@@ -1,0 +1,277 @@
+#!/usr/bin/env bash
+
+# ccctl
+# CellCycleBrowser Control Script
+# Author: Hong Yi 
+# adapted from the control script written by Michael Stealey: https://github.com/hydroshare/hs_pages/blob/develop/pmctl
+### Local Config ###
+CONFIG_DIRECTORY='config'
+CONFIG_FILE='cc-config.yaml'
+LOCAL_ENV_FILE='local-env.sh'
+HOME_DIR=${PWD}
+
+### Pre-flight Variables ###
+DEV_SERVER='python manage.py runserver 0.0.0.0:8000'
+PROD_SERVER='source gunicorn_start'
+
+# Read cc-config.yaml into environment
+cd $CONFIG_DIRECTORY
+sed -e "s/:[^:\/\/]/=/g;s/$//g;s/ *=/=/g" $CONFIG_FILE > $LOCAL_ENV_FILE
+sed -i 's/#.*$//' $LOCAL_ENV_FILE
+sed -i '/^\s*$/d' $LOCAL_ENV_FILE
+while read line; do export $line; done < <(cat $LOCAL_ENV_FILE)
+cd $HOME_DIR
+
+stop_cc() {
+    echo "*** STOP ***"
+    docker-compose stop
+}
+
+start_cc() {
+    echo "*** START ***"
+    docker-compose start
+}
+
+remove_cc() {
+    echo "*** REMOVE ***"
+    # if cellcycle container is running remove the static directory
+    if [[ -n "$(docker-compose ps | grep cellcycle | grep Up)" ]]; then
+        echo "*** INFO: Remove /static directory ***"
+        docker exec cellcycle rm -rf static
+    fi
+    stop_cc
+    docker-compose rm -f
+}
+
+start_nginx() {
+    echo "*** START NGINX ***"
+    if [[ ! -n "$(docker-compose ps | grep nginx | grep Up)" ]]; then
+        echo "*** INFO: nginx is not running, waiting ***"
+    fi
+    if [[ $USE_NGINX = 'true' ]]; then
+        echo "*** INFO: Using cc-nginx.conf ***"
+        NGINX_CONF_FILE=cc-nginx.conf
+        export NGINX_CONF_FILE=$NGINX_CONF_FILE
+        ./init-nginx
+    else
+        echo "*** INFO: Not using Nginx ***"
+        docker-compose stop nginx
+    fi
+}
+
+stop_nginx() {
+    echo "*** STOP NGINX ***"
+    if [[ -n "$(docker-compose ps | grep nginx | grep Up)" ]]; then
+        echo "*** INFO: Stopping Nginx now ***"
+        docker-compose stop nginx
+    else
+        echo "*** INFO: Nginx is not running ***"
+    fi
+}
+
+restart_cc() {
+    echo "*** RESTART ***"
+    stop_cc
+    preflight_cc
+    start_cc
+    start_nginx
+}
+
+preflight_cc() {
+    echo "*** PREFLIGHT ***";
+    echo $CC_PATH
+    if [[ $USE_NGINX = 'true' ]]; then
+        echo "*** INFO: Using Nginx ***"
+        # enable SSH server for debugging purposes
+        sed -i 's!'"# REMOVED SSH COMPONENT"'!'"/usr/sbin/sshd"'!g' ${CC_PATH}/init
+        echo "*** INFO: Using gunicorn ***"
+        # use production server to run cellcyclebrowser
+        sed -i 's/'"${DEV_SERVER}"'/'"${PROD_SERVER}"'/g' ${CC_PATH}/init
+    else
+        echo "*** INFO: Not using Nginx ***"
+        echo "*** INFO: Using Django runserver ***"
+        # use development server to run cellcyclebrowser
+        sed -i 's/'"${PROD_SERVER}"'/'"${DEV_SERVER}"'/g' ${CC_PATH}/init
+        # enable SSH server for debugging purposes
+        sed -i 's!'"# REMOVED SSH COMPONENT"'!'"/usr/sbin/sshd"'!g' ${CC_PATH}/init
+    fi
+}
+
+build_cc() {
+    echo "*** BUILD ***"
+    docker-compose build
+}
+
+run_cc() {
+    echo "*** RUN ***"
+    preflight_cc
+    docker-compose up -d
+}
+
+backup_cc() {
+    echo "*** BACKUP DATABASE, MEDIA AND SETTINGS FILES ***"
+    docker exec cellcycle /usr/bin/pg_dump -c -d postgres -U postgres -h db \
+        > "${CC_PATH}/pg.cc-`date +"%m-%d-%y"`.sql"
+    if [ ! -d "${CC_PATH}/media_files" ]; then
+        mkdir ${CC_PATH}/media_files;
+    fi
+    docker exec cellcycle rsync -avh --dry-run /home/docker/cellcycle/static/media \
+        /home/docker/cellcycle/media_files
+    docker exec cellcycle rsync -avh /home/docker/cellcycle/static/media \
+        /home/docker/cellcycle/media_files
+    cd ${CC_PATH}
+    tar -czvf "media.cc-`date +"%m-%d-%y"`.tar.gz" media_files
+    docker exec cellcycle rm -rf /home/docker/cellcycle/media_files
+    cd -
+    # Move files to backup directory in users home
+    if [ ! -d "/home/${USER}/cc-backup" ]; then
+        mkdir /home/${USER}/cc-backup;
+    fi
+    # backup local_settings.py
+    cp ${CC_PATH}/cellcycle/local_settings.py \
+        /home/${USER}/cc-backup/local_settings.py
+    # backup settings.py
+    cp ${CC_PATH}/cellcycle/settings.py \
+        /home/${USER}/cc-backup/settings.py
+    # backup cc-config.yaml
+    cp ${CC_PATH}/config/cc-config.yaml \
+        /home/${USER}/cc-backup/cc-config.yaml
+    # backup docker-compose.yml
+    cp ${HOME_DIR}/docker-compose.yml \
+        /home/${USER}/cc-backup/docker-compose.yml
+    # backup database
+    cp ${CC_PATH}/pg.cc-`date +"%m-%d-%y"`.sql \
+        /home/${USER}/cc-backup/pg.cc-`date +"%m-%d-%y"`.sql
+    # backup media files
+    cp ${CC_PATH}/media.cc-`date +"%m-%d-%y"`.tar.gz \
+        /home/${USER}/cc-backup/media.cc-`date +"%m-%d-%y"`.tar.gz
+}
+
+restore_cc() {
+    echo "*** RESTORE DATABASE, MEDIA AND SETTINGS FILES ***"
+    # restore local_settings.py
+    cp /home/${USER}/cc-backup/local_settings.py \
+        ${CC_PATH}/cellcycle/local_settings.py
+    # restore settings.py
+    cp /home/${USER}/cc-backup/settings.py \
+        ${CC_PATH}/cellcycle/settings.py
+    # restore cc-config.yaml
+    cp /home/${USER}/cc-backup/cc-config.yaml \
+        ${CC_PATH}/config/cc-config.yaml
+    # restore docker-compose.yml
+    cp /home/${USER}/cc-backup/docker-compose.yml \
+        ${CC_PATH}/docker-compose.yml
+    # restore database
+    cp /home/${USER}/cc-backup/${CC_DATABASE} \
+        ${CC_PATH}/${CC_DATABASE}
+    # restore media files
+    cp /home/${USER}/cc-backup/${CC_MEDIA_FILES} \
+        ${CC_PATH}/${CC_MEDIA_FILES}
+}
+
+loaddb_cc() {
+    echo "*** LOAD DATABASE ***"
+    # Uncomment to resolve: database "postgres" is being accessed by other users
+    #    docker exec cellcycle psql -U postgres -h db -c \
+    #    "select pg_terminate_backend(pid) from pg_stat_activity where datname='postgres';"
+    docker exec cellcycle dropdb -U postgres -h db postgres
+    docker exec cellcycle createdb -U postgres -h db postgres --encoding UNICODE --template=template0
+    docker exec cellcycle psql -U postgres -h db -f ${CC_DATABASE} --quiet
+    docker exec cellcycle python manage.py collectstatic --no-input
+    docker exec cellcycle python manage.py migrate
+}
+
+loadmedia_cc() {
+    echo "*** LOAD MEDIA FILES ***"
+    cd ${CC_PATH}
+    tar -xzvf ${CC_MEDIA_FILES}
+    if [ ! -d "${CC_PATH}/static" ]; then
+        mkdir ${CC_PATH}/static;
+    fi
+    cp -r media_files/media static/
+    cd -
+}
+
+deploy_cc_nodb() {
+    echo "*** DEPLOY - NO DB ***"
+    build_cc
+    run_cc
+    echo "*** INFO: Allowing containers to start up ***"
+    for pc in $(seq 10 -1 1); do
+        echo -ne "$pc ...\033[0K\r"
+        sleep 1
+    done
+    start_nginx
+    docker exec cellcycle python manage.py collectstatic --no-input
+    docker exec cellcycle python manage.py migrate
+}
+
+deploy_dev_cc() {
+    echo "*** DEPLOY DEVELOPMENT - WITH DB ***"
+    build_cc
+    preflight_cc
+    run_cc
+    echo "*** INFO: Allowing containers to start up ***"
+    for pc in $(seq 10 -1 1); do
+        echo -ne "$pc ...\033[0K\r"
+        sleep 1
+    done
+    start_nginx
+    loaddb_cc
+    loadmedia_cc
+}
+
+deploy_prod_cc() {
+    echo "*** DEPLOY PRODUCTION - WITH DB ***"
+    build_cc
+    restore_cc
+    preflight_cc
+    run_cc
+    echo "*** INFO: Allowing containers to start up ***"
+    for pc in $(seq 10 -1 1); do
+        echo -ne "$pc ...\033[0K\r"
+        sleep 1
+    done
+    start_nginx
+    loaddb_cc
+    loadmedia_cc
+}
+
+case "$1" in
+    build) build_cc $1
+        ;;
+    backup) backup_cc $1
+        ;;
+    restore) restore_cc $1
+        ;;
+    deploy_dev) deploy_dev_cc $1
+        ;;
+    deploy_prod) deploy_prod_cc $1
+        ;;
+    deploy_nodb) deploy_cc_nodb $1
+        ;;
+    loaddb) loaddb_cc $1
+        ;;
+    loadmedia) loadmedia_cc $1
+        ;;
+    rebuild) rebuild_cc $1 $2
+        ;;
+    restart) restart_cc $1
+        ;;
+    run) run_cc $1
+        ;;
+    start) start_cc $1
+        ;;
+    stop) stop_cc $1
+        ;;
+    remove) remove_cc $1
+        ;;
+    preflight) preflight_cc $1
+        ;;
+    start_nginx) start_nginx $1
+        ;;
+    stop_nginx) stop_nginx $1
+        ;;
+esac
+
+exit 0;

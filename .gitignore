@@ -6,6 +6,8 @@
 .idea
 /celery
 /cellcycle/local_settings.py
+/data
+/cc_core/static/cc_core/js/index_bundle.js
 /static
 /log
 /static
