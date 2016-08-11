@@ -4,7 +4,7 @@
 # Author: Hong Yi, adapted from the script written by Michael Stealey: https://github.com/hydroshare/hs_pages/blob/develop/pagemill/gunicorn_start
 
 NAME="cellcycle"                                # Name of the application
-DJANGODIR=/home/docker/CellCycleBrowser         # Django project directory
+DJANGODIR=/home/docker/cellcycle                # Django project directory
 SOCKFILE=/var/run/gunicorn.sock                 # we will communicte using this unix socket
 USER=root                                       # the user to run as
 GROUP=root                                      # the group to run as
