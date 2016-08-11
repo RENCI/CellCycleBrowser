@@ -2,7 +2,7 @@
 
 sed 's/FQDN_OR_IP/'${FQDN_OR_IP}'/g' $NGINX_DIR/$NGINX_CONF_FILE > $NGINX_DIR/nginx.conf
 
-docker exec -ti cc-nginx cp /home/docker/CellCycleBrowser/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+docker exec -ti cc-nginx cp /home/docker/cellcycle/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 docker exec -ti cc-nginx nginx -s reload
 
 exit 0;
