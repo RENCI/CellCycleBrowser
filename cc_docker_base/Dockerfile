@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --force-yes \
     postgresql-9.4 \
     postgresql-client-9.4 \
     git \
+    zip \
     rsync \
     openssh-client \
     openssh-server
@@ -38,7 +39,7 @@ WORKDIR /usr/src/
 
 # Install pip based packages (due to dependencies some packages need to come first)
 RUN pip install --upgrade pip
-RUN pip install Django==1.9.7
+RUN pip install Django==1.10
 RUN pip install numpy==1.11.1
 RUN pip install \
     arrow==0.7.0 \
@@ -67,6 +68,15 @@ RUN pip install \
     requests==2.9.1 \
     sh==1.11
 
+# install StockPy
+RUN pip install scipy
+RUN pip install python-libsbml
+WORKDIR /usr/src
+RUN wget https://sourceforge.net/projects/stochpy/files/StochPy-2.3/StochPy-2.3.zip
+RUN unzip StochPy-2.3.zip
+WORKDIR /usr/src/StochPy-2.3
+RUN python setup.py install
+
 # Cleanup
 RUN apt-get clean
-RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/src/StochPy-2.3.zip /usr/src/StochPy-2.3

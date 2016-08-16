@@ -16,9 +16,9 @@ cellcycle:
     POSTGRES_DB: postgres
   volumes:
     # cellcycle repository
-    - "/home/ccbuild/CellCycleBrowser:/home/docker/cellcycle"
+    - "/home/hongyi/CellCycleBrowser:/home/docker/cellcycle"
     # log files
-    - "/home/ccbuild/CellCycleBrowser/log:/var/log/cellcycle"
+    - "/home/hongyi/CellCycleBrowser/log:/var/log/cellcycle"
     # shared location for uwsgi.sock between containers
     - "/var/run"
     # temp directory shared with celery workers
@@ -43,13 +43,3 @@ defaultworker:
     - db:db
     - rabbitmq:rabbitmq
   command: celery worker -A cellcycle -E -Q default
-nginx:
-  container_name: cc-nginx
-  image: nginx:1.9
-  volumes_from:
-    - cellcycle
-  ports:
-    - "80:80"
-    - "443:443"
-  links:
-    - cellcycle:cellcycle

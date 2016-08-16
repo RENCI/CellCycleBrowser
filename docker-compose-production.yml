@@ -1,0 +1,55 @@
+db:
+  image: postgres:9.4
+  container_name: cc-db
+rabbitmq:
+  image: rabbitmq:3.5
+  container_name: cc-rabbitmq
+cellcycle:
+  build: .
+  container_name: cellcycle
+  cap_add:
+    - SYS_ADMIN
+  privileged: true
+  environment:
+    POSTGRES_PASSWORD: postgres
+    POSTGRES_USER: postgres
+    POSTGRES_DB: postgres
+  volumes:
+    # cellcycle repository
+    - "/home/hongyi/CellCycleBrowser:/home/docker/cellcycle"
+    # log files
+    - "/home/hongyi/CellCycleBrowser/log:/var/log/cellcycle"
+    # shared location for uwsgi.sock between containers
+    - "/var/run"
+    # temp directory shared with celery workers
+    - "/shared_temp"
+  ports:
+    - "1338:22"
+    - "8000:8000"
+  links:
+    - db:db
+    - rabbitmq:rabbitmq
+  command: /bin/bash init
+defaultworker:
+  build: .
+  container_name: defaultworker
+  environment:
+    C_FORCE_ROOT: 1
+  volumes_from:
+    - cellcycle
+  volumes:
+    - "/var/run/docker.sock:/docker.sock"
+  links:
+    - db:db
+    - rabbitmq:rabbitmq
+  command: celery worker -A cellcycle -E -Q default
+nginx:
+  container_name: cc-nginx
+  image: nginx:1.9
+  volumes_from:
+    - cellcycle
+  ports:
+    - "80:80"
+    - "443:443"
+  links:
+    - cellcycle:cellcycle

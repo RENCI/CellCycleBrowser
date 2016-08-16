@@ -9,10 +9,10 @@ CONFIG_DIRECTORY='config'
 CONFIG_FILE='cc-config.yaml'
 LOCAL_ENV_FILE='local-env.sh'
 HOME_DIR=${PWD}
-
 ### Pre-flight Variables ###
 DEV_SERVER='python manage.py runserver 0.0.0.0:8000'
 PROD_SERVER='source gunicorn_start'
+# create docker-compose.yml from docker-compose-production.yml or docker-compose-dev.yml
 
 # Read cc-config.yaml into environment
 cd $CONFIG_DIRECTORY
@@ -20,7 +20,22 @@ sed -e "s/:[^:\/\/]/=/g;s/$//g;s/ *=/=/g" $CONFIG_FILE > $LOCAL_ENV_FILE
 sed -i 's/#.*$//' $LOCAL_ENV_FILE
 sed -i '/^\s*$/d' $LOCAL_ENV_FILE
 while read line; do export $line; done < <(cat $LOCAL_ENV_FILE)
+# create docker-compose.yml from docker-compose-production.yml or docker-compose-dev.yml
+cd $CC_PATH
+if [[ $USE_NGINX = 'true' ]]; then
+    cp docker-compose-production.yml docker-compose.yml
+else
+    cp docker-compose-dev.yml docker-compose.yml
+fi
 cd $HOME_DIR
+
+display_usage() {
+    echo "*** CellCycleBrowser Control Script ***"
+    echo "usage: $0 deploy_dev_nodb    # build and deploy from scratch without loading an existing database for local development environment"
+    echo "usage: $0 deploy_nodb        # build and deploy from scratch without loading an existing database for production environment"
+    echo "usage: $0 start              # attempts to start all containers"
+    echo "usage: $0 stop               # stops all running containers"
+}
 
 stop_cc() {
     echo "*** STOP ***"
@@ -206,6 +221,19 @@ deploy_cc_nodb() {
     docker exec cellcycle python manage.py migrate
 }
 
+deploy_dev_cc_nodb() {
+    echo "*** DEPLOY - NO DB ***"
+    build_cc
+    run_cc
+    echo "*** INFO: Allowing containers to start up ***"
+    for pc in $(seq 10 -1 1); do
+        echo -ne "$pc ...\033[0K\r"
+        sleep 1
+    done
+    docker exec cellcycle python manage.py collectstatic --no-input
+    docker exec cellcycle python manage.py migrate
+}
+
 deploy_dev_cc() {
     echo "*** DEPLOY DEVELOPMENT - WITH DB ***"
     build_cc
@@ -216,7 +244,6 @@ deploy_dev_cc() {
         echo -ne "$pc ...\033[0K\r"
         sleep 1
     done
-    start_nginx
     loaddb_cc
     loadmedia_cc
 }
@@ -237,6 +264,13 @@ deploy_prod_cc() {
     loadmedia_cc
 }
 
+### Display usage if exactly one argument is not provided ###
+if [  $# -ne 1 ]
+then
+    display_usage
+    exit 1
+fi
+
 case "$1" in
     build) build_cc $1
         ;;
@@ -245,6 +279,8 @@ case "$1" in
     restore) restore_cc $1
         ;;
     deploy_dev) deploy_dev_cc $1
+        ;;
+    deploy_dev_nodb) deploy_dev_cc_nodb $1
         ;;
     deploy_prod) deploy_prod_cc $1
         ;;
