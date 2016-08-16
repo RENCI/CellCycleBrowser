@@ -68,7 +68,7 @@ RUN pip install \
     requests==2.9.1 \
     sh==1.11
 
-# install StockPy
+# install StochPy
 RUN pip install scipy
 RUN pip install python-libsbml
 WORKDIR /usr/src
