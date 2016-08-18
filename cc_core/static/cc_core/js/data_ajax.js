@@ -19,7 +19,7 @@ function csrfSafeMethod(method) {
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
-function request_dataset_list_ajax() {
+function request_profile_list_ajax() {
     $.ajaxSetup({
         beforeSend: function(xhr, settings) {
             if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -29,13 +29,13 @@ function request_dataset_list_ajax() {
     });
     $.ajax({
         type: "POST",
-        url: '/get_dataset_list/',
+        url: '/get_profile_list/',
         success: function (json_response) {
-            ds_res = json_response['datasetlist'];
-            resultstr = "data set list:\n";
+            ds_res = json_response['profilelist'];
+            resultstr = "profile list:\n";
             if (ds_res.length > 0) {
                 $.each(ds_res, function(i, v) {
-                    resultstr += "Data Set " + (i+1) + '\n';
+                    resultstr += "Profile " + (i+1) + '\n';
                     resultstr += "=========================\n"
                     resultstr += "name: " + v['name'] + '\n';
                     resultstr += "description: " + v['description'] + '\n';

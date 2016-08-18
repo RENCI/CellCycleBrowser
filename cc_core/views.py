@@ -24,19 +24,19 @@ def serve_data(request, filename, *args, **kwargs):
     
     return response
 
-def get_dataset_list(request):
+def get_profile_list(request):
     """
     It is invoked by an AJAX call, so it returns json object that holds data set list
     """
     return_object = {}
-    dataset_list = []
+    profile_list = []
     for i in range(1, 4):
         dataset_obj = {}
         dataset_obj['name'] = 'Cell Cycle Profile ' + str(i)
         dataset_obj['description'] = 'Data and models ' + str(i)
         dataset_obj['value'] = 'data/PCNA_53BP1_transpose.csv'
-        dataset_list.append(dataset_obj)
-    return_object['datasetlist'] = dataset_list
+        profile_list.append(dataset_obj)
+    return_object['profilelist'] = profile_list
     jsondump = json.dumps(return_object)
     return HttpResponse(
         jsondump,
