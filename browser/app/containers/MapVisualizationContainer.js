@@ -90,11 +90,9 @@ var MapVisualizationContainer = React.createClass ({
     }
   },
   handleSelectSpecies: function (species) {
-    console.log("Container, " + species);
     chordMap.selectSpecies(species);
   },
   render: function () {
-    console.log("render");
     return <div className="Map" style={divStyle}></div>
   }
 });

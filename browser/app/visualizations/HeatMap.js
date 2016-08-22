@@ -105,11 +105,13 @@ HeatMap.draw = function(svg, layout, state) {
         .style("fill", "white")
         .style("stroke-width", 2)
         .on("mouseover", function(d, i) {
+          var rect = d3.select(this);
+
           g.select(".highlight")
-              .attr("x", x(d, i))
+              .attr("x", rect.attr("x"))
               .attr("y", layout.yScale(rowIndex))
-              .attr("width", layout.xScale.bandwidth())
-              .attr("height", layout.yScale.bandwidth())
+              .attr("width", rect.attr("width"))
+              .attr("height", rect.attr("height"))
               .style("stroke", highlightColor(state.colorScale(d)));
 
           function highlightColor(color) {
