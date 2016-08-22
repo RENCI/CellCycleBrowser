@@ -4,7 +4,9 @@ module.exports = function() {
   var width = 200,
       height = 200,
       svg = d3.select(),
-      dispatcher = d3.dispatch("selectSpecies");
+      dispatcher = d3.dispatch("selectSpecies"),
+      data,
+      matrix = [];
 
   function chordMap(selection) {
     selection.each(function(d) {
@@ -40,7 +42,7 @@ module.exports = function() {
 
     var g = svg.select("g")
         .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")")
-        .datum(function(d) { return layout.chord(d.matrix); });
+        .datum(function(d) { return layout.chord(matrix); });
 
     // Arcs for groups
     var group = g.select(".groups").selectAll("path")
@@ -88,6 +90,30 @@ module.exports = function() {
   }
 
   function layout() {
+    // Construct mn x mn matrix
+    var n = data.species.length;
+    var m = data.phases.length;
+    matrix = zero2D(n + m, n + m);
+
+    console.log(data.speciesPhaseMatrix);
+    console.log(matrix);
+
+    data.speciesPhaseMatrix.forEach(function(d, i) {
+      d.forEach(function(e, j) {
+        matrix[i][n + j] = matrix[n + j][i] = Math.abs(e);
+      });
+    });
+
+    console.log(data.speciesPhaseMatrix);
+    console.log(matrix);
+
+    function zero2D(rows, cols) {
+      var array = [], row = [];
+      while (cols--) row.push(0);
+      while (rows--) array.push(row.slice());
+      return array;
+    }
+
     var outerRadius = Math.min(width, height) * 0.5 - 40,
         innerRadius = outerRadius * 0.9;
 
@@ -103,7 +129,7 @@ module.exports = function() {
         .radius(innerRadius);
 
     var color = d3.scaleOrdinal()
-        .domain(d3.range(data.matrix.length))
+        .domain(d3.range(matrix.length))
         .range(["#000000", "#FFDD89", "#957244", "#F26223", "#446"]);
 
     return {

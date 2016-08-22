@@ -10,31 +10,50 @@ var profileList = [
 
 var models = [
   {
-    name: "Model 1",
-    matrix: [
-      [   0,  5871, 8916, 2868],
-      [1951,     0, 2060, 6171],
-      [8010, 16145,    0, 8045],
-      [1013,   990,  940,    0]
-    ]
-  },
-  {
-    name: "Model 2",
-    matrix: [
-      [0, 5, 7, 2, 0],
-      [5, 0, 3, 4, 1],
-      [7, 3, 0, 6, 3],
-      [2, 4, 6, 0, 8],
-      [0, 1, 3, 8, 0]
-    ]
-  },
-  {
-    name: "Model 3",
-    matrix: [
-      [0, 5, 7, 2],
-      [5, 0, 3, 4],
-      [7, 3, 0, 6],
-      [2, 4, 6, 0]
+    name: "U2OS",
+    description: "U2OS cells expressing 53BP1 and PCNA reporters",
+    species: [
+      {
+        name: "53BP1",
+        min: 0,
+        max: 5,
+        value: 5
+      },
+      {
+        name: "PCNA",
+        min: 0,
+        max: 2,
+        value: 2
+      }
+    ],
+    phases: [
+      {
+        name: "G1"
+      },
+      {
+        name: "S"
+      },
+      {
+        name: "G2"
+      }
+    ],
+    speciesPhaseMatrix: [
+      [-0.3, 0, -0.1],
+      [0, 0, 0]
+    ],
+    speciesMatrices: [
+      [
+        [0, 0],
+        [0, 0]
+      ],
+      [
+        [0, 0],
+        [0, 0]
+      ],
+      [
+        [0, 0],
+        [0, 0]
+      ]
     ]
   }
 ];
