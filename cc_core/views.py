@@ -65,13 +65,49 @@ def extract_phases(request, filename):
                     for fstr in formula_strs:
                         fstr = fstr.strip()
                         sub_phases.append(species_id_to_names[fstr])
-                        phase["sub_phases"] = sub_phases
+                    phase["sub_phases"] = sub_phases
                     phases.append(phase)
 
         return_object['phases'] = phases
         jsondump = json.dumps(return_object)
         response = HttpResponse(jsondump, content_type='text/json')
-        out_file_name = os.path.splitext(filename)[0] + ".json"
+        out_file_name = os.path.splitext(filename)[0] + "_phases.json"
+        response['Content-Disposition'] = 'attachment; filename="' + out_file_name + '"'
+        return response
+    except Exception as ex:
+        return_object['error'] = ex.message
+        jsondump = json.dumps(return_object)
+        response = HttpResponse(jsondump, content_type='text/json')
+        response['Content-Disposition'] = 'attachment; filename=error.json'
+        return response
+
+
+def extract_species(request, filename):
+    """
+    extract species from the model file and return species as downloadable JSON file
+    :param request: a request in the form of /phases/<model_file_name>
+    :param filename: the model file name
+    :return: Downloadable JSON file that contain species
+    """
+
+    return_object = {}
+    try:
+        model_file = os.path.join('data/model/input', filename.encode("utf-8"))
+        reader = SBMLReader()
+        document = reader.readSBMLFromFile(model_file)
+        model = document.getModel()
+        species = model.getListOfSpecies()
+        species_list = []
+        for sp in species:
+            species_dict = {}
+            species_dict['name'] = sp.getName()
+            species_dict['initial_amount'] = sp.getInitialAmount()
+            species_list.append(species_dict)
+
+        return_object['species'] = species_list
+        jsondump = json.dumps(return_object)
+        response = HttpResponse(jsondump, content_type='text/json')
+        out_file_name = os.path.splitext(filename)[0] + "_species.json"
         response['Content-Disposition'] = 'attachment; filename="' + out_file_name + '"'
         return response
     except Exception as ex:
