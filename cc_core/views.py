@@ -1,9 +1,12 @@
 import csv
 import json
+import os
 
-from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
+
+from libsbml import *
+
 
 # Create your views here.
 def index(request):
@@ -13,8 +16,10 @@ def index(request):
     }
     return HttpResponse(template.render(context, request))
 
-def serve_data(request, filename, *args, **kwargs):
-    fp = open('data/'+filename, 'rb')
+
+def serve_data(request, filename):
+    data_file = os.path.join('data', filename)
+    fp = open(data_file, 'rb')
     data = csv.reader(fp)
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="'+filename+'"'
@@ -23,6 +28,59 @@ def serve_data(request, filename, *args, **kwargs):
         writer.writerow(row)
     
     return response
+
+
+def extract_phases(request, filename):
+    """
+    extract phases from the model file and return phases as downloadable JSON file
+    :param request: a request in the form of /phases/<model_file_name>
+    :param filename: the model file name
+    :return: Downloadable JSON file that contain phases
+    """
+
+    return_object = {}
+    try:
+        model_file = os.path.join('data/model/input', filename.encode("utf-8"))
+        reader = SBMLReader()
+        document = reader.readSBMLFromFile(model_file)
+        model = document.getModel()
+        species_id_to_names = {}
+        species = model.getListOfSpecies()
+        for sp in species:
+            name = sp.getName()
+            id = sp.getId()
+            species_id_to_names[id] = name
+
+        rule_list = model.getListOfRules()
+        phases = []
+        for rule in rule_list:
+            phase = {}
+            var_id = rule.getVariable()
+            if var_id:
+                phase["name"] = species_id_to_names[var_id]
+                sub_phases = []
+                formula_str = rule.getFormula().strip()
+                if formula_str:
+                    formula_strs = formula_str.split('+')
+                    for fstr in formula_strs:
+                        fstr = fstr.strip()
+                        sub_phases.append(species_id_to_names[fstr])
+                        phase["sub_phases"] = sub_phases
+                    phases.append(phase)
+
+        return_object['phases'] = phases
+        jsondump = json.dumps(return_object)
+        response = HttpResponse(jsondump, content_type='text/json')
+        out_file_name = os.path.splitext(filename)[0] + ".json"
+        response['Content-Disposition'] = 'attachment; filename="' + out_file_name + '"'
+        return response
+    except Exception as ex:
+        return_object['error'] = ex.message
+        jsondump = json.dumps(return_object)
+        response = HttpResponse(jsondump, content_type='text/json')
+        response['Content-Disposition'] = 'attachment; filename=error.json'
+        return response
+
 
 def get_profile_list(request):
     """

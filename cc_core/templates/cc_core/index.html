@@ -14,11 +14,12 @@
 </head>
 <body>
   <div id="main"> {{ text_to_display }}</div>
-    <form action="" method="post">
+  <form action="" method="post" style="float: left">
       {% csrf_token %}
-      Test AJAX request and response: <button type="button" class="btn btn-default" onclick="request_profile_list_ajax(); return false;">Request profileList</button>
-    </form>
-
+      <button type="button" class="btn btn-default" onclick="request_profile_list_ajax(); return false;">Request profileList by AJAX</button>
+  </form>
+  &nbsp;
+  <a id="btn-download-phases" type="button" class="btn btn-default" href="/phases/u2os_53bp1_pcna.xml">Download phases</a>
   <div id="app"></div>
   <script type="text/javascript" src="{% static 'cc_core/js/index_bundle.js' %}"></script>
 </body>
