@@ -1,12 +1,18 @@
 var d3 = require("d3");
 
 module.exports = function() {
+      // Size
   var width = 200,
       height = 200,
-      svg = d3.select(),
-      dispatcher = d3.dispatch("selectSpecies"),
+
+      // Data
       data,
-      matrix = [];
+
+      // Start with empty selection
+      svg = d3.select(),
+
+      // Event dispatcher
+      dispatcher = d3.dispatch("selectPhase", "selectSpecies");
 
   function chordMap(selection) {
     selection.each(function(d) {
@@ -26,70 +32,21 @@ module.exports = function() {
 
       var g = svgEnter.append("g");
 
+      // Groups for layout
       g.append("g")
-        .attr("class", "ribbons");
+          .attr("class", "ribbons");
 
       g.append("g")
-          .attr("class", "groups");
+          .attr("class", "arcs");
 
-      draw(layout());
+      doLayout();
+      draw();
     });
   }
 
-  function draw(layout) {
-    svg .attr("width", width)
-        .attr("height", height);
+  function doLayout() {
+/*
 
-    var g = svg.select("g")
-        .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")")
-        .datum(function(d) { return layout.chord(matrix); });
-
-    // Arcs for groups
-    var group = g.select(".groups").selectAll("path")
-        .data(function(chords) { return chords.groups; });
-
-    group.enter().append("path")
-        .style("fill", "white")
-        .style("stroke", "white")
-        .on("click", function(d) {
-          dispatcher.call("selectSpecies", this, "Species: " + d.index);
-        })
-        .on("mouseover", function() {
-          d3.select(this).style("stroke-width", 2);
-        })
-        .on("mouseout", function() {
-          d3.select(this).style("stroke-width", null);
-        })
-      .merge(group).transition().duration(0)
-        .style("fill", function(d) { return layout.color(d.index); })
-        .style("stroke", function(d) { return d3.rgb(layout.color(d.index)).darker(); })
-        .attr("d", layout.arc);
-
-    group.exit()
-        .style("fill", "white")
-        .style("stroke", "white")
-        .remove();
-
-    // Ribbons for chords
-    var ribbon = g.select(".ribbons").selectAll("path")
-        .data(function(chords) { return chords; });
-
-    ribbon.enter().append("path")
-        .style("fill", "white")
-        .style("stroke", "white")
-      .merge(ribbon).transition().duration(0)
-        .attr("d", layout.ribbon)
-        .style("fill", function(d) { return layout.color(d.target.index); })
-        .style("stroke", function(d) { return d3.rgb(layout.color(d.target.index)).darker(); })
-        .style("fill-opacity", 0.67);
-
-    ribbon.exit()
-        .style("fill", "white")
-        .style("stroke", "white")
-        .remove();
-  }
-
-  function layout() {
     // Construct mn x mn matrix
     var n = data.species.length;
     var m = data.phases.length;
@@ -138,15 +95,170 @@ module.exports = function() {
       ribbon: ribbon,
       color: color
     };
+*/
+  }
+
+  function draw() {
+    // Pie layout for phase and species arcs
+    var pie = d3.pie()
+        .value(function() { return 1; })
+        .padAngle(0.04);
+
+    // Arc generator for phase and species arcs
+    // XXX: SVG width seem to be a bit wider than container width. Maybe an
+    // issue with margins. Need to look into this.
+    var radius = Math.min(width, height) / 2 - 20;
+    var arc = d3.arc()
+        .cornerRadius(5)
+        .outerRadius(radius)
+        .innerRadius(radius - 40);
+
+    // Set width and height
+    svg .attr("width", width)
+        .attr("height", height)
+      .select("g")
+        .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
+
+    drawPhases();
+    drawSpecies();
+    drawChords();
+
+    function drawPhases() {
+      // Set to upper half of pie layout
+      pie .startAngle(-Math.PI / 2)
+          .endAngle(Math.PI / 2);
+
+      // Bind phase data
+      var phase = svg.select(".arcs").selectAll(".phase")
+          .data(pie(data.phases));
+
+      // Enter
+      var phaseEnter = phase.enter().append("g")
+          .attr("class", "phase")
+          .on("click", function(d) {
+            dispatcher.call("selectPhase", this, "Phase: " + d.data.name);
+          })
+          .on("mouseover", function() {
+            d3.select(this).select("path")
+                .style("stroke-width", 2);
+
+            d3.select(this).select("text")
+                .style("font-weight", "bold");
+          })
+          .on("mouseout", function() {
+            d3.select(this).select("path")
+                .style("stroke-width", null);
+
+            d3.select(this).select("text")
+                .style("font-weight", null);
+          });
+
+      phaseEnter.append("path")
+          .attr("d", arc)
+          .style("fill", "white")
+          .style("stroke", "white");
+
+      phaseEnter.append("text")
+          .text(function(d) { return d.data.name; })
+          .attr("class", "arcLabel")
+          .attr("transform", arcTextTransform)
+          .attr("dy", ".35em")
+          .style("text-anchor", "middle")
+          .style("fill", "white")
+          .style("stroke", "none")
+          .style("pointer-events", "none");
+
+      // Enter + update
+      var phaseMerge = phaseEnter.merge(phase);
+
+      phaseMerge.select("path")
+          .style("stroke", "black")
+          .attr("d", arc);
+
+      phaseMerge.select("text")
+          .style("fill", "black")
+          .attr("transform", arcTextTransform)
+
+      // Exit
+      phase.exit().remove();
+    }
+
+    function drawSpecies() {
+      // Set to upper half of pie layout
+      pie .startAngle(3 * Math.PI / 2)
+          .endAngle(Math.PI / 2);
+
+      // Bind species data
+      var species = svg.select(".arcs").selectAll(".species")
+          .data(pie(data.species));
+
+      // Enter
+      var speciesEnter = species.enter().append("g")
+          .attr("class", "species")
+          .on("click", function(d) {
+            dispatcher.call("selectSpecies", this, "Species: " + d.data.name);
+          })
+          .on("mouseover", function() {
+            d3.select(this).select("path")
+                .style("stroke-width", 2);
+
+            d3.select(this).select("text")
+                .style("font-weight", "bold");
+          })
+          .on("mouseout", function() {
+            d3.select(this).select("path")
+                .style("stroke-width", null);
+
+            d3.select(this).select("text")
+                .style("font-weight", null);
+          });
+
+      speciesEnter.append("path")
+          .style("fill", "white")
+          .style("stroke", "white")
+          .attr("d", arc);
+
+      speciesEnter.append("text")
+          .text(function(d) { return d.data.name; })
+          .attr("class", "arcLabel")
+          .attr("transform", arcTextTransform)
+          .attr("dy", ".35em")
+          .style("text-anchor", "middle")
+          .style("fill", "white")
+          .style("stroke", "none")
+          .style("pointer-events", "none");
+
+      // Enter + update
+      var speciesMerge = speciesEnter.merge(species);
+
+      speciesMerge.select("path")
+          .style("stroke", "black")
+          .attr("d", arc);
+
+      speciesMerge.select("text")
+          .style("fill", "black")
+          .attr("transform", arcTextTransform)
+
+      // Exit
+      species.exit().remove();
+    }
+
+    function arcTextTransform(d) {
+      var angle = ((d.startAngle + d.endAngle) / 2 * 180 / Math.PI - 90);
+
+      return "translate(" + arc.centroid(d) + ")" +
+             "rotate(" + (angle > 0 ? -90 : 90) + ")" +
+             "rotate(" + angle + ")";
+    }
+
+    function drawChords() {
+
+    }
   }
 
   chordMap.update = function() {
-    draw(layout());
-  };
-
-  chordMap.destroy = function(element) {
-    // Any clean-up would go here
-    // in this example there is nothing to do
+    doLayout();
+    draw();
   };
 
   chordMap.width = function(_) {
@@ -168,11 +280,17 @@ module.exports = function() {
   };
 
   // Initialize event callbacks
-  chordMap.selectSpecies = function(_) {
-    console.log("ChordMap, " + _);
+  chordMap.selectPhase = function(_) {
+    console.log(_);
     return chordMap;
-  }
+  };
 
+  chordMap.selectSpecies = function(_) {
+    console.log(_);
+    return chordMap;
+  };
+
+  chordMap.on("selectPhase", chordMap.selectPhase);
   chordMap.on("selectSpecies", chordMap.selectSpecies);
 
   return chordMap;
