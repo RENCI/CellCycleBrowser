@@ -4,6 +4,7 @@ import os
 
 from django.http import HttpResponse
 from django.template import loader
+from django.conf import settings
 
 from libsbml import *
 
@@ -12,7 +13,8 @@ from libsbml import *
 def index(request):
     template = loader.get_template('cc_core/index.html')
     context = {
-    'text_to_display': "This Cell Cycle Browser allows exploration and simulation of the human cell cycle.",
+        'SITE_TITLE': settings.SITE_TITLE,
+        'text_to_display': "This Cell Cycle Browser allows exploration and simulation of the human cell cycle.",
     }
     return HttpResponse(template.render(context, request))
 
@@ -43,6 +45,8 @@ def extract_phases(request, filename):
         model_file = os.path.join('data/model/input', filename.encode("utf-8"))
         reader = SBMLReader()
         document = reader.readSBMLFromFile(model_file)
+        if document.getNumErrors() > 0:
+            raise Exception("readSBMLFromFile() exception: " + document.printErrors())
         model = document.getModel()
         species_id_to_names = {}
         species = model.getListOfSpecies()
@@ -95,6 +99,8 @@ def extract_species(request, filename):
         model_file = os.path.join('data/model/input', filename.encode("utf-8"))
         reader = SBMLReader()
         document = reader.readSBMLFromFile(model_file)
+        if document.getNumErrors() > 0:
+            raise Exception("readSBMLFromFile() exception: " + document.printErrors())
         model = document.getModel()
         species = model.getListOfSpecies()
         species_list = []
@@ -108,6 +114,73 @@ def extract_species(request, filename):
         jsondump = json.dumps(return_object)
         response = HttpResponse(jsondump, content_type='text/json')
         out_file_name = os.path.splitext(filename)[0] + "_species.json"
+        response['Content-Disposition'] = 'attachment; filename="' + out_file_name + '"'
+        return response
+    except Exception as ex:
+        return_object['error'] = ex.message
+        jsondump = json.dumps(return_object)
+        response = HttpResponse(jsondump, content_type='text/json')
+        response['Content-Disposition'] = 'attachment; filename=error.json'
+        return response
+
+
+def extract_parameters(request, filename):
+    """
+    extract parameters from the model file and return parameters as downloadable JSON file
+    :param request: a request in the form of /phases/<model_file_name>
+    :param filename: the model file name
+    :return: Downloadable JSON file that contain parameters
+    """
+
+    return_object = {}
+    try:
+        model_file = os.path.join('data/model/input', filename.encode("utf-8"))
+        reader = SBMLReader()
+        document = reader.readSBMLFromFile(model_file)
+        if document.getNumErrors() > 0:
+            raise Exception("readSBMLFromFile() exception: " + document.printErrors())
+        model = document.getModel()
+        species_id_to_names = {}
+        species = model.getListOfSpecies()
+        for sp in species:
+            name = sp.getName()
+            id = sp.getId()
+            species_id_to_names[id] = name
+        paras = model.getListOfParameters()
+        paras_list = []
+        for para in paras:
+            paras_dict = {}
+            paras_dict['name'] = para.getName()
+            paras_dict['value'] = para.getValue()
+            paras_list.append(paras_dict)
+
+        reactions = model.getListOfReactions()
+        for react in reactions:
+            react_dict = {}
+            reactant = react.getListOfReactants().get(0)
+            if reactant:
+                react_species = species_id_to_names[reactant.getSpecies()]
+            else:
+                react_species = "null"
+            react_dict['reactant'] = react_species
+            product = react.getListOfProducts().get(0)
+            if product:
+                product_species = species_id_to_names[product.getSpecies()]
+            else:
+                product_species = "null"
+            react_dict['product'] = product_species
+            kl = react.getKineticLaw()
+            if kl:
+                param_list = kl.getListOfParameters()
+                if param_list:
+                    react_dict['name'] = param_list[0].getName()
+                    react_dict['value'] = param_list[0].getValue()
+            paras_list.append(react_dict)
+
+        return_object['parameters'] = paras_list
+        jsondump = json.dumps(return_object)
+        response = HttpResponse(jsondump, content_type='text/json')
+        out_file_name = os.path.splitext(filename)[0] + "_parameters.json"
         response['Content-Disposition'] = 'attachment; filename="' + out_file_name + '"'
         return response
     except Exception as ex:
