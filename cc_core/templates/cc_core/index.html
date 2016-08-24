@@ -23,6 +23,14 @@
   <a id="btn-download-phases" type="button" class="btn btn-default" href="/phases/u2os_53bp1_pcna.xml">Download phases</a>
   <a id="btn-download-species" type="button" class="btn btn-default" href="/species/u2os_53bp1_pcna.xml">Download species</a>
   <a id="btn-download-parameters" type="button" class="btn btn-default" href="/parameters/u2os_53bp1_pcna.xml">Download parameters</a>
+  <form action="/runmodel/u2os_53bp1_pcna.xml" method="post" style="float: right">
+      {% csrf_token %}
+      <span id ="model-run">
+          Trajectories:<input type="text" class="margin_left" name="trajectories" id="tragectories" value="1">
+          End time:<input type="text" class="margin_left" name="end" id="end" value="100">
+          <button id="btn-run-model" type="submit" class="btn btn-default margin_left">Run Simulation</button>
+      </span>
+  </form>
   <div id="app"></div>
   <script type="text/javascript" src="{% static 'cc_core/js/index_bundle.js' %}"></script>
 </body>

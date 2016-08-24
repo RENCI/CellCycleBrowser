@@ -11,3 +11,13 @@ li a {
 	background-image: -webkit-linear-gradient(#fcfcfc, #eee);
 	background-image: linear-gradient(#fcfcfc, #eee);
 }
+
+#model-run {
+	border: 1px solid #909090;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+.margin_left {
+    margin-left: 10px;
+}

@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^species/(?P<filename>[A-z0-9_.]+)$', views.extract_species, name='extract_species'),
     url(r'^parameters/(?P<filename>[A-z0-9_.]+)$', views.extract_parameters, name='extract_parameters'),
     url(r'^get_profile_list/$',views.get_profile_list, name='get_profile_list'),
+    url(r'^runmodel/(?P<filename>[A-z0-9_.]+)$', views.run_model, name='run_model'),
 ]

@@ -3,12 +3,12 @@ import json
 import os
 from collections import OrderedDict
 
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from django.template import loader
 from django.conf import settings
 
 from libsbml import *
-
+import stochpy
 
 # Create your views here.
 def index(request):
@@ -218,3 +218,30 @@ def get_profile_list(request):
         jsondump,
         content_type="application/json"
     )
+
+
+def run_model(request, filename, *args, **kwargs):
+    num_traj = 1
+    traj = request.POST['trajectories']
+    if traj:
+        num_traj = int(traj)
+    num_end = 100
+    end = request.POST['end']
+    if end:
+        num_end = int(end)
+
+    smod = stochpy.SSA(IsInteractive=False)
+    smod.Model(filename, 'data/model/input')
+    return_object = {}
+    return_object['model_file'] = str(smod.model_file)
+    return_object['sim_method'] = str(smod.sim_method)
+    return_object['model_dir'] = str(smod.model_dir)
+    return_object['trajectories'] = num_traj
+    return_object['end'] = end
+    smod.DoStochSim(mode="time", trajectories=num_traj, end=num_end)
+    smod.PlotSpeciesTimeSeries()
+    plot_output_fname = os.path.splitext(filename)[0] + "_SpeciesTimeSeriesPlot.pdf"
+    stochpy.plt.savefig(plot_output_fname)
+    response = FileResponse(open(plot_output_fname, 'rb'), content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="' + plot_output_fname + '"'
+    return response
