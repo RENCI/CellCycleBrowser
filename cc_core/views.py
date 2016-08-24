@@ -1,6 +1,7 @@
 import csv
 import json
 import os
+from collections import OrderedDict
 
 from django.http import HttpResponse
 from django.template import loader
@@ -140,12 +141,12 @@ def extract_parameters(request, filename):
         if document.getNumErrors() > 0:
             raise Exception("readSBMLFromFile() exception: " + document.printErrors())
         model = document.getModel()
-        species_id_to_names = {}
+        id_to_names = {}
         species = model.getListOfSpecies()
         for sp in species:
             name = sp.getName()
             id = sp.getId()
-            species_id_to_names[id] = name
+            id_to_names[id] = name
         paras = model.getListOfParameters()
         paras_list = []
         for para in paras:
@@ -153,19 +154,20 @@ def extract_parameters(request, filename):
             paras_dict['name'] = para.getName()
             paras_dict['value'] = para.getValue()
             paras_list.append(paras_dict)
+            id_to_names[para.getId()] = paras_dict['name']
 
         reactions = model.getListOfReactions()
         for react in reactions:
-            react_dict = {}
+            react_dict = OrderedDict()
             reactant = react.getListOfReactants().get(0)
             if reactant:
-                react_species = species_id_to_names[reactant.getSpecies()]
+                react_species = id_to_names[reactant.getSpecies()]
             else:
                 react_species = "null"
             react_dict['reactant'] = react_species
             product = react.getListOfProducts().get(0)
             if product:
-                product_species = species_id_to_names[product.getSpecies()]
+                product_species = id_to_names[product.getSpecies()]
             else:
                 product_species = "null"
             react_dict['product'] = product_species
@@ -175,6 +177,13 @@ def extract_parameters(request, filename):
                 if param_list:
                     react_dict['name'] = param_list[0].getName()
                     react_dict['value'] = param_list[0].getValue()
+                    pid = param_list[0].getId()
+                    formula = kl.getFormula()
+                    if formula:
+                        for key, value in id_to_names.items():
+                            formula = formula.replace(key, value)
+                        formula = formula.replace(pid, react_dict['name'])
+                        react_dict['formula'] = formula
             paras_list.append(react_dict)
 
         return_object['parameters'] = paras_list
