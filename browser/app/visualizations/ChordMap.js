@@ -1,4 +1,5 @@
 var d3 = require("d3");
+var d3ScaleChromatic = require("d3-scale-chromatic");
 
 module.exports = function() {
       // Size
@@ -109,7 +110,7 @@ module.exports = function() {
     // issue with margins. Need to look into this.
     var radius = Math.min(width, height) / 2 - 20;
     var arc = d3.arc()
-        .cornerRadius(5)
+        .cornerRadius(3)
         .outerRadius(radius)
         .innerRadius(radius - 40);
 
@@ -119,140 +120,159 @@ module.exports = function() {
       .select("g")
         .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
 
-    drawPhases();
-    drawSpecies();
-    drawChords();
+    // Draw phases and species as arcs
+    drawArcs(data.phases, -Math.PI / 2, Math.PI / 2, "phase", "selectPhase");
+    drawArcs(data.species, 3 * Math.PI / 2, Math.PI / 2, "species", "selectSpecies");
 
-    function drawPhases() {
-      // Set to upper half of pie layout
-      pie .startAngle(-Math.PI / 2)
-          .endAngle(Math.PI / 2);
+    // Draw chords between phases and species
+    drawChords("phase", data.speciesPhaseMatrix);
 
-      // Bind phase data
-      var phase = svg.select(".arcs").selectAll(".phase")
-          .data(pie(data.phases));
+    function drawArcs(arcData, startAngle, endAngle, className, eventType) {
+        // Set pie layout
+        pie .startAngle(startAngle)
+            .endAngle(endAngle);
 
-      // Enter
-      var phaseEnter = phase.enter().append("g")
-          .attr("class", "phase")
-          .on("click", function(d) {
-            dispatcher.call("selectPhase", this, "Phase: " + d.data.name);
-          })
-          .on("mouseover", function() {
-            d3.select(this).select("path")
-                .style("stroke-width", 2);
+        // Bind arc data
+        var arcGroup = svg.select(".arcs").selectAll("." + className)
+            .data(pie(arcData));
 
-            d3.select(this).select("text")
-                .style("font-weight", "bold");
-          })
-          .on("mouseout", function() {
-            d3.select(this).select("path")
-                .style("stroke-width", null);
+        // Enter
+        var arcGroupEnter = arcGroup.enter().append("g")
+            .attr("class", className)
+            .on("click", function(d) {
+              dispatcher.call(eventType, this, "Select: " + d.data.name);
+            })
+            .on("mouseover", function() {
+              d3.select(this).select("path")
+                  .style("stroke-width", 2);
 
-            d3.select(this).select("text")
-                .style("font-weight", null);
-          });
+              d3.select(this).select("text")
+                  .style("font-weight", "bold");
+            })
+            .on("mouseout", function() {
+              d3.select(this).select("path")
+                  .style("stroke-width", null);
 
-      phaseEnter.append("path")
-          .attr("d", arc)
-          .style("fill", "white")
-          .style("stroke", "white");
+              d3.select(this).select("text")
+                  .style("font-weight", null);
+            });
 
-      phaseEnter.append("text")
-          .text(function(d) { return d.data.name; })
-          .attr("class", "arcLabel")
-          .attr("transform", arcTextTransform)
-          .attr("dy", ".35em")
-          .style("text-anchor", "middle")
-          .style("fill", "white")
-          .style("stroke", "none")
-          .style("pointer-events", "none");
+        arcGroupEnter.append("path")
+            .attr("d", arc)
+            .style("fill", "white")
+            .style("stroke", "white");
 
-      // Enter + update
-      var phaseMerge = phaseEnter.merge(phase);
+        arcGroupEnter.append("text")
+            .text(function(d) { return d.data.name; })
+            .attr("class", "arcLabel")
+            .attr("transform", textTransform)
+            .attr("dy", ".35em")
+            .style("text-anchor", "middle")
+            .style("fill", "white")
+            .style("stroke", "none")
+            .style("pointer-events", "none");
 
-      phaseMerge.select("path")
-          .style("stroke", "black")
-          .attr("d", arc);
+        // Enter + update
+        var arcGroupMerge = arcGroupEnter.merge(arcGroup);
 
-      phaseMerge.select("text")
-          .style("fill", "black")
-          .attr("transform", arcTextTransform)
+        arcGroupMerge.select("path")
+            .style("stroke", "black")
+            .attr("d", arc);
 
-      // Exit
-      phase.exit().remove();
+        arcGroupMerge.select("text")
+            .style("fill", "black")
+            .attr("transform", textTransform)
+
+        // Exit
+        arcGroup.exit().remove();
+
+        function textTransform(d) {
+          var angle = midAngle(d.startAngle, d.endAngle);
+
+          return "translate(" + arc.centroid(d) + ")" +
+                 "rotate(" + (angle > 0 ? -90 : 90) + ")" +
+                 "rotate(" + angle + ")";
+        }
     }
 
-    function drawSpecies() {
-      // Set to upper half of pie layout
-      pie .startAngle(3 * Math.PI / 2)
-          .endAngle(Math.PI / 2);
+    function drawChords(targetClass, matrix) {
+      // XXX: Magic numbers
+      var w = 0.1,
+          radius = Math.min(width, height) / 2 - 60;
 
-      // Bind species data
-      var species = svg.select(".arcs").selectAll(".species")
-          .data(pie(data.species));
+      var arcs = svg.select(".arcs");
 
-      // Enter
-      var speciesEnter = species.enter().append("g")
-          .attr("class", "species")
-          .on("click", function(d) {
-            dispatcher.call("selectSpecies", this, "Species: " + d.data.name);
-          })
-          .on("mouseover", function() {
-            d3.select(this).select("path")
-                .style("stroke-width", 2);
+      var sourceData = arcs.selectAll(".species").data().map(endPoint),
+          targetData = arcs.selectAll("." + targetClass).data().map(endPoint);
 
-            d3.select(this).select("text")
-                .style("font-weight", "bold");
-          })
-          .on("mouseout", function() {
-            d3.select(this).select("path")
-                .style("stroke-width", null);
+      // Create chord data
+      var chords = [];
+      sourceData.forEach(function(d, i) {
+        targetData.forEach(function(e, j) {
+          var source = {
+            startAngle: d.angle - w,
+            endAngle: d.angle + w
+          };
 
-            d3.select(this).select("text")
-                .style("font-weight", null);
+          var target = {
+            startAngle: e.angle - w,
+            endAngle: e.angle + w
+          };
+
+          chords.push({
+            source: source,
+            target: target,
+            value: matrix[i][j]
           });
+        })
+      });
 
-      speciesEnter.append("path")
+      chords.sort(function(a, b) {
+        return d3.descending(Math.abs(a.value), Math.abs(b.value));
+      });
+
+      console.log(chords);
+
+      var opacityScale = d3.scaleLinear()
+          .domain([0, 1])
+          .range([0, 1]);
+
+      var colorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
+          .domain([1, -1]);
+
+      // Bind data
+      var ribbon = svg.select(".ribbons").selectAll("path")
+          .data(chords);
+
+      // Enter + update
+      ribbon.enter().append("path")
+          .attr("d", d3.ribbon().radius(radius))
           .style("fill", "white")
           .style("stroke", "white")
-          .attr("d", arc);
-
-      speciesEnter.append("text")
-          .text(function(d) { return d.data.name; })
-          .attr("class", "arcLabel")
-          .attr("transform", arcTextTransform)
-          .attr("dy", ".35em")
-          .style("text-anchor", "middle")
-          .style("fill", "white")
-          .style("stroke", "none")
-          .style("pointer-events", "none");
-
-      // Enter + update
-      var speciesMerge = speciesEnter.merge(species);
-
-      speciesMerge.select("path")
+        .merge(ribbon)
+          .attr("d", d3.ribbon().radius(radius))
+          .style("fill", function(d) {
+            return colorScale(d.value);
+          })
           .style("stroke", "black")
-          .attr("d", arc);
+          .style("fill-opacity", function(d) {
+            return opacityScale(Math.abs(d.value));
+          })
+          .style("stroke-opacity", function(d) {
+            return opacityScale(Math.abs(d.value));
+          });
 
-      speciesMerge.select("text")
-          .style("fill", "black")
-          .attr("transform", arcTextTransform)
+      ribbon.exit().remove();
 
-      // Exit
-      species.exit().remove();
+      function endPoint(d) {
+        return {
+          angle: (d.startAngle + d.endAngle) / 2
+        };
+      }
     }
 
-    function arcTextTransform(d) {
-      var angle = ((d.startAngle + d.endAngle) / 2 * 180 / Math.PI - 90);
-
-      return "translate(" + arc.centroid(d) + ")" +
-             "rotate(" + (angle > 0 ? -90 : 90) + ")" +
-             "rotate(" + angle + ")";
-    }
-
-    function drawChords() {
-
+    function midAngle(start, end) {
+      return (start + end) / 2 * 180 / Math.PI - 90;
     }
   }
 
