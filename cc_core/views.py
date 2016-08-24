@@ -240,8 +240,9 @@ def run_model(request, filename, *args, **kwargs):
     return_object['end'] = end
     smod.DoStochSim(mode="time", trajectories=num_traj, end=num_end)
     smod.PlotSpeciesTimeSeries()
-    plot_output_fname = os.path.splitext(filename)[0] + "_SpeciesTimeSeriesPlot.pdf"
-    stochpy.plt.savefig(plot_output_fname)
-    response = FileResponse(open(plot_output_fname, 'rb'), content_type='application/pdf')
+    plot_output_fname = os.path.splitext(filename)[0] + "_SpeciesTimeSeriesPlot_" + traj + "_" + end + ".pdf"
+    plot_output_path_fname = 'data/model/output/' + plot_output_fname
+    stochpy.plt.savefig(plot_output_path_fname)
+    response = FileResponse(open(plot_output_path_fname, 'rb'), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="' + plot_output_fname + '"'
     return response
