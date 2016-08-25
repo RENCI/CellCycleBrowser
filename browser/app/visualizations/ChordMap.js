@@ -8,6 +8,7 @@ module.exports = function() {
 
       // Data
       data,
+      currentPhase = null,
 
       // Start with empty selection
       svg = d3.select(),
@@ -40,63 +41,8 @@ module.exports = function() {
       g.append("g")
           .attr("class", "arcs");
 
-      doLayout();
       draw();
     });
-  }
-
-  function doLayout() {
-/*
-
-    // Construct mn x mn matrix
-    var n = data.species.length;
-    var m = data.phases.length;
-    matrix = zero2D(n + m, n + m);
-
-    console.log(data.speciesPhaseMatrix);
-    console.log(matrix);
-
-    data.speciesPhaseMatrix.forEach(function(d, i) {
-      d.forEach(function(e, j) {
-        matrix[i][n + j] = matrix[n + j][i] = Math.abs(e);
-      });
-    });
-
-    console.log(data.speciesPhaseMatrix);
-    console.log(matrix);
-
-    function zero2D(rows, cols) {
-      var array = [], row = [];
-      while (cols--) row.push(0);
-      while (rows--) array.push(row.slice());
-      return array;
-    }
-
-    var outerRadius = Math.min(width, height) * 0.5 - 40,
-        innerRadius = outerRadius * 0.9;
-
-    var chord = d3.chord()
-        .padAngle(0.05)
-        .sortSubgroups(d3.descending);
-
-    var arc = d3.arc()
-        .innerRadius(innerRadius)
-        .outerRadius(outerRadius);
-
-    var ribbon = d3.ribbon()
-        .radius(innerRadius);
-
-    var color = d3.scaleOrdinal()
-        .domain(d3.range(matrix.length))
-        .range(["#000000", "#FFDD89", "#957244", "#F26223", "#446"]);
-
-    return {
-      chord: chord,
-      arc: arc,
-      ribbon: ribbon,
-      color: color
-    };
-*/
   }
 
   function draw() {
@@ -139,22 +85,32 @@ module.exports = function() {
         // Enter
         var arcGroupEnter = arcGroup.enter().append("g")
             .attr("class", className)
-            .on("click", function(d) {
+            .on("click", function(d, i) {
+              if (className === "phase") {
+                currentPhase = d;
+
+                svg.selectAll(".phase").call(highlightArc, false);
+                d3.select(this).call(highlightArc, true);
+
+                drawChords("species", data.speciesMatrices[i]);
+              }
+              else {
+                currentPhase = null;
+
+                svg.selectAll(".phase").call(highlightArc, false);
+
+                drawChords("species", []);
+              }
+
               dispatcher.call(eventType, this, "Select: " + d.data.name);
             })
             .on("mouseover", function() {
-              d3.select(this).select("path")
-                  .style("stroke-width", 2);
-
-              d3.select(this).select("text")
-                  .style("font-weight", "bold");
+              d3.select(this).call(highlightArc, true);
             })
-            .on("mouseout", function() {
-              d3.select(this).select("path")
-                  .style("stroke-width", null);
-
-              d3.select(this).select("text")
-                  .style("font-weight", null);
+            .on("mouseout", function(d) {
+              if (d !== currentPhase) {
+                d3.select(this).call(highlightArc, false);
+              }
             });
 
         arcGroupEnter.append("path")
@@ -176,6 +132,7 @@ module.exports = function() {
         var arcGroupMerge = arcGroupEnter.merge(arcGroup);
 
         arcGroupMerge.select("path")
+            .style("fill", "#eee")
             .style("stroke", "black")
             .attr("d", arc);
 
@@ -193,11 +150,19 @@ module.exports = function() {
                  "rotate(" + (angle > 0 ? -90 : 90) + ")" +
                  "rotate(" + angle + ")";
         }
+
+        function highlightArc(selection, highlight) {
+          selection.select("path")
+              .style("stroke-width", highlight ? 2 : null);
+
+          selection.select("text")
+              .style("font-weigth", highlight ? "bold" : null);
+        }
     }
 
     function drawChords(targetClass, matrix) {
       // XXX: Magic numbers
-      var w = 0.1,
+      var chordWidth = 0.2,
           radius = Math.min(width, height) / 2 - 60;
 
       var arcs = svg.select(".arcs");
@@ -205,27 +170,35 @@ module.exports = function() {
       var sourceData = arcs.selectAll(".species").data().map(endPoint),
           targetData = arcs.selectAll("." + targetClass).data().map(endPoint);
 
+      var widthScale = d3.scaleLinear()
+          .domain([0, 1])
+          .range([0, chordWidth]);
+
       // Create chord data
       var chords = [];
-      sourceData.forEach(function(d, i) {
-        targetData.forEach(function(e, j) {
-          var source = {
-            startAngle: d.angle - w,
-            endAngle: d.angle + w
-          };
+      if (matrix.length > 0) {
+        sourceData.forEach(function(d, i) {
+          targetData.forEach(function(e, j) {
+            var w = widthScale(Math.abs(matrix[i][j]));
 
-          var target = {
-            startAngle: e.angle - w,
-            endAngle: e.angle + w
-          };
+            var source = {
+              startAngle: d.angle - w,
+              endAngle: d.angle + w
+            };
 
-          chords.push({
-            source: source,
-            target: target,
-            value: matrix[i][j]
-          });
-        })
-      });
+            var target = {
+              startAngle: e.angle - w,
+              endAngle: e.angle + w
+            };
+
+            chords.push({
+              source: source,
+              target: target,
+              value: matrix[i][j]
+            });
+          })
+        });
+      }
 
       chords.sort(function(a, b) {
         return d3.descending(Math.abs(a.value), Math.abs(b.value));
@@ -237,15 +210,19 @@ module.exports = function() {
           .domain([0, 1])
           .range([0, 1]);
 
-      var colorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
-          .domain([1, -1]);
+//      var colorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
+//          .domain([1, -1]);
+      var colorScale = d3.scaleThreshold()
+          .domain([0])
+          .range(["0571b0", "#ca0020"]);
 
       // Bind data
-      var ribbon = svg.select(".ribbons").selectAll("path")
+      var ribbon = svg.select(".ribbons").selectAll("." + targetClass)
           .data(chords);
 
       // Enter + update
       ribbon.enter().append("path")
+          .attr("class", targetClass)
           .attr("d", d3.ribbon().radius(radius))
           .style("fill", "white")
           .style("stroke", "white")
