@@ -11,6 +11,7 @@ var featureList = [];
 var featureKey = "";
 
 function getFeatureList(cellData) {
+  if (!cellData.species) return [];
   if (cellData.species.length === 0) return [];
 
   return cellData.species[0].cells[0].features.map(function (feature) {
