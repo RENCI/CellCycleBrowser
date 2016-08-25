@@ -39,6 +39,53 @@ var models = [
     ],
     speciesPhaseMatrix: [
       [-0.3, 0, -0.1],
+      [0, 0, 0]
+    ],
+    speciesMatrices: [
+      [
+        [0, 0],
+        [0, 0]
+      ],
+      [
+        [0, 0],
+        [0, 0]
+      ],
+      [
+        [0, 0],
+        [0, 0]
+      ]
+    ]
+  },
+  {
+    name: "Test Data",
+    description: "Test data created by embellishing U2OS data",
+    species: [
+      {
+        name: "53BP1",
+        min: 0,
+        max: 5,
+        value: 5
+      },
+      {
+        name: "PCNA",
+        min: 0,
+        max: 2,
+        value: 2
+      }
+    ],
+    phases: [
+      {
+        name: "G1"
+      },
+      {
+        name: "S"
+      },
+      {
+        name: "G2"
+      }
+    ],
+    speciesPhaseMatrix: [
+      [-0.3, 0, -0.1],
       [0, 0.6, 0.1]
     ],
     speciesMatrices: [

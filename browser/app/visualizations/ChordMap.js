@@ -72,6 +72,7 @@ module.exports = function() {
 
     // Draw chords between phases and species
     drawChords("phase", data.speciesPhaseMatrix);
+    drawChords("species", []);
 
     function drawArcs(arcData, startAngle, endAngle, className, eventType) {
         // Set pie layout
@@ -203,8 +204,6 @@ module.exports = function() {
       chords.sort(function(a, b) {
         return d3.descending(Math.abs(a.value), Math.abs(b.value));
       });
-
-      console.log(chords);
 
       var opacityScale = d3.scaleLinear()
           .domain([0, 1])
