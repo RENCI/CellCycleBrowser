@@ -36,7 +36,7 @@ module.exports = function() {
 
       // Groups for layout
       g.append("g")
-          .attr("class", "ribbons");
+          .attr("class", "chords");
 
       g.append("g")
           .attr("class", "arcs");
@@ -90,8 +90,16 @@ module.exports = function() {
               if (className === "phase") {
                 currentPhase = d;
 
-                svg.selectAll(".phase").call(highlightArc, false);
-                d3.select(this).call(highlightArc, true);
+                svg.select(".arcs").selectAll(".phase")
+                    .call(highlightArc, false);
+
+                d3.select(this)
+                    .call(highlightArc, true);
+
+                svg.select(".chords").selectAll(".phase")
+                    .style("visibility", function(e) {
+                      return e.target.data === d.data ? "visible" : "hidden";
+                    });
 
                 drawChords("species", data.speciesMatrices[i]);
               }
@@ -99,6 +107,9 @@ module.exports = function() {
                 currentPhase = null;
 
                 svg.selectAll(".phase").call(highlightArc, false);
+
+                svg.select(".chords").selectAll(".phase")
+                    .style("visibility", "visible");
 
                 drawChords("species", []);
               }
@@ -133,7 +144,7 @@ module.exports = function() {
         var arcGroupMerge = arcGroupEnter.merge(arcGroup);
 
         arcGroupMerge.select("path")
-            .style("fill", "#eee")
+            .style("fill", className === "phase" ? "#bbb" : "#eee")
             .style("stroke", "black")
             .attr("d", arc);
 
@@ -168,8 +179,11 @@ module.exports = function() {
 
       var arcs = svg.select(".arcs");
 
-      var sourceData = arcs.selectAll(".species").data().map(endPoint),
-          targetData = arcs.selectAll("." + targetClass).data().map(endPoint);
+      var sources = arcs.selectAll(".species").data(),
+          targets = arcs.selectAll("." + targetClass).data()
+
+      var sourceData = sources.map(endPoint),
+          targetData = targets.map(endPoint);
 
       var widthScale = d3.scaleLinear()
           .domain([0, 1])
@@ -180,22 +194,30 @@ module.exports = function() {
       if (matrix.length > 0) {
         sourceData.forEach(function(d, i) {
           targetData.forEach(function(e, j) {
-            var w = widthScale(Math.abs(matrix[i][j]));
+            // Get value for this pair
+            var v = matrix[i][j];
+
+            // Return if zero value
+            if (v === 0) return;
+
+            var w = widthScale(Math.abs(v));
 
             var source = {
               startAngle: d.angle - w,
-              endAngle: d.angle + w
+              endAngle: d.angle + w,
+              data: sources[i].data
             };
 
             var target = {
               startAngle: e.angle - w,
-              endAngle: e.angle + w
+              endAngle: e.angle + w,
+              data: targets[j].data
             };
 
             chords.push({
               source: source,
               target: target,
-              value: matrix[i][j]
+              value: v
             });
           })
         });
@@ -205,18 +227,11 @@ module.exports = function() {
         return d3.descending(Math.abs(a.value), Math.abs(b.value));
       });
 
-      var opacityScale = d3.scaleLinear()
-          .domain([0, 1])
-          .range([0, 1]);
-
-//      var colorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
-//          .domain([1, -1]);
-      var colorScale = d3.scaleThreshold()
-          .domain([0])
-          .range(["0571b0", "#ca0020"]);
+      var colorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
+          .domain([1, -1]);
 
       // Bind data
-      var ribbon = svg.select(".ribbons").selectAll("." + targetClass)
+      var ribbon = svg.select(".chords").selectAll("." + targetClass)
           .data(chords);
 
       // Enter + update
@@ -230,13 +245,7 @@ module.exports = function() {
           .style("fill", function(d) {
             return colorScale(d.value);
           })
-          .style("stroke", "black")
-          .style("fill-opacity", function(d) {
-            return opacityScale(Math.abs(d.value));
-          })
-          .style("stroke-opacity", function(d) {
-            return opacityScale(Math.abs(d.value));
-          });
+          .style("stroke", "#333");
 
       ribbon.exit().remove();
 

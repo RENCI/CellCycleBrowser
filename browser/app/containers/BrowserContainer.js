@@ -35,6 +35,8 @@ function getStateFromAlignmentStore() {
 }
 
 // Enable bootstrap tooltips
+// XXX: This will enable all on the page, should perhaps use selector within
+// this element
 function tooltips() {
   $('[data-toggle="tooltip"]').tooltip({
     container: "body",
