@@ -240,6 +240,26 @@ module.exports = function() {
           .attr("d", d3.ribbon().radius(radius))
           .style("fill", "white")
           .style("stroke", "white")
+          .on("mouseover", function(d) {
+            console.log(d3.select(this).node());
+            console.log(d);
+
+            var node = d3.select(this).node();
+            var mid = node.getPointAtLength(node.getTotalLength() / 2);
+
+            console.log(mid);
+
+            svg.append("text")
+                .text(d.value)
+                .attr("class", "ribbonLabel")
+                .attr("x", mid.x)
+                .attr("y", mid.y)
+                .style("fill", "black")
+                .style("stroke", "none");
+          })
+        .on("mouseout", function(d) {
+          svg.select(".ribbonLabel").remove();
+        })
         .merge(ribbon)
           .attr("d", d3.ribbon().radius(radius))
           .style("fill", function(d) {
