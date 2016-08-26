@@ -1,5 +1,6 @@
 var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
+var ribbonArrow = require("./ribbonArrow/ribbonArrow");
 
 module.exports = function() {
       // Size
@@ -239,7 +240,7 @@ module.exports = function() {
           .attr("class", targetClass);
 
       ribbonEnter.append("path")
-          .attr("d", d3.ribbon().radius(radius))
+          .attr("d", ribbonArrow().radius(radius))
           .style("fill", "white")
           .style("stroke", "white")
           .on("mouseover", function(d) {
@@ -274,7 +275,7 @@ module.exports = function() {
       var ribbonMerge = ribbonEnter.merge(ribbon);
 
       ribbonMerge.select("path")
-          .attr("d", d3.ribbon().radius(radius))
+          .attr("d", ribbonArrow().radius(radius))
           .style("fill", function(d) {
             return colorScale(d.value);
           })
