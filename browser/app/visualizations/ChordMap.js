@@ -235,38 +235,65 @@ module.exports = function() {
           .data(chords);
 
       // Enter + update
-      ribbon.enter().append("path")
-          .attr("class", targetClass)
+      var ribbonEnter = ribbon.enter().append("g")
+          .attr("class", targetClass);
+
+      ribbonEnter.append("path")
           .attr("d", d3.ribbon().radius(radius))
           .style("fill", "white")
           .style("stroke", "white")
           .on("mouseover", function(d) {
-            console.log(d3.select(this).node());
-            console.log(d);
+            var mid = d3.select(this).node().nextSibling;
 
-            var node = d3.select(this).node();
-            var mid = node.getPointAtLength(node.getTotalLength() / 2);
-
-            console.log(mid);
-
-            svg.append("text")
-                .text(d.value)
-                .attr("class", "ribbonLabel")
-                .attr("x", mid.x)
-                .attr("y", mid.y)
-                .style("fill", "black")
-                .style("stroke", "none");
+            $(mid).tooltip({
+              container: "body",
+              placement: "auto top",
+              animation: false,
+              trigger: "manual",
+            })
+            .tooltip('fixTitle')
+            .tooltip("show");
           })
         .on("mouseout", function(d) {
-          svg.select(".ribbonLabel").remove();
-        })
-        .merge(ribbon)
+          var mid = d3.select(this).node().nextSibling;
+
+          $(mid).tooltip('hide');
+        });
+
+      ribbonEnter.append("g")
+          .attr("transform", function() {
+            var ribbon = d3.select(this).node().previousSibling,
+                mid = ribbon.getPointAtLength(ribbon.getTotalLength() / 4);
+
+            return "translate(" + mid.x + "," + mid.y + ")";
+          })
+          .attr("data-toggle", "tooltip")
+          .attr("title", function(d) {
+            return d.value;
+          });
+
+      // Enter + update
+      var ribbonMerge = ribbonEnter.merge(ribbon);
+
+      ribbonMerge.select("path")
           .attr("d", d3.ribbon().radius(radius))
           .style("fill", function(d) {
             return colorScale(d.value);
           })
           .style("stroke", "#333");
 
+      ribbonMerge.select("g")
+          .attr("transform", function() {
+            var ribbon = d3.select(this).node().previousSibling,
+                mid = ribbon.getPointAtLength(ribbon.getTotalLength() / 4);
+
+            return "translate(" + mid.x + "," + mid.y + ")";
+          })
+          .attr("title", function(d) {
+            return d.value;
+          });
+
+      // Exit
       ribbon.exit().remove();
 
       function endPoint(d) {

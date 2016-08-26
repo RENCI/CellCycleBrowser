@@ -35,10 +35,10 @@ function getStateFromAlignmentStore() {
 }
 
 // Enable bootstrap tooltips
-// XXX: This will enable all on the page, should perhaps use selector within
+// XXX: This will search the entire page, should perhaps use selector within
 // this element
 function tooltips() {
-  $('[data-toggle="tooltip"]').tooltip({
+  $(".cell").tooltip({
     container: "body",
     placement: "auto top",
     animation: false
