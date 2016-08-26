@@ -268,9 +268,7 @@ module.exports = function() {
             return "translate(" + mid.x + "," + mid.y + ")";
           })
           .attr("data-toggle", "tooltip")
-          .attr("title", function(d) {
-            return d.value;
-          });
+          .attr("title", titleText);
 
       // Enter + update
       var ribbonMerge = ribbonEnter.merge(ribbon);
@@ -289,9 +287,7 @@ module.exports = function() {
 
             return "translate(" + mid.x + "," + mid.y + ")";
           })
-          .attr("title", function(d) {
-            return d.value;
-          });
+          .attr("title", titleText);
 
       // Exit
       ribbon.exit().remove();
@@ -300,6 +296,11 @@ module.exports = function() {
         return {
           angle: (d.startAngle + d.endAngle) / 2
         };
+      }
+
+      function titleText(d) {
+        return d.source.data.name + " -> " +
+               d.target.data.name + ": " + d.value;
       }
     }
 
