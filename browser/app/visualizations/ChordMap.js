@@ -11,6 +11,11 @@ module.exports = function() {
       data,
       currentPhase = null,
 
+      // Layout
+      arrow = ribbonArrow()
+          .arrowHeight(1)
+          .arrowWidth(1.25),
+
       // Start with empty selection
       svg = d3.select(),
 
@@ -151,7 +156,7 @@ module.exports = function() {
 
         arcGroupMerge.select("text")
             .style("fill", "black")
-            .attr("transform", textTransform)
+            .attr("transform", textTransform);
 
         // Exit
         arcGroup.exit().remove();
@@ -195,32 +200,69 @@ module.exports = function() {
       if (matrix.length > 0) {
         sourceData.forEach(function(d, i) {
           targetData.forEach(function(e, j) {
-            // Get value for this pair
-            var v = matrix[i][j];
+            if (targetClass === "species") {
+              // Get value for this pair
+              var v = matrix[i][j];
 
-            // Return if zero value
-            if (v === 0) return;
+              // Return if zero value
+              if (v === 0) return;
 
-            var w = widthScale(Math.abs(v));
+              var w = widthScale(Math.abs(v));
 
-            var source = {
-              startAngle: d.angle - w,
-              endAngle: d.angle + w,
-              data: sources[i].data
-            };
+              var source = {
+                startAngle: d.angle,
+                endAngle: d.angle + 2 * w,
+                leftArrow: false,
+                rightArrow: false,
+                data: sources[i].data
+              };
 
-            var target = {
-              startAngle: e.angle - w,
-              endAngle: e.angle + w,
-              data: targets[j].data
-            };
+              var target = {
+                startAngle: e.angle - 2 * w,
+                endAngle: e.angle,
+                leftArrow: true,
+                rightArrow: false,
+                data: targets[j].data
+              };
 
-            chords.push({
-              source: source,
-              target: target,
-              value: v
-            });
-          })
+              chords.push({
+                source: source,
+                target: target,
+                value: v
+              });
+            }
+            else {
+              // Get value for this pair
+              var v = matrix[i][j];
+
+              // Return if zero value
+              if (v === 0) return;
+
+              var w = widthScale(Math.abs(v));
+
+              var source = {
+                startAngle: d.angle - w,
+                endAngle: d.angle + w,
+                leftArrow: false,
+                rightArrow: false,
+                data: sources[i].data
+              };
+
+              var target = {
+                startAngle: e.angle - w,
+                endAngle: e.angle + w,
+                leftArrow: true,
+                rightArrow: true,
+                data: targets[j].data
+              };
+
+              chords.push({
+                source: source,
+                target: target,
+                value: v
+              });
+            }
+          });
         });
       }
 
@@ -240,7 +282,7 @@ module.exports = function() {
           .attr("class", targetClass);
 
       ribbonEnter.append("path")
-          .attr("d", ribbonArrow().radius(radius))
+          .attr("d", arrow.radius(radius))
           .style("fill", "white")
           .style("stroke", "white")
           .on("mouseover", function(d) {
@@ -275,7 +317,7 @@ module.exports = function() {
       var ribbonMerge = ribbonEnter.merge(ribbon);
 
       ribbonMerge.select("path")
-          .attr("d", ribbonArrow().radius(radius))
+          .attr("d", arrow.radius(radius))
           .style("fill", function(d) {
             return colorScale(d.value);
           })

@@ -28,11 +28,81 @@ function defaultEndAngle(d) {
 }
 
 function defaultArrowHeight(d) {
-  return 1.0;
+  return d.arrowHeight;
 }
 
 function defaultArrowWidth(d) {
-  return 0.5;
+  return d.arrowWidth;
+}
+
+function defaultLeftArrow(d) {
+  return d.leftArrow;
+}
+
+function defaultRightArrow(d) {
+  return d.rightArrow;
+}
+
+function arrow(r, a0, a1, left, right) {
+  var aDiff = Math.abs(a0 - a1),
+      aMid = (a0 + a1) / 2,
+      w = r * aDiff,
+      ar = r - w * ah,
+      x = aDiff * aw - aDiff;
+      points = [];
+
+  if (left) {
+    points.push({
+      x: ar * cos(a0),
+      y: ar * sin(a0),
+    });
+
+    points.push({
+      x: ar * cos(a0 - x),
+      y: ar * sin(a0 - x)
+    });
+
+    if (right) {
+      points.push({
+        x: r * cos(aMid),
+        y: r * sin(aMid)
+      });
+
+      points.push({
+        x: ar * cos(a1 + x),
+        y: ar * sin(a1 + x)
+      });
+
+      points.push({
+        x: ar * cos(a1),
+        y: ar * sin(a1),
+      });
+    }
+    else {
+      points.push({
+        x: r * cos(a1),
+        y: r * sin(a1),
+      });
+    }
+  }
+  else {
+    points.push({
+      x: r * cos(a0),
+      y: r * sin(a0)
+    });
+
+    points.push({
+      x: ar * cos(a1 + aDiff * aw / 2),
+      y: ar * sin(a1 + aDiff * aw / 2)
+    });
+
+    points.push({
+      x: ar * cos(a1),
+      y: ar * sin(a1),
+    });
+  }
+
+  return points;
 }
 
 module.exports = function() {
@@ -43,6 +113,8 @@ module.exports = function() {
       endAngle = defaultEndAngle,
       arrowHeight = defaultArrowHeight,
       arrowWidth = defaultArrowWidth,
+      leftArrow = defaultLeftArrow,
+      rightArrow = defaultRightArrow,
       context = null;
 
   function ribbonArrow() {
@@ -57,46 +129,54 @@ module.exports = function() {
         sy0 = sr * sin(sa0),
         tr = +radius.apply(this, (argv[0] = t, argv)),
         ta0 = startAngle.apply(this, argv) - halfPi,
-        ta1 = endAngle.apply(this, argv) - halfPi;
+        ta1 = endAngle.apply(this, argv) - halfPi
+        ah = +arrowHeight.apply(this, argv),
+        aw = +arrowWidth.apply(this, argv),
+        sla = leftArrow.apply(this, (argv[0] = s, argv)),
+        sra = rightArrow.apply(this, (argv[0] = s, argv)),
+        tla = leftArrow.apply(this, (argv[0] = t, argv)),
+        tra = rightArrow.apply(this, (argv[0] = t, argv));
 
     if (!context) context = buffer = path();
 
-    var ah = +arrowHeight.apply(this, (argv[0] = s, argv)),
-        aw = +arrowWidth.apply(this, (argv[0] = s, argv));
-/*
-    var sarrow = arrow(sr, sa0, sa1),
-        tarrow = arrow(tr, ta0, ta1);
+    var sarrow = [];
 
-    function arrow(r, a0, a1) {
-      return {
-        aDiff
-      };
+    // Source arrow or arc
+    if (sla || sra) {
+      sarrow = arrow(sr, sa0, sa1, sla, sra);
+
+      context.moveTo(sarrow[0].x, sarrow[0].y);
+      for (var i = 1; i < sarrow.length; i++) {
+        context.lineTo(sarrow[i].x, sarrow[i].y);
+      }
+    }
+    else {
+      context.moveTo(sx0, sy0);
+      context.arc(0, 0, sr, sa0, sa1);
     }
 
-    {
-      aDiff = Math.abs(sa0 - sa1),
-      w = sr * saDiff,
+    // Curve and target arrow or arc
+    if (tla || tra) {
+      var tarrow = arrow(tr, ta0, ta1, tla, tra);
 
-    };
-*/
-    saMid = (sa0 + sa1) / 2
-    saDiff = Math.abs(sa0 - sa1),
-    sw = sr * saDiff,
-    sarr = sr - sw * ah,
-
-    sx1 = (sr - sw * ah) * cos(sa1 + saDiff * 0.5),
-    sy1 = (sr - sw * ah) * sin(sa1 + saDiff * 0.5),
-    sx2 = (sr - sw * ah) * cos(sa1),
-    sy2 = (sr - sw * ah) * sin(sa1);
-
-    context.moveTo(sr * cos(saMid), sr * sin(saMid));
-    context.lineTo(sx1, sy1)
-    context.lineTo(sx2, sy2);
-    if (sa0 !== ta0 || sa1 !== ta1) { // TODO sr !== tr?
+      context.quadraticCurveTo(0, 0, tarrow[0].x, tarrow[0].y);
+      for (var i = 1; i < tarrow.length; i++) {
+        context.lineTo(tarrow[i].x, tarrow[i].y);
+      }
+    }
+    else {
       context.quadraticCurveTo(0, 0, tr * cos(ta0), tr * sin(ta0));
       context.arc(0, 0, tr, ta0, ta1);
     }
-    context.quadraticCurveTo(0, 0, sx0, sy0);
+
+    // Curve back
+    if (sarrow.length > 0) {
+      context.quadraticCurveTo(0, 0, sarrow[0].x, sarrow[0].y);
+    }
+    else {
+      context.quadraticCurveTo(0, 0, sx0, sy0);
+    }
+
     context.closePath();
 
     if (buffer) return context = null, buffer + "" || null;
@@ -120,6 +200,14 @@ module.exports = function() {
 
   ribbonArrow.arrowWidth = function(_) {
     return arguments.length ? (arrowWidth = typeof _ === "function" ? _ : constant(+_), ribbonArrow) : arrowWidth;
+  };
+
+  ribbonArrow.leftArrow = function(_) {
+    return arguments.length ? (leftArrow = typeof _ === "function" ? _ : constant(_ == true), ribbonArrow) : leftArrow;
+  };
+
+  ribbonArrow.rightArrow = function(_) {
+    return arguments.length ? (rightArrow = typeof _ === "function" ? _ : constant(_ == true), ribbonArrow) : rightArrow;
   };
 
   ribbonArrow.source = function(_) {
