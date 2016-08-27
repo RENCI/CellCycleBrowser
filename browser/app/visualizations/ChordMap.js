@@ -14,7 +14,7 @@ module.exports = function() {
       // Layout
       arrow = ribbonArrow()
           .arrowHeight(1)
-          .arrowWidth(1.25),
+          .arrowWidth(1),
 
       // Start with empty selection
       svg = d3.select(),
@@ -36,16 +36,16 @@ module.exports = function() {
             d3.event.preventDefault();
           });
 
-      svg = svg.merge(svgEnter);
-
       var g = svgEnter.append("g");
 
       // Groups for layout
       g.append("g")
-          .attr("class", "chords");
+          .attr("class", "arcs");
 
       g.append("g")
-          .attr("class", "arcs");
+          .attr("class", "chords");
+
+      svg = svg.merge(svgEnter);
 
       draw();
     });
@@ -221,7 +221,7 @@ module.exports = function() {
                 startAngle: e.angle - 2 * w,
                 endAngle: e.angle,
                 leftArrow: true,
-                rightArrow: false,
+                rightArrow: true,
                 data: targets[j].data
               };
 
@@ -286,9 +286,32 @@ module.exports = function() {
           .style("fill", "white")
           .style("stroke", "white")
           .on("mouseover", function(d) {
-            var mid = d3.select(this).node().nextSibling;
+/*
+            // XXX: How to turn off mouse events on tooltip?
+            var m = d3.mouse(this.parentNode);
 
-            $(mid).tooltip({
+            var tooltip = d3.select(this.parentNode).append("g")
+              .attr("transform", "translate(" + m[0] + "," + m[1] + ")")
+              .attr("data-toggle", "tooltip")
+              .attr("title", titleText(d))
+              .attr("pointer-events", "none")
+              .node();
+
+            $(tooltip).tooltip({
+              container: "body",
+              placement: "auto top",
+              animation: false,
+              trigger: "manual",
+            })
+            .tooltip("show")
+            .css({"pointer-events": "none"});
+*/
+            d3.select(this)
+                .style("stroke-width", 2);
+
+            var tool = d3.select(this.parentNode).select(".tooltipPosition").node();
+
+            $(tool).tooltip({
               container: "body",
               placement: "auto top",
               animation: false,
@@ -296,17 +319,52 @@ module.exports = function() {
             })
             .tooltip('fixTitle')
             .tooltip("show");
+
+            //d3.select(this.parentNode).raise();
+            // Sort selection
+            svg.select(".chords").selectAll(".chords > g")
+                .sort(function(a, b) {
+                  var aScore = bScore = 0;
+                  if (a.source.data === d.source.data ||
+                      a.source.data === d.target.data) aScore++;
+                  if (a.target.data === d.source.data ||
+                      a.target.data === d.target.data) aScore++;
+                  if (b.source.data === d.source.data ||
+                      b.source.data === d.target.data) bScore++;
+                  if (b.target.data === d.source.data ||
+                      b.target.data === d.target.data) bScore++;
+
+                  return aScore === bScore ?
+                         d3.descending(Math.abs(a.value, b.value)) :
+                         d3.ascending(aScore, bScore);
+                })
+                .order();
           })
         .on("mouseout", function(d) {
-          var mid = d3.select(this).node().nextSibling;
+/*
+          var tooltip = d3.select(this.parentNode).select("g").remove().node();
 
-          $(mid).tooltip('hide');
+          $(tooltip).tooltip('hide');
+*/
+          d3.select(this).style("stroke-width", null);
+
+          var tool = d3.select(this.parentNode).select(".tooltipPosition").node();
+
+          $(tool).tooltip('hide');
+
+          // Sort selection
+          svg.select(".chords").selectAll(".chords > g")
+              .sort(function(a, b) {
+                return d3.descending(Math.abs(a.value), Math.abs(b.value));
+              })
+              .order();
         });
 
       ribbonEnter.append("g")
+          .attr("class", "tooltipPosition")
           .attr("transform", function() {
             var ribbon = d3.select(this).node().previousSibling,
-                mid = ribbon.getPointAtLength(ribbon.getTotalLength() / 4);
+                mid = ribbon.getPointAtLength(ribbon.getTotalLength() * 0.4);
 
             return "translate(" + mid.x + "," + mid.y + ")";
           })
@@ -323,10 +381,10 @@ module.exports = function() {
           })
           .style("stroke", "#333");
 
-      ribbonMerge.select("g")
+      ribbonMerge.select(".tooltipPosition")
           .attr("transform", function() {
             var ribbon = d3.select(this).node().previousSibling,
-                mid = ribbon.getPointAtLength(ribbon.getTotalLength() / 4);
+                mid = ribbon.getPointAtLength(ribbon.getTotalLength() * 0.4);
 
             return "translate(" + mid.x + "," + mid.y + ")";
           })
@@ -334,6 +392,13 @@ module.exports = function() {
 
       // Exit
       ribbon.exit().remove();
+
+      // Sort selection
+      svg.select(".chords").selectAll(".chords > g")
+          .sort(function(a, b) {
+            return d3.descending(Math.abs(a.value), Math.abs(b.value));
+          })
+          .order();
 
       function endPoint(d) {
         return {

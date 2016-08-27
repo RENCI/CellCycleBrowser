@@ -47,7 +47,9 @@ function arrow(r, a0, a1, left, right) {
   var aDiff = Math.abs(a0 - a1),
       aMid = (a0 + a1) / 2,
       w = r * aDiff,
-      ar = r - w * ah,
+      //ar = r - w * ah,
+ar = r,
+r = r + 10,
       x = aDiff * aw - aDiff;
       points = [];
 
