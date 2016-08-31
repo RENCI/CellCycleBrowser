@@ -1,6 +1,7 @@
 var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
 var ribbonArrow = require("./ribbonArrow/ribbonArrow");
+var ribbonCenterLine = require("./ribbonArrow/ribbonCenterLine");
 
 module.exports = function() {
       // Size
@@ -273,6 +274,10 @@ module.exports = function() {
       var colorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
           .domain([1, -1]);
 
+      arrow.radius(radius);
+
+      var centerLine = ribbonCenterLine().radius(radius);
+
       // Bind data
       var ribbon = svg.select(".chords").selectAll("." + targetClass)
           .data(chords);
@@ -282,7 +287,8 @@ module.exports = function() {
           .attr("class", targetClass);
 
       ribbonEnter.append("path")
-          .attr("d", arrow.radius(radius))
+          .attr("class", "ribbon")
+          .attr("d", arrow)
           .style("fill", "white")
           .style("stroke", "white")
           .on("mouseover", function(d) {
@@ -360,11 +366,34 @@ module.exports = function() {
               .order();
         });
 
+      ribbonEnter.append("path")
+          .attr("class", "centerLine")
+          .attr("d", centerLine)
+          .style("visibility", "hidden")
+          .style("pointer-events", "none");
+/*
+      ribbonEnter.append("g")
+          .attr("id", "arrows")
+        .selectAll("g")
+          .data(d3.range(0.1, 1, 0.1))
+        .enter().append("g")
+          .attr("transform", function(d) {
+            var center = d3.select(this.parentNode.parentNode).select(".centerLine").node(),
+                p = center.getPointAtLength(center.getTotalLength() * d);
+
+            return "translate(" + p.x + "," + p.y + ")";
+          })
+        .append("path")
+          .attr("d", d3.symbol().type(d3.symbolCircle))
+          .style("fill", "none")
+          .style("stroke", "black");
+*/
+
       ribbonEnter.append("g")
           .attr("class", "tooltipPosition")
           .attr("transform", function() {
-            var ribbon = d3.select(this).node().previousSibling,
-                mid = ribbon.getPointAtLength(ribbon.getTotalLength() * 0.4);
+            var center = d3.select(this.parentNode).select(".centerLine").node(),
+                mid = center.getPointAtLength(center.getTotalLength() * 0.5);
 
             return "translate(" + mid.x + "," + mid.y + ")";
           })
@@ -374,17 +403,31 @@ module.exports = function() {
       // Enter + update
       var ribbonMerge = ribbonEnter.merge(ribbon);
 
-      ribbonMerge.select("path")
-          .attr("d", arrow.radius(radius))
+      ribbonMerge.select(".ribbon")
+          .attr("d", arrow)
           .style("fill", function(d) {
             return colorScale(d.value);
           })
           .style("stroke", "#333");
 
+      ribbonMerge.select(".centerLine")
+          .attr("d", centerLine);
+/*
+      ribbonMerge.select(".arrows")
+          .selectAll("g")
+            .attr("transform", function(d) {
+              var center = d3.select(this.parentNode.parentNode).select(".centerLine").node(),
+                  p = center.getPointAtLength(center.getTotalLength() * d);
+
+              return "translate(" + p.x + "," + p.y + ")";
+            })
+          .select("path")
+            .attr("d", d3.symbol().type(d3.symbolCircle));
+*/
       ribbonMerge.select(".tooltipPosition")
           .attr("transform", function() {
-            var ribbon = d3.select(this).node().previousSibling,
-                mid = ribbon.getPointAtLength(ribbon.getTotalLength() * 0.4);
+            var center = d3.select(this.parentNode).select(".centerLine").node(),
+                mid = center.getPointAtLength(center.getTotalLength() * 0.5);
 
             return "translate(" + mid.x + "," + mid.y + ")";
           })
