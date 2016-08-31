@@ -1,6 +1,7 @@
 var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
 var ribbonArrow = require("./ribbonArrow/ribbonArrow");
+var ribbonArrowOverlay = require("./ribbonArrow/ribbonArrowOverlay");
 var ribbonCenterLine = require("./ribbonArrow/ribbonCenterLine");
 
 module.exports = function() {
@@ -10,12 +11,14 @@ module.exports = function() {
 
       // Data
       data,
-      currentPhase = null,
+      currentArc = null,
 
       // Layout
       arrow = ribbonArrow()
           .arrowHeight(1)
           .arrowWidth(1),
+
+      arrowOverlay = ribbonArrowOverlay(),
 
       // Start with empty selection
       svg = d3.select(),
@@ -36,6 +39,12 @@ module.exports = function() {
             // Stop text highlighting
             d3.event.preventDefault();
           });
+
+      svgEnter.append("rect")
+          .attr("width", "100%")
+          .attr("height", "100%")
+          .style("visibility", "hidden")
+          .style("pointer-events", "all");
 
       var g = svgEnter.append("g");
 
@@ -73,6 +82,19 @@ module.exports = function() {
       .select("g")
         .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
 
+    // Set callback for background rect
+    svg.select("rect")
+        .on("click", function() {
+          currentArc = null;
+
+          svg.selectAll(".phase").call(highlightArc, false);
+
+          svg.select(".chords").selectAll(".phase")
+              .style("visibility", "visible");
+
+          drawChords("species", []);
+        })
+
     // Draw phases and species as arcs
     drawArcs(data.phases, -Math.PI / 2, Math.PI / 2, "phase", "selectPhase");
     drawArcs(data.species, 3 * Math.PI / 2, Math.PI / 2, "species", "selectSpecies");
@@ -95,9 +117,9 @@ module.exports = function() {
             .attr("class", className)
             .on("click", function(d, i) {
               if (className === "phase") {
-                currentPhase = d;
+                currentArc = d;
 
-                svg.select(".arcs").selectAll(".phase")
+                svg.select(".arcs").selectAll(".arcs > g")
                     .call(highlightArc, false);
 
                 d3.select(this)
@@ -111,12 +133,18 @@ module.exports = function() {
                 drawChords("species", data.speciesMatrices[i]);
               }
               else {
-                currentPhase = null;
+                currentArc = d;
 
-                svg.selectAll(".phase").call(highlightArc, false);
+                svg.select(".arcs").selectAll(".arcs > g")
+                    .call(highlightArc, false);
+
+                d3.select(this)
+                    .call(highlightArc, true);
 
                 svg.select(".chords").selectAll(".phase")
-                    .style("visibility", "visible");
+                    .style("visibility", function(e) {
+                      return e.source.data === d.data ? "visible" : "hidden";
+                    });
 
                 drawChords("species", []);
               }
@@ -127,7 +155,7 @@ module.exports = function() {
               d3.select(this).call(highlightArc, true);
             })
             .on("mouseout", function(d) {
-              if (d !== currentPhase) {
+              if (d !== currentArc) {
                 d3.select(this).call(highlightArc, false);
               }
             });
@@ -168,14 +196,6 @@ module.exports = function() {
           return "translate(" + arc.centroid(d) + ")" +
                  "rotate(" + (angle > 0 ? -90 : 90) + ")" +
                  "rotate(" + angle + ")";
-        }
-
-        function highlightArc(selection, highlight) {
-          selection.select("path")
-              .style("stroke-width", highlight ? 2 : null);
-
-          selection.select("text")
-              .style("font-weigth", highlight ? "bold" : null);
         }
     }
 
@@ -275,6 +295,7 @@ module.exports = function() {
           .domain([1, -1]);
 
       arrow.radius(radius);
+      arrowOverlay.radius(radius);
 
       var centerLine = ribbonCenterLine().radius(radius);
 
@@ -367,27 +388,16 @@ module.exports = function() {
         });
 
       ribbonEnter.append("path")
+          .attr("class", "ribbonOverlay")
+          .attr("d", arrowOverlay)
+          .style("fill", "white")
+          .style("fill-opacity", 0.2);
+
+      ribbonEnter.append("path")
           .attr("class", "centerLine")
           .attr("d", centerLine)
           .style("visibility", "hidden")
           .style("pointer-events", "none");
-/*
-      ribbonEnter.append("g")
-          .attr("id", "arrows")
-        .selectAll("g")
-          .data(d3.range(0.1, 1, 0.1))
-        .enter().append("g")
-          .attr("transform", function(d) {
-            var center = d3.select(this.parentNode.parentNode).select(".centerLine").node(),
-                p = center.getPointAtLength(center.getTotalLength() * d);
-
-            return "translate(" + p.x + "," + p.y + ")";
-          })
-        .append("path")
-          .attr("d", d3.symbol().type(d3.symbolCircle))
-          .style("fill", "none")
-          .style("stroke", "black");
-*/
 
       ribbonEnter.append("g")
           .attr("class", "tooltipPosition")
@@ -410,20 +420,16 @@ module.exports = function() {
           })
           .style("stroke", "#333");
 
+      ribbonMerge.select(".ribbonOverlay")
+          .attr("d", arrowOverlay)
+          .style("fill", "black");
+          //.style("stroke", "black")
+          //.style("stroke-width", 1)
+          //.style("stroke-opacity", 0.5);
+
       ribbonMerge.select(".centerLine")
           .attr("d", centerLine);
-/*
-      ribbonMerge.select(".arrows")
-          .selectAll("g")
-            .attr("transform", function(d) {
-              var center = d3.select(this.parentNode.parentNode).select(".centerLine").node(),
-                  p = center.getPointAtLength(center.getTotalLength() * d);
 
-              return "translate(" + p.x + "," + p.y + ")";
-            })
-          .select("path")
-            .attr("d", d3.symbol().type(d3.symbolCircle));
-*/
       ribbonMerge.select(".tooltipPosition")
           .attr("transform", function() {
             var center = d3.select(this.parentNode).select(".centerLine").node(),
@@ -457,6 +463,14 @@ module.exports = function() {
 
     function midAngle(start, end) {
       return (start + end) / 2 * 180 / Math.PI - 90;
+    }
+  
+    function highlightArc(selection, highlight) {
+      selection.select("path")
+          .style("stroke-width", highlight ? 2 : null);
+
+      selection.select("text")
+          .style("font-weigth", highlight ? "bold" : null);
     }
   }
 

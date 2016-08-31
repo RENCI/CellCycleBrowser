@@ -49,7 +49,8 @@ function arrow(r, a0, a1, left, right) {
       w = r * aDiff,
       //ar = r - w * ah,
 ar = r,
-r = r + 10,
+//r = r + 10,
+r = r * 1.04,
       x = aDiff * aw - aDiff;
       points = [];
 
