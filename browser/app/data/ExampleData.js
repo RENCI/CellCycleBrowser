@@ -57,8 +57,8 @@ var models = [
     ]
   },
   {
-    name: "Test Data",
-    description: "Test data created by embellishing U2OS data",
+    name: "Test Model",
+    description: "Test model created by embellishing U2OS data",
     species: [
       {
         name: "53BP1",
@@ -100,6 +100,73 @@ var models = [
       [
         [0, -0.2],
         [0.5, 0]
+      ]
+    ]
+  },
+  {
+    name: "Test Model 2",
+    description: "More complicated test model",
+    species: [
+      {
+        name: "53BP1",
+        min: 0,
+        max: 5,
+        value: 5
+      },
+      {
+        name: "PCNA",
+        min: 0,
+        max: 2,
+        value: 2
+      },
+      {
+        name: "Test01",
+        min: 0,
+        max: 2,
+        value: 2
+      },
+      {
+        name: "Test02",
+        min: 0,
+        max: 2,
+        value: 2
+      }
+    ],
+    phases: [
+      {
+        name: "G1"
+      },
+      {
+        name: "S"
+      },
+      {
+        name: "G2"
+      }
+    ],
+    speciesPhaseMatrix: [
+      [-0.3, 0, -0.1],
+      [0, 0.6, 0.1],
+      [0.3, -0.2, 0.4],
+      [0.2, 0, 0],
+    ],
+    speciesMatrices: [
+      [
+        [0, -0.6, 0.3, -0.1],
+        [0.4, 0, 0, 0.2],
+        [0.2, -0.3, 0, 0.2],
+        [0.1, 0.4, 0, 0]
+      ],
+      [
+        [0, 0.7, 0, 0],
+        [-0.4, 0, 0.1, 0.5],
+        [-0.2, 0, 0, -0.3],
+        [0, 0, 0.4, 0]
+      ],
+      [
+        [0, -0.2, 0.4, 0.1],
+        [0.5, 0, 0.1, 0.4],
+        [0.5, 0.2, 0, -0.4],
+        [-0.5, 0, -0.1, 0]
       ]
     ]
   }

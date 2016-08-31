@@ -208,10 +208,10 @@ module.exports = function() {
 
       var sources = arcs.selectAll(".species").data(),
           targets = arcs.selectAll("." + targetClass).data()
-
+/*
       var sourceData = sources.map(endPoint),
           targetData = targets.map(endPoint);
-
+*/
       var widthScale = d3.scaleLinear()
           .domain([0, 1])
           .range([0, chordWidth]);
@@ -219,8 +219,13 @@ module.exports = function() {
       // Create chord data
       var chords = [];
       if (matrix.length > 0) {
-        sourceData.forEach(function(d, i) {
-          targetData.forEach(function(e, j) {
+        sources.forEach(function(d, i) {
+          targets.forEach(function(e, j) {
+            var saDiff = d.endAngle - d.startAngle,
+                taDiff = e.endAngle - e.startAngle,
+                sa = d.startAngle + saDiff * 0.25 + Math.random() * (d.endAngle - d.startAngle) * 0.5,
+                ta = e.startAngle + taDiff * 0.25 + Math.random() * (e.endAngle - e.startAngle) * 0.5;
+
             if (targetClass === "species") {
               // Get value for this pair
               var v = matrix[i][j];
@@ -231,16 +236,16 @@ module.exports = function() {
               var w = widthScale(Math.abs(v));
 
               var source = {
-                startAngle: d.angle,
-                endAngle: d.angle + 2 * w,
+                startAngle: sa,
+                endAngle: sa + 2 * w,
                 leftArrow: false,
                 rightArrow: false,
                 data: sources[i].data
               };
 
               var target = {
-                startAngle: e.angle - 2 * w,
-                endAngle: e.angle,
+                startAngle: ta - 2 * w,
+                endAngle: ta,
                 leftArrow: true,
                 rightArrow: true,
                 data: targets[j].data
@@ -262,16 +267,16 @@ module.exports = function() {
               var w = widthScale(Math.abs(v));
 
               var source = {
-                startAngle: d.angle - w,
-                endAngle: d.angle + w,
+                startAngle: sa - w,
+                endAngle: sa + w,
                 leftArrow: false,
                 rightArrow: false,
                 data: sources[i].data
               };
 
               var target = {
-                startAngle: e.angle - w,
-                endAngle: e.angle + w,
+                startAngle: ta - w,
+                endAngle: ta + w,
                 leftArrow: true,
                 rightArrow: true,
                 data: targets[j].data
@@ -391,7 +396,8 @@ module.exports = function() {
           .attr("class", "ribbonOverlay")
           .attr("d", arrowOverlay)
           .style("fill", "white")
-          .style("fill-opacity", 0.2);
+          .style("fill-opacity", 0.2)
+          .style("pointer-events", "none");
 
       ribbonEnter.append("path")
           .attr("class", "centerLine")
@@ -464,7 +470,7 @@ module.exports = function() {
     function midAngle(start, end) {
       return (start + end) / 2 * 180 / Math.PI - 90;
     }
-  
+
     function highlightArc(selection, highlight) {
       selection.select("path")
           .style("stroke-width", highlight ? 2 : null);
