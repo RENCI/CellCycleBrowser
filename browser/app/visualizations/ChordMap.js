@@ -93,7 +93,7 @@ module.exports = function() {
               .style("visibility", "visible");
 
           drawChords("species", []);
-        })
+        });
 
     // Draw phases and species as arcs
     drawArcs(data.phases, -Math.PI / 2, Math.PI / 2, "phase", "selectPhase");
@@ -207,7 +207,7 @@ module.exports = function() {
       var arcs = svg.select(".arcs");
 
       var sources = arcs.selectAll(".species").data(),
-          targets = arcs.selectAll("." + targetClass).data()
+          targets = arcs.selectAll("." + targetClass).data();
 /*
       var sourceData = sources.map(endPoint),
           targetData = targets.map(endPoint);
@@ -221,10 +221,29 @@ module.exports = function() {
       if (matrix.length > 0) {
         sources.forEach(function(d, i) {
           targets.forEach(function(e, j) {
-            var saDiff = d.endAngle - d.startAngle,
-                taDiff = e.endAngle - e.startAngle,
-                sa = d.startAngle + saDiff * 0.25 + Math.random() * (d.endAngle - d.startAngle) * 0.5,
-                ta = e.startAngle + taDiff * 0.25 + Math.random() * (e.endAngle - e.startAngle) * 0.5;
+            var saDiff = Math.abs(d.endAngle - d.startAngle),
+                taDiff = Math.abs(e.endAngle - e.startAngle),
+                arcData = arcs.selectAll(".arcs > g").data().sort(function(a, b) {
+                  return d3.ascending(a.startAngle, b.startAngle);
+                }),
+                n = arcData.length - 1,
+                saStep = (saDiff - chordWidth * 2 - d.padAngle * 2) / (n - 1),
+                taStep = (taDiff - chordWidth * 2 - e.padAngle * 2) / (n - 1),
+                sIndex = arcData.indexOf(d),
+                tIndex = arcData.indexOf(e);
+
+            function bucket(a, b, n) {
+              return a - b > 0 ? a - b - 1 : n + (a - b);
+            }
+
+            var sBucket = bucket(sIndex, tIndex, n),
+                tBucket = bucket(tIndex, sIndex, n);
+
+            var sa = Math.min(d.startAngle, d.endAngle),
+                ta = Math.min(e.startAngle, e.endAngle);
+
+            sa += chordWidth + d.padAngle + saStep * sBucket,
+            ta += chordWidth + e.padAngle + taStep * tBucket;
 
             if (targetClass === "species") {
               // Get value for this pair
