@@ -10,11 +10,16 @@ from django.conf import settings
 from libsbml import *
 import stochpy
 
+from . import utils
+
 # Create your views here.
 def index(request):
+    profile_data = utils.get_profile_list()
+    model_fname = os.path.basename(profile_data[0]['model'][0]['value'])
     template = loader.get_template('cc_core/index.html')
     context = {
         'SITE_TITLE': settings.SITE_TITLE,
+        'model_input_file_name': model_fname,
         'text_to_display': "This Cell Cycle Browser allows exploration and simulation of the human cell cycle.",
     }
     return HttpResponse(template.render(context, request))
@@ -22,15 +27,21 @@ def index(request):
 
 def serve_data(request, filename):
     data_file = os.path.join('data', filename)
-    fp = open(data_file, 'rb')
-    data = csv.reader(fp)
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="'+filename+'"'
     writer = csv.writer(response)
-    for row in data:
-        writer.writerow(row)
+    with open(data_file, 'rb') as fp:
+        data = csv.reader(fp)
+        for row in data:
+            writer.writerow(row)
     
     return response
+
+
+def serve_config_data(request, filename):
+    config_file = os.path.join('data', 'config', filename)
+    with open(config_file, 'r') as fp:
+        data = json.load(fp)
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def extract_phases(request, filename):
@@ -205,14 +216,8 @@ def get_profile_list(request):
     It is invoked by an AJAX call, so it returns json object that holds data set list
     """
     return_object = {}
-    profile_list = []
-    for i in range(1, 4):
-        dataset_obj = {}
-        dataset_obj['name'] = 'Cell Cycle Profile ' + str(i)
-        dataset_obj['description'] = 'Data and models ' + str(i)
-        dataset_obj['value'] = 'data/PCNA_53BP1_transpose.csv'
-        profile_list.append(dataset_obj)
-    return_object['profilelist'] = profile_list
+    profile_data = utils.get_profile_list()
+    return_object['profilelist'] = profile_data
     jsondump = json.dumps(return_object)
     return HttpResponse(
         jsondump,
