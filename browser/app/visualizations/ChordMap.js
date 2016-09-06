@@ -329,38 +329,14 @@ module.exports = function() {
 
       // Enter + update
       var ribbonEnter = ribbon.enter().append("g")
-          .attr("class", targetClass);
-
-      ribbonEnter.append("path")
-          .attr("class", "ribbon")
-          .attr("d", arrow)
-          .style("fill", "white")
-          .style("stroke", "white")
+          .attr("class", targetClass)
           .on("mouseover", function(d) {
-/*
-            // XXX: How to turn off mouse events on tooltip?
-            var m = d3.mouse(this.parentNode);
-
-            var tooltip = d3.select(this.parentNode).append("g")
-              .attr("transform", "translate(" + m[0] + "," + m[1] + ")")
-              .attr("data-toggle", "tooltip")
-              .attr("title", titleText(d))
-              .attr("pointer-events", "none")
-              .node();
-
-            $(tooltip).tooltip({
-              container: "body",
-              placement: "auto top",
-              animation: false,
-              trigger: "manual",
-            })
-            .tooltip("show")
-            .css({"pointer-events": "none"});
-*/
-            d3.select(this)
+            // Highlight ribbon
+            d3.select(this).select(".ribbon")
                 .style("stroke-width", 2);
 
-            var tool = d3.select(this.parentNode).select(".tooltipPosition").node();
+            // Enable tooltip
+            var tool = d3.select(this).select(".tooltipPosition").node();
 
             $(tool).tooltip({
               container: "body",
@@ -368,10 +344,12 @@ module.exports = function() {
               animation: false,
               trigger: "manual",
             })
-            .tooltip('fixTitle')
+            .tooltip("fixTitle")
             .tooltip("show");
 
-            //d3.select(this.parentNode).raise();
+            // Turn off mouse events for tooltip
+            d3.select(".tooltip").style("pointer-events", "none");
+
             // Sort selection
             svg.select(".chords").selectAll(".chords > g")
                 .sort(function(a, b) {
@@ -392,14 +370,11 @@ module.exports = function() {
                 .order();
           })
         .on("mouseout", function(d) {
-/*
-          var tooltip = d3.select(this.parentNode).select("g").remove().node();
+          // Reset ribbon highlight
+          d3.select(this).select(".ribbon").style("stroke-width", null);
 
-          $(tooltip).tooltip('hide');
-*/
-          d3.select(this).style("stroke-width", null);
-
-          var tool = d3.select(this.parentNode).select(".tooltipPosition").node();
+          // Remove tooltip
+          var tool = d3.select(this).select(".tooltipPosition").node();
 
           $(tool).tooltip('hide');
 
@@ -410,6 +385,12 @@ module.exports = function() {
               })
               .order();
         });
+
+      ribbonEnter.append("path")
+          .attr("class", "ribbon")
+          .attr("d", arrow)
+          .style("fill", "white")
+          .style("stroke", "white");
 
       ribbonEnter.append("path")
           .attr("class", "ribbonOverlay")
