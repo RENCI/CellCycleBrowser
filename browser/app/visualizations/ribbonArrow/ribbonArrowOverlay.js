@@ -8,6 +8,7 @@ var d3 = require("d3");
 var path = d3.path;
 
 function defaultSource(d) {
+  console.log(d);
   return d.source;
 }
 
@@ -27,6 +28,10 @@ function defaultEndAngle(d) {
   return d.endAngle;
 }
 
+function defaultDoubleEnded(d) {
+  return d.doubleEnded;
+}
+
 function curve(p0, p1, p2, t) {
   return [
     (1 - t) * (1 - t) * p0[0] + 2 * (1 - t) * t * p1[0] + t * t * p2[0],
@@ -40,6 +45,7 @@ module.exports = function() {
       radius = defaultRadius,
       startAngle = defaultStartAngle,
       endAngle = defaultEndAngle,
+      doubleEnded = defaultDoubleEnded,
       context = null;
 
   function ribbonArrowOverlay() {
@@ -47,6 +53,7 @@ module.exports = function() {
         argv = slice.call(arguments),
         s = source.apply(this, argv),
         t = target.apply(this, argv),
+        de = doubleEnded.apply(this, argv),
         sr = +radius.apply(this, (argv[0] = s, argv)),
         sa0 = startAngle.apply(this, argv) - halfPi,
         sa4 = endAngle.apply(this, argv) - halfPi,
@@ -90,11 +97,13 @@ module.exports = function() {
 
     var steps = d3.range(0, 1, delta - height / (n + 1));
 
-    steps.forEach(function(d, i) {
-      var p0 = curve([sx2, sy2], [0, 0], [tx2, ty2], d + delta * height),
+    steps.forEach(function(d) {
+      var t = de ? d * 2 - 1 : 1;
+
+      var p0 = curve([sx2, sy2], [0, 0], [tx2, ty2], d + delta * height * t),
           p1 = curve([sx4, sy4], [0, 0], [tx0, ty0], d),
           p2 = curve([sx4, sy4], [0, 0], [tx0, ty0], d + delta * height),
-          p3 = curve([sx2, sy2], [0, 0], [tx2, ty2], d + delta * height * 2),
+          p3 = curve([sx2, sy2], [0, 0], [tx2, ty2], d + delta * height * t + delta * height),
           p4 = curve([sx0, sy0], [0, 0], [tx4, ty4], d + delta * height),
           p5 = curve([sx0, sy0], [0, 0], [tx4, ty4], d);
 
@@ -128,6 +137,10 @@ module.exports = function() {
 
   ribbonArrowOverlay.target = function(_) {
     return arguments.length ? (target = _, ribbonArrowOverlay) : target;
+  };
+
+  ribbonArrowOverlay.doubleEnded = function(_) {
+    return arguments.length ? (doubleEnded = _, ribbonArrowOverlay) : doubleEnded;
   };
 
   ribbonArrowOverlay.context = function(_) {

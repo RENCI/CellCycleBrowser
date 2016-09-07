@@ -40,6 +40,8 @@ module.exports = function() {
             d3.event.preventDefault();
           });
 
+      svgEnter.append("defs");
+
       svgEnter.append("rect")
           .attr("width", "100%")
           .attr("height", "100%")
@@ -87,7 +89,7 @@ module.exports = function() {
         .on("click", function() {
           currentArc = null;
 
-          svg.selectAll(".phase").call(highlightArc, false);
+          svg.selectAll(".arcs > g").call(highlightArc, false);
 
           svg.select(".chords").selectAll(".phase")
               .style("visibility", "visible");
@@ -216,6 +218,9 @@ module.exports = function() {
           .domain([0, 1])
           .range([0, chordWidth]);
 
+      var colorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
+          .domain([1, -1]);
+
       // Create chord data
       var chords = [];
       if (matrix.length > 0) {
@@ -245,7 +250,78 @@ module.exports = function() {
             sa += chordWidth + d.padAngle + saStep * sBucket,
             ta += chordWidth + e.padAngle + taStep * tBucket;
 
-            if (targetClass === "species") {
+            if (targetClass === "species" &&
+                matrix[i][j] !== 0 &&
+                matrix[j][i] !== 0) {
+              if (i >= j) return;
+
+              // Get values for this pair
+              var v1 = matrix[i][j],
+                  v2 = matrix[j][i];
+
+              var w1 = widthScale(Math.abs(v1)),
+                  w2 = widthScale(Math.abs(v2));
+
+              var source = {
+                startAngle: sa - w2,
+                endAngle: sa + w2,
+                leftArrow: true,
+                rightArrow: true,
+                data: sources[i].data
+              };
+
+              var target = {
+                startAngle: ta - w1,
+                endAngle: ta + w1,
+                leftArrow: true,
+                rightArrow: true,
+                data: targets[j].data
+              };
+
+              var chord = {
+                source: source,
+                target: target,
+                doubleEnded: true,
+                value: [v1, v2]
+              };
+
+              chords.push(chord);
+
+              var sx = radius * Math.cos(sa - Math.PI / 2),
+                  sy = radius * Math.sin(sa - Math.PI / 2),
+                  tx = radius * Math.cos(ta - Math.PI / 2),
+                  ty = radius * Math.sin(ta - Math.PI / 2),
+                  x = tx - sx,
+                  y = ty - sy,
+                  length = Math.sqrt(x * x + y * y);
+
+              x /= length,
+              y /= length;
+
+              // XXX: Move below code to operate on array of species-species ribbons
+              var gradient = svg.select("defs").selectAll("#" + gradientId(chord))
+                  .data([chord]);
+
+              var gradientEnter = gradient.enter().append("linearGradient")
+                  .attr("id", gradientId(chord));
+
+              gradientEnter.selectAll("stop")
+                  .data([v2, v1])
+                .enter().append("stop")
+                  .attr("offset", function(d, i) { return i; });
+
+              gradientEnter.merge(gradient)
+                  .attr("x1", 0)
+                  .attr("y1", 0)
+                  .attr("x2", x)
+                  .attr("y2", y)
+                .selectAll("stop")
+                  .data([v2, v1])
+                  .attr("stop-color", function(d) {
+                    return colorScale(d);
+                  });
+
+/*
               // Get value for this pair
               var v = matrix[i][j];
 
@@ -275,6 +351,7 @@ module.exports = function() {
                 target: target,
                 value: v
               });
+*/
             }
             else {
               // Get value for this pair
@@ -304,6 +381,7 @@ module.exports = function() {
               chords.push({
                 source: source,
                 target: target,
+                doubleEnded: false,
                 value: v
               });
             }
@@ -311,12 +389,18 @@ module.exports = function() {
         });
       }
 
-      chords.sort(function(a, b) {
-        return d3.descending(Math.abs(a.value), Math.abs(b.value));
-      });
+      function chordCompare(a, b) {
+        var va = a.value.length ?
+                 (Math.abs(a.value[0]) + Math.abs(a.value[1])) / 2 :
+                 Math.abs(a.value);
+            vb = b.value.length ?
+                 (Math.abs(b.value[0]) + Math.abs(b.value[1])) / 2 :
+                 Math.abs(b.value);
 
-      var colorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
-          .domain([1, -1]);
+        return d3.descending(va, vb);
+      }
+
+      chords.sort(chordCompare);
 
       arrow.radius(radius);
       arrowOverlay.radius(radius);
@@ -343,6 +427,7 @@ module.exports = function() {
               placement: "auto top",
               animation: false,
               trigger: "manual",
+              html: true
             })
             .tooltip("fixTitle")
             .tooltip("show");
@@ -364,7 +449,7 @@ module.exports = function() {
                       b.target.data === d.target.data) bScore++;
 
                   return aScore === bScore ?
-                         d3.descending(Math.abs(a.value, b.value)) :
+                         chordCompare(a, b) :
                          d3.ascending(aScore, bScore);
                 })
                 .order();
@@ -380,9 +465,7 @@ module.exports = function() {
 
           // Sort selection
           svg.select(".chords").selectAll(".chords > g")
-              .sort(function(a, b) {
-                return d3.descending(Math.abs(a.value), Math.abs(b.value));
-              })
+              .sort(chordCompare)
               .order();
         });
 
@@ -422,7 +505,9 @@ module.exports = function() {
       ribbonMerge.select(".ribbon")
           .attr("d", arrow)
           .style("fill", function(d) {
-            return colorScale(d.value);
+            return d.value.length ?
+                   "url(#" + gradientId(d) + ")" :
+                   colorScale(d.value);
           })
           .style("stroke", "#333");
 
@@ -450,9 +535,7 @@ module.exports = function() {
 
       // Sort selection
       svg.select(".chords").selectAll(".chords > g")
-          .sort(function(a, b) {
-            return d3.descending(Math.abs(a.value), Math.abs(b.value));
-          })
+          .sort(chordCompare)
           .order();
 
       function endPoint(d) {
@@ -462,8 +545,22 @@ module.exports = function() {
       }
 
       function titleText(d) {
-        return d.source.data.name + " -> " +
-               d.target.data.name + ": " + d.value;
+        if (d.value.length) {
+          return d.source.data.name + " &#8594 " +
+                 d.target.data.name + ": " + d.value[0] + "<br>" +
+                 d.target.data.name + " &#8594 " +
+                 d.source.data.name + ": " + d.value[1];
+        }
+        else {
+          return d.source.data.name + " &#8594 " +
+                 d.target.data.name + ": " + d.value;
+        }
+      }
+
+      function gradientId(chord) {
+        return "gradient_" +
+               chord.source.data.name + "_" +
+               chord.target.data.name;
       }
     }
 
