@@ -219,6 +219,7 @@ deploy_cc_nodb() {
     start_nginx
     docker exec cellcycle python manage.py collectstatic --no-input
     docker exec cellcycle python manage.py migrate
+    restart_cc
 }
 
 deploy_dev_cc_nodb() {
@@ -232,6 +233,7 @@ deploy_dev_cc_nodb() {
     done
     docker exec cellcycle python manage.py collectstatic --no-input
     docker exec cellcycle python manage.py migrate
+    restart_cc
 }
 
 deploy_dev_cc() {
@@ -246,6 +248,7 @@ deploy_dev_cc() {
     done
     loaddb_cc
     loadmedia_cc
+    restart_cc
 }
 
 deploy_prod_cc() {
@@ -262,6 +265,7 @@ deploy_prod_cc() {
     start_nginx
     loaddb_cc
     loadmedia_cc
+    restart_cc
 }
 
 ### Display usage if exactly one argument is not provided ###
