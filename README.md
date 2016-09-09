@@ -14,6 +14,8 @@
 - ```cd ..``` to get back to the root directory of the source tree, and run command ```./ccctl deploy_dev_nodb``` to build all containers.
 - rebuild index_bundle.js using npm and drop it under ```cc_core/static/cc_core/js``` directory, then run command ```docker exec -ti cellcycle python manage.py collectstatic``` to collect updated index_bundle.js file to static directory that can be served up to the client by Django server.
 - At this point, you should be able to open up your browser to get to Cell Cycle Browser page: http://localhost:8000 from within VM or http://192.168.56.101:8000/ from the host if host-only adaptor is set up in VirtualBox for the linux VM. 
+
+
 ## Useful docker-compose commands to manage docker containers ##
 - ```docker-compose up``` --- bring up all containers
 - ```docker-compose stop``` --- shut down all containers
