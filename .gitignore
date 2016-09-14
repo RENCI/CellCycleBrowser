@@ -8,9 +8,11 @@
 /cellcycle/local_settings.py
 /data
 /cc_core/static/cc_core/js/index_bundle.js
+/cc_core/static/cc_core/js/index.html
 /static
 /log
 /static
+/config/local-env.sh
 celeryd.pid
 docker-compose.yml
 /browser/dist
