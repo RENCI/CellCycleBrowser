@@ -8,7 +8,6 @@ var d3 = require("d3");
 var path = d3.path;
 
 function defaultSource(d) {
-  console.log(d);
   return d.source;
 }
 
