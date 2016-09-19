@@ -2,7 +2,7 @@
 FQDN_OR_IP: localhost
 
 ### Application configuration ###
-CC_PATH: /home/ccbuild/CellCycleBrowser
+CC_PATH: /home/ccbuild/CellCycleBrowser/server
 CC_DATABASE: pg.cc-testing.sql
 CC_MEDIA_FILES: media.cc-testing.tar.gz
 
