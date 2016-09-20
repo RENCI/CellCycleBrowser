@@ -10,7 +10,7 @@ module.exports = {
     "./app/app.js"
   ],
   output: {
-    path: __dirname + "../../cc_core/static/cc_core/js",
+    path: __dirname + "../../server/cc_core/static/cc_core/js",
     filename: "index_bundle.js"
   },
   module: {
