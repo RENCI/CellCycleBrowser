@@ -14,7 +14,7 @@
 /server/config/local-env.sh
 /server/celeryd.pid
 /server/docker-compose.yml
-/browser/dist
-/browser/node_modules
-/browser/data
+/client/dist
+/client/node_modules
+/client/data
 npm-debug*
