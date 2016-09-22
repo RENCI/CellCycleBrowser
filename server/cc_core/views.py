@@ -8,9 +8,9 @@ from django.template import loader
 from django.conf import settings
 
 from libsbml import *
-import stochpy
 
 from . import utils
+from .tasks import run_model_task
 
 # Create your views here.
 def index(request):
@@ -54,7 +54,7 @@ def extract_phases(request, filename):
 
     return_object = {}
     try:
-        model_file = os.path.join('data/model/input', filename.encode("utf-8"))
+        model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
         reader = SBMLReader()
         document = reader.readSBMLFromFile(model_file)
         if document.getNumErrors() > 0:
@@ -108,7 +108,7 @@ def extract_species(request, filename):
 
     return_object = {}
     try:
-        model_file = os.path.join('data/model/input', filename.encode("utf-8"))
+        model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
         reader = SBMLReader()
         document = reader.readSBMLFromFile(model_file)
         if document.getNumErrors() > 0:
@@ -146,7 +146,7 @@ def extract_parameters(request, filename):
 
     return_object = {}
     try:
-        model_file = os.path.join('data/model/input', filename.encode("utf-8"))
+        model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
         reader = SBMLReader()
         document = reader.readSBMLFromFile(model_file)
         if document.getNumErrors() > 0:
@@ -225,27 +225,40 @@ def get_profile_list(request):
     )
 
 
-def run_model(request, filename, *args, **kwargs):
-    num_traj = 1
+def run_model(request, filename):
     traj = request.POST['trajectories']
-    if traj:
-        num_traj = int(traj)
-    num_end = 100
     end = request.POST['end']
-    if end:
-        num_end = int(end)
 
-    plot_output_fname = os.path.splitext(filename)[0] + "_SpeciesTimeSeriesPlot_" \
-                        + traj + "_" + end + ".pdf"
-    plot_output_path_fname = 'data/model/output/' + plot_output_fname
-    # only run simulation if existing simulation output does not exist
-    if not os.path.exists(plot_output_path_fname):
-        smod = stochpy.SSA(IsInteractive=False)
-        smod.Model(filename, 'data/model/input')
-        smod.DoStochSim(mode="time", trajectories=num_traj, end=num_end)
-        smod.PlotSpeciesTimeSeries()
-        stochpy.plt.savefig(plot_output_path_fname)
+    task = run_model_task.apply_async((filename, traj, end), countdown=3)
 
-    response = FileResponse(open(plot_output_path_fname, 'rb'), content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="' + plot_output_fname + '"'
+    context = {
+        'task_id': task.task_id,
+    }
+    template = loader.get_template('cc_core/index.html')
+    return HttpResponse(template.render(context, request))
+
+
+def download_model_result(request, filename):
+    file_full_path = settings.MODEL_OUTPUT_PATH + filename
+    response = FileResponse(open(file_full_path, 'rb'), content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
     return response
+
+
+def check_task_status(request, task_id=None):
+    '''
+    A view function to tell the client if the asynchronous run_model() task is done.
+    Args:
+        request: an ajax request to check for model run status
+    Returns:
+        JSON response to return result from asynchronous task run_model()
+    '''
+    if not task_id:
+        task_id = request.POST.get('task_id')
+    result = run_model_task.AsyncResult(task_id)
+    if result.ready():
+        return HttpResponse(json.dumps({'result': result.get()}),
+                            content_type="application/json")
+    else:
+        return HttpResponse(json.dumps({"result": None}),
+                            content_type="application/json")

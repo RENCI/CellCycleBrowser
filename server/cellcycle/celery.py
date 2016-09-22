@@ -9,7 +9,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cellcycle.settings')
 os.environ.setdefault('PYTHONPATH', '/home/docker/cellcycle/cellcycle')
 
 app = Celery('cellcycle', backend='amqp://')
-#app = Celery('hydroshare')
+
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 

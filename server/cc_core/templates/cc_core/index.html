@@ -24,6 +24,13 @@
   <a id="btn-download-phases" type="button" class="btn btn-default" href="/phases/{{ model_input_file_name }}">Download phases</a>
   <a id="btn-download-species" type="button" class="btn btn-default" href="/species/{{ model_input_file_name }}">Download species</a>
   <a id="btn-download-parameters" type="button" class="btn btn-default" href="/parameters/{{ model_input_file_name }}">Download parameters</a>
+  {%  if task_id %}
+    <input type="hidden" id="task_id" name="task_id" value="{{ task_id }}">
+    <div id='simulation-status-info' class="alert alert-success">
+        Please wait for the model simulation run to finish<span id="loading">.</span>
+    </div>
+  {% endif %}
+
   <form action="/runmodel/{{ model_input_file_name }}" method="post" style="float: right">
       {% csrf_token %}
       <span id ="model-run">

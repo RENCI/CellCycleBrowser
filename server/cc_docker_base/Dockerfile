@@ -5,7 +5,7 @@ MAINTAINER Hong Yi <hongyi@renci.org>
 RUN apt-get update && apt-get install -y apt-transport-https
 COPY docker.list /etc/apt/sources.list.d/
 
-RUN apt-get update && apt-get install -y --force-yes \
+RUN apt-get update && apt-get install --fix-missing -y --force-yes \
     docker-engine \
     sudo \
     libjpeg62-turbo \
@@ -65,6 +65,7 @@ RUN pip install \
     Pillow==3.1.1 \
     psycopg2==2.6.1 \
     pysqlite==2.8.1 \
+    redis==2.10.5 \
     requests==2.9.1 \
     sh==1.11
 
