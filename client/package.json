@@ -5,6 +5,7 @@
   "main": "app/app.js",
   "scripts": {
     "start": "webpack-dev-server",
+    "dev": "webpack -d",
     "production": "webpack -p"
   },
   "author": "David Borland",
