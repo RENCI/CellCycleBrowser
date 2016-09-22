@@ -454,20 +454,20 @@ module.exports = function() {
                 })
                 .order();
           })
-        .on("mouseout", function(d) {
-          // Reset ribbon highlight
-          d3.select(this).select(".ribbon").style("stroke-width", null);
+          .on("mouseout", function(d) {
+            // Reset ribbon highlight
+            d3.select(this).select(".ribbon").style("stroke-width", null);
 
-          // Remove tooltip
-          var tool = d3.select(this).select(".tooltipPosition").node();
+            // Remove tooltip
+            var tool = d3.select(this).select(".tooltipPosition").node();
 
-          $(tool).tooltip('hide');
+            $(tool).tooltip('hide');
 
-          // Sort selection
-          svg.select(".chords").selectAll(".chords > g")
-              .sort(chordCompare)
-              .order();
-        });
+            // Sort selection
+            svg.select(".chords").selectAll(".chords > g")
+                .sort(chordCompare)
+                .order();
+          });
 
       ribbonEnter.append("path")
           .attr("class", "ribbon")

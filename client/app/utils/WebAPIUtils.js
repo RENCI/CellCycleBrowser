@@ -36,7 +36,7 @@ module.exports = {
       type: "POST",
       url: '/get_profile_list/',
       success: function (data) {
-        ServerActionCreators.receiveProfileList(data.profilelist);
+        ServerActionCreators.receiveProfileList(data);
       },
       error: function (xhr, textStatus, errorThrown) {
         console.log(textStatus + ": " + errorThrown);

@@ -7,8 +7,7 @@
 /server/celery
 /server/cellcycle/local_settings.py
 /server/data
-/server/cc_core/static/cc_core/js/index_bundle.js
-/server/cc_core/static/cc_core/js/index.html
+/server/cc_core/static/cc_core/js/index*
 /server/static
 /server/log
 /server/config/local-env.sh

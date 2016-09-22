@@ -33,7 +33,7 @@ def serve_data(request, filename):
         data = csv.reader(fp)
         for row in data:
             writer.writerow(row)
-    
+
     return response
 
 
@@ -215,14 +215,20 @@ def get_profile_list(request):
     """
     It is invoked by an AJAX call, so it returns json object that holds data set list
     """
-    return_object = {}
-    profile_data = utils.get_profile_list()
-    return_object['profilelist'] = profile_data
-    jsondump = json.dumps(return_object)
+    profile_list = utils.get_profile_list()
     return HttpResponse(
-        jsondump,
+        json.dumps(profile_list),
         content_type="application/json"
     )
+
+#    return_object = {}
+#    profile_data = utils.get_profile_list()
+#    return_object['profilelist'] = profile_data
+#    jsondump = json.dumps(return_object)
+#    return HttpResponse(
+#        jsondump,
+#        content_type="application/json"
+#    )
 
 
 def run_model(request, filename):
