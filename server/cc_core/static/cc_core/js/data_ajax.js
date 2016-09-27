@@ -101,4 +101,4 @@ $(document).ready(function () {
     var task_id = $('#task_id').val();
     if (task_id)
         update_simulation_status(task_id);
-}
+});
