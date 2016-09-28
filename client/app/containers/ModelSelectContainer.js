@@ -29,8 +29,8 @@ var ModelSelectContainer = React.createClass ({
   onModelListChange: function () {
     this.setState(getStateFromStore());
   },
-  handleChangeModel: function (e) {
-    ViewActionCreators.selectModel(e.target.value);
+  handleChangeModel: function (value) {
+    ViewActionCreators.selectModel(value);
   },
   render: function () {
     return (

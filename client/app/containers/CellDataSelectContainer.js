@@ -14,8 +14,8 @@ var CellDataSelectContainer = React.createClass ({
   propTypes: {
     cellDataList: PropTypes.arrayOf(React.PropTypes.object).isRequired
   },
-  handleChangeCellData: function (e) {
-    ViewActionCreators.selectCellData(e.target.value);
+  handleChangeCellData: function (value) {
+    ViewActionCreators.selectCellData(value);
   },
   render: function () {
     return (

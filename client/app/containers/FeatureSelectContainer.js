@@ -14,8 +14,8 @@ var FeatureSelectContainer = React.createClass ({
   propTypes: {
     featureList: PropTypes.arrayOf(React.PropTypes.string).isRequired,
   },
-  handleChangeFeature: function (e) {
-    ViewActionCreators.selectFeature(e.target.value);
+  handleChangeFeature: function (value) {
+    ViewActionCreators.selectFeature(value);
   },
   render: function () {
     return (

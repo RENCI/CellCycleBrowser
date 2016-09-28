@@ -34,8 +34,8 @@ var ProfileSelectContainer = React.createClass ({
     // along with data set list?
 //    WebAPIUtils.getProfile(ProfileListStore.getDefaultProfile().value);
   },
-  handleChangeProfile: function (e) {
-    ViewActionCreators.selectProfile(e.target.value);
+  handleChangeProfile: function (value) {
+    ViewActionCreators.selectProfile(value);
   },
   render: function () {
     return (
