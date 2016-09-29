@@ -31,15 +31,15 @@ function request_profile_list_ajax() {
         type: "POST",
         url: '/get_profile_list/',
         success: function (json_response) {
-            ds_res = json_response['profilelist'];
+            ds_res = json_response;
             resultstr = "profile list:\n";
             if (ds_res.length > 0) {
                 $.each(ds_res, function(i, v) {
                     resultstr += "Profile " + (i+1) + '\n';
                     resultstr += "=========================\n"
-                    resultstr += "name: " + v['name'] + '\n';
-                    resultstr += "description: " + v['description'] + '\n';
-                    resultstr += "value: " + v['value'] + '\n';
+                    resultstr += "name: " + v['cell'][0]['name'] + '\n';
+                    resultstr += "description: " + v['cell'][0]['description'] + '\n';
+                    resultstr += "value: " + v['cell'][0]['value'] + '\n';
                     resultstr += "=========================\n"
                 });
             }
