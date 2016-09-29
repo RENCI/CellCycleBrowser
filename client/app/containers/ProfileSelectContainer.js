@@ -1,6 +1,6 @@
 var React = require("react");
 var ProfileListStore = require("../stores/ProfileListStore");
-var ItemSelect = require("../components/ItemSelect");
+var ItemSelectContainer = require("./ItemSelectContainer");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
@@ -39,7 +39,7 @@ var ProfileSelectContainer = React.createClass ({
   },
   render: function () {
     return (
-      <ItemSelect
+      <ItemSelectContainer
         label="Profile: "
         options={this.state.profileList}
         onChange={this.handleChangeProfile} />

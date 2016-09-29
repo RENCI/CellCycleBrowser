@@ -1,11 +1,11 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
-var ItemSelect = require("../components/ItemSelect");
+var ItemSelectContainer = require("./ItemSelectContainer");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
 var featureOption = function (feature, i) {
   return {
-    value: i,
+    value: i.toString(),
     name: feature
   };
 }
@@ -19,7 +19,7 @@ var FeatureSelectContainer = React.createClass ({
   },
   render: function () {
     return (
-      <ItemSelect
+      <ItemSelectContainer
         label="Feature: "
         options={this.props.featureList.map(featureOption)}
         onChange={this.handleChangeFeature} />

@@ -1,11 +1,11 @@
 var React = require("react");
 var ModelStore = require("../stores/ModelStore");
-var ItemSelect = require("../components/ItemSelect");
+var ItemSelectContainer = require("./ItemSelectContainer");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
 function modelOption(model, i) {
   return {
-    value: i,
+    value: i.toString(),
     name: model.name
   };
 }
@@ -30,11 +30,12 @@ var ModelSelectContainer = React.createClass ({
     this.setState(getStateFromStore());
   },
   handleChangeModel: function (value) {
+    console.log(value);
     ViewActionCreators.selectModel(value);
   },
   render: function () {
     return (
-      <ItemSelect
+      <ItemSelectContainer
         label="Model: "
         options={this.state.modelList.map(modelOption)}
         onChange={this.handleChangeModel} />
