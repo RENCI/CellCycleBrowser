@@ -31,19 +31,34 @@ function ItemSelect(props) {
   }
 
   return (
-    <div className="dropdown" style={dropdownStyle}>
+    <div>
       <span className="lead">
         {props.label}
       </span>
-      <button className="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-        {props.activeOption.name + " "}
-        <span className="caret"></span>
-      </button>
-      <ul className="dropdown-menu dropdown-menu-center">
-        {props.options.map(option)}
-      </ul>
+      <div className="btn-group">
+        <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown">
+          {props.activeOption.name} <span className="caret"></span>
+        </button>
+        <ul className="dropdown-menu">
+          {props.options.map(option)}
+        </ul>
+      </div>
     </div>
   );
+
+
+  <div class="btn-group">
+  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Action <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu">
+    <li><a href="#">Action</a></li>
+    <li><a href="#">Another action</a></li>
+    <li><a href="#">Something else here</a></li>
+    <li role="separator" class="divider"></li>
+    <li><a href="#">Separated link</a></li>
+  </ul>
+</div>
 }
 
 ItemSelect.propTypes = {
