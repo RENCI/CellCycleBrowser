@@ -30,7 +30,6 @@ var ModelSelectContainer = React.createClass ({
     this.setState(getStateFromStore());
   },
   handleChangeModel: function (value) {
-    console.log(value);
     ViewActionCreators.selectModel(value);
   },
   render: function () {

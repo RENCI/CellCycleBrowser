@@ -2,11 +2,19 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 var ItemSelect = require("../components/ItemSelect");
 
-function defaultActiveOption() {
-  return {
-    name: "",
-    value: ""
-  };
+function defaultActiveOption(currentActiveOption, options) {
+  if (options.indexOf(currentActiveOption) !== -1) {
+    return currentActiveOption;
+  }
+  else if (options.length > 0) {
+    return options[0];
+  }
+  else {
+    return {
+      name: "",
+      value: ""
+    };
+  }
 }
 
 var ItemSelectContainer = React.createClass ({
@@ -22,7 +30,7 @@ var ItemSelectContainer = React.createClass ({
   },
   getInitialState: function () {
     return {
-      activeOption: defaultActiveOption()
+      activeOption: defaultActiveOption(null, this.props.options)
     };
   },
   handleChange: function (option) {
@@ -33,13 +41,9 @@ var ItemSelectContainer = React.createClass ({
     this.props.onChange(option.value);
   },
   componentWillReceiveProps: function (nextProps) {
-    if (nextProps.options.indexOf(this.state.activeOption) === -1) {
-      this.setState({
-        activeOption: nextProps.options.length > 0 ?
-                      nextProps.options[0] :
-                      defaultActiveOption()
-      });
-    }
+    this.setState({
+      activeOption: defaultActiveOption(this.state.activeOption, nextProps.options)
+    })
   },
   render: function () {
     return (
