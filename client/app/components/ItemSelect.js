@@ -7,6 +7,14 @@ var dropdownStyle = {
 
 function ItemSelect(props) {
   function option(option, i) {
+    var name = option.description ?
+      option.name + ":" :
+      option.name;
+      
+    var desc = option.description ?
+      <span className="small text-muted">{option.description}</span> :
+      null;
+
     return (
       <li
         key={i}>
@@ -15,7 +23,7 @@ function ItemSelect(props) {
           data-name={option.name}
           data-value={option.value}
           onClick={handleClick}>
-            {option.name + (option.description ? ": " + option.description : "")}
+            {name} {desc}
         </a>
       </li>
     );
