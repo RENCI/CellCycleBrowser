@@ -15,7 +15,7 @@ from .tasks import run_model_task
 # Create your views here.
 def index(request):
     profile_data = utils.get_profile_list()
-    model_fname = os.path.basename(profile_data[0]['model'][0]['value'])
+    model_fname = os.path.basename(profile_data[0]['models'][0]['fileName'])
     template = loader.get_template('cc_core/index.html')
     context = {
         'SITE_TITLE': settings.SITE_TITLE,
