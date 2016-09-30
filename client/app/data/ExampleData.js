@@ -218,14 +218,17 @@ d3.csv("data/PCNA_53BP1_transpose.csv", function(error, data) {
   cellData = [
     {
       name: "Cell data 1",
+      description: "Both species",
       species: species.slice()
     },
     {
       name: "Cell data 2",
+      description: "One species",
       species: [species[0]]
     },
     {
       name: "Cell data 3",
+      description: "The other species",
       species: [species[1]]
     }
   ];

@@ -6,7 +6,8 @@ var ViewActionCreators = require("../actions/ViewActionCreators");
 var cellDataOption = function (cellData, i) {
   return {
     value: i.toString(),
-    name: cellData.name
+    name: cellData.name,
+    description: cellData.description
   };
 }
 

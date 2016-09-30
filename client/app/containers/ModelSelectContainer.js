@@ -6,7 +6,8 @@ var ViewActionCreators = require("../actions/ViewActionCreators");
 function modelOption(model, i) {
   return {
     value: i.toString(),
-    name: model.name
+    name: model.name,
+    description: model.description
   };
 }
 
