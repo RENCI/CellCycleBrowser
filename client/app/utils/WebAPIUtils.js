@@ -43,9 +43,9 @@ module.exports = {
       }
     });
   },
-  getProfile: function (profileKey) {
+  getProfile: function (profileIndex) {
     setTimeout(function() {
-      var profile = JSON.parse(localStorage.getItem("profiles"))[profileKey];
+      var profile = JSON.parse(localStorage.getItem("profiles"))[profileIndex];
 
       ServerActionCreators.receiveProfile(profile);
     }, 0);

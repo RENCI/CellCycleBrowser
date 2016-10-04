@@ -3,13 +3,13 @@ var Constants = require("../constants/Constants");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
 module.exports = {
-  selectProfile: function(profileKey) {
+  selectProfile: function(profileIndex) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_PROFILE,
-      profileKey: profileKey
+      profileIndex: profileIndex
     });
 
-    WebAPIUtils.getProfile(profileKey);
+    WebAPIUtils.getProfile(profileIndex);
   },
   selectModel: function(modelKey) {
     AppDispatcher.dispatch({

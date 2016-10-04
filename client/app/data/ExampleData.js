@@ -2,12 +2,6 @@
 var WebAPIUtils = require("../utils/WebAPIUtils");
 var d3 = require("d3");
 
-var profileList = [
-  { value: "profile1", name: "Profile 1" },
-  { value: "profile2", name: "Profile 2" },
-  { value: "profile3", name: "Profile 3" },
-];
-
 var models = [
   {
     name: "U2OS",
@@ -173,7 +167,7 @@ var models = [
 ];
 
 var cellData = [];
-var profiles = {};
+var profiles = [];
 
 d3.csv("data/PCNA_53BP1_transpose.csv", function(error, data) {
   if (error) {
@@ -233,37 +227,35 @@ d3.csv("data/PCNA_53BP1_transpose.csv", function(error, data) {
     }
   ];
 
-  profiles = {
-    profile1: {
+  profiles = [
+    {
       description: "Data and models",
       models: models.slice(),
       cellData: cellData.slice()
     },
-    profile2: {
+    {
       description: "Just data, no models",
       models: [],
       cellData: cellData.slice()
     },
-    profile3: {
+    {
       description: "Just models, no data",
       models: models.slice(),
       cellData: []
     }
-  };
+  ];
 
-  localStorage.setItem("profileList", JSON.stringify(profileList));
   localStorage.setItem("profiles", JSON.stringify(profiles));
 
   // Re-fire event chain once data is loaded
   // TODO: Will need to move elsewhere, probably by firing select event
   // in ProfileSelectContainer
-  WebAPIUtils.getProfile(profileList[0].value);
+  WebAPIUtils.getProfile(0);
 });
 
 module.exports = {
   init: function () {
     localStorage.clear();
-    localStorage.setItem("profileList", JSON.stringify(profileList));
     localStorage.setItem("profiles", JSON.stringify(profiles));
   }
 }

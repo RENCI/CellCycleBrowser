@@ -4,6 +4,14 @@ var ItemSelectContainer = require("./ItemSelectContainer");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
+function profileOption(profile, i) {
+  return {
+    value: i.toString(),
+    name: profile.name,
+    description: profile.description
+  }
+}
+
 function getStateFromStore() {
   return {
     profileList: ProfileListStore.getProfileList()
@@ -41,7 +49,7 @@ var ProfileSelectContainer = React.createClass ({
     return (
       <ItemSelectContainer
         label="Profile: "
-        options={this.state.profileList}
+        options={this.state.profileList.map(profileOption)}
         onChange={this.handleChangeProfile} />
     );
   }
