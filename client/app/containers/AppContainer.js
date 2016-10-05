@@ -16,14 +16,11 @@ function getStateFromStore() {
 var AppContainer = React.createClass({
   getInitialState: function () {
     return {
-      profile: null
+      profile: {}
     };
   },
   componentDidMount: function () {
     ProfileStore.addChangeListener(this.onProfileChange);
-
-    // XXX: Jump-starts everything. May want to move this elsewhere
-    WebAPIUtils.getProfile(0);
   },
   componentWillUnmount: function() {
     ProfileStore.removeChangeListener(this.onProfileChange);
@@ -32,8 +29,6 @@ var AppContainer = React.createClass({
     this.setState(getStateFromStore());
   },
   render: function () {
-    if (!this.state.profile) return null;
-
     return (
       <div>
         <HeaderSection profile={this.state.profile}/>

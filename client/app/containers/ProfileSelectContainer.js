@@ -27,20 +27,15 @@ var ProfileSelectContainer = React.createClass ({
   componentDidMount: function () {
     ProfileListStore.addChangeListener(this.onProfileListChange);
 
-    // Get initial data set list
+    // Get initial data
     WebAPIUtils.getProfileList();
+    WebAPIUtils.getProfile(0);
   },
   componentWillUnmount: function() {
     ProfileListStore.removeChangeListener(this.onProfileListChange);
   },
   onProfileListChange: function () {
     this.setState(getStateFromStore());
-
-    // Load first profile
-    // TODO: Currently called from ExampleData
-    // TODO: Is this the best place for this? Better to have server send
-    // along with data set list?
-//    WebAPIUtils.getProfile(ProfileListStore.getDefaultProfile().value);
   },
   handleChangeProfile: function (value) {
     ViewActionCreators.selectProfile(value);
