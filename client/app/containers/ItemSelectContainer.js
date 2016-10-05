@@ -2,27 +2,8 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 var ItemSelect = require("../components/ItemSelect");
 
-function defaultActiveOption(currentActiveOption, options) {
-  if (currentActiveOption) {
-    // Check for current active option in options
-    for (var i = 0; i < options.length; i++) {
-      if (currentActiveOption.name === options[i].name &&
-          currentActiveOption.description === options[i].description) {
-        return options[i];
-      }
-    }
-  }
-
-  if (options.length > 0) {
-    // Return first option
-    return options[0];
-  }
-  else {
-    return {
-      name: "",
-      value: ""
-    };
-  }
+function defaultOption(options) {
+  return options.length > 0 ? options[0] : { name: "", value: "" };
 }
 
 var ItemSelectContainer = React.createClass ({
@@ -38,7 +19,7 @@ var ItemSelectContainer = React.createClass ({
   },
   getInitialState: function () {
     return {
-      activeOption: defaultActiveOption(null, this.props.options)
+      activeOption: defaultOption(this.props.options)
     };
   },
   handleChange: function (option) {
@@ -49,9 +30,20 @@ var ItemSelectContainer = React.createClass ({
     this.props.onChange(option.value);
   },
   componentWillReceiveProps: function (nextProps) {
+    // Check for valid active option
+    for (var i = 0; i < nextProps.options.length; i++) {
+      var option = nextProps.options[i];
+
+      if (this.state.activeOption.name === option.name &&
+          this.state.activeOption.description === option.description) {
+        return;
+      }
+    }
+
+    // Invalid, so set default
     this.setState({
-      activeOption: defaultActiveOption(this.state.activeOption, nextProps.options)
-    })
+      activeOption: defaultOption(nextProps.options)
+    });
   },
   render: function () {
     return (
