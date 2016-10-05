@@ -7,6 +7,7 @@ var SliderContainer = React.createClass ({
     label: PropTypes.string,
     min: PropTypes.number,
     max: PropTypes.number,
+    steps: PropTypes.number,
     initialValue: PropTypes.number,
     onChange: PropTypes.func.isRequired
   },
@@ -15,7 +16,8 @@ var SliderContainer = React.createClass ({
       label: "",
       min: 0,
       max: 1,
-      initialValue: 0
+      steps: 100,
+      initialValue: 0.5
     };
   },
   getInitialState: function () {
@@ -23,7 +25,9 @@ var SliderContainer = React.createClass ({
       value: this.props.initialValue
     };
   },
-  handleChange: function (value) {
+  handleChange: function (sliderValue) {
+    var value = this.sliderToValue(sliderValue);
+
     this.setState({
       value: value
     });
@@ -40,14 +44,20 @@ var SliderContainer = React.createClass ({
       });
     }
   },
+  sliderToValue: function (sliderValue) {
+    return this.props.min + sliderValue / this.props.steps * (this.props.max - this.props.min);
+  },
+  valueToSlider: function (value) {
+    return (value - this.props.min) / (this.props.max - this.props.min) * this.props.steps;
+  },
   render: function () {
     return (
-        <Slider
-          label={this.props.label}
-          min={this.props.min}
-          max={this.props.max}
-          value={this.state.value}
-          onChange={this.handleChange} />
+      <Slider
+        label={this.props.label}
+        min={0}
+        max={this.props.steps}
+        value={this.valueToSlider(this.state.value)}
+        onChange={this.handleChange} />
     );
   }
 });

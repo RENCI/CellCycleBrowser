@@ -273,7 +273,8 @@ def get_profile(request):
 
 def send_parameter(request):
     data = {}
-    data['response'] = 'hello'
+    data['species'] = request.POST['species']
+    data['value'] = request.POST['value']
 
     return HttpResponse(
         json.dumps(data),

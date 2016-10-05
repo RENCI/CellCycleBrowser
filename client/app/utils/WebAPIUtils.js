@@ -118,7 +118,7 @@ module.exports = {
       url: "/send_parameter/",
       data: data,
       success: function (data) {
-        console.log(data.response)
+        console.log(data)
         //ServerActionCreators.receiveProfile(data);
       },
       error: function (xhr, textStatus, errorThrown) {
