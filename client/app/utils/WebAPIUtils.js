@@ -95,13 +95,7 @@ module.exports = {
     });
   },
   getProfile: function (profileIndex) {
-    $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-          xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-        }
-      }
-    });
+    setupAjax();
 
     $.ajax({
       type: "POST",
@@ -110,6 +104,22 @@ module.exports = {
       success: function (data) {
         if (data.cellData) data.cellData = data.cellData.map(createCellData);
         ServerActionCreators.receiveProfile(data);
+      },
+      error: function (xhr, textStatus, errorThrown) {
+        console.log(textStatus + ": " + errorThrown);
+      }
+    });
+  },
+  sendParameter: function(data) {
+    setupAjax();
+
+    $.ajax({
+      type: "POST",
+      url: "/send_parameter/",
+      data: data,
+      success: function (data) {
+        console.log(data.response)
+        //ServerActionCreators.receiveProfile(data);
       },
       error: function (xhr, textStatus, errorThrown) {
         console.log(textStatus + ": " + errorThrown);

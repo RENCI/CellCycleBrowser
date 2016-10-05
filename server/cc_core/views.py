@@ -271,6 +271,16 @@ def get_profile(request):
     )
 
 
+def send_parameter(request):
+    data = {}
+    data['response'] = 'hello'
+
+    return HttpResponse(
+        json.dumps(data),
+        content_type='application/json'
+    )
+
+
 def run_model(request, filename):
     traj = request.POST['trajectories']
     end = request.POST['end']

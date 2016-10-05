@@ -1,6 +1,7 @@
 var React = require("react");
 var ModelStore = require("../stores/ModelStore");
 var SliderContainer = require("./SliderContainer");
+var WebAPIUtils = require("../utils/WebAPIUtils");
 
 function getStateFromStore() {
   return {
@@ -28,7 +29,10 @@ var ControlsContainer = React.createClass ({
     this.setState(getStateFromStore());
   },
   handleSliderChange: function (data) {
-    console.log(data);
+    WebAPIUtils.sendParameter({
+      species: data.species.name,
+      value: data.value
+    });
   },
   render: function () {
     if (!this.state.model) return null;
