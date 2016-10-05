@@ -33,8 +33,6 @@ var ControlsContainer = React.createClass ({
   render: function () {
     if (!this.state.model) return null;
 
-    console.log(this.state.model.species);
-
     var sliders = this.state.model.species.map(function (species, i) {
       function handleChange(value) {
         this.handleSliderChange({
@@ -57,9 +55,7 @@ var ControlsContainer = React.createClass ({
     return (
       <div>
         <h2>Controls</h2>
-        <div className="form-group">
-          {sliders}
-        </div>
+        {sliders}
       </div>
     );
   }

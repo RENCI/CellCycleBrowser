@@ -6,17 +6,24 @@ function Slider(props) {
     props.onChange(+e.currentTarget.value);
   }
 
+  var sliderName = props.label + "Slider";
+
   return (
-    <div>
-      <span className="lead">
-        {props.label}
-      </span>
-      <input
-        type="range"
-        min={props.min}
-        max={props.max}
-        value={props.value}
-        onChange={handleChange} />
+    <div className="row">
+      <label
+        htmlFor={sliderName}
+        className="col-sm-2 control-label">
+          {props.label}
+      </label>
+      <div className="col-sm-10">
+        <input
+          name={sliderName}
+          type="range"
+          min={props.min}
+          max={props.max}
+          value={props.value}
+          onChange={handleChange} />
+      </div>
     </div>
   );
 }
