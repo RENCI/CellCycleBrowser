@@ -10,7 +10,7 @@ function ItemSelect(props) {
     var name = option.description ?
       option.name + ":" :
       option.name;
-      
+
     var desc = option.description ?
       <span className="small text-muted">{option.description}</span> :
       null;
@@ -31,7 +31,7 @@ function ItemSelect(props) {
 
   function handleClick(e) {
     var data = e.currentTarget.dataset;
-    var option = props.options.filter(function(d) {
+    var option = props.options.filter(function (d) {
       return d.value === data.value;
     })[0];
 
@@ -53,20 +53,6 @@ function ItemSelect(props) {
       </div>
     </div>
   );
-
-
-  <div class="btn-group">
-  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Action <span class="caret"></span>
-  </button>
-  <ul class="dropdown-menu">
-    <li><a href="#">Action</a></li>
-    <li><a href="#">Another action</a></li>
-    <li><a href="#">Something else here</a></li>
-    <li role="separator" class="divider"></li>
-    <li><a href="#">Separated link</a></li>
-  </ul>
-</div>
 }
 
 ItemSelect.propTypes = {
