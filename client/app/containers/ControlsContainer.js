@@ -9,10 +9,6 @@ function getStateFromStore() {
   };
 }
 
-function testSlider(value) {
-  console.log(value);
-}
-
 var ControlsContainer = React.createClass ({
   getInitialState: function () {
     return {
