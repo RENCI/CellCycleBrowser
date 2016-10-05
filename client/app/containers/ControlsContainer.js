@@ -1,13 +1,68 @@
 var React = require("react");
-var Controls = require("../components/Controls");
+var ModelStore = require("../stores/ModelStore");
+var SliderContainer = require("./SliderContainer");
 
-function ControlsContainer(props) {
-  return (
-    <div>
-      <h2>Controls</h2>
-      <Controls />
-    </div>
-  );
+function getStateFromStore() {
+  return {
+    model: ModelStore.getModel()
+  };
 }
+
+function testSlider(value) {
+  console.log(value);
+}
+
+var ControlsContainer = React.createClass ({
+  getInitialState: function () {
+    return {
+      model: null
+    };
+  },
+  componentDidMount: function () {
+    ModelStore.addChangeListener(this.onModelChange);
+  },
+  componentWillUnmount: function () {
+    ModelStore.removeChangeListener(this.onModelChange);
+  },
+  onModelChange: function () {
+    this.setState(getStateFromStore());
+  },
+  handleSliderChange: function (data) {
+    console.log(data);
+  },
+  render: function () {
+    if (!this.state.model) return null;
+
+    console.log(this.state.model.species);
+
+    var sliders = this.state.model.species.map(function (species, i) {
+      function handleChange(value) {
+        this.handleSliderChange({
+          species: species,
+          value: value
+        });
+      };
+
+      return (
+        <SliderContainer
+          key={i}
+          label={species.name}
+          min={species.min}
+          max={species.max}
+          initialValue={species.value}
+          onChange={handleChange.bind(this)} />
+      );
+    }.bind(this));
+
+    return (
+      <div>
+        <h2>Controls</h2>
+        <div className="form-group">
+          {sliders}
+        </div>
+      </div>
+    );
+  }
+});
 
 module.exports = ControlsContainer;

@@ -54,7 +54,7 @@ var BrowserContainer = React.createClass({
       featureList: [],
       featureKey: "",
       alignment: getStateFromAlignmentStore().alignment
-    }
+    };
   },
   componentDidMount: function () {
     CellDataStore.addChangeListener(this.onCellDataChange);
