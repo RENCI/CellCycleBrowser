@@ -6,7 +6,7 @@ var AppContainer = require("./containers/AppContainer");
 var ExampleData = require("./data/ExampleData");
 
 // Load example data into local storage
-ExampleData.init();
+//ExampleData.init();
 
 ReactDOM.render(
   <AppContainer />,

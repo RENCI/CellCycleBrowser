@@ -1,3 +1,4 @@
+/*
 // Use localStorage as a proxy for getting data from a server
 var WebAPIUtils = require("../utils/WebAPIUtils");
 var d3 = require("d3");
@@ -259,3 +260,4 @@ module.exports = {
     localStorage.setItem("profiles", JSON.stringify(profiles));
   }
 }
+*/

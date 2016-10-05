@@ -3,10 +3,18 @@ var PropTypes = React.PropTypes;
 var ItemSelect = require("../components/ItemSelect");
 
 function defaultActiveOption(currentActiveOption, options) {
-  if (options.indexOf(currentActiveOption) !== -1) {
-    return currentActiveOption;
+  if (currentActiveOption) {
+    // Check for current active option in options
+    for (var i = 0; i < options.length; i++) {
+      if (currentActiveOption.name === options[i].name &&
+          currentActiveOption.description === options[i].description) {
+        return options[i];
+      }
+    }
   }
-  else if (options.length > 0) {
+
+  if (options.length > 0) {
+    // Return first option
     return options[0];
   }
   else {

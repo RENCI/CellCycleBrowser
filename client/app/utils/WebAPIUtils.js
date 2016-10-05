@@ -1,4 +1,5 @@
 var ServerActionCreators = require("../actions/ServerActionCreators");
+var d3 = require("d3");
 
 // Get a cookie for cross site request forgery (CSRF) protection
 function getCookie(name) {
@@ -22,8 +23,78 @@ function csrfSafeMethod(method) {
     return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
 }
 
+function setupAjax() {
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+      }
+    }
+  });
+}
+
+function createCellData(d) {
+  var cd = {};
+  cd.name = d.name;
+  cd.description = d.description;
+
+  var data = d3.csvParse(d.csv);
+
+  // Nest by species, cell, and feature
+  var nest = d3.nest()
+      .key(function(d) { return d.Species; })
+      .key(function(d) { return d.Cell; })
+      .key(function(d) { return d.Feature; })
+      .entries(data);
+
+  // Get keys for time samples
+  var timeKeys = data.columns.filter(function(d) {
+    return d !== "Species" && d !== "Cell" && d !== "Feature";
+  });
+
+  // Reformat data
+  var species = nest.map(function(d) {
+    return {
+      name: d.key,
+      cells: d.values.map(function(d) {
+        return {
+          name: d.key,
+          features: d.values.map(function(d) {
+            return {
+              name: d.key,
+              values: timeKeys.map(function(key) {
+                return +d.values[0][key];
+              }).filter(function(d) {
+                return !isNaN(d);
+              })
+            }
+          })
+        }
+      })
+    };
+  });
+
+  cd.species = species;
+
+  return cd;
+}
+
 module.exports = {
   getProfileList: function () {
+    setupAjax();
+
+    $.ajax({
+      type: "POST",
+      url: "/get_profile_list/",
+      success: function (data) {
+        ServerActionCreators.receiveProfileList(data);
+      },
+      error: function (xhr, textStatus, errorThrown) {
+        console.log(textStatus + ": " + errorThrown);
+      }
+    });
+  },
+  getProfile: function (profileIndex) {
     $.ajaxSetup({
       beforeSend: function(xhr, settings) {
         if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
@@ -34,20 +105,15 @@ module.exports = {
 
     $.ajax({
       type: "POST",
-      url: '/get_profile_list/',
+      url: "/get_profile/",
+      data: { index: profileIndex },
       success: function (data) {
-        ServerActionCreators.receiveProfileList(data);
+        if (data.cellData) data.cellData = data.cellData.map(createCellData);
+        ServerActionCreators.receiveProfile(data);
       },
       error: function (xhr, textStatus, errorThrown) {
         console.log(textStatus + ": " + errorThrown);
       }
     });
-  },
-  getProfile: function (profileIndex) {
-    setTimeout(function() {
-      var profile = JSON.parse(localStorage.getItem("profiles"))[profileIndex];
-
-      ServerActionCreators.receiveProfile(profile);
-    }, 0);
   }
 }

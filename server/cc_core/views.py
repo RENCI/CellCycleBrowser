@@ -216,19 +216,59 @@ def get_profile_list(request):
     It is invoked by an AJAX call, so it returns json object that holds data set list
     """
     profile_list = utils.get_profile_list()
+
     return HttpResponse(
         json.dumps(profile_list),
-        content_type="application/json"
+        content_type='application/json'
     )
 
-#    return_object = {}
-#    profile_data = utils.get_profile_list()
-#    return_object['profilelist'] = profile_data
-#    jsondump = json.dumps(return_object)
-#    return HttpResponse(
-#        jsondump,
-#        content_type="application/json"
-#    )
+
+def load_model_json(model):
+    modelData = {}
+    modelData['name'] = model['name']
+    modelData['description'] = model['description']
+
+    with open(model['fileName'], 'r') as json_file:
+        data = json.load(json_file)
+
+    modelData['species'] = data['species']
+    modelData['phases'] = data['phases']
+    modelData['speciesPhaseMatrix'] = data['speciesPhaseMatrix']
+    modelData['speciesMatrices'] = data['speciesMatrices']
+
+    return modelData
+
+
+def load_cell_data_csv(cell_data):
+    with open(cell_data['fileName'], 'r') as csv_file:
+        csv_data = csv_file.read()
+
+    data = {}
+    data['name'] = cell_data['name']
+    data['description'] = cell_data['description']
+    data['csv'] = csv_data
+
+    return data
+
+
+def get_profile(request):
+    index = int(request.POST['index'])
+    profile = utils.get_profile_list()[index]
+
+    data = {}
+    data['name'] = profile['name']
+    data['description'] = profile['description']
+
+    if 'models' in profile:
+        data['models'] = [load_model_json(m) for m in profile['models']]
+
+    if 'cellData' in profile:
+        data['cellData'] = [load_cell_data_csv(d) for d in profile['cellData']]
+
+    return HttpResponse(
+        json.dumps(data),
+        content_type='application/json'
+    )
 
 
 def run_model(request, filename):

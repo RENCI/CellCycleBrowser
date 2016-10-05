@@ -4,6 +4,7 @@ var React = require("react");
 var HeaderSection = require("../components/HeaderSection");
 var MainSection = require("../components/MainSection");
 var ProfileStore = require("../stores/ProfileStore");
+var WebAPIUtils = require("../utils/WebAPIUtils");
 
 // Retrieve the current state from the store
 function getStateFromStore() {
@@ -20,6 +21,9 @@ var AppContainer = React.createClass({
   },
   componentDidMount: function () {
     ProfileStore.addChangeListener(this.onProfileChange);
+
+    // XXX: Jump-starts everything. May want to move this elsewhere
+    WebAPIUtils.getProfile(0);
   },
   componentWillUnmount: function() {
     ProfileStore.removeChangeListener(this.onProfileChange);
