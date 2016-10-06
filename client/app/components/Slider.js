@@ -25,8 +25,6 @@ function Slider(props) {
 
   var sliderName = props.label + "Slider";
 
-  console.log(props);
-
   return (
     <form className="form-horizontal">
       <div className="form-group">
