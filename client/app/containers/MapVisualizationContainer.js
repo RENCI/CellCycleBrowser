@@ -3,7 +3,8 @@ var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
 var ModelStore = require("../stores/ModelStore");
 var d3 = require("d3");
-var ChordMap = require("../visualizations/ChordMap");
+//var ChordMap = require("../visualizations/ChordMap");
+var NetworkMap = require("../visualizations/NetworkMap")
 
 // TODO: Move to css file
 var divStyle = {
@@ -14,7 +15,8 @@ var divStyle = {
   borderRadius: 5
 };
 
-var chordMap = ChordMap();
+//var chordMap = ChordMap();
+var networkMap = NetworkMap();
 
 function getStateFromStore() {
   return {
@@ -33,7 +35,11 @@ var MapVisualizationContainer = React.createClass ({
 
     var size = this.getSize();
 
-    chordMap
+//    chordMap
+//        .width(size.width)
+//        .height(size.width)
+//        .on("selectSpecies", this.handleSelectSpecies);
+    networkMap
         .width(size.width)
         .height(size.width)
         .on("selectSpecies", this.handleSelectSpecies);
@@ -60,9 +66,12 @@ var MapVisualizationContainer = React.createClass ({
   onResize: function () {
     var size = this.getSize();
 
-    chordMap
+//    chordMap
+//        .width(size.width)
+//        .height(size.width);
+    networkMap
         .width(size.width)
-        .height(size.width);
+        .height(size.height);
 
     this.drawMap(this.state.model);
   },
@@ -71,7 +80,9 @@ var MapVisualizationContainer = React.createClass ({
 
     d3.select(this.getNode())
         .datum(model)
-        .call(chordMap);
+//        .call(chordMap);
+        .call(networkMap);
+
   },
   getChartState: function () {
     return {
@@ -90,7 +101,8 @@ var MapVisualizationContainer = React.createClass ({
     }
   },
   handleSelectSpecies: function (species) {
-    chordMap.selectSpecies(species);
+//    chordMap.selectSpecies(species);
+    networkMap.selectSpecies(species);
   },
   render: function () {
     return <div className="Map" style={divStyle}></div>
