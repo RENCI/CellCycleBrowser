@@ -29,11 +29,54 @@ function Slider(props) {
     <form className="form-horizontal">
       <div className="form-group">
         <label
-          htmlFor={sliderName}
-          className="control-label col-sm-2">
+          className="control-label col-sm-2"
+          htmlFor={sliderName}>
             {props.label}
         </label>
-        <div className="col-sm-6">
+        <div className="col-sm-10">
+          <div className="input-group">
+            <span className="input-group-addon">
+              {props.min}
+            </span>
+            <input
+              type="range"
+              className="form-control"
+              name={sliderName}
+              min={0}
+              max={valueToSlider(props.max)}
+              value={valueToSlider(props.value)}
+              onChange={handleSliderChange} />
+            <span className="input-group-addon">
+              {props.max}
+            </span>
+            <input
+              type="number"
+              className="form-control"
+              min={props.min}
+              max={props.max}
+              step={props.step}
+              value={props.value}
+              onChange={handleNumberChange} />
+          </div>
+        </div>
+      </div>
+    </form>
+  );
+/*
+  return (
+    <form className="form-horizontal">
+      <div className="form-group">
+        <label
+          htmlFor={sliderName}
+          className="control-label text-left col-sm-2">
+            {props.label}
+        </label>
+        <div className="col-sm-1 text-right">
+          <p className="form-control-static">
+            {props.min}
+          </p>
+        </div>
+        <div className="col-sm-3">
           <input
             name={sliderName}
             type="range"
@@ -43,7 +86,12 @@ function Slider(props) {
             value={valueToSlider(props.value)}
             onChange={handleSliderChange} />
         </div>
-        <div className="col-sm-4">
+        <div className="col-sm-1 text-left">
+          <p className="form-control-static">
+            {props.max}
+          </p>
+        </div>
+        <div className="col-sm-4 text-left">
           <input
             type="number"
             className="form-control"
@@ -56,6 +104,7 @@ function Slider(props) {
       </div>
     </form>
   );
+*/
 }
 
 Slider.propTypes = {
