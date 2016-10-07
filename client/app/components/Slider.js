@@ -1,6 +1,12 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
+var style = {
+  //verticalAlign: "middle"
+  marginTop: "-5px",
+  marginBottom: "5px"
+};
+
 function Slider(props) {
   function round(value) {
     var factor = 1 / props.step;
