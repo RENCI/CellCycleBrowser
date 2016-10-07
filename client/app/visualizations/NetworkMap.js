@@ -11,7 +11,19 @@ module.exports = function() {
 
       // Data
       data,
+      nodes,
+      links,
       currentPhase = null,
+
+      // Layout
+      pie = d3.pie()
+          .value(function() { return 1; })
+          .padAngle(0.04),
+      force = d3.forceSimulation()
+          .force("link", d3.forceLink())
+          .force("charge", d3.forceManyBody())
+          .force("center", d3.forceCenter(width / 2, height / 2))
+          .on("tick", updateForce),
 
       // Start with empty selection
       svg = d3.select(),
@@ -47,12 +59,33 @@ module.exports = function() {
           .attr("class", "phases");
 
       g.append("g")
+          .attr("class", "links");
+
+      g.append("g")
           .attr("class", "species");
+
 
       svg = svg.merge(svgEnter);
 
+      // Create nodes and links
+      processData();
+
       draw();
     });
+  }
+
+  function updateForce() {
+/*
+    link.select("line")
+        .attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node.attr("transform", function(d) {
+      return "translate(" + d.x + "," + d.y + ")";
+    });
+*/
   }
 
   function draw() {
@@ -62,15 +95,11 @@ module.exports = function() {
       .select("g")
         .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
 
-    // Draw phases
+    // Draw phases and species
     drawPhases();
+    drawSpecies();
 
     function drawPhases() {
-      // Pie layout for arcs
-      var pie = d3.pie()
-          .value(function() { return 1; })
-          .padAngle(0.04);
-
       // Arc generator
       // XXX: SVG width seem to be a bit wider than container width. Maybe an
       // issue with margins. Need to look into this.
@@ -148,6 +177,56 @@ module.exports = function() {
             .style("font-weigth", highlight ? "bold" : null);
       }
     }
+
+    function drawSpecies() {
+      force.nodes(nodes);
+      force.force("link").links(links);
+      force.force("center").x(width / 2).y(width / 2);
+
+      // Set fixed position for phases
+      // XXX: Radius copied from above
+      var radius = Math.min(width, height) / 2 - 20;
+
+      data.phases.forEach(function(d) {
+//        var a =
+//        d.fx = radius * Math.cos(sa - Math.PI / 2),
+//        d.fy = radius * Math.sin(sa - Math.PI / 2),
+      });
+
+      // Bind species data
+      var node = svg.select(".species").selectAll(".species > g")
+          .data(data.species);
+
+      var nodeEnter = node.enter().append("g")
+          .append("circle")
+          .attr("r", 5);
+
+      // Bind link data
+      var link = svg.select(".links").selectAll(".links > line")
+          .data(links);
+
+      var linkEnter = link.enter().append("line");
+    }
+  }
+
+  function processData() {
+    console.log(data);
+
+    nodes = data.phases.concat(data.species);
+
+    links = [];
+    data.speciesPhaseMatrix.forEach(function(d, i) {
+      d.forEach(function(e, j) {
+        links.push({
+          source: data.species[i],
+          target: data.phases[j],
+          value: e
+        });
+      });
+    });
+
+    console.log(nodes);
+    console.log(links);
   }
 
   networkMap.update = function() {
