@@ -25,18 +25,6 @@ def index(request):
     return HttpResponse(template.render(context, request))
 
 
-def serve_data(request, filename):
-    data_file = os.path.join('data', filename)
-    response = HttpResponse(content_type='text/csv')
-    writer = csv.writer(response)
-    with open(data_file, 'rb') as fp:
-        data = csv.reader(fp)
-        for row in data:
-            writer.writerow(row)
-
-    return response
-
-
 def serve_config_data(request, filename):
     config_file = os.path.join('data', 'config', filename)
     with open(config_file, 'r') as fp:
@@ -240,13 +228,21 @@ def load_model_json(model):
 
 
 def load_cell_data_csv(cell_data):
-    with open(cell_data['fileName'], 'r') as csv_file:
-        csv_data = csv_file.read()
-
+    if os.path.isfile(cell_data['fileName']):
+        with open(cell_data['fileName'], 'r') as fp:
+            data_str = fp.read()
+            #data_str = ''
+            #data_lst = []
+            #csv_data = csv.reader(fp)
+            #for row in csv_data:
+            #    for cell in row:
+            #        data_lst.append(cell)
+            # columns = list(zip(*csv_data))
+            #data_str = ','.join(data_lst)
     data = {}
     data['name'] = cell_data['name']
     data['description'] = cell_data['description']
-    data['csv'] = csv_data
+    data['csv'] = data_str
 
     return data
 
