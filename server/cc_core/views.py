@@ -228,17 +228,19 @@ def load_model_json(model):
 
 
 def load_cell_data_csv(cell_data):
+    data_str = ''
     if os.path.isfile(cell_data['fileName']):
         with open(cell_data['fileName'], 'r') as fp:
-            data_str = fp.read()
-            #data_str = ''
-            #data_lst = []
-            #csv_data = csv.reader(fp)
-            #for row in csv_data:
-            #    for cell in row:
-            #        data_lst.append(cell)
-            # columns = list(zip(*csv_data))
-            #data_str = ','.join(data_lst)
+            # data_str = fp.read()
+            # do data transpose before serving csv data to client
+            csv_data = csv.reader(fp)
+            data_list = [row for row in csv_data]
+            for column in zip(*data_list):
+                for y in column:
+                    data_str += y + ','
+                # replace last , with \n
+                data_str = data_str[:-1]
+                data_str += '\n'
     data = {}
     data['name'] = cell_data['name']
     data['description'] = cell_data['description']
