@@ -261,6 +261,44 @@ def extract_info_from_model(filename):
                 [0, 0]
             ]
         ]
+
+        if filename == 'test_model.xml':
+            s_s_matrix = [
+                [
+                    [0, -0.6],
+                    [0.4, 0]
+                ],
+                [
+                    [0, 0.7],
+                    [-0.4, 0]
+                ],
+                [
+                    [0, -0.2],
+                    [0.5, 0]
+                ]
+            ]
+        elif filename == 'test_model2.xml':
+            s_s_matrix = [
+                [
+                    [0, -0.6, 0.3, -0.1],
+                    [0, -0.6, 0.3, -0.1],
+                    [0.2, -0.3, 0, 0.2],
+                    [0.1, 0.4, 0, 0]
+                ],
+                [
+                    [0, 0.7, 0, 0],
+                    [-0.4, 0, 0.1, 0.5],
+                    [-0.2, 0, 0, -0.3],
+                    [0, 0, 0.4, 0]
+                ],
+                [
+                    [0, -0.2, 0.4, 0.1],
+                    [0.5, 0, 0.1, 0.4],
+                    [0.5, 0.2, 0, -0.4],
+                    [-0.5, 0, -0.1, 0]
+                ]
+            ]
+
         return_object['speciesMatrices'] = s_s_matrix
 
         jsondump = json.dumps(return_object)
