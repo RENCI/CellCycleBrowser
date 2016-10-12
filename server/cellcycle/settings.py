@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 from __future__ import absolute_import
 import os
 
+# Full filesystem path to the project.
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 local_settings_module = os.environ.get('LOCAL_SETTINGS', 'cellcycle.local_settings')

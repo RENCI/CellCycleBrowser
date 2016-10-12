@@ -1,6 +1,9 @@
 db:
   image: postgres:9.4
   container_name: cc-db
+redis:
+  image: redis:2.8
+  container_name: cc-redis
 rabbitmq:
   image: rabbitmq:3.5
   container_name: cc-rabbitmq
@@ -14,6 +17,8 @@ cellcycle:
     POSTGRES_PASSWORD: postgres
     POSTGRES_USER: postgres
     POSTGRES_DB: postgres
+    REDIS_HOST: redis
+    REDIS_PORT: 6379
   volumes:
     # cellcycle repository
     - "/home/ccbuild/CellCycleBrowser/server:/home/docker/cellcycle"
@@ -28,12 +33,18 @@ cellcycle:
     - "8000:8000"
   links:
     - db:db
+    - redis:redis
     - rabbitmq:rabbitmq
   command: /bin/bash init
 defaultworker:
   build: .
-  container_name: defaultworker
+  container_name: cc-defaultworker
   environment:
+    POSTGRES_PASSWORD: postgres
+    POSTGRES_USER: postgres
+    POSTGRES_DB: postgres
+    REDIS_HOST: redis
+    REDIS_PORT: 6379
     C_FORCE_ROOT: 1
   volumes_from:
     - cellcycle
@@ -41,8 +52,9 @@ defaultworker:
     - "/var/run/docker.sock:/docker.sock"
   links:
     - db:db
+    - redis:redis
     - rabbitmq:rabbitmq
-  command: celery worker -A cellcycle -E -Q default
+  command: /bin/bash init-defaultworker
 nginx:
   container_name: cc-nginx
   image: nginx:1.9

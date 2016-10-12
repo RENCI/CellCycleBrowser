@@ -23,6 +23,7 @@ def index(request):
     context = {
         'SITE_TITLE': settings.SITE_TITLE,
         'model_input_file_name': model_fname,
+        'task_id': '',
         'text_to_display': "This Cell Cycle Browser allows exploration and simulation of the human cell cycle.",
     }
     return HttpResponse(template.render(context, request))
@@ -400,6 +401,7 @@ def get_profile(request):
     index = int(request.POST['index'])
     profile = utils.get_profile_list()[index]
     data = {}
+
     data['name'] = profile['name']
     data['description'] = profile['description']
 
@@ -440,7 +442,7 @@ def run_model(request, filename):
 
 
 def download_model_result(request, filename):
-    file_full_path = settings.MODEL_OUTPUT_PATH + filename
+    file_full_path = os.path.join(settings.MODEL_OUTPUT_PATH, filename)
     response = FileResponse(open(file_full_path, 'rb'), content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
     return response

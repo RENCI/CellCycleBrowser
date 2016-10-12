@@ -38,7 +38,7 @@ cellcycle:
   command: /bin/bash init
 defaultworker:
   build: .
-  container_name: defaultworker
+  container_name: cc-defaultworker
   environment:
     POSTGRES_PASSWORD: postgres
     POSTGRES_USER: postgres
@@ -54,4 +54,4 @@ defaultworker:
     - db:db
     - redis:redis
     - rabbitmq:rabbitmq
-  command: celery worker -A cellcycle -E -Q default
+  command: /bin/bash init-defaultworker
