@@ -185,8 +185,9 @@ ROOT_URLCONF = "%s.urls" % PROJECT_DIRNAME
 CRISPY_TEMPLATE_PACK = 'bootstrap'
 
 # input data and model path
-MODEL_INPUT_PATH = 'data/model/input'
-MODEL_OUTPUT_PATH = 'data/model/output/'
+MODEL_INPUT_PATH = 'data/models/input'
+MODEL_OUTPUT_PATH = 'data/models/output'
+CELL_DATA_PATH = 'data/cellData'
 
 ####################
 # LOGGING SETTINGS #

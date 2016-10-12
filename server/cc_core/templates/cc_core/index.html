@@ -17,11 +17,7 @@
 </head>
 <body>
   <div id="main"> {{ text_to_display }}</div>
-  <form action="" method="post" style="float: left">
-      {% csrf_token %}
-      <button type="button" class="btn btn-default" onclick="request_profile_list_ajax(); return false;">Request profileList by AJAX</button>
-  </form>
-  &nbsp;
+    &nbsp;
   <a id="btn-download-phases" type="button" class="btn btn-default" href="/phases/{{ model_input_file_name }}">Download phases</a>
   <a id="btn-download-species" type="button" class="btn btn-default" href="/species/{{ model_input_file_name }}">Download species</a>
   <a id="btn-download-parameters" type="button" class="btn btn-default" href="/parameters/{{ model_input_file_name }}">Download parameters</a>

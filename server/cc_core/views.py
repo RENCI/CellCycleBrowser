@@ -2,15 +2,18 @@ import csv
 import json
 import os
 from collections import OrderedDict
+import logging
+
+from libsbml import *
 
 from django.http import HttpResponse, FileResponse
 from django.template import loader
 from django.conf import settings
 
-from libsbml import *
-
 from . import utils
 from .tasks import run_model_task
+
+logger = logging.getLogger('django')
 
 # Create your views here.
 def index(request):
@@ -124,6 +127,150 @@ def extract_species(request, filename):
         return response
 
 
+def extract_info_from_model(filename):
+    """
+    extract species, phases, speciesPhaseMatrix, and speciesMatrices info from the model file and
+    return info as JSON string in the format of
+    "species": [
+      {
+        "name": "53BP1",
+        "min": 0,
+        "max": 5,
+        "value": 5
+      },
+      ...
+    ]
+    "phases": [
+     {
+       "name": "G1"
+     },
+     ...
+    ],
+    "speciesPhaseMatrix": [
+      [-0.3, 0, -0.1],
+      [0, 0, 0]
+      ...
+    ],
+    "speciesMatrices": [
+      [
+        [0, 0],
+        [0, 0]
+      ],
+      ...
+    ]
+    :param filename: the model file name
+    :return: JSON string as detailed above
+    """
+
+    return_object = {}
+    try:
+        model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
+        reader = SBMLReader()
+        document = reader.readSBMLFromFile(model_file)
+        if document.getNumErrors() > 0:
+            raise Exception("readSBMLFromFile() exception: " + document.printErrors())
+        model = document.getModel()
+
+        # extract species
+        species = model.getListOfSpecies()
+        species_list = []
+        species_id_to_names = {}
+        for sp in species:
+            name = sp.getName()
+            id = sp.getId()
+            species_id_to_names[id] = name
+            species_dict = {}
+            species_dict['name'] = sp.getName()
+            species_dict['value'] = sp.getInitialAmount()
+            # TO DO: extract min and max info from the model
+            species_dict['min'] = 0
+            species_dict['max'] = 5
+            species_list.append(species_dict)
+
+        # extract phases
+        rule_list = model.getListOfRules()
+        phases = []
+        sub_phases = []
+        for rule in rule_list:
+            phase = {}
+            var_id = rule.getVariable()
+            if var_id:
+                phase['name'] = species_id_to_names[var_id]
+                phases.append(phase)
+                formula_str = rule.getFormula().strip()
+                if formula_str:
+                    formula_strs = formula_str.split('+')
+                    for fstr in formula_strs:
+                        fstr = fstr.strip()
+                        sub_phases.append(species_id_to_names[fstr])
+
+        # remove phases and sub-phases from species_list
+        for ph in phases:
+            for sp in species_list:
+                if ph['name'] == sp['name']:
+                    species_list.remove(sp)
+                    break
+        for sub_name in sub_phases:
+            for sp in species_list:
+                if sub_name == sp['name']:
+                    species_list.remove(sp)
+                    break
+
+        return_object['species'] = species_list
+        return_object['phases'] = phases
+
+        # extract speciesPhaseMatrix
+        s_p_dict = OrderedDict()
+        # initialize the matrix list
+        for s in species_list:
+            p_dict = OrderedDict()
+            for p in phases:
+                p_dict[p['name']] = 0
+            s_p_dict[s['name']] = p_dict
+
+        paras = model.getListOfParameters()
+        paras_list = []
+        for para in paras:
+            para_names = para.getName().split('_')
+            spec_name = para_names[1]
+            phase_name = para_names[2]
+            s_p_dict[spec_name][phase_name] = para.getValue()
+
+        s_p_matrix = []
+        for s_name, s_value in s_p_dict.iteritems():
+            p_list = []
+            for p_name, p_value in s_value.iteritems():
+                p_list.append(p_value)
+            s_p_matrix.append(p_list)
+
+        return_object['speciesPhaseMatrix'] = s_p_matrix
+
+        # TO DO: extract species matrices from the model
+        s_s_matrix = [
+            [
+                [0, 0],
+                [0, 0]
+            ],
+            [
+                [0, 0],
+                [0, 0]
+            ],
+            [
+                [0, 0],
+                [0, 0]
+            ]
+        ]
+        return_object['speciesMatrices'] = s_s_matrix
+
+        jsondump = json.dumps(return_object)
+        logger.debug('info extracted from model: ' + jsondump)
+        return jsondump
+    except Exception as ex:
+        return_object['error'] = ex.message
+        jsondump = json.dumps(return_object)
+        return jsondump
+
+
 def extract_parameters(request, filename):
     """
     extract parameters from the model file and return parameters as downloadable JSON file
@@ -203,6 +350,7 @@ def get_profile_list(request):
     """
     It is invoked by an AJAX call, so it returns json object that holds data set list
     """
+
     profile_list = utils.get_profile_list()
 
     return HttpResponse(
@@ -211,14 +359,12 @@ def get_profile_list(request):
     )
 
 
-def load_model_json(model):
+def load_model(model):
     modelData = {}
     modelData['name'] = model['name']
     modelData['description'] = model['description']
 
-    with open(model['fileName'], 'r') as json_file:
-        data = json.load(json_file)
-
+    data = json.loads(extract_info_from_model(model['fileName']))
     modelData['species'] = data['species']
     modelData['phases'] = data['phases']
     modelData['speciesPhaseMatrix'] = data['speciesPhaseMatrix']
@@ -229,9 +375,10 @@ def load_model_json(model):
 
 def load_cell_data_csv(cell_data):
     data_str = ''
-    if os.path.isfile(cell_data['fileName']):
-        with open(cell_data['fileName'], 'r') as fp:
-            # data_str = fp.read()
+    cell_data_filename = os.path.join(settings.CELL_DATA_PATH,
+                                      cell_data['fileName'].encode("utf-8"))
+    if os.path.isfile(cell_data_filename):
+        with open(cell_data_filename, 'r') as fp:
             # do data transpose before serving csv data to client
             csv_data = csv.reader(fp)
             data_list = [row for row in csv_data]
@@ -252,13 +399,12 @@ def load_cell_data_csv(cell_data):
 def get_profile(request):
     index = int(request.POST['index'])
     profile = utils.get_profile_list()[index]
-
     data = {}
     data['name'] = profile['name']
     data['description'] = profile['description']
 
     if 'models' in profile:
-        data['models'] = [load_model_json(m) for m in profile['models']]
+        data['models'] = [load_model(m) for m in profile['models']]
 
     if 'cellData' in profile:
         data['cellData'] = [load_cell_data_csv(d) for d in profile['cellData']]
