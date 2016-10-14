@@ -43,7 +43,6 @@ def extract_phases(request, filename):
     :param filename: the model file name
     :return: Downloadable JSON file that contain phases
     """
-
     return_object = {}
     try:
         model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
@@ -162,7 +161,10 @@ def extract_info_from_model(filename):
     :param filename: the model file name
     :return: JSON string as detailed above
     """
-
+    import sys
+    sys.path.append("/home/docker/pycharm-debug/")
+    import pydevd
+    pydevd.settrace('192.168.56.1', port=21000, suspend=False)
     return_object = {}
     try:
         model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
@@ -220,22 +222,31 @@ def extract_info_from_model(filename):
         return_object['species'] = species_list
         return_object['phases'] = phases
 
-        # extract speciesPhaseMatrix
+        # extract speciesPhaseMatrix and speciesMatrix
+        species_name_list = [s['name'] for s in species_list]
+        phase_name_list = [p['name'] for p in phases]
         s_p_dict = OrderedDict()
+        s_s_dict = OrderedDict()
         # initialize the matrix list
-        for s in species_list:
+        for sname in species_name_list:
             p_dict = OrderedDict()
-            for p in phases:
-                p_dict[p['name']] = 0
-            s_p_dict[s['name']] = p_dict
+            s_dict = OrderedDict()
+            for pname in phase_name_list:
+                p_dict[pname] = 0
+            s_p_dict[sname] = p_dict
+            for ssname in species_name_list:
+                s_dict[ssname] = 0
+            s_s_dict[sname] = s_dict
 
         paras = model.getListOfParameters()
-        paras_list = []
         for para in paras:
             para_names = para.getName().split('_')
-            spec_name = para_names[1]
-            phase_name = para_names[2]
-            s_p_dict[spec_name][phase_name] = para.getValue()
+            name1 = para_names[1]
+            name2 = para_names[2]
+            if name1 in species_name_list and name2 in phase_name_list:
+                s_p_dict[name1][name2] = para.getValue()
+            elif name1 in species_name_list and name2 in species_name_list:
+                s_s_dict[name1][name2] = para.getValue()
 
         s_p_matrix = []
         for s_name, s_value in s_p_dict.iteritems():
@@ -246,21 +257,12 @@ def extract_info_from_model(filename):
 
         return_object['speciesPhaseMatrix'] = s_p_matrix
 
-        # TO DO: extract species matrices from the model
-        s_s_matrix = [
-            [
-                [0, 0],
-                [0, 0]
-            ],
-            [
-                [0, 0],
-                [0, 0]
-            ],
-            [
-                [0, 0],
-                [0, 0]
-            ]
-        ]
+        s_s_matrix = []
+        for s_name, s_value in s_s_dict.iteritems():
+            s_list = []
+            for ss_name, ss_value in s_value.iteritems():
+                s_list.append(ss_value)
+            s_s_matrix.append(s_list)
 
         if filename == 'test_model.xml':
             s_s_matrix = [
