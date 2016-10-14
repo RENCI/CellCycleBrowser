@@ -161,10 +161,7 @@ def extract_info_from_model(filename):
     :param filename: the model file name
     :return: JSON string as detailed above
     """
-    import sys
-    sys.path.append("/home/docker/pycharm-debug/")
-    import pydevd
-    pydevd.settrace('192.168.56.1', port=21000, suspend=False)
+    
     return_object = {}
     try:
         model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
