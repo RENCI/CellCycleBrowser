@@ -18,16 +18,23 @@ def run_model_task(filename, traj='', end=''):
     if end:
         num_end = int(end)
 
-    logger.debug("in run_model_task, traj=" + traj + ", end=" + end)
-    plot_output_fname = os.path.splitext(filename)[0] + "_SpeciesTimeSeriesPlot_" \
-                        + traj + "_" + end + ".pdf"
+    plot_output_fname = os.path.splitext(filename)[0] + "_SpeciesTimeSeries_" \
+                        + traj + "_" + end + ".json"
     plot_output_path_fname = os.path.join(settings.MODEL_OUTPUT_PATH, plot_output_fname)
+    logger.debug("in run_model_task, traj=" + traj + ", end=" + end + ", output_path_fname:" +
+                 plot_output_path_fname)
     # only run simulation if existing simulation output does not exist
     if not os.path.exists(plot_output_path_fname):
+        logger.debug("before starting simulation")
         smod = stochpy.SSA(IsInteractive=False)
         smod.Model(filename, settings.MODEL_INPUT_PATH)
         smod.DoStochSim(mode="time", trajectories=num_traj, end=num_end)
-        smod.PlotSpeciesTimeSeries()
-        stochpy.plt.savefig(plot_output_path_fname)
+        smod.GetRegularGrid(n_samples=num_end/20)
+        specs_data = smod.data_stochsim_grid.getSpecies(lbls=True)
+        logger.debug('After simulation, output data follows:')
+        logger.debug("specs_data[0]: ")
+        logger.debug(specs_data[0])
+        logger.debug("specs_data[1]: ")
+        logger.debug(specs_data[1])
 
     return plot_output_fname
