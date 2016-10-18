@@ -53,6 +53,40 @@ function request_profile_list_ajax() {
     });
 }
 
+function run_model_ajax(model_input_file_name) {
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            }
+        }
+    });
+    $.ajax({
+        type: "POST",
+        url: '/runmodel/' + model_input_file_name,
+        data: {
+            trajectories: $('#trajectories').val(),
+            end: $('#end').val()
+        },
+        success: function (json_response) {
+            task_id = json_response.task_id;
+            if(task_id) {
+                $('#task_id').val(task_id);
+                $('#simulation-status-info').show();
+                window.location.reload();
+            }
+            else {
+                console.log("returned task_id is empty, model run did not start successfully.")
+            }
+
+        },
+        error: function (xhr, errmsg, err) {
+            console.log(xhr.status + ": " + xhr.responseText + ". Error message: " + errmsg);
+        }
+    });
+}
+
+
 function update_simulation_status(task_id) {
     sim_status_timeout_id=-1;
     // disable run model button to prevent it from being clicked again
@@ -72,11 +106,12 @@ function update_simulation_status(task_id) {
                 if(sim_status_timeout_id > -1)
                     clearTimeout(sim_status_timeout_id);
                 $("#btn-run-model").removeAttr('disabled');
+                $('#task_id').val('');
                 download_path = '/download_model_result/' + data.result;
                 $("#simulation-status-info").html(
                         "If your download of model run result does not start automatically, " +
                         "please click <a href='" + download_path + "'>here</a>.");
-                window.location.href = download_path;
+                $('#simulation-status-info').show();
             }
             // only check status again in 5 seconds when $("#loading") is not
             // cleared up by success status above

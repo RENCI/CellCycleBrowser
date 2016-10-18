@@ -465,17 +465,23 @@ def send_parameter(request):
     )
 
 
-def run_model(request, filename):
-    traj = request.POST['trajectories']
-    end = request.POST['end']
+def run_model(request, filename=''):
+    
+    if filename:
+        traj = request.POST['trajectories']
+        end = request.POST['end']
 
-    task = run_model_task.apply_async((filename, traj, end), countdown=3)
+        task = run_model_task.apply_async((filename, traj, end), countdown=3)
 
-    context = {
-        'task_id': task.task_id,
-    }
-    template = loader.get_template('cc_core/index.html')
-    return HttpResponse(template.render(context, request))
+        context = {
+            'task_id': task.task_id,
+        }
+    else:
+        context = {
+            'task_id': '',
+        }
+
+    return HttpResponse(json.dumps(context), content_type="application/json")
 
 
 def download_model_result(request, filename):

@@ -18,24 +18,22 @@
 <body>
   <div id="main"> {{ text_to_display }}</div>
     &nbsp;
-  <a id="btn-download-phases" type="button" class="btn btn-default" href="/phases/{{ model_input_file_name }}">Download phases</a>
-  <a id="btn-download-species" type="button" class="btn btn-default" href="/species/{{ model_input_file_name }}">Download species</a>
-  <a id="btn-download-parameters" type="button" class="btn btn-default" href="/parameters/{{ model_input_file_name }}">Download parameters</a>
-  {%  if task_id %}
-    <input type="hidden" id="task_id" name="task_id" value="{{ task_id }}">
-    <div id='simulation-status-info' class="alert alert-success">
-        Please wait for the model simulation run to finish<span id="loading">.</span>
-    </div>
-  {% endif %}
-
-  <form action="/runmodel/{{ model_input_file_name }}" method="post" style="float: right">
+  <form action='' method='post' style='float: right'>
       {% csrf_token %}
       <span id ="model-run">
-          Trajectories:<input type="text" class="margin_left" name="trajectories" id="tragectories" value="1">
+          Trajectories:<input type="text" class="margin_left" name="trajectories" id="trajectories" value="1">
           End time:<input type="text" class="margin_left" name="end" id="end" value="100">
-          <button id="btn-run-model" type="submit" class="btn btn-default margin_left">Run Simulation</button>
+          53BP1: <input type="text" class="margin_left" name="53BP1" id="53BP1" value="5">
+          PCNA:<input type="text" class="margin_left" name="PCNA" id="PCNA" value="2">
+          P16:<input type="text" class="margin_left" name="PCNA" id="P16" value="5">
+
+          <button id="btn-run-model" type="button" class="btn btn-default margin_left" onclick="run_model_ajax('{{ model_input_file_name }}'); return false;">Run Simulation</button>
       </span>
   </form>
+  <input type="hidden" id="task_id" name="task_id" value=''>
+  <div id='simulation-status-info' class='alert alert-success' style='display:none'>
+      Please wait for the model simulation run to finish<span id='loading'>.</span>
+  </div>
   <div id="app"></div>
   <script type="text/javascript" src="{% static 'cc_core/js/index_bundle.js' %}"></script>
 </body>
