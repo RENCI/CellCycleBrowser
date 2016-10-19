@@ -105,12 +105,11 @@ function update_simulation_status(task_id) {
                 $("#loading").html('');
                 if(sim_status_timeout_id > -1)
                     clearTimeout(sim_status_timeout_id);
+                // enable run model button now that model run is done
                 $("#btn-run-model").removeAttr('disabled');
                 $('#task_id').val('');
-                download_path = '/get_model_result/' + data.result;
-                $("#simulation-status-info").html(
-                        "If your download of model run result does not start automatically, " +
-                        "please click <a href='" + download_path + "'>here</a>.");
+                request_url = '/get_model_result/' + data.result;
+                $("#simulation-status-info").load(request_url);
                 $('#simulation-status-info').show();
             }
             // only check status again in 5 seconds when $("#loading") is not

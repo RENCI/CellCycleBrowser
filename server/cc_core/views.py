@@ -6,7 +6,7 @@ import logging
 
 from libsbml import *
 
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from django.conf import settings
 
@@ -538,9 +538,13 @@ def run_model(request, filename=''):
 
 def get_model_result(request, filename):
     file_full_path = os.path.join(settings.MODEL_OUTPUT_PATH, filename)
-    response = FileResponse(open(file_full_path, 'rb'), content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
-    return response
+    with open(file_full_path, 'rb') as model_output_file:
+        model_result_json = json.load(model_output_file)
+        response = JsonResponse(model_result_json)
+        return response
+
+    # return bad request if the json file cannot be served above
+    return HttpResponse(status=400)
 
 
 def check_task_status(request, task_id=None):
