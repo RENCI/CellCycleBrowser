@@ -107,7 +107,7 @@ function update_simulation_status(task_id) {
                     clearTimeout(sim_status_timeout_id);
                 $("#btn-run-model").removeAttr('disabled');
                 $('#task_id').val('');
-                download_path = '/download_model_result/' + data.result;
+                download_path = '/get_model_result/' + data.result;
                 $("#simulation-status-info").html(
                         "If your download of model run result does not start automatically, " +
                         "please click <a href='" + download_path + "'>here</a>.");
