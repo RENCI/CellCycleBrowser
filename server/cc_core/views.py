@@ -6,7 +6,7 @@ import logging
 
 from libsbml import *
 
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from django.conf import settings
 
@@ -125,6 +125,55 @@ def extract_species(request, filename):
         response = HttpResponse(jsondump, content_type='text/json')
         response['Content-Disposition'] = 'attachment; filename=error.json'
         return response
+
+
+def extract_species_and_phases_from_model(filename):
+    """
+
+    :param filename: the SBML model input file name
+    :return: id_to_names, species, phases triple where id_to_names is a dict that maps id to
+             names for all species and phases, species is a list of pure species ids, and
+             phases is a dict that has phases ids as keys and corresponding subphases ids list
+             as values
+    """
+    model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
+    reader = SBMLReader()
+    document = reader.readSBMLFromFile(model_file)
+    if document.getNumErrors() > 0:
+        raise Exception("readSBMLFromFile() exception: " + document.printErrors())
+    model = document.getModel()
+
+    species = []
+    # extract species
+    species_lst = model.getListOfSpecies()
+    id_to_names = {}
+    for sp in species_lst:
+        name = sp.getName()
+        id = sp.getId()
+        id_to_names[id] = name
+        species.append(id)
+
+    # extract phases
+    rule_list = model.getListOfRules()
+
+    phases = {}
+    for rule in rule_list:
+        sub_phases = []
+        var_id = rule.getVariable()
+        if var_id:
+            formula_str = rule.getFormula().strip()
+            if formula_str:
+                formula_strs = formula_str.split('+')
+                for fstr in formula_strs:
+                    fstr = fstr.strip()
+                    sub_phases.append(fstr)
+                    # remove sub-phases from species
+                    species.remove(fstr)
+            phases[var_id] = sub_phases
+            # remove phases from species
+            species.remove(var_id)
+
+    return id_to_names, species, phases
 
 
 def extract_info_from_model(filename):
@@ -301,7 +350,7 @@ def extract_info_from_model(filename):
         return_object['speciesMatrices'] = s_s_matrix
 
         jsondump = json.dumps(return_object)
-        logger.debug('info extracted from model: ' + jsondump)
+        # logger.debug('info extracted from model: ' + jsondump)
         return jsondump
     except Exception as ex:
         return_object['error'] = ex.message
@@ -468,10 +517,13 @@ def send_parameter(request):
 def run_model(request, filename=''):
     
     if filename:
+        id_to_names, species, phases = extract_species_and_phases_from_model(filename)
+
         traj = request.POST['trajectories']
         end = request.POST['end']
 
-        task = run_model_task.apply_async((filename, traj, end), countdown=3)
+        task = run_model_task.apply_async((filename, id_to_names, species, phases, traj, end),
+                                          countdown=3)
 
         context = {
             'task_id': task.task_id,
@@ -484,11 +536,15 @@ def run_model(request, filename=''):
     return HttpResponse(json.dumps(context), content_type="application/json")
 
 
-def download_model_result(request, filename):
+def get_model_result(request, filename):
     file_full_path = os.path.join(settings.MODEL_OUTPUT_PATH, filename)
-    response = FileResponse(open(file_full_path, 'rb'), content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="' + filename + '"'
-    return response
+    with open(file_full_path, 'rb') as model_output_file:
+        model_result_json = json.load(model_output_file)
+        response = JsonResponse(model_result_json)
+        return response
+
+    # return bad request if the json file cannot be served above
+    return HttpResponse(status=400)
 
 
 def check_task_status(request, task_id=None):
