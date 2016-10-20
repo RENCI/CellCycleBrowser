@@ -52,6 +52,7 @@ function Slider(props) {
             <input
               type="number"
               className="form-control"
+              style={{width: "65px"}}
               min={props.min}
               max={props.max}
               step={props.step}

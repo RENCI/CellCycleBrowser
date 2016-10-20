@@ -10,6 +10,8 @@ module.exports = {
     });
   },
   receiveProfile: function(profile) {
+    console.log(profile);
+
     AppDispatcher.dispatch({
       actionType: Constants.RECEIVE_PROFILE,
       profile: profile

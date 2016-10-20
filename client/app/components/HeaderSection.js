@@ -18,7 +18,7 @@ function HeaderSection(props) {
   );
 }
 
-HeaderSection.props = {
+HeaderSection.propTypes = {
   profile: PropTypes.object.isRequired
 };
 
