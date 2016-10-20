@@ -13,13 +13,17 @@ from . import utils
 logger = logging.getLogger('django')
 
 @shared_task
-def run_model_task(filename, id_to_names, species, phases, traj='', end='', species_val_dict={}):
-    num_traj = 1
+def run_model_task(filename, id_to_names, species, phases, traj='', end='', species_val_dict={},
+                   sp_infl_para_dict={}):
     if traj:
         num_traj = int(traj)
-    num_end = 100
+    else:
+        num_traj = 1
+
     if end:
         num_end = int(end)
+    else:
+        num_end = 100
 
     plot_output_fname = os.path.splitext(filename)[0] + "_SpeciesTimeSeries_" \
                         + traj + "_" + end + ".json"
@@ -30,7 +34,10 @@ def run_model_task(filename, id_to_names, species, phases, traj='', end='', spec
     for sp_id, sp_val in species_val_dict.iteritems():
         logger.debug('changing ' + sp_id + ' amount ' + sp_val)
         smod.ChangeInitialSpeciesCopyNumber(str(sp_id), float(sp_val))
-        logger.debug('after changing call')
+
+    for id, val in sp_infl_para_dict.iteritems():
+        logger.debug('changing ' + id + ' parameter value ' + val)
+        smod.ChangeParameter(str(id), float(val))
 
     smod.DoStochSim(mode="time", trajectories=num_traj, end=num_end)
     smod.GetRegularGrid(n_samples=num_end/20)

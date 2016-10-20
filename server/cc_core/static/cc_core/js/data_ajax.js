@@ -66,14 +66,22 @@ function run_model_ajax(model_input_file_name) {
         "PCNA": $('#PCNA').val(),
         "p16": $('#p16').val()
     };
-    
+
+    var sp_infl_para_dict = {
+        "53BP1_G1": $('#53BP1_G1').val(),
+        "53BP1_S": $('#53BP1_S').val(),
+        "53BP1_G2": $('#53BP1_G2').val(),
+        "53BP1_p16": $('#53BP1_p16').val()
+    };
+
     $.ajax({
         type: "POST",
         url: '/runmodel/' + model_input_file_name,
         data: {
             trajectories: $('#trajectories').val(),
             end: $('#end').val(),
-            species: JSON.stringify(species_dict)
+            species: JSON.stringify(species_dict),
+            parameters: JSON.stringify(sp_infl_para_dict)
         },
         success: function (json_response) {
             task_id = json_response.task_id;
