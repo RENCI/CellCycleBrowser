@@ -65,7 +65,8 @@ function run_model_ajax(model_input_file_name) {
         "53BP1": $('#53BP1').val(),
         "PCNA": $('#PCNA').val(),
         "p16": $('#p16').val()
-    }
+    };
+    
     $.ajax({
         type: "POST",
         url: '/runmodel/' + model_input_file_name,
