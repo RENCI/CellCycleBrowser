@@ -518,20 +518,37 @@ def send_parameter(request):
 
 
 def run_model(request, filename=''):
-
+    
     if filename:
         id_to_names, name_to_ids, species, phases = extract_species_and_phases_from_model(filename)
 
-        traj = request.POST['trajectories']
-        end = request.POST['end']
-        sp_name_to_val_dict = json.loads(request.POST['species'])
+        traj = request.POST.get('trajectories', 1)
+        end = request.POST.get('end', 100)
+        if 'species' not in request.POST:
+            sp_name_to_val_dict = {}
+        else:
+            sp_name_to_val_dict = json.loads(request.POST['species'])
+
+        if 'parameters' not in request.POST:
+            sp_name_infl_para_dict = {}
+        else:
+            sp_name_infl_para_dict = json.loads(request.POST['parameters'])
+
         sp_id_to_val_dict = {}
         for sp_name, sp_val in sp_name_to_val_dict.iteritems():
             sp_id = name_to_ids[sp_name]
             sp_id_to_val_dict[sp_id] = sp_val
 
+        sp_id_infl_para_dict = {}
+        for name, val in sp_name_infl_para_dict.iteritems():
+            names = name.split('_')
+            name1 = names[0] # species name which is an influencer
+            name2 = names[1] # species or phase name which is an influencee
+            para_id = 'a_' + name1 + '_' + name2
+            sp_id_infl_para_dict[para_id] = val
+
         task = run_model_task.apply_async((filename, id_to_names, species, phases, traj, end,
-                                           sp_id_to_val_dict),
+                                           sp_id_to_val_dict, sp_id_infl_para_dict),
                                           countdown=3)
 
         context = {
