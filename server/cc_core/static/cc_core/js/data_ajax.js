@@ -61,12 +61,18 @@ function run_model_ajax(model_input_file_name) {
             }
         }
     });
+    var species_dict = {
+        "53BP1": $('#53BP1').val(),
+        "PCNA": $('#PCNA').val(),
+        "p16": $('#p16').val()
+    }
     $.ajax({
         type: "POST",
         url: '/runmodel/' + model_input_file_name,
         data: {
             trajectories: $('#trajectories').val(),
-            end: $('#end').val()
+            end: $('#end').val(),
+            species: JSON.stringify(species_dict)
         },
         success: function (json_response) {
             task_id = json_response.task_id;

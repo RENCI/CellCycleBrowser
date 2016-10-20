@@ -131,8 +131,9 @@ def extract_species_and_phases_from_model(filename):
     """
 
     :param filename: the SBML model input file name
-    :return: id_to_names, species, phases triple where id_to_names is a dict that maps id to
-             names for all species and phases, species is a list of pure species ids, and
+    :return: id_to_names, name_to_ids, species, phases quadruple where id_to_names is a dict that
+             maps id to names for all species and phases and name_to_ids is a dict that maps names
+             to ids for all species and phases; species is a list of pure species ids, and
              phases is a dict that has phases ids as keys and corresponding subphases ids list
              as values
     """
@@ -147,10 +148,12 @@ def extract_species_and_phases_from_model(filename):
     # extract species
     species_lst = model.getListOfSpecies()
     id_to_names = {}
+    name_to_ids = {}
     for sp in species_lst:
         name = sp.getName()
         id = sp.getId()
         id_to_names[id] = name
+        name_to_ids[name] = id
         species.append(id)
 
     # extract phases
@@ -173,7 +176,7 @@ def extract_species_and_phases_from_model(filename):
             # remove phases from species
             species.remove(var_id)
 
-    return id_to_names, species, phases
+    return id_to_names, name_to_ids, species, phases
 
 
 def extract_info_from_model(filename):
@@ -515,14 +518,20 @@ def send_parameter(request):
 
 
 def run_model(request, filename=''):
-    
+
     if filename:
-        id_to_names, species, phases = extract_species_and_phases_from_model(filename)
+        id_to_names, name_to_ids, species, phases = extract_species_and_phases_from_model(filename)
 
         traj = request.POST['trajectories']
         end = request.POST['end']
+        sp_name_to_val_dict = json.loads(request.POST['species'])
+        sp_id_to_val_dict = {}
+        for sp_name, sp_val in sp_name_to_val_dict.iteritems():
+            sp_id = name_to_ids[sp_name]
+            sp_id_to_val_dict[sp_id] = sp_val
 
-        task = run_model_task.apply_async((filename, id_to_names, species, phases, traj, end),
+        task = run_model_task.apply_async((filename, id_to_names, species, phases, traj, end,
+                                           sp_id_to_val_dict),
                                           countdown=3)
 
         context = {
