@@ -3,23 +3,27 @@ var SliderContainer = require("../containers/SliderContainer");
 var PropTypes = React.PropTypes;
 
 function SpeciesPhaseSliders(props) {
-  var sliders = props.species.map(function (species, i) {
-    function handleChange(value) {
-      props.onChange({
-        species: species,
-        value: value
-      });
-    };
+  var sliders = [];
+  props.model.species.forEach(function(species, i) {
+    props.model.phases.forEach(function(phase, j) {
+      function handleChange(value) {
+        props.onChange({
+          species: species,
+          phase: phase,
+          value: value
+        });
+      }
 
-    return (
-      <SliderContainer
-        key={i}
-        label={species.name}
-        min={species.min}
-        max={species.max}
-        initialValue={species.value}
-        onChange={handleChange} />
-    );
+      sliders.push (
+        <SliderContainer
+          key={i * props.model.phases.length + j}
+          label={species.name + "→" + phase.name}
+          min={-1}
+          max={1}
+          initialValue={props.model.speciesPhaseMatrix[i][j]}
+          onChange={handleChange} />
+      );
+    });
   });
 
   return (
@@ -35,8 +39,7 @@ function SpeciesPhaseSliders(props) {
 }
 
 SpeciesPhaseSliders.propTypes = {
-  species: PropTypes.arrayOf(PropTypes.object).isRequired,
-  phases: PropTypes.arrayOf(PropTypes.object).isRequired,
+  model: PropTypes.object.isRequired,
   onChange: PropTypes.func.isRequired
 };
 

@@ -29,11 +29,11 @@ function Slider(props) {
     <form className="form-horizontal">
       <div className="form-group">
         <label
-          className="control-label col-sm-2"
+          className="control-label"
           htmlFor={sliderName}>
             {props.label}
         </label>
-        <div className="col-sm-10">
+        <div className="col-sm-12">
           <div className="input-group">
             <span className="input-group-addon">
               {props.min}
@@ -52,7 +52,6 @@ function Slider(props) {
             <input
               type="number"
               className="form-control"
-              style={{width: "65px"}}
               min={props.min}
               max={props.max}
               step={props.step}

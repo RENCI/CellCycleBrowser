@@ -25,11 +25,20 @@ var ControlsContainer = React.createClass ({
   onModelChange: function () {
     this.setState(getStateFromStore());
   },
-  handleSliderChange: function (data) {
+  handleSpeciesSliderChange: function (data) {
     console.log(data);
 
     WebAPIUtils.sendParameter({
       species: data.species.name,
+      value: data.value
+    });
+  },
+  handleSpeciesPhaseSliderChange: function (data) {
+    console.log(data);
+
+    WebAPIUtils.sendParameter({
+      species: data.species.name,
+      phase: data.phase.name,
       value: data.value
     });
   },
@@ -42,20 +51,21 @@ var ControlsContainer = React.createClass ({
     return (
       <div>
         <h2>Controls</h2>
+        <div className="panel">
+          <button
+            type="button"
+            className="btn btn-info"
+            style={{width: "100%"}}
+            onClick={this.handleButtonClick}>
+              Run Model
+          </button>
+        </div>
         <InitialValueSliders
           species={this.state.model.species}
-          onChange={this.handleSliderChange} />
+          onChange={this.handleSpeciesSliderChange} />
         <SpeciesPhaseSliders
-          species={this.state.model.species}
-          phases={this.state.model.phases}
-          onChange={this.handleSliderChange} />
-        <button
-          type="button"
-          className="btn btn-info"
-          style={{width: "100%"}}
-          onClick={this.handleButtonClick}>
-            Run Model
-        </button>
+          model={this.state.model}
+          onChange={this.handleSpeciesPhaseSliderChange} />
       </div>
     );
   }
