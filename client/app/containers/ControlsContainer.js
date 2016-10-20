@@ -1,5 +1,6 @@
 var React = require("react");
 var ModelStore = require("../stores/ModelStore");
+var ModelParameterSliders = require("../components/ModelParameterSliders");
 var InitialValueSliders = require("../components/InitialValueSliders");
 var SpeciesPhaseSliders = require("../components/SpeciesPhaseSliders");
 var WebAPIUtils = require("../utils/WebAPIUtils");
@@ -60,6 +61,7 @@ var ControlsContainer = React.createClass ({
               Run Model
           </button>
         </div>
+        <ModelParameterSliders />
         <InitialValueSliders
           species={this.state.model.species}
           onChange={this.handleSpeciesSliderChange} />
