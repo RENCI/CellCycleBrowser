@@ -25,7 +25,7 @@ function Species(props) {
     return cell.features[props.featureKey].values;
   });
 
-  var collapseId = props.name;
+  var collapseId = props.name + "Collapse";
 
   return (
     <div className="text-left" style={outerStyle}>
