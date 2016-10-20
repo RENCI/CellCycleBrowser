@@ -36,7 +36,7 @@ function SpeciesPhaseSliders(props) {
 
 SpeciesPhaseSliders.propTypes = {
   species: PropTypes.arrayOf(PropTypes.object).isRequired,
-  phases: PropTypes.arrayOf(PropTypes.object).isReqiured,
+  phases: PropTypes.arrayOf(PropTypes.object).isRequired,
   onChange: PropTypes.func.isRequired
 };
 

@@ -54,10 +54,10 @@ function Species(props) {
 }
 
 Species.propTypes = {
-    name: PropTypes.string.isRequired,
-    cells: PropTypes.arrayOf(PropTypes.object).isRequired,
-    featureKey: PropTypes.string.isRequired,
-    alignment: PropTypes.string.isRequired
-  },
+  name: PropTypes.string.isRequired,
+  cells: PropTypes.arrayOf(PropTypes.object).isRequired,
+  featureKey: PropTypes.string.isRequired,
+  alignment: PropTypes.string.isRequired
+},
 
 module.exports = Species;
