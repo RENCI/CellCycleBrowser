@@ -2,6 +2,15 @@ var React = require("react");
 var SliderContainer = require("../containers/SliderContainer");
 var PropTypes = React.PropTypes;
 
+var buttonStyle = {
+  width: "100%"
+}
+
+var divStyle = {
+  marginLeft: 10,
+  marginRight: 10
+}
+
 function SpeciesPhaseSliders(props) {
   var sliders = [];
   props.model.species.forEach(function(species, i) {
@@ -26,12 +35,19 @@ function SpeciesPhaseSliders(props) {
     });
   });
 
+  var collapseId = "speciesPhaseSliders";
+
   return (
     <div className="panel panel-default">
-      <div className="panel-heading">
-        <h3 className="panel-title">Species-phase interactions</h3>
-      </div>
-      <div className="panel-body">
+      <button
+        type="button"
+        className="btn btn-info"
+        style={buttonStyle}
+        data-toggle="collapse"
+        data-target={"#" + collapseId}>
+          Species→phase interactions
+      </button>
+      <div className="in" id={collapseId} style={divStyle}>
         {sliders}
       </div>
     </div>
