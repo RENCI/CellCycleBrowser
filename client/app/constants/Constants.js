@@ -7,6 +7,8 @@ module.exports = keyMirror({
   SELECT_FEATURE: null,
   SELECT_ALIGNMENT: null,
 
+  CHANGE_SPECIES_VALUE: null,
+
   RECEIVE_PROFILE_LIST: null,
   RECEIVE_PROFILE: null
 });

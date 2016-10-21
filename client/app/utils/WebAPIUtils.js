@@ -110,6 +110,7 @@ module.exports = {
       }
     });
   },
+/*
   sendParameter: function(data) {
     setupAjax();
 
@@ -125,5 +126,9 @@ module.exports = {
         console.log(textStatus + ": " + errorThrown);
       }
     });
+  },
+*/  
+  runModel: function(model) {
+    console.log(model);
   }
 }

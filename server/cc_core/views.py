@@ -131,9 +131,8 @@ def extract_species_and_phases_from_model(filename):
     """
 
     :param filename: the SBML model input file name
-    :return: id_to_names, name_to_ids, species, phases quadruple where id_to_names is a dict that
-             maps id to names for all species and phases and name_to_ids is a dict that maps names
-             to ids for all species and phases; species is a list of pure species ids, and
+    :return: id_to_names, species, phases triple where id_to_names is a dict that maps id to
+             names for all species and phases, species is a list of pure species ids, and
              phases is a dict that has phases ids as keys and corresponding subphases ids list
              as values
     """
@@ -148,12 +147,10 @@ def extract_species_and_phases_from_model(filename):
     # extract species
     species_lst = model.getListOfSpecies()
     id_to_names = {}
-    name_to_ids = {}
     for sp in species_lst:
         name = sp.getName()
         id = sp.getId()
         id_to_names[id] = name
-        name_to_ids[name] = id
         species.append(id)
 
     # extract phases
@@ -176,7 +173,7 @@ def extract_species_and_phases_from_model(filename):
             # remove phases from species
             species.remove(var_id)
 
-    return id_to_names, name_to_ids, species, phases
+    return id_to_names, species, phases
 
 
 def extract_info_from_model(filename):
@@ -213,7 +210,7 @@ def extract_info_from_model(filename):
     :param filename: the model file name
     :return: JSON string as detailed above
     """
-    
+
     return_object = {}
     try:
         model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
@@ -453,6 +450,7 @@ def load_model(model):
     modelData = {}
     modelData['name'] = model['name']
     modelData['description'] = model['description']
+    modelData['fileName'] = model['fileName']
 
     data = json.loads(extract_info_from_model(model['fileName']))
     modelData['species'] = data['species']
@@ -518,37 +516,14 @@ def send_parameter(request):
 
 
 def run_model(request, filename=''):
-    
+
     if filename:
-        id_to_names, name_to_ids, species, phases = extract_species_and_phases_from_model(filename)
+        id_to_names, species, phases = extract_species_and_phases_from_model(filename)
 
-        traj = request.POST.get('trajectories', 1)
-        end = request.POST.get('end', 100)
-        if 'species' not in request.POST:
-            sp_name_to_val_dict = {}
-        else:
-            sp_name_to_val_dict = json.loads(request.POST['species'])
+        traj = request.POST['trajectories']
+        end = request.POST['end']
 
-        if 'parameters' not in request.POST:
-            sp_name_infl_para_dict = {}
-        else:
-            sp_name_infl_para_dict = json.loads(request.POST['parameters'])
-
-        sp_id_to_val_dict = {}
-        for sp_name, sp_val in sp_name_to_val_dict.iteritems():
-            sp_id = name_to_ids[sp_name]
-            sp_id_to_val_dict[sp_id] = sp_val
-
-        sp_id_infl_para_dict = {}
-        for name, val in sp_name_infl_para_dict.iteritems():
-            names = name.split('_')
-            name1 = names[0] # species name which is an influencer
-            name2 = names[1] # species or phase name which is an influencee
-            para_id = 'a_' + name1 + '_' + name2
-            sp_id_infl_para_dict[para_id] = val
-
-        task = run_model_task.apply_async((filename, id_to_names, species, phases, traj, end,
-                                           sp_id_to_val_dict, sp_id_infl_para_dict),
+        task = run_model_task.apply_async((filename, id_to_names, species, phases, traj, end),
                                           countdown=3)
 
         context = {

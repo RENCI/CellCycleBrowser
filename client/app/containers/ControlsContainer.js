@@ -3,6 +3,7 @@ var ModelStore = require("../stores/ModelStore");
 var ModelParameterSliders = require("../components/ModelParameterSliders");
 var InitialValueSliders = require("../components/InitialValueSliders");
 var SpeciesPhaseSliders = require("../components/SpeciesPhaseSliders");
+var ViewActionCreators = require("../actions/ViewActionCreators");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
 function getStateFromStore() {
@@ -27,24 +28,13 @@ var ControlsContainer = React.createClass ({
     this.setState(getStateFromStore());
   },
   handleSpeciesSliderChange: function (data) {
-    console.log(data);
-
-    WebAPIUtils.sendParameter({
-      species: data.species.name,
-      value: data.value
-    });
+    ViewActionCreators.changeSpeciesValue(data.species.name, data.value);
   },
   handleSpeciesPhaseSliderChange: function (data) {
-    console.log(data);
-
-    WebAPIUtils.sendParameter({
-      species: data.species.name,
-      phase: data.phase.name,
-      value: data.value
-    });
+    ViewActionCreators.changeSpeciesPhaseValue(data.species.name, data.phase.name, data.value);
   },
   handleButtonClick: function (data) {
-    console.log("CLICK!");
+    WebAPIUtils.runModel(ModelStore.getModel());
   },
   render: function () {
     if (!this.state.model) return null;
