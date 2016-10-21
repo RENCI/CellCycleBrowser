@@ -518,7 +518,10 @@ def send_parameter(request):
 
 
 def run_model(request, filename=''):
-    
+    import sys
+    sys.path.append("/home/docker/pycharm-debug")
+    import pydevd
+    pydevd.settrace('192.168.0.115', port=21000, suspend=False)
     if filename:
         id_to_names, name_to_ids, species, phases = extract_species_and_phases_from_model(filename)
 
@@ -530,9 +533,9 @@ def run_model(request, filename=''):
             sp_name_to_val_dict = json.loads(request.POST['species'])
 
         if 'parameters' not in request.POST:
-            sp_name_infl_para_dict = {}
+            sp_name_infl_para_list = []
         else:
-            sp_name_infl_para_dict = json.loads(request.POST['parameters'])
+            sp_name_infl_para_list = json.loads(request.POST['parameters'])
 
         sp_id_to_val_dict = {}
         for sp_name, sp_val in sp_name_to_val_dict.iteritems():
@@ -540,11 +543,15 @@ def run_model(request, filename=''):
             sp_id_to_val_dict[sp_id] = sp_val
 
         sp_id_infl_para_dict = {}
-        for name, val in sp_name_infl_para_dict.iteritems():
-            names = name.split('_')
-            name1 = names[0] # species name which is an influencer
-            name2 = names[1] # species or phase name which is an influencee
-            para_id = 'a_' + name1 + '_' + name2
+        for p_dict_item in sp_name_infl_para_list:
+            phase = p_dict_item['phase'].strip()
+            name1 = p_dict_item['upstream'].strip() # species name which is an influencer
+            name2 = p_dict_item['downstream'].strip() # species or phase name which is an influencee
+            val = p_dict_item['value'].strip()
+            if phase:
+                para_id = 'a_' + phase + '_' + name1 + '_' + name2
+            else:
+                para_id = 'a_' + name1 + '_' + name2
             sp_id_infl_para_dict[para_id] = val
 
         task = run_model_task.apply_async((filename, id_to_names, species, phases, traj, end,

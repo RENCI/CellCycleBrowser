@@ -67,12 +67,32 @@ function run_model_ajax(model_input_file_name) {
         "p16": $('#p16').val()
     };
 
-    var sp_infl_para_dict = {
-        "53BP1_G1": $('#53BP1_G1').val(),
-        "53BP1_S": $('#53BP1_S').val(),
-        "53BP1_G2": $('#53BP1_G2').val(),
-        "53BP1_p16": $('#53BP1_p16').val()
-    };
+    var sp_infl_para_list = [
+        {
+            "phase": '',
+            "upstream": "53BP1",
+            "downstream": "G1",
+            "value": $('#53BP1_G1').val()
+        },
+        {
+            "phase": '',
+            "upstream": "53BP1",
+            "downstream": "S",
+            "value": $('#53BP1_S').val()
+        },
+        {
+            "phase": '',
+            "upstream": "53BP1",
+            "downstream": "G2",
+            "value": $('#53BP1_G2').val()
+        },
+        {
+            "phase": '',
+            "upstream": "53BP1",
+            "downstream": "p16",
+            "value": $('#53BP1_p16').val()
+        }
+    ];
 
     $.ajax({
         type: "POST",
@@ -81,7 +101,7 @@ function run_model_ajax(model_input_file_name) {
             trajectories: $('#trajectories').val(),
             end: $('#end').val(),
             species: JSON.stringify(species_dict),
-            parameters: JSON.stringify(sp_infl_para_dict)
+            parameters: JSON.stringify(sp_infl_para_list)
         },
         success: function (json_response) {
             task_id = json_response.task_id;
