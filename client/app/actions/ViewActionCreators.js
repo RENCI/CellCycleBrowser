@@ -34,5 +34,20 @@ module.exports = {
       actionType: Constants.SELECT_ALIGNMENT,
       alignment: alignment
     });
+  },
+  changeSpeciesValue: function(species, value) {
+    AppDispatcher.dispatch({
+      actionType: Constants.CHANGE_SPECIES_VALUE,
+      species: species,
+      value: value
+    });
+  },
+  changeSpeciesPhaseValue: function(species, phase, value) {
+    AppDispatcher.dispatch({
+      actionType: Constants.CHANGE_SPECIES_PHASE_VALUE,
+      species: species,
+      phase: phase,
+      value: value
+    });
   }
 };

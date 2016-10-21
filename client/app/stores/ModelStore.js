@@ -42,6 +42,28 @@ AppDispatcher.register(function (action) {
       model = modelList.length > 0 ? modelList[0] : {};
       ModelStore.emitChange();
       break;
+
+    case Constants.CHANGE_SPECIES_VALUE:
+      var i = model.species.map(function (d) {
+        return d.name;
+      }).indexOf(action.species);
+
+      model.species[i].value = action.value;
+      ModelStore.emitChange();
+      break;
+
+    case Constants.CHANGE_SPECIES_PHASE_VALUE:
+      var i = model.species.map(function (d) {
+        return d.name;
+      }).indexOf(action.species);
+
+      var j = model.phases.map(function (d) {
+        return d.name;
+      }).indexOf(action.phase);
+
+      model.speciesPhaseMatrix[i][j] = action.value;
+      ModelStore.emitChange();
+      break;
   }
 });
 
