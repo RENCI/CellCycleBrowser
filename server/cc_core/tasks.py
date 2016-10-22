@@ -13,8 +13,8 @@ from . import utils
 logger = logging.getLogger('django')
 
 @shared_task
-def run_model_task(filename, id_to_names, species, phases, traj='', end='', species_val_dict={},
-                   sp_infl_para_dict={}):
+def run_model_task(filename, id_to_names, species, phases, traj='', end='',
+                   species_val_dict={}, sp_infl_para_dict={}):
     if traj:
         num_traj = int(traj)
     else:
@@ -40,7 +40,8 @@ def run_model_task(filename, id_to_names, species, phases, traj='', end='', spec
         smod.ChangeParameter(str(id), float(val))
 
     smod.DoStochSim(mode="time", trajectories=num_traj, end=num_end)
-    smod.GetRegularGrid(n_samples=num_end/20)
+    n_tps = num_end/20+1
+    smod.GetRegularGrid(n_samples=n_tps)
     specs_data = smod.data_stochsim_grid.getSpecies(lbls=True)
     output_data = {}
     output_data['timeSteps'] = [row[0] for row in specs_data[0]]
