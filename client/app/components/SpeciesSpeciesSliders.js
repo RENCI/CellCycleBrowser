@@ -21,6 +21,8 @@ function SpeciesSpeciesSliders(props) {
 
         var downstream = props.model.species[k];
 
+        console.log(upstream.name, downstream.name);
+
         function handleChange(value) {
           props.onChange({
             phase: phase,
@@ -32,7 +34,8 @@ function SpeciesSpeciesSliders(props) {
 
         sliders.push(
           <SliderContainer
-            key={j * props.model.species.length + k}
+            //key={j * props.model.species.length + k}
+            key={phase.name + upstream.name + downstream.name}
             label={upstream.name + "→" + downstream.name}
             min={-1}
             max={1}
@@ -54,7 +57,7 @@ function SpeciesSpeciesSliders(props) {
         <div
           id={tabId}
           key={i}
-          className={"tab-pane fade" + i === 0 ? " in active" : ""}>
+          className={"tab-pane fade" + (i === 0 ? " in active" : "")}>
             {sliders}
         </div>
       )
@@ -77,7 +80,7 @@ function SpeciesSpeciesSliders(props) {
         <ul className="nav nav-tabs">
           {tabs.map(function(tab) { return tab.tab; })}
         </ul>
-        <div className="tabContent">
+        <div className="tab-content">
           {tabs.map(function(tab) { return tab.content; })}
         </div>
       </div>
