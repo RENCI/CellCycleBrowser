@@ -21,8 +21,6 @@ function SpeciesSpeciesSliders(props) {
 
         var downstream = props.model.species[k];
 
-        console.log(upstream.name, downstream.name);
-
         function handleChange(value) {
           props.onChange({
             phase: phase,
@@ -34,8 +32,7 @@ function SpeciesSpeciesSliders(props) {
 
         sliders.push(
           <SliderContainer
-            //key={j * props.model.species.length + k}
-            key={phase.name + upstream.name + downstream.name}
+            key={j * props.model.species.length + k}
             label={upstream.name + "→" + downstream.name}
             min={-1}
             max={1}
@@ -49,8 +46,8 @@ function SpeciesSpeciesSliders(props) {
 
     return {
       tab: (
-        <li className={i === 0 ? "active" : null} key={i}>
-          <a href={"#" + tabId}>{phase.name}</a>
+        <li className={"nav" + (i === 0 ? " active" : "")} key={i}>
+          <a href={"#" + tabId} data-toggle="tab">{phase.name}</a>
         </li>
       ),
       content: (
