@@ -49,5 +49,14 @@ module.exports = {
       phase: phase,
       value: value
     });
+  },
+  changeSpeciesSpeciesValue: function(phase, upstream, downstream, value) {
+    AppDispatcher.dispatch({
+      actionType: Constants.CHANGE_SPECIES_SPECIES_VALUE,
+      phase: phase,
+      upstream: upstream,
+      downstream: downstream,
+      value: value
+    });
   }
 };

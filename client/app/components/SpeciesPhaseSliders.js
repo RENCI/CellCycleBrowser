@@ -23,7 +23,7 @@ function SpeciesPhaseSliders(props) {
         });
       }
 
-      sliders.push (
+      sliders.push(
         <SliderContainer
           key={i * props.model.phases.length + j}
           label={species.name + "→" + phase.name}

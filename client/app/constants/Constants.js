@@ -8,6 +8,8 @@ module.exports = keyMirror({
   SELECT_ALIGNMENT: null,
 
   CHANGE_SPECIES_VALUE: null,
+  CHANGE_SPECIES_PHASE_VALUE: null,
+  CHANGE_SPECIES_SPECIES_VALUE: null,
 
   RECEIVE_PROFILE_LIST: null,
   RECEIVE_PROFILE: null
