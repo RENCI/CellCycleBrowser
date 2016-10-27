@@ -12,9 +12,8 @@ var divStyle = {
 }
 
 function SpeciesPhaseSliders(props) {
-  var sliders = [];
-  props.model.species.forEach(function(species, i) {
-    props.model.phases.forEach(function(phase, j) {
+  var tabs = props.model.phases.map(function(phase, i) {
+    var sliders = props.model.species.map(function(species, j) {
       function handleChange(value) {
         props.onChange({
           species: species,
@@ -23,9 +22,9 @@ function SpeciesPhaseSliders(props) {
         });
       }
 
-      sliders.push(
+      return(
         <SliderContainer
-          key={i * props.model.phases.length + j}
+          key={j}
           label={species.name + "→" + phase.name}
           min={-1}
           max={1}
@@ -33,6 +32,24 @@ function SpeciesPhaseSliders(props) {
           onChange={handleChange} />
       );
     });
+
+    var tabId = "speciesPhase" + phase.name;
+
+    return {
+      tab: (
+        <li className={"nav" + (i === 0 ? " active" : "")} key={i}>
+          <a href={"#" + tabId} data-toggle="tab">{phase.name}</a>
+        </li>
+      ),
+      content: (
+        <div
+          id={tabId}
+          key={i}
+          className={"tab-pane fade" + (i === 0 ? " in active" : "")}>
+            {sliders}
+        </div>
+      )
+    };
   });
 
   var collapseId = "speciesPhaseSliders";
@@ -48,7 +65,12 @@ function SpeciesPhaseSliders(props) {
           Species→phase interactions
       </button>
       <div className="in" id={collapseId} style={divStyle}>
-        {sliders}
+        <ul className="nav nav-tabs">
+          {tabs.map(function(tab) { return tab.tab; })}
+        </ul>
+        <div className="tab-content">
+          {tabs.map(function(tab) { return tab.content; })}
+        </div>
       </div>
     </div>
   );
