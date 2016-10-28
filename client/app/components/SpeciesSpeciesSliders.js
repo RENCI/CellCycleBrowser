@@ -33,7 +33,7 @@ function SpeciesSpeciesSliders(props) {
         sliders.push(
           <SliderContainer
             key={j * props.model.species.length + k}
-            label={upstream.name + "→" + downstream.name}
+            label={upstream.name + "→" + downstream.name + " (" + phase.name + ")"}
             min={-1}
             max={1}
             initialValue={props.model.speciesMatrices[i][j][k]}
