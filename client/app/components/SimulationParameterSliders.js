@@ -15,7 +15,7 @@ function handleTrajectoryChange(e) {
   console.log(e);
 }
 
-function ModelParameterSliders(props) {
+function SimulationParameterSliders(props) {
   var collapseId = "modelParameterSliders";
 
   return (
@@ -26,7 +26,7 @@ function ModelParameterSliders(props) {
         style={buttonStyle}
         data-toggle="collapse"
         data-target={"#" + collapseId}>
-          Model parameters
+          Simulation parameters
       </button>
       <div className="in" id={collapseId} style={divStyle}>
         <SliderContainer
@@ -41,4 +41,4 @@ function ModelParameterSliders(props) {
   );
 }
 
-module.exports = ModelParameterSliders;
+module.exports = SimulationParameterSliders;

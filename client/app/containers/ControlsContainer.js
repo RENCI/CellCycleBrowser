@@ -1,6 +1,6 @@
 var React = require("react");
 var ModelStore = require("../stores/ModelStore");
-var ModelParameterSliders = require("../components/ModelParameterSliders");
+var SimulationParameterSliders = require("../components/SimulationParameterSliders");
 var SpeciesValueSliders = require("../components/SpeciesValueSliders");
 var SpeciesPhaseSliders = require("../components/SpeciesPhaseSliders");
 var SpeciesSpeciesSliders = require("../components/SpeciesSpeciesSliders");
@@ -59,10 +59,10 @@ var ControlsContainer = React.createClass ({
             className="btn btn-success"
             style={{width: "100%"}}
             onClick={this.handleButtonClick}>
-              Run Model
+              Run simulation
           </button>
         </div>
-        <ModelParameterSliders />
+        <SimulationParameterSliders />
         <SpeciesValueSliders
           species={this.state.model.species}
           onChange={this.handleSpeciesSliderChange} />
