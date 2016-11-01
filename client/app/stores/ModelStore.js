@@ -28,13 +28,8 @@ var ModelStore = assign({}, EventEmitter.prototype, {
   }
 });
 
-AppDispatcher.register(function (action) {
+ModelStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
-    case Constants.SELECT_MODEL:
-      model = modelList[action.modelKey];
-      ModelStore.emitChange();
-      break;
-
     case Constants.RECEIVE_PROFILE:
       AppDispatcher.waitFor([ProfileStore.dispatchToken]);
       var profile = ProfileStore.getProfile();
@@ -43,25 +38,8 @@ AppDispatcher.register(function (action) {
       ModelStore.emitChange();
       break;
 
-    case Constants.CHANGE_SPECIES_VALUE:
-      var i = model.species.map(function (d) {
-        return d.name;
-      }).indexOf(action.species);
-
-      model.species[i].value = action.value;
-      ModelStore.emitChange();
-      break;
-
-    case Constants.CHANGE_SPECIES_PHASE_VALUE:
-      var i = model.species.map(function (d) {
-        return d.name;
-      }).indexOf(action.species);
-
-      var j = model.phases.map(function (d) {
-        return d.name;
-      }).indexOf(action.phase);
-
-      model.speciesPhaseMatrix[i][j] = action.value;
+    case Constants.SELECT_MODEL:
+      model = modelList[action.modelKey];
       ModelStore.emitChange();
       break;
   }

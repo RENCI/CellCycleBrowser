@@ -1,5 +1,5 @@
 var React = require("react");
-var ModelStore = require("../stores/ModelStore");
+var SimulationControlStore = require("../stores/SimulationControlStore");
 var SimulationParameterSliders = require("../components/SimulationParameterSliders");
 var SpeciesValueSliders = require("../components/SpeciesValueSliders");
 var SpeciesPhaseSliders = require("../components/SpeciesPhaseSliders");
@@ -9,46 +9,50 @@ var WebAPIUtils = require("../utils/WebAPIUtils");
 
 function getStateFromStore() {
   return {
-    model: ModelStore.getModel()
+    controls: SimulationControlStore.getControls()
   };
 }
 
 var ControlsContainer = React.createClass ({
   getInitialState: function () {
     return {
-      model: null
+      controls: null
     };
   },
   componentDidMount: function () {
-    ModelStore.addChangeListener(this.onModelChange);
+    SimulationControlStore.addChangeListener(this.onSimulationControlStoreChange);
   },
   componentWillUnmount: function () {
-    ModelStore.removeChangeListener(this.onModelChange);
+    SimulationControlStore.removeChangeListener(this.onSimulationControlStoreChange);
   },
-  onModelChange: function () {
+  onSimulationControlStoreChange: function () {
     this.setState(getStateFromStore());
   },
+  handleSimulationParameterChange: function (data) {
+    ViewActionCreators.changeSimulationParameter(
+      data.parameter, data.value
+    );
+  },
   handleSpeciesSliderChange: function (data) {
-    ViewActionCreators.changeSpeciesValue(
-      data.species.name, data.value
+    ViewActionCreators.changeSpeciesInitialValue(
+      data.species, data.value
     );
   },
   handleSpeciesPhaseSliderChange: function (data) {
-    ViewActionCreators.changeSpeciesPhaseValue(
-      data.species.name, data.phase.name, data.value
+    ViewActionCreators.changeSpeciesPhaseInteraction(
+      data.species, data.phase, data.value
     );
   },
   handleSpeciesSpeciesSliderChange: function (data) {
-    console.log(data);
-    ViewActionCreators.changeSpeciesSpeciesValue(
-      data.phase.name, data.upstream.name, data.downstream.name, data.value
+    ViewActionCreators.changeSpeciesSpeciesInteraction(
+      data.phase, data.upstream, data.downstream, data.value
     );
   },
-  handleButtonClick: function (data) {
-    WebAPIUtils.runModel(ModelStore.getModel());
+  handleButtonClick: function () {
+    WebAPIUtils.runSimulation();
   },
   render: function () {
-    if (!this.state.model) return null;
+    if (!this.state.controls) return null;
 
     return (
       <div>
@@ -62,15 +66,22 @@ var ControlsContainer = React.createClass ({
               Run simulation
           </button>
         </div>
-        <SimulationParameterSliders />
+        <SimulationParameterSliders
+          parameters={this.state.controls.parameters}
+          onChange={this.handleSimulationParameterChange} />
         <SpeciesValueSliders
-          species={this.state.model.species}
+          species={this.state.controls.species}
+          values={this.state.controls.speciesInitialValues}
           onChange={this.handleSpeciesSliderChange} />
         <SpeciesPhaseSliders
-          model={this.state.model}
+          species={this.state.controls.species}
+          phases={this.state.controls.phases}
+          matrix={this.state.controls.speciesPhaseMatrix}
           onChange={this.handleSpeciesPhaseSliderChange} />
         <SpeciesSpeciesSliders
-          model={this.state.model}
+          species={this.state.controls.species}
+          phases={this.state.controls.phases}
+          matrices={this.state.controls.speciesSpeciesMatrices}
           onChange={this.handleSpeciesSpeciesSliderChange} />
       </div>
     );

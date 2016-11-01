@@ -12,8 +12,8 @@ var divStyle = {
 }
 
 function SpeciesPhaseSliders(props) {
-  var tabs = props.model.phases.map(function(phase, i) {
-    var sliders = props.model.species.map(function(species, j) {
+  var tabs = props.phases.map(function(phase, i) {
+    var sliders = props.species.map(function(species, j) {
       function handleChange(value) {
         props.onChange({
           species: species,
@@ -22,23 +22,25 @@ function SpeciesPhaseSliders(props) {
         });
       }
 
+      var value = props.matrix[species][phase];
+
       return(
         <SliderContainer
           key={j}
-          label={species.name + "→" + phase.name}
-          min={-1}
-          max={1}
-          initialValue={props.model.speciesPhaseMatrix[i][j]}
+          label={species + "→" + phase}
+          min={value.min}
+          max={value.max}
+          initialValue={value.value}
           onChange={handleChange} />
       );
     });
 
-    var tabId = "speciesPhase" + phase.name;
+    var tabId = "speciesPhase" + phase;
 
     return {
       tab: (
         <li className={"nav" + (i === 0 ? " active" : "")} key={i}>
-          <a href={"#" + tabId} data-toggle="tab">{phase.name}</a>
+          <a href={"#" + tabId} data-toggle="tab">{phase}</a>
         </li>
       ),
       content: (
@@ -77,7 +79,9 @@ function SpeciesPhaseSliders(props) {
 }
 
 SpeciesPhaseSliders.propTypes = {
-  model: PropTypes.object.isRequired,
+  species: PropTypes.arrayOf(PropTypes.string).isRequired,
+  phases: PropTypes.arrayOf(PropTypes.string).isRequired,
+  matrix: PropTypes.object.isRequired,
   onChange: PropTypes.func.isRequired
 };
 

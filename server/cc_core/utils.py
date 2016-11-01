@@ -272,6 +272,7 @@ def load_model(model):
     modelData = {}
     modelData['name'] = model['name']
     modelData['description'] = model['description']
+    modelData['fileName'] = model['fileName']
 
     data = json.loads(extract_info_from_model(model['fileName']))
     modelData['species'] = data['species']

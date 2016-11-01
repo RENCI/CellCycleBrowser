@@ -12,14 +12,11 @@ var divStyle = {
 }
 
 function SpeciesSpeciesSliders(props) {
-  var tabs = props.model.phases.map(function(phase, i) {
+  var tabs = props.phases.map(function (phase, i) {
     var sliders = [];
-    for (var j = 0; j < props.model.species.length; j++) {
-      var upstream = props.model.species[j];
-      for (var k = 0; k < props.model.species.length; k++) {
-        if (k === j) continue;
-
-        var downstream = props.model.species[k];
+    props.species.forEach(function (upstream, j) {
+      props.species.forEach(function (downstream, k) {
+        if (k === j) return;
 
         function handleChange(value) {
           props.onChange({
@@ -30,24 +27,31 @@ function SpeciesSpeciesSliders(props) {
           });
         }
 
+        var value = props.matrices[phase][upstream][downstream];
+
         sliders.push(
           <SliderContainer
-            key={j * props.model.species.length + k}
-            label={upstream.name + "→" + downstream.name + " (" + phase.name + ")"}
-            min={-1}
-            max={1}
-            initialValue={props.model.speciesMatrices[i][j][k]}
+            key={j * props.species.length + k}
+            label={upstream + "→" + downstream + " (" + phase + ")"}
+            min={value.min}
+            max={value.max}
+            initialValue={value.value}
             onChange={handleChange} />
         );
-      }
-    }
 
-    var tabId = "speciesSpecies" + phase.name;
+        var numSpecies = props.species.length;
+        if (j < numSpecies - 1 && k === numSpecies - 1) {
+          sliders.push(<hr key={"line" + j} />);
+        }
+      });
+    });
+
+    var tabId = "speciesSpecies" + phase;
 
     return {
       tab: (
         <li className={"nav" + (i === 0 ? " active" : "")} key={i}>
-          <a href={"#" + tabId} data-toggle="tab">{phase.name}</a>
+          <a href={"#" + tabId} data-toggle="tab">{phase}</a>
         </li>
       ),
       content: (
@@ -86,7 +90,9 @@ function SpeciesSpeciesSliders(props) {
 }
 
 SpeciesSpeciesSliders.propTypes = {
-  model: PropTypes.object.isRequired,
+  species: PropTypes.arrayOf(PropTypes.string).isRequired,
+  phases: PropTypes.arrayOf(PropTypes.string).isRequired,
+  matrices: PropTypes.object.isRequired,
   onChange: PropTypes.func.isRequired
 };
 

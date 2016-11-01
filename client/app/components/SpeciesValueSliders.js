@@ -20,13 +20,15 @@ function SpeciesValueSliders(props) {
       });
     };
 
+    var value = props.values[species];
+
     return (
       <SliderContainer
         key={i}
-        label={species.name}
-        min={species.min}
-        max={species.max}
-        initialValue={species.value}
+        label={species}
+        min={value.min}
+        max={value.max}
+        initialValue={value.value}
         onChange={handleChange} />
     );
   });
@@ -51,7 +53,8 @@ function SpeciesValueSliders(props) {
 }
 
 SpeciesValueSliders.propTypes = {
-  species: PropTypes.arrayOf(PropTypes.object).isRequired,
+  species: PropTypes.arrayOf(PropTypes.string).isRequired,
+  values: PropTypes.object.isRequired,
   onChange: PropTypes.func.isRequired
 };
 

@@ -1,4 +1,6 @@
 var ServerActionCreators = require("../actions/ServerActionCreators");
+var ModelStore = require("../stores/ModelStore");
+var SimulationControlStore = require("../stores/SimulationControlStore");
 var d3 = require("d3");
 
 // Get a cookie for cross site request forgery (CSRF) protection
@@ -79,6 +81,55 @@ function createCellData(d) {
   return cd;
 }
 
+function simulationParameters() {
+  var model = ModelStore.getModel();
+  var controls = SimulationControlStore.getControls();
+
+  var trajectories = controls.parameters[controls.parameters.map(function (parameter) {
+    return parameter.name;
+  }).indexOf("numTrajectories")].value;
+
+  var species = controls.species.map(function (species) {
+    return {
+      species: species,
+      value: controls.speciesInitialValues[species].value
+    };
+  });
+
+  var parameters = [];
+
+  controls.species.forEach(function (species) {
+    controls.phases.forEach(function (phase) {
+      parameters.push({
+        species: species,
+        phase: phase,
+        value: controls.speciesPhaseMatrix[species][phase].value
+      });
+    });
+  });
+
+  controls.phases.forEach(function (phase) {
+    controls.species.forEach(function (upstream, i) {
+      controls.species.forEach(function (downstream, j) {
+        if (i === j) return;
+
+        parameters.push({
+          phase: phase,
+          upstream: upstream,
+          downstream: downstream,
+          value: controls.speciesSpeciesMatrices[phase][upstream][downstream].value
+        });
+      });
+    });
+  });
+
+  return {
+    trajectories: trajectories,
+    species: species,
+    parameters: parameters
+  };
+}
+
 module.exports = {
   getProfileList: function () {
     setupAjax();
@@ -127,8 +178,21 @@ module.exports = {
       }
     });
   },
-*/  
-  runModel: function(model) {
-    console.log(model);
+*/
+  runSimulation: function() {
+    setupAjax();
+
+    $.ajax({
+      type: "POST",
+      url: "/runmodel/" + ModelStore.getModel().fileName,
+      data: simulationParameters(),
+      success: function (data) {
+        console.log(data);
+        //ServerActionCreators.receiveModelOutput(data);
+      },
+      error: function (xhr, textStatus, errorThrown) {
+        console.log(textStatus + ": " + errorThrown);
+      }
+    });
   }
 }

@@ -11,11 +11,27 @@ var divStyle = {
   marginRight: 10
 }
 
-function handleTrajectoryChange(e) {
-  console.log(e);
-}
-
 function SimulationParameterSliders(props) {
+  var sliders = props.parameters.map(function (parameter, i) {
+    function handleChange(value) {
+      props.onChange({
+        parameter: parameter.name,
+        value: value
+      });
+    }
+
+    return (
+      <SliderContainer
+        key={i}
+        label={parameter.label}
+        min={parameter.min}
+        max={parameter.max}
+        step={1}
+        initialValue={parameter.value}
+        onChange={handleChange} />
+    );
+  });
+
   var collapseId = "modelParameterSliders";
 
   return (
@@ -29,16 +45,15 @@ function SimulationParameterSliders(props) {
           Simulation parameters
       </button>
       <div className="in" id={collapseId} style={divStyle}>
-        <SliderContainer
-          label={"Number of trajectories"}
-          min={1}
-          max={20}
-          step={1}
-          initialValue={1}
-          onChange={handleTrajectoryChange} />
+        {sliders}
       </div>
     </div>
   );
 }
+
+SimulationParameterSliders.propTypes = {
+  parameters: PropTypes.arrayOf(PropTypes.object).isRequired,
+  onChange: PropTypes.func.isRequired
+};
 
 module.exports = SimulationParameterSliders;

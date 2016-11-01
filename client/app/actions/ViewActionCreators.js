@@ -35,24 +35,31 @@ module.exports = {
       alignment: alignment
     });
   },
-  changeSpeciesValue: function(species, value) {
+  changeSimulationParameter: function(parameter, value) {
     AppDispatcher.dispatch({
-      actionType: Constants.CHANGE_SPECIES_VALUE,
+      actionType: Constants.CHANGE_SIMULATION_PARAMETER,
+      parameter: parameter,
+      value: value
+    });
+  },
+  changeSpeciesInitialValue: function(species, value) {
+    AppDispatcher.dispatch({
+      actionType: Constants.CHANGE_SPECIES_INITIAL_VALUE,
       species: species,
       value: value
     });
   },
-  changeSpeciesPhaseValue: function(species, phase, value) {
+  changeSpeciesPhaseInteraction: function(species, phase, value) {
     AppDispatcher.dispatch({
-      actionType: Constants.CHANGE_SPECIES_PHASE_VALUE,
+      actionType: Constants.CHANGE_SPECIES_PHASE_INTERACTION,
       species: species,
       phase: phase,
       value: value
     });
   },
-  changeSpeciesSpeciesValue: function(phase, upstream, downstream, value) {
+  changeSpeciesSpeciesInteraction: function(phase, upstream, downstream, value) {
     AppDispatcher.dispatch({
-      actionType: Constants.CHANGE_SPECIES_SPECIES_VALUE,
+      actionType: Constants.CHANGE_SPECIES_SPECIES_INTERACTION,
       phase: phase,
       upstream: upstream,
       downstream: downstream,
