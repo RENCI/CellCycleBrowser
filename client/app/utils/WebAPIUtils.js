@@ -125,9 +125,63 @@ function simulationParameters() {
 
   return {
     trajectories: trajectories,
+    end: 100,
     species: species,
     parameters: parameters
   };
+}
+
+function requestSimulationOutput(url) {
+  setupAjax();
+
+  $.ajax({
+    type: "POST",
+    url: url,
+    success: function (data) {
+      ServerActionCreators.receiveSimulationOutput(data);
+    },
+    error: function (xhr, textStatus, errorThrown) {
+      console.log(textStatus + ": " + errorThrown);
+    }
+  });
+}
+
+function pollSimulation(taskId) {
+  var timeOutStatusId = -1;
+
+  $.ajax({
+    dataType: "json",
+    cache: false,
+    timeout: 60000,
+    type: "POST",
+    url: '/check_task_status/',
+    data: {
+      task_id: taskId
+    },
+    success: function(data) {
+      console.log(data);
+
+      if (data.result) {
+        if (timeOutStatusId > -1) {
+          clearTimeout(timeOutStatusId);
+        }
+
+        requestSimulationOutput("/get_model_result/" + data.result);
+      }
+      else {
+        timeOutStatusId = setTimeout(function () {
+          pollSimulation(taskId);
+        }, 1000);
+      }
+    },
+    error: function (xhr, textStatus, errorThrown) {
+      if (timeOutStatusId > -1) {
+        clearTimeout(timeOutStatusId);
+      }
+
+      console.log(textStatus + ": " + errorThrown);
+    }
+  });
 }
 
 module.exports = {
@@ -179,7 +233,7 @@ module.exports = {
     });
   },
 */
-  runSimulation: function() {
+  runSimulation: function () {
     setupAjax();
 
     $.ajax({
@@ -187,8 +241,12 @@ module.exports = {
       url: "/runmodel/" + ModelStore.getModel().fileName,
       data: simulationParameters(),
       success: function (data) {
-        console.log(data);
-        //ServerActionCreators.receiveModelOutput(data);
+        if (data.task_id) {
+          pollSimulation(data.task_id);
+        }
+        else {
+          console.log("Empty task_id. Simulation did not start successfully");
+        }
       },
       error: function (xhr, textStatus, errorThrown) {
         console.log(textStatus + ": " + errorThrown);

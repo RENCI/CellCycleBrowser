@@ -14,5 +14,13 @@ module.exports = {
       actionType: Constants.RECEIVE_PROFILE,
       profile: profile
     });
+  },
+  receiveSimulationOutput: function(output) {
+    console.log(output);
+
+    AppDispatcher.dispatch({
+      actionType: Constants.RECEIVE_SIMULATION_OUTPUT,
+      output: output
+    });
   }
 };
