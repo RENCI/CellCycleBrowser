@@ -16,7 +16,7 @@ function SpeciesSpeciesSliders(props) {
     var sliders = [];
     props.species.forEach(function (upstream, j) {
       props.species.forEach(function (downstream, k) {
-        if (k === j) return;
+        if (j === k) return;
 
         function handleChange(value) {
           props.onChange({

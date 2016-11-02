@@ -85,6 +85,8 @@ function simulationParameters() {
   var model = ModelStore.getModel();
   var controls = SimulationControlStore.getControls();
 
+  console.log(controls);
+
   var trajectories = controls.parameters[controls.parameters.map(function (parameter) {
     return parameter.name;
   }).indexOf("numTrajectories")].value;
