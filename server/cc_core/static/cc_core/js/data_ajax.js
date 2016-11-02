@@ -98,6 +98,8 @@ function run_model_ajax(model_input_file_name) {
         type: "POST",
         url: '/runmodel/' + model_input_file_name,
         data: {
+            timeStepSize: 20,
+            timeUnit: 'minute',
             trajectories: $('#trajectories').val(),
             end: $('#end').val(),
             species: JSON.stringify(species_dict),
@@ -107,8 +109,8 @@ function run_model_ajax(model_input_file_name) {
             task_id = json_response.task_id;
             if(task_id) {
                 $('#task_id').val(task_id);
-                $('#simulation-status-info').show();
                 window.location.reload();
+                $('#simulation-status-info').show();
             }
             else {
                 console.log("returned task_id is empty, model run did not start successfully.")
@@ -122,10 +124,39 @@ function run_model_ajax(model_input_file_name) {
 }
 
 
+function terminate_model_ajax() {
+    $.ajax({
+        dataType: "json",
+        cache: false,
+        type: "POST",
+        url: '/terminate_model_run/',
+        data: {
+            task_id: $('#task_id').val()
+        },
+        success: function(data) {
+            // model run has been terminated successfully, clear up task status polling
+            $("#loading").html('');
+            if(sim_status_timeout_id > -1)
+                clearTimeout(sim_status_timeout_id);
+            // enable run model button now that model run is done
+            $("#btn-run-model").removeAttr('disabled');
+            $('#task_id').val('');
+            $("#simulation-status-info").html('Model run has been terminated successfully');
+            $('#simulation-status-info').show();
+        },
+        error: function (xhr, errmsg, err) {
+            console.log("Terminating model run failed: " + errmsg);
+            alert("Terminating model run failed: " + errmsg);
+        }
+    });
+}
+
+
 function update_simulation_status(task_id) {
     sim_status_timeout_id=-1;
     // disable run model button to prevent it from being clicked again
     $('#btn-run-model').attr('disabled', 'disabled');
+    $('#simulation-status-info').show();
     $.ajax({
         dataType: "json",
         cache: false,

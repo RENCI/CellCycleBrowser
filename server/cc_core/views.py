@@ -79,12 +79,18 @@ def send_parameter(request):
 
 
 def run_model(request, filename=''):
+    import sys
+    sys.path.append("/home/docker/pycharm-debug")
+    import pydevd
+    pydevd.settrace('172.17.0.1', port=21000, suspend=False)
     if filename:
         id_to_names, name_to_ids, species, phases = \
             utils.extract_species_and_phases_from_model(filename)
 
         traj = request.POST.get('trajectories', 1)
         end = request.POST.get('end', 100)
+        time_step_size = request.POST.get('timeStepSize', 20)
+        time_unit = request.POST.get('timeUnit', 'second')
         if 'species' not in request.POST:
             sp_name_to_val_dict = {}
         else:
@@ -113,6 +119,7 @@ def run_model(request, filename=''):
             sp_id_infl_para_dict[para_id] = val
 
         task = run_model_task.apply_async((filename, id_to_names, species, phases, traj, end,
+                                           time_step_size, time_unit,
                                            sp_id_to_val_dict, sp_id_infl_para_dict),
                                           countdown=3)
 
@@ -138,7 +145,7 @@ def get_model_result(request, filename):
     return HttpResponse(status=400)
 
 
-def check_task_status(request, task_id=None):
+def check_task_status(request):
     '''
     A view function to tell the client if the asynchronous run_model() task is done.
     Args:
@@ -146,8 +153,7 @@ def check_task_status(request, task_id=None):
     Returns:
         JSON response to return result from asynchronous task run_model()
     '''
-    if not task_id:
-        task_id = request.POST.get('task_id')
+    task_id = request.POST.get('task_id')
     result = run_model_task.AsyncResult(task_id)
     if result.ready():
         return HttpResponse(json.dumps({'result': result.get()}),
@@ -155,6 +161,23 @@ def check_task_status(request, task_id=None):
     else:
         return HttpResponse(json.dumps({"result": None}),
                             content_type="application/json")
+
+
+def terminate_model_run(request):
+    '''
+    A view function to terminate model run task at user's request.
+    Args:
+        request: an ajax request to terminate model run task
+    Returns:
+        JSON response to indicate success or failure
+    '''
+    try:
+        task_id = request.POST.get('task_id')
+        run_model_task.AsyncResult(task_id).revoke(terminate=True)
+    except Exception as ex:
+        return JsonResponse({'status':'failure', 'message': ex.message}, status=500)
+
+    return JsonResponse({'status': 'success'})
 
 
 def extract_parameters(request, filename):

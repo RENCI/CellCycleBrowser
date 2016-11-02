@@ -36,6 +36,7 @@
   <input type="hidden" id="task_id" name="task_id" value=''>
   <div id='simulation-status-info' class='alert alert-success' style='display:none'>
       Please wait for the model simulation run to finish<span id='loading'>.</span>
+      <button id="btn-kill-model" type="button" class="btn btn-default margin_left" onclick="terminate_model_ajax(); return false;">Terminate Simulation</button>
   </div>
   <div id="app"></div>
   <script type="text/javascript" src="{% static 'cc_core/js/index_bundle.js' %}"></script>
