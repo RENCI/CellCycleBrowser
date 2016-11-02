@@ -1,6 +1,7 @@
 var ServerActionCreators = require("../actions/ServerActionCreators");
 var ModelStore = require("../stores/ModelStore");
 var SimulationControlStore = require("../stores/SimulationControlStore");
+var CellDataStore = require("../stores/CellDataStore");
 var d3 = require("d3");
 
 // Get a cookie for cross site request forgery (CSRF) protection
@@ -54,6 +55,8 @@ function createCellData(d) {
     return d !== "Species" && d !== "Cell" && d !== "Feature";
   });
 
+  cd.timeStep = +timeKeys[1] - +timeKeys[0];
+
   // Reformat data
   var species = nest.map(function(d) {
     return {
@@ -84,6 +87,7 @@ function createCellData(d) {
 function simulationParameters() {
   var model = ModelStore.getModel();
   var controls = SimulationControlStore.getControls();
+  var cellData = CellDataStore.getCellData();
 
   console.log(controls);
 
@@ -125,9 +129,14 @@ function simulationParameters() {
     });
   });
 
+
+
   return {
     trajectories: trajectories,
     end: 100,
+//    timeUnit: cellData.timeUnit,
+    timeUnit: "minutes",
+    timeStepSize: cellData.timeStep,
     species: species,
     parameters: parameters
   };
