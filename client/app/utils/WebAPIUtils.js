@@ -101,8 +101,8 @@ function simulationParameters() {
   controls.species.forEach(function (species) {
     controls.phases.forEach(function (phase) {
       parameters.push({
-        species: species,
-        phase: phase,
+        upstream: species,
+        downstream: phase,
         value: controls.speciesPhaseMatrix[species][phase].value
       });
     });
