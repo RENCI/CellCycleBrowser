@@ -37,6 +37,10 @@ function Species(props) {
           </div>
         </div>
         <div className="col-sm-9">
+          {props.simulationData ?
+            <HeatLineContainer
+              data={props.simulationData}
+              alignment={props.alignment} /> : null}
           <HeatLineContainer
             data={featureData}
             alignment={props.alignment} />
@@ -57,7 +61,12 @@ Species.propTypes = {
   name: PropTypes.string.isRequired,
   cells: PropTypes.arrayOf(PropTypes.object).isRequired,
   featureKey: PropTypes.string.isRequired,
+  simulationData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
   alignment: PropTypes.string.isRequired
-},
+};
+
+Species.defaultProps = {
+  simulationData: null,
+};
 
 module.exports = Species;

@@ -4,6 +4,7 @@ var React = require("react");
 var CellDataStore = require("../stores/CellDataStore");
 var ModelStore = require("../stores/ModelStore");
 var FeatureStore = require("../stores/FeatureStore");
+var SimulationOutputStore = require("../stores/SimulationOutputStore");
 var AlignmentStore = require("../stores/AlignmentStore");
 var BrowserControls = require("../components/BrowserControls");
 var Species = require("../components/Species");
@@ -26,6 +27,12 @@ function getStateFromFeatureStore() {
     featureList: FeatureStore.getFeatureList(),
     featureKey: FeatureStore.getFeatureKey()
   };
+}
+
+function getStateFromSimulationOutputStore() {
+  return {
+    simulationOutput: SimulationOutputStore.getSimulationOutput()
+  }
 }
 
 function getStateFromAlignmentStore() {
@@ -53,6 +60,7 @@ var BrowserContainer = React.createClass({
       model: null,
       featureList: [],
       featureKey: "",
+      simulationOutput: getStateFromSimulationOutputStore().simulationOutput,
       alignment: getStateFromAlignmentStore().alignment
     };
   },
@@ -60,6 +68,7 @@ var BrowserContainer = React.createClass({
     CellDataStore.addChangeListener(this.onCellDataChange);
     ModelStore.addChangeListener(this.onModelChange);
     FeatureStore.addChangeListener(this.onFeatureChange);
+    SimulationOutputStore.addChangeListener(this.onSimulationOutputChange);
     AlignmentStore.addChangeListener(this.onAlignmentChange);
     tooltips();
   },
@@ -67,6 +76,7 @@ var BrowserContainer = React.createClass({
     CellDataStore.removeChangeListener(this.onCellDataChange);
     ModelStore.removeChangeListener(this.onModelChange);
     FeatureStore.removeChangeListener(this.onFeatureChange);
+    SimulationOutputStore.removeChangeListener(this.onSimulationOutputChange);
     AlignmentStore.removeChangeListener(this.onAlignmentChange);
   },
   componentDidUpdate: function () {
@@ -81,6 +91,9 @@ var BrowserContainer = React.createClass({
   onFeatureChange: function () {
     this.setState(getStateFromFeatureStore());
   },
+  onSimulationOutputChange: function () {
+    this.setState(getStateFromSimulationOutputStore());
+  },
   onAlignmentChange: function () {
     this.setState(getStateFromAlignmentStore());
   },
@@ -92,12 +105,26 @@ var BrowserContainer = React.createClass({
                     : [];
 
     var species = speciesData.map(function (species, i) {
+      // Get simulation output data for this species
+      var simulationData = null;
+      if (this.state.simulationOutput) {
+        // Search for name in case indeces have been switched
+        var index = this.state.simulationOutput.species.map(function (s) {
+          return s.name;
+        }).indexOf(species.name);
+
+        if (index >= 0) {
+          simulationData = [this.state.simulationOutput.species[index].values];
+        }
+      }
+
       return (
         <Species
           key={i}
           name={species.name}
           cells={species.cells}
           featureKey={this.state.featureKey}
+          simulationData={simulationData}
           alignment={this.state.alignment} />
       );
     }.bind(this));

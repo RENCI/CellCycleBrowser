@@ -16,8 +16,6 @@ module.exports = {
     });
   },
   receiveSimulationOutput: function(output) {
-    console.log(output);
-
     AppDispatcher.dispatch({
       actionType: Constants.RECEIVE_SIMULATION_OUTPUT,
       output: output

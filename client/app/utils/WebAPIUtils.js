@@ -57,6 +57,7 @@ function createCellData(d) {
   });
 
   cd.timeStep = +timeKeys[1] - +timeKeys[0];
+  cd.timeEnd = +timeKeys[timeKeys.length - 1];
 
   // Reformat data
   var species = nest.map(function(d) {
@@ -132,7 +133,7 @@ function simulationParameters() {
 
   return {
     trajectories: trajectories,
-    end: 100,
+    end: cellData.timeEnd,
     timeUnit: cellData.timeUnit,
     timeStepSize: cellData.timeStep,
     species: species,
