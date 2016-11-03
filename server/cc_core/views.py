@@ -79,10 +79,6 @@ def send_parameter(request):
 
 
 def run_model(request, filename=''):
-    import sys
-    sys.path.append("/home/docker/pycharm-debug")
-    import pydevd
-    pydevd.settrace('172.17.0.1', port=21000, suspend=False)
     if filename:
         id_to_names, name_to_ids, species, phases = \
             utils.extract_species_and_phases_from_model(filename)
