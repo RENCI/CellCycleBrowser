@@ -40,6 +40,7 @@ function createCellData(d) {
   var cd = {};
   cd.name = d.name;
   cd.description = d.description;
+  cd.timeUnit = d.timeUnit;
 
   var data = d3.csvParse(d.csv);
 
@@ -129,13 +130,10 @@ function simulationParameters() {
     });
   });
 
-
-
   return {
     trajectories: trajectories,
     end: 100,
-//    timeUnit: cellData.timeUnit,
-    timeUnit: "minutes",
+    timeUnit: cellData.timeUnit,
     timeStepSize: cellData.timeStep,
     species: species,
     parameters: parameters
