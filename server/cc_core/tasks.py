@@ -57,9 +57,12 @@ def run_model_task(filename, id_to_names, species, phases, traj='', end='',
     #    num_end /= 3600
     # elif time_unit == 'minute':
     #   num_end /= 60
-    n_tps = num_end/ts_size + 1
-    smod.GetRegularGrid(n_samples=n_tps)
-    specs_data = smod.data_stochsim_grid.getSpecies(lbls=True)
+    # n_tps = num_end/ts_size + 1
+    # smod.GetRegularGrid(n_samples=n_tps)
+    # specs_data = smod.data_stochsim_grid.getSpecies(lbls=True)
+
+    # return the original raw model output without putting the output on a regular grid
+    specs_data = smod.data_stochsim.getSpecies(lbls=True)
     output_data = {}
     output_data['timeSteps'] = [row[0] for row in specs_data[0]]
     output_data['species'] = []

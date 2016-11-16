@@ -304,7 +304,7 @@ def get_phase_start_stop(data):
     :param data: the time series data list
     :return: the indices in the data list for the start and stop
     """
-    if data[0] == 1:
+    if data[0] > 0:
         phase_start_idx = 0
         phase_stop_idx = -1
         start_idx = 1 # the index in the data list to start searching
@@ -319,7 +319,7 @@ def get_phase_start_stop(data):
         if phase_start_idx != -1 and val == 0: # phase has stopped, record the stop
             phase_stop_idx = idx
             break
-        if phase_start_idx == -1 and val == 1:
+        if phase_start_idx == -1 and val > 0:
             phase_start_idx = idx
 
     return phase_start_idx, phase_stop_idx
