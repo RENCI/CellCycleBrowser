@@ -47,7 +47,7 @@ def run_model_task(filename, id_to_names, species, phases, traj='', end='',
 
     # TO DO: change this to a custom simulation method that automatically detects when the last
     # phase ends without requiring end time input
-    smod.DoStochSim(mode="time", trajectories=num_traj, end=num_end)
+    smod.DoStochSim(mode="time", trajectories=num_traj, end=num_end, cellcycle=True)
 
     # TO DO: need to align model output with cell data taking into account time unit after custom
     # simulation method is done and used and after the SBML input model can simulation for long

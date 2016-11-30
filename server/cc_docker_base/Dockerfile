@@ -69,15 +69,3 @@ RUN pip install \
     requests==2.9.1 \
     sh==1.11
 
-# install StochPy
-RUN pip install scipy
-RUN pip install python-libsbml
-WORKDIR /usr/src
-RUN wget https://sourceforge.net/projects/stochpy/files/StochPy-2.3/StochPy-2.3.zip
-RUN unzip StochPy-2.3.zip
-WORKDIR /usr/src/StochPy-2.3
-RUN python setup.py install
-
-# Cleanup
-RUN apt-get clean
-RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/src/StochPy-2.3.zip /usr/src/StochPy-2.3
