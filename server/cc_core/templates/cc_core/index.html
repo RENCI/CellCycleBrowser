@@ -18,21 +18,10 @@
 <body>
   <div id="main"> {{ text_to_display }}</div>
     &nbsp;
-  <form action='' method='post' style='float: right'>
-      {% csrf_token %}
-      <span id ="model-run">
-          Trajectories:<input type="text" class="margin_left" name="trajectories" id="trajectories" value="1">
-          End time:<input type="text" class="margin_left" name="end" id="end" value="100">
-          53BP1: <input type="text" class="margin_left" name="53BP1" id="53BP1" value="5">
-          PCNA:<input type="text" class="margin_left" name="PCNA" id="PCNA" value="2">
-          P16:<input type="text" class="margin_left" name="p16" id="p16" value="5">
-          Influence of 53BP1 on G1: <input type="text" class="margin_left" name="53BP1_G1" id="53BP1_G1" value="-0.3">
-          Influence of 53BP1 on S:<input type="text" class="margin_left" name="53BP1_S" id="53BP1_S" value="0">
-          Influence of 53BP1 on G2:<input type="text" class="margin_left" name="53BP1_G2" id="53BP1_G2" value="-0.1">
-          Influence of 53BP1 on p16: <input type="text" class="margin_left" name="53BP1_p16" id="53BP1_p16" value="1">
-          <button id="btn-run-model" type="button" class="btn btn-default margin_left" onclick="run_model_ajax('{{ model_input_file_name }}'); return false;">Run Simulation</button>
-      </span>
-  </form>
+  <span id ="model-run">
+    <button id="btn-run-model" type="button" class="btn btn-default margin_left" onclick="run_model_ajax('{{ model_input_file_name }}'); return false;">Run Simulation</button>
+  </span>
+
   <input type="hidden" id="task_id" name="task_id" value=''>
   <div id='simulation-status-info' class='alert alert-success' style='display:none'>
       Please wait for the model simulation run to finish<span id='loading'>.</span>

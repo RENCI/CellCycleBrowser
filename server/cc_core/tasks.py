@@ -31,8 +31,7 @@ def run_model_task(filename, id_to_names, species, phases, traj='', end='',
     else:
         ts_size = 20
 
-    plot_output_fname = os.path.splitext(filename)[0] + "_SpeciesTimeSeries_" \
-                        + traj + "_" + end + ".json"
+    plot_output_fname = os.path.splitext(filename)[0] + "_SpeciesTimeSeries_" + traj + ".json"
     plot_output_path_fname = os.path.join(settings.MODEL_OUTPUT_PATH, plot_output_fname)
 
     smod = stochpy.SSA(IsInteractive=False)

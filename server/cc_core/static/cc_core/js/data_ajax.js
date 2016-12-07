@@ -61,10 +61,11 @@ function run_model_ajax(model_input_file_name) {
             }
         }
     });
+
     var species_dict = {
-        "53BP1": $('#53BP1').val(),
-        "PCNA": $('#PCNA').val(),
-        "p16": $('#p16').val()
+        "53BP1": '5',
+        "PCNA": '2',
+        "p16": '5'
     };
 
     var sp_infl_para_list = [
@@ -72,25 +73,25 @@ function run_model_ajax(model_input_file_name) {
             "phase": '',
             "upstream": "53BP1",
             "downstream": "G1",
-            "value": $('#53BP1_G1').val()
+            "value": '-0.3'
         },
         {
             "phase": '',
             "upstream": "53BP1",
             "downstream": "S",
-            "value": $('#53BP1_S').val()
+            "value": '0'
         },
         {
             "phase": '',
             "upstream": "53BP1",
             "downstream": "G2",
-            "value": $('#53BP1_G2').val()
+            "value": '-0.1'
         },
         {
             "phase": '',
             "upstream": "53BP1",
             "downstream": "p16",
-            "value": $('#53BP1_p16').val()
+            "value": '1'
         }
     ];
 
@@ -100,8 +101,7 @@ function run_model_ajax(model_input_file_name) {
         data: {
             timeStepSize: 20,
             timeUnit: 'minute',
-            trajectories: $('#trajectories').val(),
-            end: $('#end').val(),
+            trajectories: '1',
             species: JSON.stringify(species_dict),
             parameters: JSON.stringify(sp_infl_para_list)
         },
