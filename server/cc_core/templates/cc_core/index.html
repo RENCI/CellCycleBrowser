@@ -17,6 +17,7 @@
 </head>
 <body>
   <div id="main"> {{ text_to_display }}</div>
+   {% csrf_token %}
     &nbsp;
   <span id ="model-run">
     <button id="btn-run-model" type="button" class="btn btn-default margin_left" onclick="run_model_ajax('{{ model_input_file_name }}'); return false;">Run Simulation</button>
