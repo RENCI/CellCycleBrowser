@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import os
+import sys
 import logging
 import json
 
@@ -34,8 +35,9 @@ def run_model_task(filename, id_to_names, species, phases, traj='', species_val_
         smod.ChangeParameter(str(id), float(val))
 
     # call a custom simulation method by setting cellcycle to True which automatically detects
-    # when the last phase ends without requiring end time input
-    smod.DoStochSim(mode="time", trajectories=num_traj, end=10**50, cellcycle=True)
+    # when the last phase ends without requiring end time input. Setting end to int type max
+    # but simulation will break out of the loop after the cell cycle ends
+    smod.DoStochSim(mode="time", trajectories=num_traj, end=sys.maxint, cellcycle=True)
 
     # return the original raw model output
     specs_data = smod.data_stochsim.getSpecies(lbls=True)
