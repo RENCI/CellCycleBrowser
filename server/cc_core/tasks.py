@@ -95,12 +95,12 @@ def run_model_task(filename, id_to_names, species, phases, traj='', end='',
                 s_idx = phase_id_to_idx[s_id]
                 s_data = [row[s_idx] for row in specs_data[0]]
                 s_start, s_stop = utils.get_phase_start_stop(s_data)
-                if s_start == -1 or s_stop == -1:
+                # if s_start == -1 or s_stop == -1:
                     # this phase has not started or ended during simulation within specified end time
-                    sim_end_tp = -1
-                elif sim_end_tp != -1 and s_stop > sim_end_tp:
+                    # sim_end_tp = -1
+                # elif sim_end_tp != -1 and s_stop > sim_end_tp:
                     # record simulation end time point so far
-                    sim_end_tp = s_stop
+                    # sim_end_tp = s_stop
                 s_dict = {}
                 s_dict['name'] = id_to_names[s_id]
                 s_dict['start'] = s_start
@@ -110,10 +110,10 @@ def run_model_task(filename, id_to_names, species, phases, traj='', end='',
             output_data['phases'].append(ph)
 
     # truncate simulation output data to when the last phase has ended as needed
-    if sim_end_tp > 0:
-        del output_data['timeSteps'][sim_end_tp+1:]
-        for spec_data in output_data['species']:
-            del spec_data['values'][sim_end_tp+1:]
+    # if sim_end_tp > 0:
+    #    del output_data['timeSteps'][sim_end_tp+1:]
+    #    for spec_data in output_data['species']:
+    #        del spec_data['values'][sim_end_tp+1:]
 
     with open(plot_output_path_fname, 'w') as json_file:
         json.dump(output_data, json_file,  indent=2)
