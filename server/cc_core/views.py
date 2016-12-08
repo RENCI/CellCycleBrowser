@@ -86,9 +86,6 @@ def run_model(request, filename=''):
         traj = request.POST.get('trajectories', 1)
         # use a big end time value which is used by stochpy to indicate end time is not used
         # but rather simulation will end when the last phase is done in the simulation
-        end = 10**50
-        time_step_size = request.POST.get('timeStepSize', 20)
-        time_unit = request.POST.get('timeUnit', 'second')
         if 'species' not in request.POST:
             sp_name_to_val_dict = {}
         else:
@@ -116,8 +113,7 @@ def run_model(request, filename=''):
                 para_id = 'a_' + name1 + '_' + name2
             sp_id_infl_para_dict[para_id] = val
 
-        task = run_model_task.apply_async((filename, id_to_names, species, phases, traj, end,
-                                           time_step_size, time_unit,
+        task = run_model_task.apply_async((filename, id_to_names, species, phases, traj,
                                            sp_id_to_val_dict, sp_id_infl_para_dict),
                                           countdown=1)
 

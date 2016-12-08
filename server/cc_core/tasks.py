@@ -13,23 +13,12 @@ from . import utils
 logger = logging.getLogger('django')
 
 @shared_task
-def run_model_task(filename, id_to_names, species, phases, traj='', end='',
-                   time_step_size=20, time_unit='second',
-                   species_val_dict={}, sp_infl_para_dict={}):
+def run_model_task(filename, id_to_names, species, phases, traj='', species_val_dict={},
+                   sp_infl_para_dict={}):
     if traj:
         num_traj = int(traj)
     else:
         num_traj = 1
-
-    if end:
-        num_end = int(end)
-    else:
-        num_end = 100
-
-    if time_step_size:
-        ts_size = int(time_step_size)
-    else:
-        ts_size = 20
 
     plot_output_fname = os.path.splitext(filename)[0] + "_SpeciesTimeSeries_" + traj + ".json"
     plot_output_path_fname = os.path.join(settings.MODEL_OUTPUT_PATH, plot_output_fname)
@@ -44,23 +33,11 @@ def run_model_task(filename, id_to_names, species, phases, traj='', end='',
         logger.debug('changing ' + id + ' parameter value ' + val)
         smod.ChangeParameter(str(id), float(val))
 
-    # TO DO: change this to a custom simulation method that automatically detects when the last
-    # phase ends without requiring end time input
-    smod.DoStochSim(mode="time", trajectories=num_traj, end=num_end, cellcycle=True)
+    # call a custom simulation method by setting cellcycle to True which automatically detects
+    # when the last phase ends without requiring end time input
+    smod.DoStochSim(mode="time", trajectories=num_traj, end=10**50, cellcycle=True)
 
-    # TO DO: need to align model output with cell data taking into account time unit after custom
-    # simulation method is done and used and after the SBML input model can simulation for long
-    # time steps without raising exceptions
-    # time_unit = time_unit.lower()
-    # if time_unit == 'hour':
-    #    num_end /= 3600
-    # elif time_unit == 'minute':
-    #   num_end /= 60
-    # n_tps = num_end/ts_size + 1
-    # smod.GetRegularGrid(n_samples=n_tps)
-    # specs_data = smod.data_stochsim_grid.getSpecies(lbls=True)
-
-    # return the original raw model output without putting the output on a regular grid
+    # return the original raw model output
     specs_data = smod.data_stochsim.getSpecies(lbls=True)
     output_data = {}
     output_data['timeSteps'] = [row[0] for row in specs_data[0]]
