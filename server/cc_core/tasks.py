@@ -99,7 +99,7 @@ def run_model_task(filename, id_to_names, species, phases, traj='', species_val_
                 output_data['phases'].append(ph)
 
         whole_output_data.append(output_data)
-
+    output_data_dict = {'result': whole_output_data}
     # truncate simulation output data to when the last phase has ended as needed
     # if sim_end_tp > 0:
     #    del output_data['timeSteps'][sim_end_tp+1:]
@@ -107,6 +107,6 @@ def run_model_task(filename, id_to_names, species, phases, traj='', species_val_
     #        del spec_data['values'][sim_end_tp+1:]
 
     with open(plot_output_path_fname, 'w') as json_file:
-        json.dump(whole_output_data, json_file,  indent=2)
+        json.dump(output_data_dict, json_file,  indent=2)
 
     return plot_output_fname
