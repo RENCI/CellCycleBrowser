@@ -12,11 +12,13 @@ HeatMap.create = function(element, props, state) {
   var g = svg.append("g");
 
   g.append("g")
+      .attr("class", "borders")
+  g.append("g")
       .attr("class", "rows");
   g.append("rect")
       .attr("class", "highlight")
-      .attr("shape-rendering", "crispEdges")
-      .attr("pointer-events", "none")
+      .style("shape-rendering", "crispEdges")
+      .style("pointer-events", "none")
       .style("fill", "none")
       .style("stroke", "none")
       .style("stroke-width", 2);
@@ -64,6 +66,24 @@ HeatMap.draw = function(svg, layout, state) {
   var g = svg.select("g")
       .datum(state.data);
 
+  // Borders
+  var border = g.select(".borders").selectAll(".border")
+      .data(function(d) { return d; });
+
+  border.enter().append("rect")
+      .attr("class", "border")
+      .style("shape-rendering", "crispEdges")
+      .style("fill", "none")
+      .style("stroke", "#ddd")
+      .style("stroke-width", 4)
+    .merge(border).transition()
+      .attr("x", function(d) { return layout.xScale(rowOffset(d)); })
+      .attr("y", function(d, i) { return layout.yScale(i); })
+      .attr("width", function(d) {
+        return d.length * layout.xScale.bandwidth();
+      })
+      .attr("height", layout.yScale.bandwidth());
+
   // Rows
   var row = g.select(".rows").selectAll(".cellRow")
       .data(function(d) { return d; });
@@ -74,19 +94,13 @@ HeatMap.draw = function(svg, layout, state) {
       .attr("transform", function(d, i) {
         return "translate(0," + layout.yScale(i) + ")";
       })
-      .each(cell);
+      .each(cells);
 
   row.exit().remove();
 
-  function cell(row, rowIndex) {
-    var domain = layout.xScale.domain(),
-        maxRowLength = domain[domain.length - 1],
-        offset = state.alignment === "right" ?
-                 maxRowLength - row.length + 1 :
-                 0;
-
+  function cells(row, rowIndex) {
     function x(d, i) {
-      return layout.xScale(i + offset);
+      return layout.xScale(i + rowOffset(row));
     }
 
     // Bind cell data
@@ -137,6 +151,15 @@ HeatMap.draw = function(svg, layout, state) {
     cell.exit().transition()
         .style("fill", "white")
         .remove();
+  }
+
+  function rowOffset(row) {
+    var domain = layout.xScale.domain(),
+        maxRowLength = domain[domain.length - 1];
+
+    return state.alignment === "right" ?
+           maxRowLength - row.length + 1 :
+           0;
   }
 };
 
