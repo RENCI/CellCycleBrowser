@@ -13,5 +13,6 @@ module.exports = keyMirror({
   CHANGE_SPECIES_SPECIES_INTERACTION: null,
 
   RECEIVE_PROFILE_LIST: null,
-  RECEIVE_PROFILE: null
+  RECEIVE_PROFILE: null,
+  RECEIVE_SIMULATION_OUTPUT: null
 });

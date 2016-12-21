@@ -106,17 +106,21 @@ var BrowserContainer = React.createClass({
 
     var species = speciesData.map(function (species, i) {
       // Get simulation output data for this species
-      var simulationData = null;
-      if (this.state.simulationOutput) {
+      var simulationData = [];
+
+      this.state.simulationOutput.forEach(function(trajectory) {
         // Search for name in case indeces have been switched
-        var index = this.state.simulationOutput.species.map(function (s) {
+        var index = trajectory.species.map(function(s) {
           return s.name;
         }).indexOf(species.name);
 
         if (index >= 0) {
-          simulationData = [this.state.simulationOutput.species[index].values];
+          simulationData.push({
+            timeSteps: trajectory.timeSteps,
+            values: trajectory.species[index].values
+          });
         }
-      }
+      });
 
       return (
         <Species

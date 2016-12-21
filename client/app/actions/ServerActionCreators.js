@@ -18,7 +18,7 @@ module.exports = {
   receiveSimulationOutput: function(output) {
     AppDispatcher.dispatch({
       actionType: Constants.RECEIVE_SIMULATION_OUTPUT,
-      output: output
+      output: output.result
     });
   }
 };

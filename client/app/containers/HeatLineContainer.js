@@ -8,8 +8,12 @@ var HeatLine = require("../visualizations/HeatLine");
 // TODO: Magic number for height. Percentage doesn't work, perhaps read
 // from container element?
 var style = {
-  height: 34,
-  borderLeft: "2px solid #ddd"
+  height: 38,
+  borderLeft: "2px solid #ddd",
+  borderTop: "2px solid #ddd",
+  borderBottom: "2px solid #ddd",
+  marginTop: -2,
+  backgroundColor: "#eee"
 };
 
 // TODO: Use a shared range/sequence for line and heat maps. Perhaps refactor

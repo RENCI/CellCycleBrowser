@@ -48,10 +48,11 @@ var HeatMapContainer = React.createClass ({
     HeatMap.destroy(ReactDOM.findDOMNode(this));
   },
   render: function() {
+    // Style needs to be defined here to access data length
     var style = {
       height: this.props.data.length * 20,
       borderLeft: "2px solid #ddd",
-      borderTop: "2px solid #ddd"
+      backgroundColor: "#eee"
     };
 
     return <div className="heatMap" style={style}></div>

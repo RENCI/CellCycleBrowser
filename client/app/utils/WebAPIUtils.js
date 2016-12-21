@@ -169,8 +169,6 @@ function pollSimulation(taskId) {
       task_id: taskId
     },
     success: function(data) {
-      console.log(data);
-
       if (data.result) {
         if (timeOutStatusId > -1) {
           clearTimeout(timeOutStatusId);
