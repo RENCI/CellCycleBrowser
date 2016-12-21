@@ -100,6 +100,60 @@ var BrowserContainer = React.createClass({
   render: function() {
     if (!this.state.featureKey) return null;
 
+    // Get the list of species present in cell data or model
+    var cellSpecies = this.state.cellData.species;
+    var modelSpecies = this.state.model.species;
+    var allSpecies = [];
+
+    cellSpecies.forEach(function(species) {
+      if (allSpecies.indexOf(species.name) === -1) allSpecies.push(species.name);
+    });
+
+    modelSpecies.forEach(function(species) {
+      if (allSpecies.indexOf(species.name) === -1) allSpecies.push(species.name);
+    });
+
+    console.log(this.state.cellData);
+    console.log(this.state.model);
+
+    // Create GUI components for each species
+    var speciesComponents = allSpecies.map(function(species, i) {
+      // Cell data
+      var cellData = [];
+      for (var i = 0; i < cellSpecies.length; i++) {
+        if (cellSpecies[i].name === species) {
+          cellData = cellSpecies[i].cells;
+          break;
+        }
+      }
+
+      // Simulation output
+      var simulationData = [];
+      this.state.simulationOutput.forEach(function(trajectory) {
+        var index = trajectory.species.map(function(s) {
+          return s.name;
+        }).indexOf(species.name);
+
+        if (index >= 0) {
+          simulationData.push({
+            timeSteps: trajectory.timeSteps,
+            values: trajectory.species[index].values
+          });
+        }
+      });
+
+      return (
+        <Species
+          key={i}
+          name={species}
+          cells={cellData}
+          featureKey={this.state.featureKey}
+          simulationData={simulationData}
+          alignment={this.state.alignment} />
+      );
+    }.bind(this));
+
+/*
     var speciesData = this.state.cellDataList.length > 0
                     ? this.state.cellData.species
                     : [];
@@ -132,14 +186,14 @@ var BrowserContainer = React.createClass({
           alignment={this.state.alignment} />
       );
     }.bind(this));
-
+*/
     return (
       <div>
         <h2>Browser</h2>
         <BrowserControls
           cellDataList={this.state.cellDataList}
           featureList={this.state.featureList} />
-        {species}
+        {speciesComponents}
       </div>
     );
   }

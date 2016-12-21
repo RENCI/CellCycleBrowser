@@ -15,7 +15,8 @@ var outerStyle = {
 
 var speciesLabelStyle = {
   marginTop: 5,
-  marginLeft: 10
+  marginLeft: 10,
+  fontWeight: "bold"
 };
 
 var dataLabelStyle = {
