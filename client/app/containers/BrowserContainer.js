@@ -105,6 +105,8 @@ var BrowserContainer = React.createClass({
     var modelSpecies = this.state.model.species;
     var allSpecies = [];
 
+    console.log(this.state);
+
     cellSpecies.forEach(function(species) {
       if (allSpecies.indexOf(species.name) === -1) allSpecies.push(species.name);
     });
@@ -112,9 +114,6 @@ var BrowserContainer = React.createClass({
     modelSpecies.forEach(function(species) {
       if (allSpecies.indexOf(species.name) === -1) allSpecies.push(species.name);
     });
-
-    console.log(this.state.cellData);
-    console.log(this.state.model);
 
     // Create GUI components for each species
     var speciesComponents = allSpecies.map(function(species, i) {
@@ -132,13 +131,15 @@ var BrowserContainer = React.createClass({
       this.state.simulationOutput.forEach(function(trajectory) {
         var index = trajectory.species.map(function(s) {
           return s.name;
-        }).indexOf(species.name);
+        }).indexOf(species);
 
         if (index >= 0) {
-          simulationData.push({
-            timeSteps: trajectory.timeSteps,
-            values: trajectory.species[index].values
-          });
+          simulationData.push(trajectory.timeSteps.map(function(d, i) {
+            return {
+              value: trajectory.species[index].values[i],
+              time: d
+            };
+          }));
         }
       });
 

@@ -36,13 +36,13 @@ function setupAjax() {
   });
 }
 
-function createCellData(d) {
+function createCellData(cellData) {
   var cd = {};
-  cd.name = d.name;
-  cd.description = d.description;
-  cd.timeUnit = d.timeUnit;
+  cd.name = cellData.name;
+  cd.description = cellData.description;
+  cd.timeUnit = cellData.timeUnit;
 
-  var data = d3.csvParse(d.csv);
+  var data = d3.csvParse(cellData.csv);
 
   // Nest by species, cell, and feature
   var nest = d3.nest()
@@ -56,11 +56,8 @@ function createCellData(d) {
     return d !== "Species" && d !== "Cell" && d !== "Feature";
   });
 
-  cd.timeStep = +timeKeys[1] - +timeKeys[0];
-  cd.timeEnd = +timeKeys[timeKeys.length - 1];
-
   // Reformat data
-  var species = nest.map(function(d) {
+  cd.species = nest.map(function(d) {
     return {
       name: d.key,
       cells: d.values.map(function(d) {
@@ -70,9 +67,14 @@ function createCellData(d) {
             return {
               name: d.key,
               values: timeKeys.map(function(key) {
-                return +d.values[0][key];
-              }).filter(function(d) {
-                return !isNaN(d);
+                var v = +d.values[0][key];
+
+                if (isNaN(v)) v = -1;
+
+                return {
+                  value: v,
+                  time: +key
+                };
               })
             }
           })
@@ -80,8 +82,6 @@ function createCellData(d) {
       })
     };
   });
-
-  cd.species = species;
 
   return cd;
 }

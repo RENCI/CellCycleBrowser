@@ -47,13 +47,15 @@ var visColumnStyle = {
 function Species(props) {
   // Generate feature data
   var featureData = props.cells.map(function (cell, i) {
+    console.log(cell);
     return cell.features[props.featureKey].values;
   });
 
   var simulationCollapseId = props.name + "SimulationCollapse";
   var cellDataCollapseId = props.name + "CellDataCollapse";
 
-  console.log(props);
+  console.log(featureData);
+  console.log(props.simulationData);
 
   return (
     <div className="text-left" style={outerStyle}>

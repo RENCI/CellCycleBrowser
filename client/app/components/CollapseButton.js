@@ -3,7 +3,7 @@ var PropTypes = React.PropTypes;
 
 var buttonStyle = {
   width: 35
-}
+};
 
 function CollapseButton(props) {
   return (
