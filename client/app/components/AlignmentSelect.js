@@ -13,7 +13,7 @@ var iconStyle = {
 function AlignmentSelect(props) {
   return (
     <div className="row">
-      <div className="col-sm-9 col-sm-offset-3">
+      <div className="col-sm-8 col-sm-offset-4">
         <div className="btn-group btn-group-justified" role="group">
           <div className="btn-group" role="group">
             <button
