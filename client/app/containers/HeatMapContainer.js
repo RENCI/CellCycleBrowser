@@ -52,7 +52,7 @@ var HeatMapContainer = React.createClass ({
     var style = {
       height: this.props.data.length * 20,
       borderLeft: "2px solid #ddd",
-      marginBottom: 0,
+//      marginBottom: 0,
       backgroundColor: "#eee"
     };
 
