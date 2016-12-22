@@ -57,46 +57,54 @@ function Species(props) {
           </div>
         </div>
         <div className="col-sm-10">
-          <div className="row">
-            <div className="col-sm-2 text-right" style={buttonColumnStyle}>
-              <div style={dataLabelStyle}>
-                Sim
+          {props.simulationData.length > 0 ?
+            <div>
+              <div className="row">
+                <div className="col-sm-2 text-right" style={buttonColumnStyle}>
+                  <div style={dataLabelStyle}>
+                    Sim
+                  </div>
+                  <CollapseButtonContainer targetId={simulationCollapseId}/>
+                </div>
+                <div className="col-sm-10" style={visColumnStyle}>
+                  <HeatLineContainer
+                    data={featureData}
+                    alignment={props.alignment} />
+                </div>
               </div>
-              <CollapseButtonContainer targetId={simulationCollapseId}/>
-            </div>
-            <div className="col-sm-10" style={visColumnStyle}>
-              <HeatLineContainer
-                data={featureData}
-                alignment={props.alignment} />
-            </div>
-          </div>
-          <div className="row in" id={simulationCollapseId}>
-            <div className="col-sm-10 col-sm-offset-2" style={visColumnStyle}>
-              <HeatMapContainer
-                data={featureData}
-                alignment={props.alignment} />
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-sm-2 text-right" style={buttonColumnStyle}>
-              <div style={dataLabelStyle}>
-                Cell
+              <div className="row in" id={simulationCollapseId}>
+                <div className="col-sm-10 col-sm-offset-2" style={visColumnStyle}>
+                  <HeatMapContainer
+                    data={featureData}
+                    alignment={props.alignment} />
+                </div>
               </div>
-              <CollapseButtonContainer targetId={cellDataCollapseId} />
             </div>
-            <div className="col-sm-10" style={visColumnStyle}>
-              <HeatLineContainer
-                data={featureData}
-                alignment={props.alignment} />
+          : null}
+          {featureData.length > 0 ?
+            <div>
+              <div className="row">
+                <div className="col-sm-2 text-right" style={buttonColumnStyle}>
+                  <div style={dataLabelStyle}>
+                    Cell
+                  </div>
+                  <CollapseButtonContainer targetId={cellDataCollapseId} />
+                </div>
+                <div className="col-sm-10" style={visColumnStyle}>
+                  <HeatLineContainer
+                    data={featureData}
+                    alignment={props.alignment} />
+                </div>
+              </div>
+              <div className="row in" id={cellDataCollapseId}>
+                <div className="col-sm-10 col-sm-offset-2" style={visColumnStyle}>
+                  <HeatMapContainer
+                    data={featureData}
+                    alignment={props.alignment} />
+                </div>
+              </div>
             </div>
-          </div>
-          <div className="row in" id={cellDataCollapseId}>
-            <div className="col-sm-10 col-sm-offset-2" style={visColumnStyle}>
-              <HeatMapContainer
-                data={featureData}
-                alignment={props.alignment} />
-            </div>
-          </div>
+          : null}
         </div>
       </div>
     </div>
