@@ -95,7 +95,7 @@ function averageData(data, alignment) {
     });
 
     return {
-      value: value / count,
+      value: count > 0 ? value / count : 0,
       time: timeStep
     };
   });
