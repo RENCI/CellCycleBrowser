@@ -105,8 +105,6 @@ var BrowserContainer = React.createClass({
     var modelSpecies = this.state.model.species;
     var allSpecies = [];
 
-    console.log(this.state);
-
     cellSpecies.forEach(function(species) {
       if (allSpecies.indexOf(species.name) === -1) allSpecies.push(species.name);
     });
@@ -114,6 +112,29 @@ var BrowserContainer = React.createClass({
     modelSpecies.forEach(function(species) {
       if (allSpecies.indexOf(species.name) === -1) allSpecies.push(species.name);
     });
+
+    // Get time extent across cell and simulation data
+    var timeExtent = [];
+
+    if (this.state.cellData.species.length > 0) {
+      var values = this.state.cellData.species[0].cells[0].features[0].values.map(function(d) {
+        return d.time;
+      });
+
+      timeExtent.push(Math.min.apply(null, values));
+      timeExtent.push(Math.max.apply(null, values));
+    }
+
+    if (this.state.simulationOutput.length > 0) {
+      var values = [].concat.apply([], this.state.simulationOutput.map(function(trajectory) {
+        return trajectory.timeSteps;
+      }));
+
+      timeExtent.push(Math.min.apply(null, values));
+      timeExtent.push(Math.max.apply(null, values));
+    }
+
+    timeExtent = [ Math.min.apply(null, timeExtent), Math.max.apply(null, timeExtent) ];
 
     // Create GUI components for each species
     var speciesComponents = allSpecies.map(function(species, i) {
@@ -150,6 +171,7 @@ var BrowserContainer = React.createClass({
           cells={cellData}
           featureKey={this.state.featureKey}
           simulationData={simulationData}
+          timeExtent={timeExtent}
           alignment={this.state.alignment} />
       );
     }.bind(this));

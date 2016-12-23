@@ -16,12 +16,13 @@ function colorScale(data) {
       .range(["#edf8fb", "#b2e2e2", "#66c2a4", "#2ca25f", "#006d2c"]);
 */
     return d3.scaleSequential(d3ScaleChromatic.interpolateBuGn)
-        .domain(d3.extent(d3.merge(data)));
+        .domain(d3.extent(d3.merge(data), function(d) { return d.value; }));
 }
 
 var HeatMapContainer = React.createClass ({
   propTypes: {
-    data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+    data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+    timeExtent: PropTypes.arrayOf(PropTypes.number),
     alignment: PropTypes.string.isRequired
   },
   componentDidMount: function() {
@@ -41,6 +42,7 @@ var HeatMapContainer = React.createClass ({
     return {
       data: this.props.data,
       colorScale: colorScale(this.props.data),
+      timeExtent: this.props.timeExtent,
       alignment: this.props.alignment
     };
   },
@@ -52,7 +54,6 @@ var HeatMapContainer = React.createClass ({
     var style = {
       height: this.props.data.length * 20,
       borderLeft: "2px solid #ddd",
-//      marginBottom: 0,
       backgroundColor: "#eee"
     };
 

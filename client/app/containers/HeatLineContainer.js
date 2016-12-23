@@ -10,9 +10,7 @@ var HeatLine = require("../visualizations/HeatLine");
 var style = {
   height: 34,
   borderLeft: "2px solid #ddd",
-//  borderTop: "2px solid #ddd",
-//  borderBottom: "2px solid #ddd",
-//  backgroundColor: "#eee"
+  backgroundColor: "#eee"
 };
 
 // TODO: Use a shared range/sequence for line and heat maps. Perhaps refactor
@@ -28,39 +26,85 @@ function colorScale(data) {
       .range(["#edf8fb", "#b2e2e2", "#66c2a4", "#2ca25f", "#006d2c"]);
 */
     return d3.scaleSequential(d3ScaleChromatic.interpolateBuGn)
-        .domain(d3.extent(d3.merge(data)));
+        .domain(d3.extent(d3.merge(data), function(d) { return d.value; }));
 }
 
 function averageData(data, alignment) {
-  var maxLength = d3.max(data, function(d) { return d.length; });
+  var timeExtent = d3.extent(d3.merge(data), function(d) { return d.time; });
 
-  var average = [];
-  average.length = maxLength;
+  var shiftData = data.map(function(d) {
+    var valid = d.map(function(d) { return d.value >= 0; });
 
-  for (var i = 0; i < maxLength; i++) {
-    average[i] = 0;
+    var first = d[valid.indexOf(true)].time;
+    var last = d[valid.lastIndexOf(true)].time;
+
+    return d.map(function(d) {
+      return alignment === "left" ?
+             { value: d.value, time: d.time - (first - timeExtent[0]) } :
+             { value: d.value, time: d.time + (timeExtent[1] - last) }
+    });
+  });
+
+  // Get the average time step
+  var timeStep = d3.mean(d3.merge(data.map(function(d) {
+    return d3.pairs(d).map(function(d) { return d[1].time - d[0].time; });
+  })));
+
+  // Generate time steps
+  var timeRange = d3.extent(d3.merge(shiftData), function(d) { return d.time; });
+  var timeSteps = d3.range(timeRange[0], timeRange[1] + timeStep, timeStep);
+
+  // Keep track of time step per array
+  var t = shiftData.map(function() { return 0; });
+
+  return timeSteps.map(function(timeStep) {
+    var value = 0;
     var count = 0;
 
-    for (var j = 0; j < data.length; j++) {
-      var d = data[j],
-          offset = alignment === "right" ? maxLength - d.length : 0,
-          i2 = i - offset;
+    shiftData.forEach(function(d, i) {
+      if (t[i] === d.length - 1) return;
 
-      if (i2 >= 0 && i2 < d.length) {
-        average[i] += d[i2];
+      // Find closest time step
+      var closest = {
+        index: t[i],
+        distance: Math.abs(d[t[i]].time - timeStep)
+      };
+
+      for (var j = t[i] + 1; j < d.length; j++) {
+        var distance = Math.abs(d[j].time - timeStep);
+
+        if (distance > closest.distance) {
+          break;
+        }
+        else {
+          closest.index = j;
+          closest.distance = distance;
+        }
+      }
+
+      var v = d[closest.index].value;
+
+      // XXX: Hack using timeStep comparison here. Should check for
+      // overlapping regions, or perhaps do a weighted average
+      if (v >= 0 && closest.distance <= timeStep) {
+        value += v;
         count++;
       }
-    }
 
-    average[i] /= count;
-  }
+      t[i] = closest.index;
+    });
 
-  return average;
+    return {
+      value: value / count,
+      time: timeStep
+    };
+  });
 }
 
 var HeatLineContainer = React.createClass ({
   propTypes: {
-    data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+    data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+    timeExtent: PropTypes.arrayOf(PropTypes.number),
     alignment: PropTypes.string.isRequired
   },
   componentDidMount: function() {
@@ -82,6 +126,7 @@ var HeatLineContainer = React.createClass ({
     return {
       data: average,
       colorScale: colorScale(this.props.data),
+      timeExtent: this.props.timeExtent,
       alignment: this.props.alignment
     };
   },

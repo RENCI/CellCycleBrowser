@@ -47,15 +47,11 @@ var visColumnStyle = {
 function Species(props) {
   // Generate feature data
   var featureData = props.cells.map(function (cell, i) {
-    console.log(cell);
     return cell.features[props.featureKey].values;
   });
 
   var simulationCollapseId = props.name + "SimulationCollapse";
   var cellDataCollapseId = props.name + "CellDataCollapse";
-
-  console.log(featureData);
-  console.log(props.simulationData);
 
   return (
     <div className="text-left" style={outerStyle}>
@@ -77,14 +73,16 @@ function Species(props) {
             </div>
             <div className="col-sm-10" style={visColumnStyle}>
               <HeatLineContainer
-                data={featureData}
+                data={props.simulationData}
+                timeExtent={props.timeExtent}
                 alignment={props.alignment} />
             </div>
           </div>
           <div className="row in" id={simulationCollapseId}>
             <div className="col-sm-10 col-sm-offset-2">
               <HeatMapContainer
-                data={featureData}
+                data={props.simulationData}
+                timeExtent={props.timeExtent}
                 alignment={props.alignment} />
             </div>
           </div>
@@ -102,6 +100,7 @@ function Species(props) {
             <div className="col-sm-10" style={visColumnStyle}>
               <HeatLineContainer
                 data={featureData}
+                timeExtent={props.timeExtent}
                 alignment={props.alignment} />
             </div>
           </div>
@@ -109,6 +108,7 @@ function Species(props) {
             <div className="col-sm-10 col-sm-offset-2">
               <HeatMapContainer
                 data={featureData}
+                timeExtent={props.timeExtent}
                 alignment={props.alignment} />
             </div>
           </div>
@@ -116,81 +116,15 @@ function Species(props) {
       : null}
     </div>
   );
-/*
-  return (
-    <div className="text-left" style={outerStyle}>
-      <div className="row">
-        <div className="col-sm-2">
-          <div style={speciesLabelStyle}>
-            {props.name}
-          </div>
-        </div>
-        <div className="col-sm-10">
-          {props.simulationData.length > 0 ?
-            <div>
-              <div className="row">
-                <div className="col-sm-2 text-right" style={buttonColumnStyle}>
-                  <div style={dataLabelStyle}>
-                    Sim
-                  </div>
-                  <CollapseButtonContainer targetId={simulationCollapseId}/>
-                </div>
-                <div className="col-sm-10" style={visColumnStyle}>
-                  <HeatLineContainer
-                    data={featureData}
-                    alignment={props.alignment} />
-                </div>
-              </div>
-              <div className="row in" id={simulationCollapseId}>
-                <div className="col-sm-10 col-sm-offset-2" style={visColumnStyle}>
-                  <HeatMapContainer
-                    data={featureData}
-                    alignment={props.alignment} />
-                </div>
-              </div>
-            </div>
-          : null}
-          {featureData.length > 0 ?
-            <div>
-              <div className="row">
-                <div className="col-sm-2 text-right" style={buttonColumnStyle}>
-                  <div style={dataLabelStyle}>
-                    Cell
-                  </div>
-                  <CollapseButtonContainer targetId={cellDataCollapseId} />
-                </div>
-                <div className="col-sm-10" style={visColumnStyle}>
-                  <HeatLineContainer
-                    data={featureData}
-                    alignment={props.alignment} />
-                </div>
-              </div>
-              <div className="row in" id={cellDataCollapseId}>
-                <div className="col-sm-10 col-sm-offset-2" style={visColumnStyle}>
-                  <HeatMapContainer
-                    data={featureData}
-                    alignment={props.alignment} />
-                </div>
-              </div>
-            </div>
-          : null}
-        </div>
-      </div>
-    </div>
-  );
-*/
 }
 
 Species.propTypes = {
   name: PropTypes.string.isRequired,
   cells: PropTypes.arrayOf(PropTypes.object).isRequired,
   featureKey: PropTypes.string.isRequired,
-  simulationData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  simulationData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   alignment: PropTypes.string.isRequired
-};
-
-Species.defaultProps = {
-  simulationData: [],
 };
 
 module.exports = Species;

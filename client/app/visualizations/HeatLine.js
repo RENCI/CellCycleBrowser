@@ -11,6 +11,8 @@ HeatLine.create = function(element, props, state) {
 
   var g = svg.append("g");
 
+  g.append("rect")
+      .attr("class", "border");
   g.append("g")
       .attr("class", "row");
   g.append("rect")
@@ -29,17 +31,22 @@ HeatLine.update = function(element, state) {
 //      .attr("width", props.width)
 //      .attr("height", props.height);
 
-  var layout = this.layout(svg, state.data);
+  var layout = this.layout(svg, state);
 
   this.draw(svg, layout, state);
 };
 
-HeatLine.layout = function(svg, data) {
+HeatLine.layout = function(svg, state) {
   var width = parseInt(svg.style("width"), 10),
       height = parseInt(svg.style("height"), 10);
 
-  var xScale = d3.scaleBand()
-      .domain(d3.range(data.length))
+  var timeExtent = d3.extent(state.data, function(d) { return d.time; });
+
+  var xScale = d3.scaleLinear()
+      .domain(state.alignment === "left" ?
+              state.timeExtent :
+              [state.timeExtent[0] - (state.timeExtent[1] - timeExtent[1]),
+               timeExtent[1]])
       .range([0, width]);
 
   return {
@@ -56,6 +63,19 @@ HeatLine.draw = function(svg, layout, state) {
   var width = parseInt(svg.style("width"), 10),
       height = parseInt(svg.style("height"), 10);
 
+  // Border
+  var border = svg.select("g").select(".border")
+      .style("shape-rendering", "crispEdges")
+      .style("fill", "none")
+      .style("stroke", "#ddd")
+      .style("stroke-width", 4)
+    .transition()
+      .attr("x", layout.xScale(state.data[0].time))
+      .attr("width", layout.xScale(state.data[state.data.length - 1].time) -
+                     layout.xScale(state.data[0].time) + 10)
+      .attr("height", height);
+
+  // Row
   var row = svg.select("g").select(".row")
       .datum(state.data);
 
@@ -65,20 +85,20 @@ HeatLine.draw = function(svg, layout, state) {
 
   cell.enter().append("rect")
       .attr("class", "cell")
-      .attr("x", function(d, i) { return layout.xScale(i); })
-      .attr("width", layout.xScale.bandwidth())
+      .attr("x", function(d) { return layout.xScale(d.time); })
+      .attr("width", 10)
       .attr("height", height)
       .attr("shape-rendering", "crispEdges")
       .attr("data-toggle", "tooltip")
-      .attr("title", function(d) { return d.toPrecision(3); })
+      .attr("title", function(d) { return d.value.toPrecision(3); })
       .style("fill", "white")
       .style("stroke-width", 2)
-      .on("mouseover", function(d, i) {
+      .on("mouseover", function(d) {
         svg.select(".highlight")
-            .attr("x", layout.xScale(i))
-            .attr("width", layout.xScale.bandwidth())
+            .attr("x", layout.xScale(d.time))
+            .attr("width", 10)
             .attr("height", height)
-            .style("stroke", highlightColor(state.colorScale(d)));
+            .style("stroke", highlightColor(state.colorScale(d.value)));
 
         function highlightColor(color) {
           var hcl = d3.hcl(color);
@@ -93,11 +113,11 @@ HeatLine.draw = function(svg, layout, state) {
             .style("stroke", "none");
       })
     .merge(cell).transition()
-      .attr("x", function(d, i) { return layout.xScale(i); })
-      .attr("width", layout.xScale.bandwidth())
+      .attr("x", function(d, i) { return layout.xScale(d.time); })
+      .attr("width", 10)
       .attr("height", height)
-      .attr("title", function(d) { return d; })
-      .style("fill", function(d) { return state.colorScale(d); });
+      .attr("title", function(d) { return d.value; })
+      .style("fill", function(d) { return state.colorScale(d.value); });
 
   cell.exit().transition()
       .style("fill", "white")

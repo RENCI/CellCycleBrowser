@@ -31,21 +31,28 @@ HeatMap.update = function(element, state) {
 //      .attr("width", props.width)
 //      .attr("height", props.height);
 
-  var layout = this.layout(svg, state.data);
+  // Filter invalid values
+  state.data = state.data.map(function(d) {
+    return d.filter(function(d) {
+      return d.value >= 0;
+    });
+  });
+
+  var layout = this.layout(svg, state);
 
   this.draw(svg, layout, state);
 };
 
-HeatMap.layout = function(svg, data) {
+HeatMap.layout = function(svg, state) {
   var width = parseInt(svg.style("width"), 10),
       height = parseInt(svg.style("height"), 10);
 
-  var xScale = d3.scaleBand()
-      .domain(d3.range(d3.max(data, function(d) { return d.length; })))
+  var xScale = d3.scaleLinear()
+      .domain(state.timeExtent)
       .range([0, width]);
 
   var yScale = d3.scaleBand()
-      .domain(d3.range(data.length))
+      .domain(d3.range(state.data.length))
       .range([0, height]);
 
   return {
@@ -77,10 +84,10 @@ HeatMap.draw = function(svg, layout, state) {
       .style("stroke", "#ddd")
       .style("stroke-width", 4)
     .merge(border).transition()
-      .attr("x", function(d) { return layout.xScale(rowOffset(d)); })
+      .attr("x", function(d) { return layout.xScale(d[0].time + rowOffset(d)); })
       .attr("y", function(d, i) { return layout.yScale(i); })
       .attr("width", function(d) {
-        return d.length * layout.xScale.bandwidth();
+        return layout.xScale(d[d.length -1].time) - layout.xScale(d[0].time) + 10;
       })
       .attr("height", layout.yScale.bandwidth());
 
@@ -99,8 +106,8 @@ HeatMap.draw = function(svg, layout, state) {
   row.exit().remove();
 
   function cells(row, rowIndex) {
-    function x(d, i) {
-      return layout.xScale(i + rowOffset(row));
+    function x(d) {
+      return layout.xScale(d.time + rowOffset(row));
     }
 
     // Bind cell data
@@ -111,11 +118,11 @@ HeatMap.draw = function(svg, layout, state) {
     cell.enter().append("rect")
         .attr("class", "cell")
         .attr("x", x)
-        .attr("width", layout.xScale.bandwidth())
+        .attr("width", 10)
         .attr("height", layout.yScale.bandwidth())
         .attr("shape-rendering", "crispEdges")
         .attr("data-toggle", "tooltip")
-        .attr("title", function(d) { return d; })
+        .attr("title", function(d) { return d.value; })
         .style("fill", "white")
         .style("stroke-width", 2)
         .on("mouseover", function(d, i) {
@@ -126,7 +133,7 @@ HeatMap.draw = function(svg, layout, state) {
               .attr("y", layout.yScale(rowIndex))
               .attr("width", rect.attr("width"))
               .attr("height", rect.attr("height"))
-              .style("stroke", highlightColor(state.colorScale(d)));
+              .style("stroke", highlightColor(state.colorScale(d.value)));
 
           function highlightColor(color) {
             var hcl = d3.hcl(color);
@@ -142,10 +149,10 @@ HeatMap.draw = function(svg, layout, state) {
         })
       .merge(cell).transition()
         .attr("x", x)
-        .attr("width", layout.xScale.bandwidth())
+        .attr("width", 10)
         .attr("height", layout.yScale.bandwidth())
-        .attr("title", function(d) { return d; })
-        .style("fill", function(d) { return state.colorScale(d); });
+        .attr("title", function(d) { return d.value; })
+        .style("fill", function(d) { return state.colorScale(d.value); });
 
     // Exit
     cell.exit().transition()
@@ -154,12 +161,9 @@ HeatMap.draw = function(svg, layout, state) {
   }
 
   function rowOffset(row) {
-    var domain = layout.xScale.domain(),
-        maxRowLength = domain[domain.length - 1];
-
     return state.alignment === "right" ?
-           maxRowLength - row.length + 1 :
-           0;
+           layout.xScale.domain()[1] - row[row.length - 1].time :
+           layout.xScale.domain()[0] - row[0].time;
   }
 };
 
