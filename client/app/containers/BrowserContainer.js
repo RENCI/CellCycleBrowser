@@ -176,46 +176,13 @@ var BrowserContainer = React.createClass({
       );
     }.bind(this));
 
-/*
-    var speciesData = this.state.cellDataList.length > 0
-                    ? this.state.cellData.species
-                    : [];
-
-    var species = speciesData.map(function (species, i) {
-      // Get simulation output data for this species
-      var simulationData = [];
-
-      this.state.simulationOutput.forEach(function(trajectory) {
-        // Search for name in case indeces have been switched
-        var index = trajectory.species.map(function(s) {
-          return s.name;
-        }).indexOf(species.name);
-
-        if (index >= 0) {
-          simulationData.push({
-            timeSteps: trajectory.timeSteps,
-            values: trajectory.species[index].values
-          });
-        }
-      });
-
-      return (
-        <Species
-          key={i}
-          name={species.name}
-          cells={species.cells}
-          featureKey={this.state.featureKey}
-          simulationData={simulationData}
-          alignment={this.state.alignment} />
-      );
-    }.bind(this));
-*/
     return (
       <div>
         <h2>Browser</h2>
         <BrowserControls
           cellDataList={this.state.cellDataList}
-          featureList={this.state.featureList} />
+          featureList={this.state.featureList}
+          timeExtent={timeExtent} />
         {speciesComponents}
       </div>
     );

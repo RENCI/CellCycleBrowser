@@ -578,7 +578,6 @@ module.exports = function() {
   }
 
   chordMap.update = function() {
-    doLayout();
     draw();
   };
 

@@ -33,18 +33,10 @@ var MapVisualizationContainer = React.createClass ({
   componentDidMount: function() {
     ModelStore.addChangeListener(this.onModelChange);
 
-    var size = this.getSize();
+//    chordMap.on("selectSpecies", this.handleSelectSpecies);
+    networkMap.on("selectSpecies", this.handleSelectSpecies);
 
-//    chordMap
-//        .width(size.width)
-//        .height(size.width)
-//        .on("selectSpecies", this.handleSelectSpecies);
-    networkMap
-        .width(size.width)
-        .height(size.width)
-        .on("selectSpecies", this.handleSelectSpecies);
-
-    this.drawMap(this.state.model);
+    this.resize();
 
     window.addEventListener("resize", function() {
       // TODO: Create a store with window resize. Move event listener to
@@ -64,16 +56,7 @@ var MapVisualizationContainer = React.createClass ({
     this.setState(getStateFromStore());
   },
   onResize: function () {
-    var size = this.getSize();
-
-//    chordMap
-//        .width(size.width)
-//        .height(size.width);
-    networkMap
-        .width(size.width)
-        .height(size.height);
-
-    this.drawMap(this.state.model);
+    this.resize();
   },
   drawMap: function (model) {
     if (!model) return;
@@ -84,21 +67,20 @@ var MapVisualizationContainer = React.createClass ({
         .call(networkMap);
 
   },
-  getChartState: function () {
-    return {
-      model: this.props.model
-    };
+  resize: function () {
+    var width = this.getNode().offsetWidth;
+
+//    chordMap
+//        .width(width)
+//        .height(width);
+    networkMap
+        .width(width)
+        .height(width);
+
+    this.drawMap(this.state.model);
   },
   getNode: function () {
     return ReactDOM.findDOMNode(this);
-  },
-  getSize: function () {
-    var node = this.getNode();
-
-    return {
-      width: node.offsetWidth,
-      height: node.offsetHeight
-    }
   },
   handleSelectSpecies: function (species) {
 //    chordMap.selectSpecies(species);
