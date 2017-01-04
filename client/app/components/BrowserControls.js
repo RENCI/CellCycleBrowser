@@ -27,7 +27,7 @@ function BrowserControls(props) {
       </div>
       <AlignmentSelectContainer />
       <div className="row">
-        <div className="col-sm-10 col-sm-offset-2">
+        <div className="col-sm-10 col-sm-offset-2 text-left">
           <TimeScaleContainer timeExtent={props.timeExtent} />
         </div>
       </div>

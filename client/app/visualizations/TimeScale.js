@@ -10,6 +10,8 @@ module.exports = function() {
 
       // Layout
       scale = d3.scaleLinear(),
+      axis = d3.axisTop(scale)
+          .tickSizeOuter(0),
 
       // Start with empty selection
       svg = d3.select(),
@@ -31,7 +33,11 @@ module.exports = function() {
             d3.event.preventDefault();
           });
 
-      var g = svgEnter.append("g");
+      svgEnter.append("text")
+          .text("Elapsed time (hours)")
+          .style("text-anchor", "middle");
+
+      svgEnter.append("g");
 
       svg = svg.merge(svgEnter);
 
@@ -40,8 +46,32 @@ module.exports = function() {
   }
 
   function draw() {
+    // Update svg size
     svg .attr("width", width)
         .attr("height", height);
+
+    // Set scale for axis
+    scale
+        .domain(timeExtent.map(function(d) { return d / 60; }))
+        .range([0, width]);
+
+    // Draw axis
+    svg.select("g").transition()
+        .attr("transform", "translate(0," + (height - 1) + ")")
+        .call(axis);
+
+    // Remove first and last ticks
+    var ticks = svg.selectAll(".tick");
+
+    ticks.style("visibility", function(d, i) {
+      return i === 0 || i === ticks.size() - 1 ? "hidden" : null;
+    });
+
+    // Move label
+    svg.select("text").transition()
+        .attr("y", 5)
+        .attr("x", width / 2)
+        .attr("dy", "1em");
   }
 
   timeScale.update = function() {

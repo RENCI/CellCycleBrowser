@@ -68,7 +68,7 @@ var MapVisualizationContainer = React.createClass ({
 
   },
   resize: function () {
-    var width = this.getNode().offsetWidth;
+    var width = this.getNode().clientWidth;
 
 //    chordMap
 //        .width(width)

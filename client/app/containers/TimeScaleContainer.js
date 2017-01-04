@@ -47,11 +47,11 @@ var TimeScaleContainer = React.createClass ({
         .call(timeScale);
   },
   resize: function () {
-    var width = this.getNode().offsetWidth;
+    var width = this.getNode().clientWidth;
 
     timeScale
         .width(width)
-        .height(40);
+        .height(50);
 
     this.drawTimeScale(this.props.timeExtent);
   },
