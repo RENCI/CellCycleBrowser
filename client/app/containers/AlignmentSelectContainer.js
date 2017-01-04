@@ -3,8 +3,8 @@ var AlignmentSelect = require("../components/AlignmentSelect");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
 var AlignmentSelectContainer = React.createClass ({
-  handleChangeAlignment: function (e) {
-    ViewActionCreators.selectAlignment(e.target.value);
+  handleChangeAlignment: function (alignment) {
+    ViewActionCreators.selectAlignment(alignment);
   },
   render: function () {
     return <AlignmentSelect onClick={this.handleChangeAlignment} />;
