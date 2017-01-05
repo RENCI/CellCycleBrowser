@@ -73,7 +73,7 @@ function createCellData(cellData) {
 
                 return {
                   value: v,
-                  time: +key
+                  time: +key / 60
                 };
               })
             }

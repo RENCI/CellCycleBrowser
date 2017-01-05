@@ -52,7 +52,7 @@ module.exports = function() {
 
     // Set scale for axis
     scale
-        .domain(timeExtent.map(function(d) { return d / 60; }))
+        .domain(timeExtent)
         .range([0, width]);
 
     // Draw axis
