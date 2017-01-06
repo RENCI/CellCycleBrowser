@@ -7,6 +7,7 @@ var FeatureStore = require("../stores/FeatureStore");
 var SimulationOutputStore = require("../stores/SimulationOutputStore");
 var AlignmentStore = require("../stores/AlignmentStore");
 var BrowserControls = require("../components/BrowserControls");
+var Phases = require("../components/Phases");
 var Species = require("../components/Species");
 
 function getStateFromCellDataStore() {
@@ -176,12 +177,17 @@ var BrowserContainer = React.createClass({
       );
     }.bind(this));
 
+this.state.simulationOutput = [[{}]];
+
     return (
       <div>
         <h2>Browser</h2>
         <BrowserControls
           cellDataList={this.state.cellDataList}
           featureList={this.state.featureList}
+          timeExtent={timeExtent} />
+        <Phases
+          simulationOutput={this.state.simulationOutput}
           timeExtent={timeExtent} />
         {speciesComponents}
       </div>

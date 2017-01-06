@@ -3,7 +3,6 @@ var PropTypes = React.PropTypes;
 var CellDataSelectContainer = require("../containers/CellDataSelectContainer");
 var FeatureSelectContainer = require("../containers/FeatureSelectContainer");
 var AlignmentSelectContainer = require("../containers/AlignmentSelectContainer");
-var TimeScaleContainer = require("../containers/TimeScaleContainer");
 
 var divStyle = {
   display: "inline-block",
@@ -26,11 +25,6 @@ function BrowserControls(props) {
           featureList={props.featureList} />
       </div>
       <AlignmentSelectContainer />
-      <div className="row">
-        <div className="col-sm-10 col-sm-offset-2 text-left">
-          <TimeScaleContainer timeExtent={props.timeExtent} />
-        </div>
-      </div>
     </div>
   );
 }

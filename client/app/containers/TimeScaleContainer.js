@@ -5,13 +5,10 @@ var d3 = require("d3");
 var TimeScale = require("../visualizations/TimeScale");
 
 var divStyle = {
-  backgroundColor: "white",
-  borderColor: "#ddd",
-  borderStyle: "solid",
-  borderWidth: "2px",
-  borderRadius: 5,
-  marginTop: 10,
-  marginBottom: 10
+  borderLeftColor: "#ddd",
+  borderLeftStyle: "solid",
+  borderLeftWidth: "2px",
+  paddingBottom: 0
 };
 
 var timeScale = TimeScale();
@@ -51,7 +48,7 @@ var TimeScaleContainer = React.createClass ({
 
     timeScale
         .width(width)
-        .height(50);
+        .height(45);
 
     this.drawTimeScale(this.props.timeExtent);
   },

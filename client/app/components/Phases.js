@@ -1,8 +1,9 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
-var PhaseLineContainer = require("../containers/PhaseLineContainer");
-var PhaseMapContainer = require("../containers/PhaseMapContainer");
+var TimeScaleContainer = require("../containers/TimeScaleContainer");
+//var PhaseLineContainer = require("../containers/PhaseLineContainer");
+//var PhaseMapContainer = require("../containers/PhaseMapContainer");
 
 var outerStyle = {
   backgroundColor: "white",
@@ -10,6 +11,7 @@ var outerStyle = {
   borderStyle: "solid",
   borderWidth: "2px",
   borderRadius: 5,
+  marginTop: 10,
   marginBottom: 10
 };
 
@@ -18,6 +20,12 @@ var labelStyle = {
   marginBottom: 5,
   marginLeft: 10,
   fontWeight: "bold"
+};
+
+var phasesLabelStyle = {
+  float: "none",
+  display: "inline-block",
+  marginLeft: 10
 };
 
 var rowStyle = {
@@ -35,7 +43,7 @@ var buttonColumnStyle = {
 
 var visColumnStyle = {
   paddingLeft: 5,
-  paddingRight:0
+  paddingRight: 0
 };
 
 function Phases(props) {
@@ -45,46 +53,41 @@ function Phases(props) {
     <div className="text-left" style={outerStyle}>
       <div className="row">
         <div className="col-sm-2">
-          <div style={speciesLabelStyle}>
-            {props.name}
+          <div style={labelStyle}>
+            Time line
           </div>
         </div>
+        <div className="col-sm-10 text-left">
+          <TimeScaleContainer timeExtent={props.timeExtent} />
+        </div>
       </div>
-      <div>
-        <div className="row" style={rowStyle}>
-          <div className="col-sm-2 text-left" style={buttonColumnStyle}>
-            <CollapseButtonContainer targetId={cellDataCollapseId} />
-            <div style={dataLabelStyle}>
-              Cell
+      {props.simulationOutput.length > 0 ?
+        <div>
+          <div className="row" style={rowStyle}>
+            <div className="col-sm-2 text-left" style={buttonColumnStyle}>
+              <CollapseButtonContainer targetId={collapseId} />
+              <div style={phasesLabelStyle}>
+                Phases
+              </div>
+            </div>
+            <div className="col-sm-10" style={visColumnStyle}>
+
             </div>
           </div>
-          <div className="col-sm-10" style={visColumnStyle}>
-            <HeatLineContainer
-              data={featureData}
-              timeExtent={props.timeExtent}
-              alignment={props.alignment} />
+          <div className="row in" id={collapseId}>
+            <div className="col-sm-10 col-sm-offset-2">
+
+            </div>
           </div>
         </div>
-        <div className="row in" id={cellDataCollapseId}>
-          <div className="col-sm-10 col-sm-offset-2">
-            <HeatMapContainer
-              data={featureData}
-              timeExtent={props.timeExtent}
-              alignment={props.alignment} />
-          </div>
-        </div>
-      </div>
+      : null}
     </div>
   );
 }
 
-Species.propTypes = {
-  name: PropTypes.string.isRequired,
-  cells: PropTypes.arrayOf(PropTypes.object).isRequired,
-  featureKey: PropTypes.string.isRequired,
-  simulationData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+Phases.propTypes = {
+  simulationOutput: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
-  alignment: PropTypes.string.isRequired
 };
 
-module.exports = Species;
+module.exports = Phases;
