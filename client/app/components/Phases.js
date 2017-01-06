@@ -49,6 +49,8 @@ var visColumnStyle = {
 function Phases(props) {
   var collapseId = "phasesCollapse";
 
+  console.log(props.phaseData);
+
   return (
     <div className="text-left" style={outerStyle}>
       <div className="row">
@@ -61,7 +63,7 @@ function Phases(props) {
           <TimeScaleContainer timeExtent={props.timeExtent} />
         </div>
       </div>
-      {props.simulationOutput.length > 0 ?
+      {props.phaseData.length > 0 ?
         <div>
           <div className="row" style={rowStyle}>
             <div className="col-sm-2 text-left" style={buttonColumnStyle}>
@@ -86,7 +88,7 @@ function Phases(props) {
 }
 
 Phases.propTypes = {
-  simulationOutput: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  phaseData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
 };
 
