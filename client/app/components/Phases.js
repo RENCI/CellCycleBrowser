@@ -2,8 +2,8 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
 var TimeScaleContainer = require("../containers/TimeScaleContainer");
-//var PhaseLineContainer = require("../containers/PhaseLineContainer");
-//var PhaseMapContainer = require("../containers/PhaseMapContainer");
+var PhaseLineContainer = require("../containers/PhaseLineContainer");
+var PhaseMapContainer = require("../containers/PhaseMapContainer");
 
 var outerStyle = {
   backgroundColor: "white",
@@ -49,8 +49,6 @@ var visColumnStyle = {
 function Phases(props) {
   var collapseId = "phasesCollapse";
 
-  console.log(props.phaseData);
-
   return (
     <div className="text-left" style={outerStyle}>
       <div className="row">
@@ -73,12 +71,18 @@ function Phases(props) {
               </div>
             </div>
             <div className="col-sm-10" style={visColumnStyle}>
-
+              <PhaseLineContainer
+                data={props.phaseData}
+                timeExtent={props.timeExtent}
+                alignment={props.alignment} />
             </div>
           </div>
           <div className="row in" id={collapseId}>
             <div className="col-sm-10 col-sm-offset-2">
-
+              <PhaseMapContainer
+                data={props.phaseData}
+                timeExtent={props.timeExtent}
+                alignment={props.alignment} />
             </div>
           </div>
         </div>
@@ -90,6 +94,7 @@ function Phases(props) {
 Phases.propTypes = {
   phaseData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
+  alignment: PropTypes.string.isRequired
 };
 
 module.exports = Phases;

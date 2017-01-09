@@ -36,8 +36,6 @@ function computeTimeExtent(cellData, simulationOutput) {
 }
 
 function phaseData(simulationOutput) {
-console.log(simulationOutput);
-
   // Map phase time steps to actual time
   return simulationOutput.map(function(trajectory) {
     var timeSteps = trajectory.timeSteps;
@@ -53,8 +51,12 @@ console.log(simulationOutput);
             start: timeSteps[subPhase.start],
             stop: timeSteps[subPhase.stop]
           };
+        }).sort(function(a, b) {
+          return a.start - b.start;
         })
       };
+    }).sort(function(a, b) {
+      return a.start - b.start;
     });
   });
 }
@@ -206,7 +208,7 @@ var BrowserContainer = React.createClass({
     }.bind(this));
 
 // XXX: TEST DATA
-this.state.simulationOutput = testData;
+//this.state.simulationOutput = testData;
 
     return (
       <div>
@@ -217,7 +219,8 @@ this.state.simulationOutput = testData;
           timeExtent={timeExtent} />
         <Phases
           phaseData={phaseData(this.state.simulationOutput)}
-          timeExtent={timeExtent} />
+          timeExtent={timeExtent}
+          alignment={this.state.alignment} />
         {speciesComponents}
       </div>
     );

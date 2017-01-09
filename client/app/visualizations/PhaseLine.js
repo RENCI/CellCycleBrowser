@@ -1,20 +1,19 @@
 var d3 = require("d3");
 
-var HeatLine = {};
+var PhaseLine = {};
 
-HeatLine.create = function(element, props, state) {
+PhaseLine.create = function(element, props, state) {
   // Create skeletal chart
   var svg = d3.select(element).append("svg")
-      .attr("class", "heatLine")
+      .attr("class", "PhaseLine")
       .attr("width", props.width)
       .attr("height", props.height);
 
   var g = svg.append("g");
-
-  g.append("rect")
-      .attr("class", "border");
   g.append("g")
       .attr("class", "row");
+    g.append("rect")
+        .attr("class", "border");
   g.append("rect")
       .attr("class", "highlight")
       .attr("shape-rendering", "crispEdges")
@@ -26,8 +25,8 @@ HeatLine.create = function(element, props, state) {
   this.update(element, state);
 };
 
-HeatLine.update = function(element, state) {
-  var svg = d3.select(element).select(".heatLine");
+PhaseLine.update = function(element, state) {
+  var svg = d3.select(element).select(".PhaseLine");
 //      .attr("width", props.width)
 //      .attr("height", props.height);
 
@@ -36,11 +35,14 @@ HeatLine.update = function(element, state) {
   this.draw(svg, layout, state);
 };
 
-HeatLine.layout = function(svg, state) {
+PhaseLine.layout = function(svg, state) {
   var width = parseInt(svg.style("width"), 10),
       height = parseInt(svg.style("height"), 10);
 
-  var timeExtent = d3.extent(state.data, function(d) { return d.time; });
+  var timeExtent = [
+    d3.min(state.data, function(d) { return d.start; }),
+    d3.max(state.data, function(d) { return d.stop; })
+  ];
 
   var xScale = d3.scaleLinear()
       .domain(state.alignment === "left" ?
@@ -54,12 +56,12 @@ HeatLine.layout = function(svg, state) {
   };
 };
 
-HeatLine.destroy = function(element) {
+PhaseLine.destroy = function(element) {
   // Any clean-up would go here
   // in this example there is nothing to do
 };
 
-HeatLine.draw = function(svg, layout, state) {
+PhaseLine.draw = function(svg, layout, state) {
   var width = parseInt(svg.style("width"), 10),
       height = parseInt(svg.style("height"), 10);
 
@@ -68,11 +70,11 @@ HeatLine.draw = function(svg, layout, state) {
       .style("shape-rendering", "crispEdges")
       .style("fill", "none")
       .style("stroke", "#ddd")
-      .style("stroke-width", 4)
+      .style("stroke-width", 2)
     .transition()
-      .attr("x", layout.xScale(state.data[0].time))
-      .attr("width", layout.xScale(state.data[state.data.length - 1].time) -
-                     layout.xScale(state.data[0].time) + 10)
+      .attr("x", layout.xScale(state.data[0].start))
+      .attr("width", layout.xScale(state.data[state.data.length - 1].stop) -
+                     layout.xScale(state.data[0].start))
       .attr("height", height);
 
   // Row
@@ -80,25 +82,41 @@ HeatLine.draw = function(svg, layout, state) {
       .datum(state.data);
 
   // Cells
+  function x(d) {
+    return layout.xScale(d.start);
+  }
+
+  function w(d) {
+    return layout.xScale(d.stop) - layout.xScale(d.start);
+  }
+
+  var format = d3.format(".1f");
+
+  function label(d) {
+    return d.name + ": " + format(d.stop - d.start) + "h";
+  }
+
   var cell = row.selectAll(".cell")
       .data(function(d) { return d; });
 
   cell.enter().append("rect")
       .attr("class", "cell")
-      .attr("x", function(d) { return layout.xScale(d.time); })
-      .attr("width", 10)
+      .attr("x", x)
+      .attr("width", w)
       .attr("height", height)
       .attr("shape-rendering", "crispEdges")
       .attr("data-toggle", "tooltip")
-      .attr("title", function(d) { return d.value.toPrecision(3); })
+      .attr("title", label)
       .style("fill", "white")
       .style("stroke-width", 2)
       .on("mouseover", function(d) {
+        var rect = d3.select(this);
+
         svg.select(".highlight")
-            .attr("x", layout.xScale(d.time))
-            .attr("width", 10)
+            .attr("x", rect.attr("x"))
+            .attr("width", rect.attr("width"))
             .attr("height", height)
-            .style("stroke", highlightColor(state.colorScale(d.value)));
+            .style("stroke", highlightColor(state.colorScale(d.name)));
 
         function highlightColor(color) {
           var hcl = d3.hcl(color);
@@ -113,15 +131,15 @@ HeatLine.draw = function(svg, layout, state) {
             .style("stroke", "none");
       })
     .merge(cell).transition()
-      .attr("x", function(d) { return layout.xScale(d.time); })
-      .attr("width", 10)
+      .attr("x", x)
+      .attr("width", w)
       .attr("height", height)
-      .attr("title", function(d) { return d.value; })
-      .style("fill", function(d) { return state.colorScale(d.value); });
+      .attr("title", label)
+      .style("fill", function(d) { return state.colorScale(d.name); });
 
   cell.exit().transition()
       .style("fill", "white")
       .remove();
 };
 
-module.exports = HeatLine;
+module.exports = PhaseLine;
