@@ -17,7 +17,7 @@ var style = {
 // to include a SpeciesVisualizationContainer that handles this.
 function colorScale(data) {
   // TODO: Move to global settings somewhere
-  return d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
+  return d3.scaleOrdinal(d3ScaleChromatic.schemeAccent.slice(1))
       .domain(data[0].map(function(d) { return d.name; }));
 }
 
@@ -39,14 +39,10 @@ function averageData(data, alignment) {
     });
   });
 
-  console.log(average);
-
   average.forEach(function(phase) {
     phase.start /= data.length;
     phase.stop /= data.length;
   });
-
-  console.log(average);
 
   return average;
 }

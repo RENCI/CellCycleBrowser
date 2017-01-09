@@ -7,7 +7,7 @@ var PhaseMap = require("../visualizations/PhaseMap");
 
 function colorScale(data) {
   // TODO: Move to global settings somewhere
-  return d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
+  return d3.scaleOrdinal(d3ScaleChromatic.schemeAccent.slice(1))
       .domain(data[0].map(function(d) { return d.name; }));
 }
 
