@@ -122,7 +122,7 @@ HeatMap.draw = function(svg, layout, state) {
         .attr("height", layout.yScale.bandwidth())
         .attr("shape-rendering", "crispEdges")
         .attr("data-toggle", "tooltip")
-        .attr("title", function(d) { return d.value; })
+        .attr("data-original-title", function(d) { return d.value; })
         .style("fill", "white")
         .style("stroke-width", 2)
         .on("mouseover", function(d, i) {
@@ -151,7 +151,7 @@ HeatMap.draw = function(svg, layout, state) {
         .attr("x", x)
         .attr("width", 10)
         .attr("height", layout.yScale.bandwidth())
-        .attr("title", function(d) { return d.value; })
+        .attr("data-original-title", function(d) { return d.value; })
         .style("fill", function(d) { return state.colorScale(d.value); });
 
     // Exit

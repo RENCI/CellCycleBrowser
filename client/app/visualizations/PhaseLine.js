@@ -106,7 +106,7 @@ PhaseLine.draw = function(svg, layout, state) {
       .attr("height", height)
       .attr("shape-rendering", "crispEdges")
       .attr("data-toggle", "tooltip")
-      .attr("title", label)
+      .attr("data-original-title", label)
       .style("fill", "white")
       .style("stroke-width", 2)
       .on("mouseover", function(d) {
@@ -130,11 +130,14 @@ PhaseLine.draw = function(svg, layout, state) {
         svg.select(".highlight")
             .style("stroke", "none");
       })
+      .on("click", function(d) {
+        console.log(d);
+      })
     .merge(cell).transition()
       .attr("x", x)
       .attr("width", w)
       .attr("height", height)
-      .attr("title", label)
+      .attr("data-original-title", label)
       .style("fill", function(d) { return state.colorScale(d.name); });
 
   cell.exit().transition()

@@ -127,7 +127,7 @@ PhaseMap.draw = function(svg, layout, state) {
         .attr("height", layout.yScale.bandwidth())
         .attr("shape-rendering", "crispEdges")
         .attr("data-toggle", "tooltip")
-        .attr("title", label)
+        .attr("data-original-title", label)
         .style("fill", "white")
         .style("stroke-width", 2)
         .on("mouseover", function(d, i) {
@@ -156,7 +156,7 @@ PhaseMap.draw = function(svg, layout, state) {
         .attr("x", x)
         .attr("width", w)
         .attr("height", layout.yScale.bandwidth())
-        .attr("title", label)
+        .attr("data-original-title", label)
         .style("fill", function(d) { return state.colorScale(d.name); });
 
     // Exit

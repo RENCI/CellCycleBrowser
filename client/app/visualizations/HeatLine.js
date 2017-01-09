@@ -90,7 +90,7 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("height", height)
       .attr("shape-rendering", "crispEdges")
       .attr("data-toggle", "tooltip")
-      .attr("title", function(d) { return d.value.toPrecision(3); })
+      .attr("data-original-title", function(d) { return d.value.toPrecision(3); })
       .style("fill", "white")
       .style("stroke-width", 2)
       .on("mouseover", function(d) {
@@ -116,7 +116,7 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("x", function(d) { return layout.xScale(d.time); })
       .attr("width", 10)
       .attr("height", height)
-      .attr("title", function(d) { return d.value; })
+      .attr("data-original-title", function(d) { return d.value; })
       .style("fill", function(d) { return state.colorScale(d.value); });
 
   cell.exit().transition()
