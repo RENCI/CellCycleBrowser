@@ -69,7 +69,7 @@ PhaseLine.draw = function(svg, layout, state) {
   var border = svg.select("g").select(".border")
       .style("shape-rendering", "crispEdges")
       .style("fill", "none")
-      .style("stroke", "#ddd")
+      .style("stroke", state.active ? "#999" : "#ddd")
       .style("stroke-width", 2)
     .transition()
       .attr("x", layout.xScale(state.data[0].start))
@@ -107,7 +107,6 @@ PhaseLine.draw = function(svg, layout, state) {
       .attr("shape-rendering", "crispEdges")
       .attr("data-toggle", "tooltip")
       .attr("data-original-title", label)
-      .style("fill", "white")
       .style("stroke-width", 2)
       .on("mouseover", function(d) {
         var rect = d3.select(this);
@@ -131,18 +130,33 @@ PhaseLine.draw = function(svg, layout, state) {
             .style("stroke", "none");
       })
       .on("click", function(d) {
-        console.log(d);
+        state.selectTrajectory({
+          id: "average",
+          phases: d
+        });
       })
-    .merge(cell).transition()
+    .merge(cell)
+      .style("fill", function(d) {
+        return state.active ?
+               highlightColor(state.colorScale(d.name)) :
+               state.colorScale(d.name);
+      })
+    .transition()
       .attr("x", x)
       .attr("width", w)
       .attr("height", height)
-      .attr("data-original-title", label)
-      .style("fill", function(d) { return state.colorScale(d.name); });
+      .attr("data-original-title", label);
 
   cell.exit().transition()
       .style("fill", "white")
       .remove();
+
+  function highlightColor(color) {
+    var hcl = d3.hcl(color);
+    hcl.c *= 2;
+
+    return hcl;
+  }
 };
 
 module.exports = PhaseLine;

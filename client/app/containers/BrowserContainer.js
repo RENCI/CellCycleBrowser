@@ -6,6 +6,7 @@ var ModelStore = require("../stores/ModelStore");
 var FeatureStore = require("../stores/FeatureStore");
 var SimulationOutputStore = require("../stores/SimulationOutputStore");
 var AlignmentStore = require("../stores/AlignmentStore");
+var TrajectoryStore = require("../stores/TrajectoryStore");
 var BrowserControls = require("../components/BrowserControls");
 var Phases = require("../components/Phases");
 var Species = require("../components/Species");
@@ -93,6 +94,13 @@ function getStateFromAlignmentStore() {
   }
 }
 
+function getStateFromTrajectoryStore() {
+  return {
+    activeTrajectory: TrajectoryStore.getTrajectory()
+  }
+}
+
+
 // Enable bootstrap tooltips
 // XXX: This will search the entire page, should perhaps use selector within
 // this element
@@ -113,7 +121,8 @@ var BrowserContainer = React.createClass({
       featureList: [],
       featureKey: "",
       simulationOutput: getStateFromSimulationOutputStore().simulationOutput,
-      alignment: getStateFromAlignmentStore().alignment
+      alignment: getStateFromAlignmentStore().alignment,
+      activeTrajectory: getStateFromTrajectoryStore().activeTrajectory
     };
   },
   componentDidMount: function () {
@@ -122,6 +131,7 @@ var BrowserContainer = React.createClass({
     FeatureStore.addChangeListener(this.onFeatureChange);
     SimulationOutputStore.addChangeListener(this.onSimulationOutputChange);
     AlignmentStore.addChangeListener(this.onAlignmentChange);
+    TrajectoryStore.addChangeListener(this.onTrajectoryChange);
     tooltips();
   },
   componentWillUnmount: function() {
@@ -130,6 +140,7 @@ var BrowserContainer = React.createClass({
     FeatureStore.removeChangeListener(this.onFeatureChange);
     SimulationOutputStore.removeChangeListener(this.onSimulationOutputChange);
     AlignmentStore.removeChangeListener(this.onAlignmentChange);
+    TrajectoryStore.removeChangeListener(this.onTrajectoryChange);
   },
   componentDidUpdate: function () {
     tooltips();
@@ -148,6 +159,9 @@ var BrowserContainer = React.createClass({
   },
   onAlignmentChange: function () {
     this.setState(getStateFromAlignmentStore());
+  },
+  onTrajectoryChange: function () {
+    this.setState(getStateFromTrajectoryStore());
   },
   render: function() {
     if (!this.state.featureKey) return null;
@@ -220,7 +234,8 @@ var BrowserContainer = React.createClass({
         <Phases
           phaseData={phaseData(this.state.simulationOutput)}
           timeExtent={timeExtent}
-          alignment={this.state.alignment} />
+          alignment={this.state.alignment}
+          activeTrajectory={this.state.activeTrajectory} />
         {speciesComponents}
       </div>
     );

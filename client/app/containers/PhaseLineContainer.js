@@ -1,6 +1,7 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
+var ViewActionCreators = require("../actions/ViewActionCreators");
 var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
 var PhaseLine = require("../visualizations/PhaseLine");
@@ -50,8 +51,9 @@ function averageData(data, alignment) {
 var PhaseLineContainer = React.createClass ({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
-    timeExtent: PropTypes.arrayOf(PropTypes.number),
-    alignment: PropTypes.string.isRequired
+    timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
+    alignment: PropTypes.string.isRequired,
+    active: PropTypes.bool.isRequired
   },
   componentDidMount: function() {
     PhaseLine.create(
@@ -71,11 +73,16 @@ var PhaseLineContainer = React.createClass ({
       data: averageData(this.props.data, this.props.alignment),
       colorScale: colorScale(this.props.data),
       timeExtent: this.props.timeExtent,
-      alignment: this.props.alignment
+      alignment: this.props.alignment,
+      active: this.props.active,
+      selectTrajectory: this.selectTrajectory
     };
   },
   componentWillUnmount: function() {
     PhaseLine.destroy(ReactDOM.findDOMNode(this));
+  },
+  selectTrajectory: function(trajectory) {
+    ViewActionCreators.selectTrajectory(trajectory);
   },
   render: function() {
     return <div className="phaseLine" style={style}></div>

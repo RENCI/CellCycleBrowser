@@ -23,6 +23,13 @@ PhaseMap.create = function(element, props, state) {
       .style("fill", "none")
       .style("stroke", "none")
       .style("stroke-width", 2);
+  g.append("rect")
+    .attr("class", "highlight2")
+    .style("shape-rendering", "crispEdges")
+    .style("pointer-events", "none")
+    .style("fill", "none")
+    .style("stroke", "none")
+    .style("stroke-width", 2);
 
   this.update(element, state);
 };
@@ -99,6 +106,25 @@ PhaseMap.draw = function(svg, layout, state) {
 
   row.exit().remove();
 
+  // Highlight border
+  g.select(".highlight2")
+      .style("stroke", "none");
+
+  g.select(".borders").selectAll(".border")
+    .filter(function(d, i) {
+      return state.activeTrajectory.id === i.toString()
+    })
+    .each(function() {
+      var border = d3.select(this);
+
+      g.select(".highlight2")
+          .attr("x", border.attr("x"))
+          .attr("y", border.attr("y"))
+          .attr("width", border.attr("width"))
+          .attr("height", border.attr("height"))
+          .style("stroke", "#999");
+    });
+
   function cells(row, rowIndex) {
     function x(d) {
 //      return layout.xScale(d.start + rowOffset(row));
@@ -128,7 +154,6 @@ PhaseMap.draw = function(svg, layout, state) {
         .attr("shape-rendering", "crispEdges")
         .attr("data-toggle", "tooltip")
         .attr("data-original-title", label)
-        .style("fill", "white")
         .style("stroke-width", 2)
         .on("mouseover", function(d, i) {
           var rect = d3.select(this);
@@ -152,12 +177,23 @@ PhaseMap.draw = function(svg, layout, state) {
           g.select(".highlight")
               .style("stroke", "none");
         })
-      .merge(cell).transition()
+        .on("click", function(d) {
+          state.selectTrajectory({
+            id: rowIndex.toString(),
+            phases: d
+          });
+        })
+      .merge(cell)
+        .style("fill", function(d) {
+          return state.activeTrajectory.id === rowIndex.toString() ?
+                 highlightColor(state.colorScale(d.name)) :
+                 state.colorScale(d.name);
+        })
+      .transition()
         .attr("x", x)
         .attr("width", w)
         .attr("height", layout.yScale.bandwidth())
-        .attr("data-original-title", label)
-        .style("fill", function(d) { return state.colorScale(d.name); });
+        .attr("data-original-title", label);
 
     // Exit
     cell.exit().transition()
@@ -169,6 +205,13 @@ PhaseMap.draw = function(svg, layout, state) {
     return state.alignment === "right" ?
            layout.xScale.domain()[1] - row[row.length - 1].stop :
            layout.xScale.domain()[0] - row[0].start;
+  }
+
+  function highlightColor(color) {
+    var hcl = d3.hcl(color);
+    hcl.c *= 2;
+
+    return hcl;
   }
 };
 

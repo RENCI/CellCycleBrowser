@@ -1,6 +1,7 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
+var ViewActionCreators = require("../actions/ViewActionCreators");
 var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
 var PhaseMap = require("../visualizations/PhaseMap");
@@ -15,7 +16,8 @@ var PhaseMapContainer = React.createClass ({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     timeExtent: PropTypes.arrayOf(PropTypes.number),
-    alignment: PropTypes.string.isRequired
+    alignment: PropTypes.string.isRequired,
+    activeTrajectory: PropTypes.object.isRequired
   },
   componentDidMount: function() {
     PhaseMap.create(
@@ -35,11 +37,16 @@ var PhaseMapContainer = React.createClass ({
       data: this.props.data,
       colorScale: colorScale(this.props.data),
       timeExtent: this.props.timeExtent,
-      alignment: this.props.alignment
+      alignment: this.props.alignment,
+      activeTrajectory: this.props.activeTrajectory,
+      selectTrajectory: this.selectTrajectory
     };
   },
   componentWillUnmount: function() {
     PhaseMap.destroy(ReactDOM.findDOMNode(this));
+  },
+  selectTrajectory: function(trajectory) {
+    ViewActionCreators.selectTrajectory(trajectory);
   },
   render: function() {
     // Style needs to be defined here to access data length

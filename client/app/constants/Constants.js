@@ -6,6 +6,7 @@ module.exports = keyMirror({
   SELECT_CELL_DATA: null,
   SELECT_FEATURE: null,
   SELECT_ALIGNMENT: null,
+  SELECT_TRAJECTORY: null,
 
   CHANGE_SIMULATION_PARAMETER: null,
   CHANGE_SPECIES_INITIAL_VALUE: null,

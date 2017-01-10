@@ -35,6 +35,12 @@ module.exports = {
       alignment: alignment
     });
   },
+  selectTrajectory: function(trajectory) {
+    AppDispatcher.dispatch({
+      actionType: Constants.SELECT_TRAJECTORY,
+      trajectory: trajectory
+    });
+  },
   changeSimulationParameter: function(parameter, value) {
     AppDispatcher.dispatch({
       actionType: Constants.CHANGE_SIMULATION_PARAMETER,
