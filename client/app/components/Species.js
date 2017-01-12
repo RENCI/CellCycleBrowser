@@ -53,6 +53,33 @@ function Species(props) {
   var simulationCollapseId = props.name + "SimulationCollapse";
   var cellDataCollapseId = props.name + "CellDataCollapse";
 
+  /// XXX: Copied from PhaseLineContainer
+  function averagePhaseData(data, alignment) {
+    var average = [];
+
+    data.forEach(function(trajectory, i) {
+      trajectory.forEach(function(phase, j) {
+        if (i === 0) {
+          average.push({
+            name: phase.name,
+            start: 0,
+            stop: 0
+          });
+        }
+
+        average[j].start += phase.start;
+        average[j].stop += phase.stop;
+      });
+    });
+
+    average.forEach(function(phase) {
+      phase.start /= data.length;
+      phase.stop /= data.length;
+    });
+
+    return average;
+  }
+
   return (
     <div className="text-left" style={outerStyle}>
       <div className="row">
@@ -74,6 +101,7 @@ function Species(props) {
             <div className="col-sm-10" style={visColumnStyle}>
               <HeatLineContainer
                 data={props.simulationData}
+                phases={averagePhaseData(props.phaseData)}
                 timeExtent={props.timeExtent}
                 alignment={props.alignment} />
             </div>
@@ -82,6 +110,7 @@ function Species(props) {
             <div className="col-sm-10 col-sm-offset-2">
               <HeatMapContainer
                 data={props.simulationData}
+                phases={props.phaseData}
                 timeExtent={props.timeExtent}
                 alignment={props.alignment} />
             </div>
@@ -100,6 +129,7 @@ function Species(props) {
             <div className="col-sm-10" style={visColumnStyle}>
               <HeatLineContainer
                 data={featureData}
+                phases={props.phases}
                 timeExtent={props.timeExtent}
                 alignment={props.alignment} />
             </div>
@@ -108,6 +138,7 @@ function Species(props) {
             <div className="col-sm-10 col-sm-offset-2">
               <HeatMapContainer
                 data={featureData}
+                phases={props.cells.map(function() { return props.phases; })}
                 timeExtent={props.timeExtent}
                 alignment={props.alignment} />
             </div>
@@ -123,6 +154,8 @@ Species.propTypes = {
   cells: PropTypes.arrayOf(PropTypes.object).isRequired,
   featureKey: PropTypes.string.isRequired,
   simulationData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  phases: PropTypes.arrayOf(PropTypes.object).isRequired,
+  phaseData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   alignment: PropTypes.string.isRequired
 };

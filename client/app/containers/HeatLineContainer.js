@@ -15,7 +15,7 @@ var style = {
 
 // TODO: Use a shared range/sequence for line and heat maps. Perhaps refactor
 // to include a SpeciesVisualizationContainer that handles this.
-function colorScale(data) {
+function colorScale(data, phases) {
   // TODO: Currently normalizing per heatmap. Might want this to be global
   // across all heatmaps
 /*
@@ -25,8 +25,32 @@ function colorScale(data) {
       //.range(["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"]);
       .range(["#edf8fb", "#b2e2e2", "#66c2a4", "#2ca25f", "#006d2c"]);
 */
-    return d3.scaleSequential(d3ScaleChromatic.interpolateBuGn)
-        .domain(d3.extent(d3.merge(data), function(d) { return d.value; }));
+/*
+  return d3.scaleSequential(d3ScaleChromatic.interpolateBuGn)
+      .domain(d3.extent(d3.merge(data), function(d) { return d.value; }));
+*/
+  var extent = d3.extent(d3.merge(data), function(d) { return d.value; });
+
+  return phases.length > 0 ?
+    d3.scaleThreshold()
+        .domain(phases.map(function(d) {
+          return d.stop;
+        }))
+        .range([
+          d3.scaleSequential(d3ScaleChromatic.interpolateGreens)
+              .domain(extent),
+          d3.scaleSequential(d3ScaleChromatic.interpolatePurples)
+              .domain(extent),
+          d3.scaleSequential(d3ScaleChromatic.interpolateOranges)
+              .domain(extent),
+          d3.scaleLinear()
+              .domain(extent)
+              .range(["white", "black"])
+        ])
+    :
+    d3.scaleLinear()
+        .domain(extent)
+        .range(["white", "black"]);
 }
 
 function averageData(data, alignment) {
@@ -104,6 +128,7 @@ function averageData(data, alignment) {
 var HeatLineContainer = React.createClass ({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+    phases: PropTypes.arrayOf(PropTypes.object).isRequired,
     timeExtent: PropTypes.arrayOf(PropTypes.number),
     alignment: PropTypes.string.isRequired
   },
@@ -125,7 +150,8 @@ var HeatLineContainer = React.createClass ({
 
     return {
       data: average,
-      colorScale: colorScale(this.props.data),
+      colorScale: colorScale(this.props.data, this.props.phases),
+      phases: this.props.phases,
       timeExtent: this.props.timeExtent,
       alignment: this.props.alignment
     };

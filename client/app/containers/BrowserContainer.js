@@ -166,6 +166,8 @@ var BrowserContainer = React.createClass({
   render: function() {
     if (!this.state.featureKey) return null;
 
+    var allPhaseData = phaseData(this.state.simulationOutput);
+
     // Get the list of species present in cell data or model
     var cellSpecies = this.state.cellData.species;
     var modelSpecies = this.state.model.species;
@@ -216,6 +218,8 @@ var BrowserContainer = React.createClass({
           cells={cellData}
           featureKey={this.state.featureKey}
           simulationData={simulationData}
+          phases={this.state.activeTrajectory.phases}
+          phaseData={allPhaseData}
           timeExtent={timeExtent}
           alignment={this.state.alignment} />
       );
@@ -232,7 +236,7 @@ var BrowserContainer = React.createClass({
           featureList={this.state.featureList}
           timeExtent={timeExtent} />
         <Phases
-          phaseData={phaseData(this.state.simulationOutput)}
+          phaseData={allPhaseData}
           timeExtent={timeExtent}
           alignment={this.state.alignment}
           activeTrajectory={this.state.activeTrajectory} />

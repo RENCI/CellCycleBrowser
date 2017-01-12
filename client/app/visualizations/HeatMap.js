@@ -133,7 +133,7 @@ HeatMap.draw = function(svg, layout, state) {
               .attr("y", layout.yScale(rowIndex))
               .attr("width", rect.attr("width"))
               .attr("height", rect.attr("height"))
-              .style("stroke", highlightColor(state.colorScale(d.value)));
+              .style("stroke", highlightColor(color(d, row, rowIndex)));
 
           function highlightColor(color) {
             var hcl = d3.hcl(color);
@@ -152,7 +152,7 @@ HeatMap.draw = function(svg, layout, state) {
         .attr("width", 10)
         .attr("height", layout.yScale.bandwidth())
         .attr("data-original-title", function(d) { return d.value; })
-        .style("fill", function(d) { return state.colorScale(d.value); });
+        .style("fill", function(d) { return color(d, row, rowIndex); });
 
     // Exit
     cell.exit().transition()
@@ -164,6 +164,17 @@ HeatMap.draw = function(svg, layout, state) {
     return state.alignment === "right" ?
            layout.xScale.domain()[1] - row[row.length - 1].time :
            layout.xScale.domain()[0] - row[0].time;
+  }
+
+  function color(d, row, rowIndex) {
+    if (state.phases[0].length > 0) {
+      return state.alignment === "right" ?
+              state.colorScale[rowIndex](d.time - row[row.length - 1].time)(d.value) :
+              state.colorScale[rowIndex](d.time - row[0].time)(d.value);
+    }
+    else {
+      return state.colorScale(d.value);
+    }
   }
 };
 

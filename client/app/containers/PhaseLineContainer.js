@@ -18,7 +18,7 @@ var style = {
 // to include a SpeciesVisualizationContainer that handles this.
 function colorScale(data) {
   // TODO: Move to global settings somewhere
-  return d3.scaleOrdinal(d3ScaleChromatic.schemeAccent.slice(1))
+  return d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
       .domain(data[0].map(function(d) { return d.name; }));
 }
 

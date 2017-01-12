@@ -177,10 +177,10 @@ PhaseMap.draw = function(svg, layout, state) {
           g.select(".highlight")
               .style("stroke", "none");
         })
-        .on("click", function(d) {
+        .on("click", function() {
           state.selectTrajectory({
             id: rowIndex.toString(),
-            phases: d
+            phases: state.data[rowIndex]
           });
         })
       .merge(cell)

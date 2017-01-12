@@ -98,7 +98,7 @@ HeatLine.draw = function(svg, layout, state) {
             .attr("x", layout.xScale(d.time))
             .attr("width", 10)
             .attr("height", height)
-            .style("stroke", highlightColor(state.colorScale(d.value)));
+            .style("stroke", highlightColor(color(d)));
 
         function highlightColor(color) {
           var hcl = d3.hcl(color);
@@ -117,11 +117,17 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("width", 10)
       .attr("height", height)
       .attr("data-original-title", function(d) { return d.value; })
-      .style("fill", function(d) { return state.colorScale(d.value); });
+      .style("fill", color);
 
   cell.exit().transition()
       .style("fill", "white")
       .remove();
+
+  function color(d, row) {
+    return state.phases.length > 0 ?
+           state.colorScale(d.time)(d.value) :
+           state.colorScale(d.value);
+  }
 };
 
 module.exports = HeatLine;
