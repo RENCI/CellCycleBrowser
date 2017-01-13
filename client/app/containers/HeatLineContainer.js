@@ -15,7 +15,7 @@ var style = {
 
 // TODO: Use a shared range/sequence for line and heat maps. Perhaps refactor
 // to include a SpeciesVisualizationContainer that handles this.
-function colorScale(data, phases) {
+function colorScale(data) {
   // TODO: Currently normalizing per heatmap. Might want this to be global
   // across all heatmaps
 /*
@@ -29,6 +29,7 @@ function colorScale(data, phases) {
   return d3.scaleSequential(d3ScaleChromatic.interpolateBuGn)
       .domain(d3.extent(d3.merge(data), function(d) { return d.value; }));
 */
+/*
   var extent = d3.extent(d3.merge(data), function(d) { return d.value; });
 
   return phases.length > 0 ?
@@ -51,6 +52,15 @@ function colorScale(data, phases) {
     d3.scaleLinear()
         .domain(extent)
         .range(["white", "black"]);
+*/
+  return d3.scaleLinear()
+      .domain(d3.extent(d3.merge(data), function(d) { return d.value; }))
+      .range(["white", "black"]);
+}
+
+function phaseColorScale(phases) {
+  return d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
+      .domain(phases.map(function(d) { return d.name; }));
 }
 
 function averageData(data, alignment) {
@@ -150,8 +160,9 @@ var HeatLineContainer = React.createClass ({
 
     return {
       data: average,
-      colorScale: colorScale(this.props.data, this.props.phases),
+      colorScale: colorScale(this.props.data),
       phases: this.props.phases,
+      phaseColorScale: phaseColorScale(this.props.phases),
       timeExtent: this.props.timeExtent,
       alignment: this.props.alignment
     };

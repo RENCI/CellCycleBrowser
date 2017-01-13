@@ -9,12 +9,34 @@ HeatLine.create = function(element, props, state) {
       .attr("width", props.width)
       .attr("height", props.height);
 
+  var defs = svg.append("defs");
+
+  defs.append("clipPath")
+      .attr("id", "clipLeft")
+      .attr("clipPathUnits", "objectBoundingBox")
+    .append("rect")
+      .attr("x", 0.5)
+      .attr("y", -0.1)
+      .attr("width", 0.6)
+      .attr("height", 1.2);
+
+  defs.append("clipPath")
+      .attr("id", "clipRight")
+      .attr("clipPathUnits", "objectBoundingBox")
+    .append("rect")
+      .attr("x", -0.1)
+      .attr("y", -0.1)
+      .attr("width", 0.6)
+      .attr("height", 1.2);
+
   var g = svg.append("g");
 
   g.append("rect")
       .attr("class", "border");
   g.append("g")
       .attr("class", "row");
+  g.append("g")
+      .attr("class", "phaseRow");
   g.append("rect")
       .attr("class", "highlight")
       .attr("shape-rendering", "crispEdges")
@@ -123,10 +145,102 @@ HeatLine.draw = function(svg, layout, state) {
       .style("fill", "white")
       .remove();
 
+  // Phase row
+  var phaseRow = svg.select("g").select(".phaseRow")
+      .datum(state.phases);
+
+  // Phases
+  function x1(d) {
+    return layout.xScale(d.start);
+  }
+
+  function x2(d) {
+    return layout.xScale(d.stop);
+  }
+
+  var r = height / 4;
+
+  var phase = phaseRow.selectAll(".phase")
+      .data(function(d) { return d; });
+
+  var phaseEnter = phase.enter().append("g")
+      .attr("class", "phase")
+      .style("pointer-events", "none")
+      .style("fill", phaseColor)
+      .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); });
+
+  phaseEnter.append("circle")
+      .attr("cx", x1)
+      .attr("cy", height / 2)
+      .attr("r", r)
+      .attr("clip-path", "url(#clipLeft)");
+
+  phaseEnter.append("circle")
+      .attr("cx", x2)
+      .attr("cy", height / 2)
+      .attr("r", r)
+      .attr("clip-path", "url(#clipRight)");
+
+  phaseEnter.merge(phase)
+      .style("fill", phaseColor)
+      .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); })
+    .selectAll("circle")
+      .attr("cx", function(d, i) { return i === 0 ? x1(d) : x2(d); })
+      .attr("cy", height / 2)
+      .attr("r", r);
+
+  // Exit
+  phase.exit().transition()
+      .style("fill-opacity", 0)
+      .remove();
+/*
+  // Phases
+  function x(d) {
+    return layout.xScale(d.start);
+  }
+
+  function width(d) {
+    return layout.xScale(d.stop) - layout.xScale(d.start);
+  }
+
+  var phase = phaseRow.selectAll(".phase")
+      .data(function(d) { return d; });
+
+  phase.enter().append("rect")
+      .attr("class", "phase")
+      .attr("x", x)
+      .attr("width", width)
+      .attr("height", height)
+      .attr("shape-rendering", "crispEdges")
+      .style("fill", phaseColor)
+      .style("fill-opacity", 0)
+      .style("stroke", phaseColor)
+      .style("stroke-opacity", 0)
+      .style("stroke-width", 2)
+      .style("pointer-events", "none")
+    .merge(phase).transition()
+      .attr("x", x)
+      .attr("width", width)
+      .attr("height", height)
+      .style("fill-opacity", 0.1)
+      .style("stroke-opacity", 0.4);
+
+  phase.exit().transition()
+      .style("fill-opacity", 0)
+      .remove();
+*/
+
   function color(d, row) {
+/*
     return state.phases.length > 0 ?
            state.colorScale(d.time)(d.value) :
            state.colorScale(d.value);
+*/
+    return state.colorScale(d.value);
+  }
+
+  function phaseColor(d) {
+    return state.phaseColorScale(d.name);
   }
 };
 

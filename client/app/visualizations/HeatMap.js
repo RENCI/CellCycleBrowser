@@ -9,12 +9,34 @@ HeatMap.create = function(element, props, state) {
       .attr("width", props.width)
       .attr("height", props.height);
 
+  var defs = svg.append("defs");
+
+  defs.append("clipPath")
+      .attr("id", "clipLeft")
+      .attr("clipPathUnits", "objectBoundingBox")
+    .append("rect")
+      .attr("x", 0.5)
+      .attr("y", -0.1)
+      .attr("width", 0.6)
+      .attr("height", 1.2);
+
+  defs.append("clipPath")
+      .attr("id", "clipRight")
+      .attr("clipPathUnits", "objectBoundingBox")
+    .append("rect")
+      .attr("x", -0.1)
+      .attr("y", -0.1)
+      .attr("width", 0.6)
+      .attr("height", 1.2);
+
   var g = svg.append("g");
 
   g.append("g")
       .attr("class", "borders")
   g.append("g")
       .attr("class", "rows");
+  g.append("g")
+      .attr("class", "phaseRows");
   g.append("rect")
       .attr("class", "highlight")
       .style("shape-rendering", "crispEdges")
@@ -160,13 +182,116 @@ HeatMap.draw = function(svg, layout, state) {
         .remove();
   }
 
+  // Phase data
+  var phaseRow = g.select(".phaseRows").selectAll(".phaseRow")
+          .data(state.phases);
+
+  phaseRow.enter().append("g")
+      .attr("class", "phaseRow")
+    .merge(phaseRow)
+      .attr("transform", function(d, i) {
+        return "translate(0," + layout.yScale(i) + ")";
+      })
+      .each(phases);
+
+  phaseRow.exit().remove();
+
+  function phases(row, rowIndex) {
+    function x1(d) {
+      return layout.xScale(d.start);
+    }
+
+    function x2(d) {
+      return layout.xScale(d.stop);
+    }
+
+    var r = layout.yScale.bandwidth() / 4;
+
+    // Bind phase data
+    var phase = d3.select(this).selectAll(".phase")
+        .data(function(d) { return d; });
+
+    // Enter + update
+    var phaseEnter = phase.enter().append("g")
+        .attr("class", "phase")
+        .style("pointer-events", "none")
+        .style("fill", phaseColor)
+        .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); });
+
+    phaseEnter.append("circle")
+        .attr("cx", x1)
+        .attr("cy", layout.yScale.bandwidth() / 2)
+        .attr("r", r)
+        .attr("clip-path", "url(#clipLeft)");
+
+    phaseEnter.append("circle")
+        .attr("cx", x2)
+        .attr("cy", layout.yScale.bandwidth() / 2)
+        .attr("r", r)
+        .attr("clip-path", "url(#clipRight)");
+
+    phaseEnter.merge(phase)
+        .style("fill", phaseColor)
+        .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); })
+      .selectAll("circle")
+        .attr("cx", function(d, i) { return i === 0 ? x1(d) : x2(d); })
+        .attr("cy", layout.yScale.bandwidth() / 2)
+        .attr("r", r);
+
+    // Exit
+    phase.exit().transition()
+        .style("fill-opacity", 0)
+        .remove();
+  }
+
+/*
+  function phases(row, rowIndex) {
+    function x(d) {
+      return layout.xScale(d.start);
+    }
+
+    function width(d) {
+      return layout.xScale(d.stop) - layout.xScale(d.start);
+    }
+
+    // Bind phase data
+    var phase = d3.select(this).selectAll(".phase")
+        .data(function(d) { return d; });
+
+    // Enter + update
+    phase.enter().append("rect")
+        .attr("class", "phase")
+        .attr("x", x)
+        .attr("width", width)
+        .attr("height", layout.yScale.bandwidth())
+        .attr("shape-rendering", "crispEdges")
+        .style("fill", phaseColor)
+        .style("fill-opacity", 0)
+        .style("stroke", phaseColor)
+        .style("stroke-opacity", 0)
+        .style("stroke-width", 2)
+        .style("pointer-events", "none")
+      .merge(phase).transition()
+        .attr("x", x)
+        .attr("width", width)
+        .attr("height", layout.yScale.bandwidth())
+        .style("fill-opacity", 0.1)
+        .style("stroke-opacity", 0.4);
+
+    // Exit
+    phase.exit().transition()
+        .style("fill-opacity", 0)
+        .remove();
+  }
+*/
   function rowOffset(row) {
     return state.alignment === "right" ?
            layout.xScale.domain()[1] - row[row.length - 1].time :
            layout.xScale.domain()[0] - row[0].time;
   }
 
-  function color(d, row, rowIndex) {
+  function color(d) {
+/*
     if (state.phases[0].length > 0) {
       return state.alignment === "right" ?
               state.colorScale[rowIndex](d.time - row[row.length - 1].time)(d.value) :
@@ -175,6 +300,12 @@ HeatMap.draw = function(svg, layout, state) {
     else {
       return state.colorScale(d.value);
     }
+  */
+    return state.colorScale(d.value);
+  }
+
+  function phaseColor(d) {
+    return state.phaseColorScale(d.name);
   }
 };
 
