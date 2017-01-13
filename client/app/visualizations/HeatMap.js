@@ -196,6 +196,66 @@ HeatMap.draw = function(svg, layout, state) {
 
   phaseRow.exit().remove();
 
+/*
+  function phases(row, rowIndex) {
+    function x1(d) {
+      return layout.xScale(d.start);
+    }
+
+    function x2(d) {
+      return layout.xScale(d.stop);
+    }
+
+    var r = layout.yScale.bandwidth() / 6;
+
+    // Bind phase data
+    var phase = d3.select(this).selectAll(".phase")
+        .data(function(d) { return d; });
+
+    // Enter + update
+    var phaseEnter = phase.enter().append("g")
+        .attr("class", "phase")
+        .style("pointer-events", "none")
+        .style("fill", phaseColor)
+        .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); });
+
+    phaseEnter.append("line")
+        .attr("x1", x1)
+        .attr("y1", layout.yScale.bandwidth() / 2)
+        .attr("x2", x2)
+        .attr("y2", layout.yScale.bandwidth() / 2)
+        .style("fill", "none")
+        .style("stroke", phaseColor);
+
+    phaseEnter.append("circle")
+        .attr("cx", x2)
+        .attr("cy", layout.yScale.bandwidth() / 2)
+        .attr("r", r);
+
+    var phaseUpdate = phaseEnter.merge(phase)
+        .style("fill", phaseColor)
+        .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); });
+
+    phaseUpdate.select("line")
+        .attr("x1", x1)
+        .attr("y1", layout.yScale.bandwidth() / 2)
+        .attr("x2", x2)
+        .attr("y2", layout.yScale.bandwidth() / 2)
+        .style("stroke", phaseColor);
+
+    phaseUpdate.select("circle")
+        .attr("cx", x2)
+        .attr("cy", layout.yScale.bandwidth() / 2)
+        .attr("r", r);
+
+    // Exit
+    phase.exit().transition()
+        .style("fill-opacity", 0)
+        .style("stroke-opacity", 0)
+        .remove();
+  }
+*/
+/*
   function phases(row, rowIndex) {
     function x1(d) {
       return layout.xScale(d.start);
@@ -211,12 +271,20 @@ HeatMap.draw = function(svg, layout, state) {
     var phase = d3.select(this).selectAll(".phase")
         .data(function(d) { return d; });
 
-    // Enter + update
+    // Enter
     var phaseEnter = phase.enter().append("g")
         .attr("class", "phase")
         .style("pointer-events", "none")
         .style("fill", phaseColor)
         .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); });
+
+    phaseEnter.append("line")
+        .attr("x1", x1)
+        .attr("y1", layout.yScale.bandwidth() / 2)
+        .attr("x2", x2)
+        .attr("y2", layout.yScale.bandwidth() / 2)
+        .style("fill", "none")
+        .style("stroke", phaseColor);
 
     phaseEnter.append("circle")
         .attr("cx", x1)
@@ -230,10 +298,21 @@ HeatMap.draw = function(svg, layout, state) {
         .attr("r", r)
         .attr("clip-path", "url(#clipRight)");
 
-    phaseEnter.merge(phase)
+    // Update
+    var phaseUpdate = phaseEnter.merge(phase)
         .style("fill", phaseColor)
-        .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); })
-      .selectAll("circle")
+        .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); });
+
+    phaseUpdate.select("line")
+        .attr("x1", x1)
+        .attr("y1", layout.yScale.bandwidth() / 2)
+        .attr("x2", x2)
+        .attr("y2", layout.yScale.bandwidth() / 2)
+        .style("stroke", phaseColor);
+
+    // XXX: This is ugly, should probably just bind data for circles above since there are two
+    phaseUpdate.selectAll("circle")
+      .data(function(d) { return [d, d]; })
         .attr("cx", function(d, i) { return i === 0 ? x1(d) : x2(d); })
         .attr("cy", layout.yScale.bandwidth() / 2)
         .attr("r", r);
@@ -241,10 +320,11 @@ HeatMap.draw = function(svg, layout, state) {
     // Exit
     phase.exit().transition()
         .style("fill-opacity", 0)
+        .style("stroke-opacity", 0)
         .remove();
   }
+*/
 
-/*
   function phases(row, rowIndex) {
     function x(d) {
       return layout.xScale(d.start);
@@ -283,7 +363,7 @@ HeatMap.draw = function(svg, layout, state) {
         .style("fill-opacity", 0)
         .remove();
   }
-*/
+
   function rowOffset(row) {
     return state.alignment === "right" ?
            layout.xScale.domain()[1] - row[row.length - 1].time :

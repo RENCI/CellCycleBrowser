@@ -149,6 +149,7 @@ HeatLine.draw = function(svg, layout, state) {
   var phaseRow = svg.select("g").select(".phaseRow")
       .datum(state.phases);
 
+/*
   // Phases
   function x1(d) {
     return layout.xScale(d.start);
@@ -163,11 +164,20 @@ HeatLine.draw = function(svg, layout, state) {
   var phase = phaseRow.selectAll(".phase")
       .data(function(d) { return d; });
 
+  // Enter
   var phaseEnter = phase.enter().append("g")
       .attr("class", "phase")
       .style("pointer-events", "none")
       .style("fill", phaseColor)
       .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); });
+
+  phaseEnter.append("line")
+      .attr("x1", x1)
+      .attr("y1", height / 2)
+      .attr("x2", x2)
+      .attr("y2", height / 2)
+      .style("fill", "none")
+      .style("stroke", phaseColor);
 
   phaseEnter.append("circle")
       .attr("cx", x1)
@@ -181,10 +191,21 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("r", r)
       .attr("clip-path", "url(#clipRight)");
 
-  phaseEnter.merge(phase)
+  // Update
+  var phaseUpdate = phaseEnter.merge(phase)
       .style("fill", phaseColor)
-      .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); })
-    .selectAll("circle")
+      .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); });
+
+  phaseUpdate.select("line")
+      .attr("x1", x1)
+      .attr("y1", height / 2)
+      .attr("x2", x2)
+      .attr("y2", height / 2)
+      .style("stroke", phaseColor);
+
+  // XXX: This is ugly, should probably just bind data for circles above since there are two
+  phaseUpdate.selectAll("circle")
+    .data(function(d) { return [d, d]; })
       .attr("cx", function(d, i) { return i === 0 ? x1(d) : x2(d); })
       .attr("cy", height / 2)
       .attr("r", r);
@@ -192,8 +213,10 @@ HeatLine.draw = function(svg, layout, state) {
   // Exit
   phase.exit().transition()
       .style("fill-opacity", 0)
+      .style("stroke-opacity", 0)
       .remove();
-/*
+*/
+
   // Phases
   function x(d) {
     return layout.xScale(d.start);
@@ -228,7 +251,7 @@ HeatLine.draw = function(svg, layout, state) {
   phase.exit().transition()
       .style("fill-opacity", 0)
       .remove();
-*/
+
 
   function color(d, row) {
 /*
