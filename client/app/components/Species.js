@@ -103,7 +103,8 @@ function Species(props) {
                 data={props.simulationData}
                 phases={averagePhaseData(props.phaseData)}
                 timeExtent={props.timeExtent}
-                alignment={props.alignment} />
+                alignment={props.alignment}
+                phaseOverlayOpacity={props.phaseOverlayOpacity} />
             </div>
           </div>
           <div className="row in" id={simulationCollapseId}>
@@ -112,7 +113,8 @@ function Species(props) {
                 data={props.simulationData}
                 phases={props.phaseData}
                 timeExtent={props.timeExtent}
-                alignment={props.alignment} />
+                alignment={props.alignment}
+                phaseOverlayOpacity={props.phaseOverlayOpacity} />
             </div>
           </div>
         </div>
@@ -131,7 +133,8 @@ function Species(props) {
                 data={featureData}
                 phases={props.phases}
                 timeExtent={props.timeExtent}
-                alignment={props.alignment} />
+                alignment={props.alignment}
+                phaseOverlayOpacity={props.phaseOverlayOpacity} />
             </div>
           </div>
           <div className="row in" id={cellDataCollapseId}>
@@ -140,7 +143,8 @@ function Species(props) {
                 data={featureData}
                 phases={props.cells.map(function() { return props.phases; })}
                 timeExtent={props.timeExtent}
-                alignment={props.alignment} />
+                alignment={props.alignment}
+                phaseOverlayOpacity={props.phaseOverlayOpacity} />
             </div>
           </div>
         </div>
@@ -157,7 +161,8 @@ Species.propTypes = {
   phases: PropTypes.arrayOf(PropTypes.object).isRequired,
   phaseData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
-  alignment: PropTypes.string.isRequired
+  alignment: PropTypes.string.isRequired,
+  phaseOverlayOpacity: PropTypes.number.isRequired
 };
 
 module.exports = Species;

@@ -105,7 +105,7 @@ HeatMap.draw = function(svg, layout, state) {
       .style("fill", "none")
       .style("stroke", "#ddd")
       .style("stroke-width", 4)
-    .merge(border).transition()
+    .merge(border)//.transition()
       .attr("x", function(d) { return layout.xScale(d[0].time + rowOffset(d)); })
       .attr("y", function(d, i) { return layout.yScale(i); })
       .attr("width", function(d) {
@@ -169,7 +169,7 @@ HeatMap.draw = function(svg, layout, state) {
           g.select(".highlight")
               .style("stroke", "none");
         })
-      .merge(cell).transition()
+      .merge(cell)//.transition()
         .attr("x", x)
         .attr("width", 10)
         .attr("height", layout.yScale.bandwidth())
@@ -195,7 +195,6 @@ HeatMap.draw = function(svg, layout, state) {
       .each(phases);
 
   phaseRow.exit().remove();
-
 /*
   function phases(row, rowIndex) {
     function x1(d) {
@@ -255,7 +254,6 @@ HeatMap.draw = function(svg, layout, state) {
         .remove();
   }
 */
-/*
   function phases(row, rowIndex) {
     function x1(d) {
       return layout.xScale(d.start);
@@ -276,7 +274,9 @@ HeatMap.draw = function(svg, layout, state) {
         .attr("class", "phase")
         .style("pointer-events", "none")
         .style("fill", phaseColor)
-        .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); });
+        .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); })
+        .style("fill-opacity", state.phaseOverlayOpacity)
+        .style("stroke-opacity", state.phaseOverlayOpacity);
 
     phaseEnter.append("line")
         .attr("x1", x1)
@@ -301,7 +301,9 @@ HeatMap.draw = function(svg, layout, state) {
     // Update
     var phaseUpdate = phaseEnter.merge(phase)
         .style("fill", phaseColor)
-        .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); });
+        .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); })
+        .style("fill-opacity", state.phaseOverlayOpacity)
+        .style("stroke-opacity", state.phaseOverlayOpacity);
 
     phaseUpdate.select("line")
         .attr("x1", x1)
@@ -323,8 +325,7 @@ HeatMap.draw = function(svg, layout, state) {
         .style("stroke-opacity", 0)
         .remove();
   }
-*/
-
+/*
   function phases(row, rowIndex) {
     function x(d) {
       return layout.xScale(d.start);
@@ -351,19 +352,19 @@ HeatMap.draw = function(svg, layout, state) {
         .style("stroke-opacity", 0)
         .style("stroke-width", 2)
         .style("pointer-events", "none")
-      .merge(phase).transition()
+      .merge(phase)//.transition()
         .attr("x", x)
         .attr("width", width)
         .attr("height", layout.yScale.bandwidth())
-        .style("fill-opacity", 0.1)
-        .style("stroke-opacity", 0.4);
+        .style("fill-opacity", state.phaseOverlayOpacity)
+        .style("stroke-opacity", state.phaseOverlayOpacity * 2);
 
     // Exit
     phase.exit().transition()
         .style("fill-opacity", 0)
         .remove();
   }
-
+*/
   function rowOffset(row) {
     return state.alignment === "right" ?
            layout.xScale.domain()[1] - row[row.length - 1].time :

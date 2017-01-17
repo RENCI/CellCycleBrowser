@@ -41,6 +41,12 @@ module.exports = {
       trajectory: trajectory
     });
   },
+  changePhaseOverlayOpacity: function(opacity) {
+    AppDispatcher.dispatch({
+      actionType: Constants.CHANGE_PHASE_OVERLAY_OPACITY,
+      opacity: opacity
+    });
+  },
   changeSimulationParameter: function(parameter, value) {
     AppDispatcher.dispatch({
       actionType: Constants.CHANGE_SIMULATION_PARAMETER,

@@ -140,7 +140,8 @@ var HeatLineContainer = React.createClass ({
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     phases: PropTypes.arrayOf(PropTypes.object).isRequired,
     timeExtent: PropTypes.arrayOf(PropTypes.number),
-    alignment: PropTypes.string.isRequired
+    alignment: PropTypes.string.isRequired,
+    phaseOverlayOpacity: PropTypes.number.isRequired
   },
   componentDidMount: function() {
     HeatLine.create(
@@ -164,7 +165,8 @@ var HeatLineContainer = React.createClass ({
       phases: this.props.phases,
       phaseColorScale: phaseColorScale(this.props.phases),
       timeExtent: this.props.timeExtent,
-      alignment: this.props.alignment
+      alignment: this.props.alignment,
+      phaseOverlayOpacity: this.props.phaseOverlayOpacity
     };
   },
   componentWillUnmount: function() {

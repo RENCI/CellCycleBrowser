@@ -149,7 +149,6 @@ HeatLine.draw = function(svg, layout, state) {
   var phaseRow = svg.select("g").select(".phaseRow")
       .datum(state.phases);
 
-/*
   // Phases
   function x1(d) {
     return layout.xScale(d.start);
@@ -169,7 +168,9 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("class", "phase")
       .style("pointer-events", "none")
       .style("fill", phaseColor)
-      .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); });
+      .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); })
+      .style("fill-opacity", state.phaseOverlayOpacity)
+      .style("stroke-opacity", state.phaseOverlayOpacity);
 
   phaseEnter.append("line")
       .attr("x1", x1)
@@ -194,7 +195,9 @@ HeatLine.draw = function(svg, layout, state) {
   // Update
   var phaseUpdate = phaseEnter.merge(phase)
       .style("fill", phaseColor)
-      .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); });
+      .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); })
+      .style("fill-opacity", state.phaseOverlayOpacity)
+      .style("stroke-opacity", state.phaseOverlayOpacity);
 
   phaseUpdate.select("line")
       .attr("x1", x1)
@@ -215,8 +218,7 @@ HeatLine.draw = function(svg, layout, state) {
       .style("fill-opacity", 0)
       .style("stroke-opacity", 0)
       .remove();
-*/
-
+/*
   // Phases
   function x(d) {
     return layout.xScale(d.start);
@@ -251,7 +253,7 @@ HeatLine.draw = function(svg, layout, state) {
   phase.exit().transition()
       .style("fill-opacity", 0)
       .remove();
-
+*/
 
   function color(d, row) {
 /*

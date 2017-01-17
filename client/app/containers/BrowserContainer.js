@@ -7,6 +7,7 @@ var FeatureStore = require("../stores/FeatureStore");
 var SimulationOutputStore = require("../stores/SimulationOutputStore");
 var AlignmentStore = require("../stores/AlignmentStore");
 var TrajectoryStore = require("../stores/TrajectoryStore");
+var PhaseOverlayOpacityStore = require("../stores/PhaseOverlayOpacityStore");
 var BrowserControls = require("../components/BrowserControls");
 var Phases = require("../components/Phases");
 var Species = require("../components/Species");
@@ -100,6 +101,12 @@ function getStateFromTrajectoryStore() {
   }
 }
 
+function getStateFromPhaseOverlayOpacityStore() {
+  return {
+    phaseOverlayOpacity: PhaseOverlayOpacityStore.getOpacity()
+  }
+}
+
 
 // Enable bootstrap tooltips
 // XXX: This will search the entire page, should perhaps use selector within
@@ -122,7 +129,8 @@ var BrowserContainer = React.createClass({
       featureKey: "",
       simulationOutput: getStateFromSimulationOutputStore().simulationOutput,
       alignment: getStateFromAlignmentStore().alignment,
-      activeTrajectory: getStateFromTrajectoryStore().activeTrajectory
+      activeTrajectory: getStateFromTrajectoryStore().activeTrajectory,
+      phaseOverlayOpacity: getStateFromPhaseOverlayOpacityStore().phaseOverlayOpacity
     };
   },
   componentDidMount: function () {
@@ -132,6 +140,7 @@ var BrowserContainer = React.createClass({
     SimulationOutputStore.addChangeListener(this.onSimulationOutputChange);
     AlignmentStore.addChangeListener(this.onAlignmentChange);
     TrajectoryStore.addChangeListener(this.onTrajectoryChange);
+    PhaseOverlayOpacityStore.addChangeListener(this.onPhaseOverlayOpacityChange);
     tooltips();
   },
   componentWillUnmount: function() {
@@ -141,6 +150,7 @@ var BrowserContainer = React.createClass({
     SimulationOutputStore.removeChangeListener(this.onSimulationOutputChange);
     AlignmentStore.removeChangeListener(this.onAlignmentChange);
     TrajectoryStore.removeChangeListener(this.onTrajectoryChange);
+    PhaseOverlayOpacityStore.removeChangeListener(this.onPhaseOverlayOpacityChange);
   },
   componentDidUpdate: function () {
     tooltips();
@@ -163,8 +173,14 @@ var BrowserContainer = React.createClass({
   onTrajectoryChange: function () {
     this.setState(getStateFromTrajectoryStore());
   },
+  onPhaseOverlayOpacityChange: function () {
+    this.setState(getStateFromPhaseOverlayOpacityStore());
+  },
   render: function() {
     if (!this.state.featureKey) return null;
+
+// XXX: TEST DATA
+this.state.simulationOutput = testData;
 
     var allPhaseData = phaseData(this.state.simulationOutput);
 
@@ -221,12 +237,10 @@ var BrowserContainer = React.createClass({
           phases={this.state.activeTrajectory.phases}
           phaseData={allPhaseData}
           timeExtent={timeExtent}
-          alignment={this.state.alignment} />
+          alignment={this.state.alignment}
+          phaseOverlayOpacity={this.state.phaseOverlayOpacity} />
       );
     }.bind(this));
-
-// XXX: TEST DATA
-//this.state.simulationOutput = testData;
 
     return (
       <div>
