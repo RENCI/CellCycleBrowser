@@ -158,7 +158,7 @@ HeatLine.draw = function(svg, layout, state) {
     return layout.xScale(d.stop);
   }
 
-  var r = height / 4;
+  var r = 3;
 
   var phase = phaseRow.selectAll(".phase")
       .data(function(d) { return d; });
@@ -178,7 +178,20 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("x2", x2)
       .attr("y2", height / 2)
       .style("fill", "none")
-      .style("stroke", phaseColor);
+      .style("stroke", phaseColor)
+      .style("stroke-dasharray", "5,5");
+
+  phaseEnter.append("line")
+      .attr("x1", x1)
+      .attr("y1", height / 2)
+      .attr("x2", x2)
+      .attr("y2", height / 2)
+      .style("fill", "none")
+      .style("stroke", function (d) {
+        return d3.color(phaseColor(d)).darker();
+      })
+      .style("stroke-dasharray", "5,5")
+      .style("stroke-dashoffset", 5);
 
   phaseEnter.append("circle")
       .attr("cx", x1)
@@ -199,12 +212,11 @@ HeatLine.draw = function(svg, layout, state) {
       .style("fill-opacity", state.phaseOverlayOpacity)
       .style("stroke-opacity", state.phaseOverlayOpacity);
 
-  phaseUpdate.select("line")
+  phaseUpdate.selectAll("line")
       .attr("x1", x1)
       .attr("y1", height / 2)
       .attr("x2", x2)
-      .attr("y2", height / 2)
-      .style("stroke", phaseColor);
+      .attr("y2", height / 2);
 
   // XXX: This is ugly, should probably just bind data for circles above since there are two
   phaseUpdate.selectAll("circle")

@@ -197,6 +197,99 @@ HeatMap.draw = function(svg, layout, state) {
   phaseRow.exit().remove();
 /*
   function phases(row, rowIndex) {
+    var height = layout.yScale.bandwidth(),
+        width = 6,
+        y = (layout.yScale.bandwidth() - height) / 2;
+
+    function x1(d) {
+      return layout.xScale(d.start);
+    }
+
+    function x2(d) {
+      return layout.xScale(d.stop);
+    }
+
+    var r = layout.yScale.bandwidth() / 4;
+
+    // Bind phase data
+    var phase = d3.select(this).selectAll(".phase")
+        .data(function(d) { return d; });
+
+    // Enter
+    var phaseEnter = phase.enter().append("g")
+        .attr("class", "phase")
+        .style("pointer-events", "none")
+        .style("fill", phaseColor)
+        .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); })
+        .style("fill-opacity", state.phaseOverlayOpacity)
+        .style("stroke-opacity", state.phaseOverlayOpacity);
+
+    phaseEnter.append("line")
+        .attr("x1", x1)
+        .attr("y1", layout.yScale.bandwidth() / 2)
+        .attr("x2", x2)
+        .attr("y2", layout.yScale.bandwidth() / 2)
+        .style("fill", "none")
+        .style("stroke", phaseColor)
+        .style("stroke-dasharray", "5,5");
+
+    phaseEnter.append("line")
+        .attr("x1", x1)
+        .attr("y1", layout.yScale.bandwidth() / 2)
+        .attr("x2", x2)
+        .attr("y2", layout.yScale.bandwidth() / 2)
+        .style("fill", "none")
+        .style("stroke", function (d) { return d3.color(phaseColor(d)).darker(); })
+        .style("stroke-dasharray", "5,5")
+        .style("stroke-dashoffset", 5);
+
+    phaseEnter.append("rect")
+        .attr("x", function(d) { return x1(d) - width / 2; })
+        .attr("y", y)
+        .attr("width", width)
+        .attr("height", height)
+        .attr("clip-path", "url(#clipLeft)");
+
+    phaseEnter.append("rect")
+        .attr("x", function(d) { return x2(d) - width / 2; })
+        .attr("y", y)
+        .attr("width", width)
+        .attr("height", height)
+        .attr("clip-path", "url(#clipRight)");
+
+    // Update
+    var phaseUpdate = phaseEnter.merge(phase)
+        .style("fill", phaseColor)
+        .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); })
+        .style("fill-opacity", state.phaseOverlayOpacity)
+        .style("stroke-opacity", state.phaseOverlayOpacity);
+
+    phaseUpdate.select("line")
+        .attr("x1", x1)
+        .attr("y1", layout.yScale.bandwidth() / 2)
+        .attr("x2", x2)
+        .attr("y2", layout.yScale.bandwidth() / 2)
+        .style("stroke", phaseColor);
+
+    // XXX: This is ugly, should probably just bind data for circles above since there are two
+    phaseUpdate.selectAll("rect")
+      .data(function(d) { return [d, d]; })
+        .attr("x", function(d, i) {
+          return i === 0 ? x1(d) - width / 2 : x2(d) - width / 2;
+        })
+        .attr("y", y)
+        .attr("width", width)
+        .attr("height", height);
+
+    // Exit
+    phase.exit().transition()
+        .style("fill-opacity", 0)
+        .style("stroke-opacity", 0)
+        .remove();
+  }
+*/
+/*
+  function phases(row, rowIndex) {
     function x1(d) {
       return layout.xScale(d.start);
     }
@@ -263,7 +356,7 @@ HeatMap.draw = function(svg, layout, state) {
       return layout.xScale(d.stop);
     }
 
-    var r = layout.yScale.bandwidth() / 4;
+    var r = 3;
 
     // Bind phase data
     var phase = d3.select(this).selectAll(".phase")
@@ -284,7 +377,20 @@ HeatMap.draw = function(svg, layout, state) {
         .attr("x2", x2)
         .attr("y2", layout.yScale.bandwidth() / 2)
         .style("fill", "none")
-        .style("stroke", phaseColor);
+        .style("stroke", phaseColor)
+        .style("stroke-dasharray", "5,5");
+
+    phaseEnter.append("line")
+        .attr("x1", x1)
+        .attr("y1", layout.yScale.bandwidth() / 2)
+        .attr("x2", x2)
+        .attr("y2", layout.yScale.bandwidth() / 2)
+        .style("fill", "none")
+        .style("stroke", function (d) {
+          return d3.color(phaseColor(d)).darker();
+        })
+        .style("stroke-dasharray", "5,5")
+        .style("stroke-dashoffset", 5);
 
     phaseEnter.append("circle")
         .attr("cx", x1)
@@ -305,12 +411,11 @@ HeatMap.draw = function(svg, layout, state) {
         .style("fill-opacity", state.phaseOverlayOpacity)
         .style("stroke-opacity", state.phaseOverlayOpacity);
 
-    phaseUpdate.select("line")
+    phaseUpdate.selectAll("line")
         .attr("x1", x1)
         .attr("y1", layout.yScale.bandwidth() / 2)
         .attr("x2", x2)
-        .attr("y2", layout.yScale.bandwidth() / 2)
-        .style("stroke", phaseColor);
+        .attr("y2", layout.yScale.bandwidth() / 2);
 
     // XXX: This is ugly, should probably just bind data for circles above since there are two
     phaseUpdate.selectAll("circle")
