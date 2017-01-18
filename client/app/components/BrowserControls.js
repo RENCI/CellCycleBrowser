@@ -15,6 +15,12 @@ var divStyle = {
   marginBottom: 20
 };
 
+function handleShowPhaseOverlayChange(event) {
+  var show = $(event.target).hasClass("active");
+  
+  ViewActionCreators.changeShowPhaseOverlay(show);
+}
+
 function handlePhaseOverlayOpacityChange(value) {
   ViewActionCreators.changePhaseOverlayOpacity(value);
 }
@@ -35,9 +41,10 @@ function BrowserControls(props) {
         <div className="col-sm-2 col-sm-offset-2">
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn btn-primary active"
             style={{marginTop: 27, width: "100%"}}
-            data-toggle="button">
+            data-toggle="button"
+            onClick={handleShowPhaseOverlayChange}>
             Show
           </button>
         </div>

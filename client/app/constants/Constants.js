@@ -8,6 +8,7 @@ module.exports = keyMirror({
   SELECT_ALIGNMENT: null,
   SELECT_TRAJECTORY: null,
 
+  CHANGE_SHOW_PHASE_OVERLAY: null,
   CHANGE_PHASE_OVERLAY_OPACITY: null,
 
   CHANGE_SIMULATION_PARAMETER: null,

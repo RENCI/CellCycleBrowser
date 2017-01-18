@@ -5,10 +5,13 @@ var Constants = require("../constants/Constants");
 
 var CHANGE_EVENT = "change";
 
+// Show phase overlay or not
+var show = true;
+
 // Phase overlay opacity
 var opacity = 1;
 
-var PhaseOverlayOpacityStore = assign({}, EventEmitter.prototype, {
+var PhaseOverlayStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
     this.emit(CHANGE_EVENT);
   },
@@ -18,6 +21,9 @@ var PhaseOverlayOpacityStore = assign({}, EventEmitter.prototype, {
   removeChangeListener: function (callback) {
     this.removeListener(CHANGE_EVENT, callback);
   },
+  getShow: function() {
+    return show;
+  },
   getOpacity: function () {
     return opacity;
   }
@@ -25,11 +31,16 @@ var PhaseOverlayOpacityStore = assign({}, EventEmitter.prototype, {
 
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
+    case Constants.CHANGE_SHOW_PHASE_OVERLAY:
+      show = action.show;
+      PhaseOverlayStore.emitChange();
+      break;
+
     case Constants.CHANGE_PHASE_OVERLAY_OPACITY:
       opacity = action.opacity;
-      PhaseOverlayOpacityStore.emitChange();
+      PhaseOverlayStore.emitChange();
       break;
   }
 });
 
-module.exports = PhaseOverlayOpacityStore;
+module.exports = PhaseOverlayStore;
