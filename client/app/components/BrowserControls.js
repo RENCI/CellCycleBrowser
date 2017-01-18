@@ -47,7 +47,7 @@ function BrowserControls(props) {
             min={0}
             max={1}
             step={0.1}
-            initialValue={0.5}
+            initialValue={1}
             onChange={handlePhaseOverlayOpacityChange} />
         </div>
       </div>

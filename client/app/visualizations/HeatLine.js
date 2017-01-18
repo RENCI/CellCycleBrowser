@@ -112,14 +112,18 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("height", height)
       .attr("shape-rendering", "crispEdges")
       .attr("data-toggle", "tooltip")
-      .attr("data-original-title", function(d) { return d.value.toPrecision(3); })
+      .attr("data-original-title", function(d) {
+        return d.value.toPrecision(3);
+      })
       .style("fill", "white")
       .style("stroke-width", 2)
       .on("mouseover", function(d) {
+        var rect = d3.select(this);
+
         svg.select(".highlight")
-            .attr("x", layout.xScale(d.time))
-            .attr("width", 10)
-            .attr("height", height)
+            .attr("x", rect.attr("x"))
+            .attr("width", rect.attr("width"))
+            .attr("height", rect.attr("height"))
             .style("stroke", highlightColor(color(d)));
 
         function highlightColor(color) {
@@ -138,7 +142,9 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("x", function(d) { return layout.xScale(d.time); })
       .attr("width", 10)
       .attr("height", height)
-      .attr("data-original-title", function(d) { return d.value; })
+      .attr("data-original-title", function(d) {
+        return d.value.toPrecision(3);
+      })
       .style("fill", color);
 
   cell.exit().transition()

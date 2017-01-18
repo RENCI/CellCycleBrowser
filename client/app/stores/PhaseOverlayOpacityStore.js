@@ -6,7 +6,7 @@ var Constants = require("../constants/Constants");
 var CHANGE_EVENT = "change";
 
 // Phase overlay opacity
-var opacity = 0.5;
+var opacity = 1;
 
 var PhaseOverlayOpacityStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
