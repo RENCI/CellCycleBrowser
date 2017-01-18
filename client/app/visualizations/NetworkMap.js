@@ -81,11 +81,11 @@ module.exports = function() {
         .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
-
-    node.attr("transform", function(d) {
-      return "translate(" + d.x + "," + d.y + ")";
-    });
 */
+    svg.select(".species").selectAll(".species > g")
+        .attr("transform", function(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+        });
   }
 
   function draw() {
@@ -96,7 +96,7 @@ module.exports = function() {
         .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
 
     // Draw phases and species
-    drawPhases();
+//    drawPhases();
     drawSpecies();
 
     function drawPhases() {
@@ -179,15 +179,20 @@ module.exports = function() {
     }
 
     function drawSpecies() {
-      force.nodes(nodes);
-      force.force("link").links(links);
-      force.force("center").x(width / 2).y(width / 2);
+      force.force("center").x(0).y(0);
 
       // Set fixed position for phases
       // XXX: Radius copied from above
       var radius = Math.min(width, height) / 2 - 20;
 
-      data.phases.forEach(function(d) {
+      data.phases.forEach(function(d, i) {
+        var numPhases = data.phases.length;
+
+        var a = i / numPhases * 2 * Math.PI;
+
+        d.fx = radius * Math.cos(a);
+        d.fy = radius * Math.sin(a);
+
 //        var a =
 //        d.fx = radius * Math.cos(sa - Math.PI / 2),
 //        d.fy = radius * Math.sin(sa - Math.PI / 2),
@@ -195,7 +200,8 @@ module.exports = function() {
 
       // Bind species data
       var node = svg.select(".species").selectAll(".species > g")
-          .data(data.species);
+//          .data(data.species);
+          .data(nodes);
 
       var nodeEnter = node.enter().append("g")
           .append("circle")
@@ -212,7 +218,7 @@ module.exports = function() {
   function processData() {
     console.log(data);
 
-    nodes = data.phases.concat(data.species);
+    nodes = data.phases.slice().concat(data.species).slice();
 
     links = [];
     data.speciesPhaseMatrix.forEach(function(d, i) {
@@ -227,6 +233,10 @@ module.exports = function() {
 
     console.log(nodes);
     console.log(links);
+
+
+    force.nodes(nodes);
+    force.force("link").links(links);
   }
 
   networkMap.update = function() {
