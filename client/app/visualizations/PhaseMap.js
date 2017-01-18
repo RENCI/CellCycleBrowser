@@ -180,7 +180,7 @@ PhaseMap.draw = function(svg, layout, state) {
         .on("click", function() {
           state.selectTrajectory({
             id: rowIndex.toString(),
-            phases: state.data[rowIndex]
+            phases: d3.select(this.parentNode).datum()
           });
         })
       .merge(cell)

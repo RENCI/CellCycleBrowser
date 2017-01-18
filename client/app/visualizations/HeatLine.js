@@ -212,7 +212,9 @@ HeatLine.draw = function(svg, layout, state) {
       .style("fill-opacity", state.phaseOverlayOpacity)
       .style("stroke-opacity", state.phaseOverlayOpacity);
 
+// XXX: This is ugly, should probably just bind data for lines above since there are two
   phaseUpdate.selectAll("line")
+    .data(function(d) { return [d, d]; })
       .attr("x1", x1)
       .attr("y1", height / 2)
       .attr("x2", x2)

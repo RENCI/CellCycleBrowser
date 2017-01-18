@@ -32,7 +32,16 @@ function BrowserControls(props) {
       </div>
       <AlignmentSelectContainer />
       <div className="row">
-        <div className="col-sm-10 col-sm-offset-2">
+        <div className="col-sm-2 col-sm-offset-2">
+          <button
+            type="button"
+            className="btn btn-primary"
+            style={{marginTop: 27, width: "100%"}}
+            data-toggle="button">
+            Show
+          </button>
+        </div>
+        <div className="col-sm-8">
           <SliderContainer
             label={"Phase overlay opacity"}
             min={0}

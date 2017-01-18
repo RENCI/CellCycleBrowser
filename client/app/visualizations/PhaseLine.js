@@ -129,10 +129,10 @@ PhaseLine.draw = function(svg, layout, state) {
         svg.select(".highlight")
             .style("stroke", "none");
       })
-      .on("click", function() {
+      .on("click", function(d) {
         state.selectTrajectory({
           id: "average",
-          phases: state.data
+          phases: d3.select(this.parentNode).datum()
         });
       })
     .merge(cell)

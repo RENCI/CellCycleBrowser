@@ -32,6 +32,14 @@ AppDispatcher.register(function (action) {
       trajectory = action.trajectory;
       TrajectoryStore.emitChange();
       break;
+
+    case Constants.RECEIVE_SIMULATION_OUTPUT:
+      trajectory = {
+        id: null,
+        phases: []
+      };
+      TrajectoryStore.emitChange();
+      break;
   }
 });
 

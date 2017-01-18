@@ -180,7 +180,7 @@ var BrowserContainer = React.createClass({
     if (!this.state.featureKey) return null;
 
 // XXX: TEST DATA
-this.state.simulationOutput = testData;
+//this.state.simulationOutput = testData;
 
     var allPhaseData = phaseData(this.state.simulationOutput);
 

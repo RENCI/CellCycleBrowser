@@ -15,7 +15,7 @@ var controls = {
       label: "Number of trajectories",
       min: 1,
       max: 20,
-      value: 1
+      value: 4
     }
   ],
   species: [],
