@@ -21,8 +21,11 @@ module.exports = function() {
           .padAngle(0.04),
       force = d3.forceSimulation()
           .force("link", d3.forceLink())
-          .force("charge", d3.forceManyBody())
-          .force("center", d3.forceCenter(width / 2, height / 2))
+          //.force("charge", d3.forceManyBody())
+          //.force("center", d3.forceCenter())
+          .force("x", d3.forceX(0).strength(0.02))
+          .force("y", d3.forceY(0).strength(0.02))
+          .force("collide", d3.forceCollide(6))
           .on("tick", updateForce),
 
       // Start with empty selection
@@ -75,13 +78,12 @@ module.exports = function() {
   }
 
   function updateForce() {
-/*
-    link.select("line")
+    svg.select(".links").selectAll("line")
         .attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
-*/
+
     svg.select(".species").selectAll(".species > g")
         .attr("transform", function(d) {
           return "translate(" + d.x + "," + d.y + ")";
@@ -96,10 +98,14 @@ module.exports = function() {
         .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
 
     // Draw phases and species
-//    drawPhases();
+    drawPhases();
     drawSpecies();
 
     function drawPhases() {
+      // TODO: Move to global settings somewhere
+      var colorScale = d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
+          .domain(data.phases.map(function(d) { return d.name; }));
+
       // Arc generator
       // XXX: SVG width seem to be a bit wider than container width. Maybe an
       // issue with margins. Need to look into this.
@@ -116,13 +122,20 @@ module.exports = function() {
       // Enter
       var phaseEnter = phase.enter().append("g")
           .on("click", function(d, i) {
-            dispatcher.call("selectPhase", this, "Select: " + d.data.name);
+            dispatcher.call("selectPhase", this, d.data.name);
+
+            svg.selectAll(".phases > g").each(function(d) {
+              d3.select(this).call(highlightPhase, d.data === currentPhase);
+            });
+
+            processData();
+            draw();
           })
           .on("mouseover", function() {
             d3.select(this).call(highlightPhase, true);
           })
           .on("mouseout", function(d) {
-            if (d !== currentPhase) {
+            if (d.data !== currentPhase) {
               d3.select(this).call(highlightPhase, false);
             }
           });
@@ -146,8 +159,8 @@ module.exports = function() {
       var phaseMerge = phaseEnter.merge(phase);
 
       phaseMerge.select("path")
-          .style("fill", "#ddd")
-          .style("stroke", "black")
+          .style("fill", function(d) { return colorScale(d.data.name); })
+          .style("stroke", "#999")
           .attr("d", arc);
 
       phaseMerge.select("text")
@@ -179,16 +192,14 @@ module.exports = function() {
     }
 
     function drawSpecies() {
-      force.force("center").x(0).y(0);
-
       // Set fixed position for phases
       // XXX: Radius copied from above
-      var radius = Math.min(width, height) / 2 - 20;
+      var radius = Math.min(width, height) / 2 - 60;
 
       data.phases.forEach(function(d, i) {
         var numPhases = data.phases.length;
 
-        var a = i / numPhases * 2 * Math.PI;
+        var a = i / numPhases * 2 * Math.PI - Math.PI / 2 + Math.PI / numPhases;
 
         d.fx = radius * Math.cos(a);
         d.fy = radius * Math.sin(a);
@@ -198,45 +209,99 @@ module.exports = function() {
 //        d.fy = radius * Math.sin(sa - Math.PI / 2),
       });
 
+      console.log(data);
+
       // Bind species data
+      var nodeFillScale = d3.scaleLinear()
+          .domain([0, d3.max(data.species, function(d) { return d.value; }) ])
+          .range(["white", "black"]);
+
       var node = svg.select(".species").selectAll(".species > g")
-//          .data(data.species);
-          .data(nodes);
+          .data(data.species);
 
       var nodeEnter = node.enter().append("g")
-          .append("circle")
-          .attr("r", 5);
+        .append("circle")
+          .attr("r", 5)
+          .style("fill", function(d) { return nodeFillScale(d.value); })
+          .style("stroke", "black")
+        .append("title")
+          .text(function(d) { return d.name; });
 
       // Bind link data
+      var linkColorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
+          .domain([1, -1]);
+
+      var linkWidthScale = d3.scaleLinear()
+          .domain([0, 1])
+          .range([0, 6]);
+
       var link = svg.select(".links").selectAll(".links > line")
           .data(links);
 
-      var linkEnter = link.enter().append("line");
+      var linkEnter = link.enter().append("line")
+          .style("stroke", function(d) {
+            return linkColorScale(d.value);
+          })
+          .style("stroke-width", function(d) {
+            return linkWidthScale(Math.abs(d.value));
+          })
+        .append("title")
+          .text(function(d) { return d.value; });
     }
   }
 
   function processData() {
-    console.log(data);
+    var distanceScale = d3.scaleLinear()
+        .domain([0, 1])
+        .range([100, 0]);
+
+    var strengthScale = d3.scaleLinear()
+        .domain([0, 1])
+        .range([0, 1]);
 
     nodes = data.phases.slice().concat(data.species).slice();
 
     links = [];
     data.speciesPhaseMatrix.forEach(function(d, i) {
       d.forEach(function(e, j) {
-        links.push({
-          source: data.species[i],
-          target: data.phases[j],
-          value: e
-        });
+        if (Math.abs(e) > 0) {
+          links.push({
+            source: data.species[i],
+            target: data.phases[j],
+            value: e
+          });
+        }
       });
     });
 
-    console.log(nodes);
-    console.log(links);
+    if (currentPhase) {
+      var index = data.phases.indexOf(currentPhase);
 
+      console.log(data);
+
+      data.speciesMatrices[index].forEach(function(d, i) {
+        console.log(d);
+        d.forEach(function(e, j) {
+          if (Math.abs(e) > 0) {
+            links.push({
+              source: data.species[i],
+              target: data.species[j],
+              value: e
+            });
+          }
+        });
+      });
+    }
 
     force.nodes(nodes);
-    force.force("link").links(links);
+    force.force("link").links(links)
+        //.distance(function(d) {
+        //  return distanceScale(Math.abs(d.value));
+        //});
+        .distance(0)
+        .strength(function(d) {
+          return strengthScale(Math.abs(d.value));
+        });
   }
 
   networkMap.update = function() {
@@ -264,7 +329,10 @@ module.exports = function() {
 
   // Initialize event callbacks
   networkMap.selectPhase = function(_) {
-    console.log(_);
+    var index = data.phases.map(function(d) { return d.name; }).indexOf(_);
+
+    currentPhase = index !== -1 ? data.phases[index] : null;
+
     return networkMap;
   };
 
