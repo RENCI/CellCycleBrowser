@@ -213,13 +213,6 @@ def extract_info_from_model(filename):
 
         return_object['speciesPhaseMatrix'] = s_p_matrix
 
-        s_s_matrix = []
-        for s_name, s_value in s_s_dict.iteritems():
-            s_list = []
-            for ss_name, ss_value in s_value.iteritems():
-                s_list.append(ss_value)
-            s_s_matrix.append(s_list)
-
         if filename == 'test_model.xml':
             s_s_matrix = [
                 [
@@ -256,6 +249,19 @@ def extract_info_from_model(filename):
                     [-0.5, 0, -0.1, 0]
                 ]
             ]
+        else:
+            s_s_matrix = []
+            # TODO: Our current model does not include phase info in species to species interaction, so
+            # replicate same species to species interaction across all phases until we have this info
+            # in the model
+            for phase in phases:
+                p_s_s_matrix = []
+                for s_name, s_value in s_s_dict.iteritems():
+                    s_list = []
+                    for ss_name, ss_value in s_value.iteritems():
+                        s_list.append(ss_value)
+                    p_s_s_matrix.append(s_list)
+                s_s_matrix.append(p_s_s_matrix)
 
         return_object['speciesMatrices'] = s_s_matrix
 
