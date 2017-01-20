@@ -92,6 +92,13 @@ HeatMap.draw = function(svg, layout, state) {
   var width = parseInt(svg.style("width"), 10),
       height = parseInt(svg.style("height"), 10);
 
+  var heightScale = d3.scaleLinear()
+      .domain(state.colorScale.domain())
+      //.range([0, layout.yScale.bandwidth()]);
+      .range([layout.yScale.bandwidth(), layout.yScale.bandwidth()]);
+
+  var cellWidth = layout.xScale(state.data[0][1].time) - layout.xScale(state.data[0][0].time);
+
   var g = svg.select("g")
       .datum(state.data);
 
@@ -140,8 +147,9 @@ HeatMap.draw = function(svg, layout, state) {
     cell.enter().append("rect")
         .attr("class", "cell")
         .attr("x", x)
-        .attr("width", 10)
-        .attr("height", layout.yScale.bandwidth())
+        .attr("y", function(d) { return layout.yScale.bandwidth() - heightScale(d.value); })
+        .attr("width", cellWidth)
+        .attr("height", function(d) { return heightScale(d.value); })//layout.yScale.bandwidth())
         .attr("shape-rendering", "crispEdges")
         .attr("data-toggle", "tooltip")
         .attr("data-original-title", function(d) { return d.value; })
@@ -171,8 +179,9 @@ HeatMap.draw = function(svg, layout, state) {
         })
       .merge(cell)//.transition()
         .attr("x", x)
-        .attr("width", 10)
-        .attr("height", layout.yScale.bandwidth())
+        .attr("y", function(d) { return layout.yScale.bandwidth() - heightScale(d.value); })
+        .attr("width", cellWidth)
+        .attr("height", function(d) { return heightScale(d.value); })//layout.yScale.bandwidth())
         .attr("data-original-title", function(d) { return d.value; })
         .style("fill", function(d) { return color(d, row, rowIndex); });
 

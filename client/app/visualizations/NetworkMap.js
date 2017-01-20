@@ -303,12 +303,8 @@ module.exports = function() {
       });
     });
 
-    console.log(currentPhase);
-
     if (currentPhase !== null) {
       var index = data.phases.indexOf(currentPhase);
-
-      console.log(data);
 
       data.speciesMatrices[index].forEach(function(d, i) {
         d.forEach(function(e, j) {
