@@ -21,11 +21,9 @@ module.exports = function() {
           .padAngle(0.04),
       force = d3.forceSimulation()
           .force("link", d3.forceLink())
-          //.force("charge", d3.forceManyBody())
-          //.force("center", d3.forceCenter())
           .force("x", d3.forceX(0).strength(0.02))
           .force("y", d3.forceY(0).strength(0.02))
-          .force("collide", d3.forceCollide(6))
+          .force("collide", d3.forceCollide(10))
           .on("tick", updateForce),
 
       // Start with empty selection
@@ -53,7 +51,13 @@ module.exports = function() {
           .attr("width", "100%")
           .attr("height", "100%")
           .style("visibility", "hidden")
-          .style("pointer-events", "all");
+          .style("pointer-events", "all")
+          .on("click", function() {
+            dispatcher.call("selectPhase", this, "");
+
+            processData();
+            draw();
+          });
 
       var g = svgEnter.append("g");
 
@@ -72,7 +76,6 @@ module.exports = function() {
 
       // Create nodes and links
       processData();
-
       draw();
     });
   }
@@ -124,10 +127,6 @@ module.exports = function() {
           .on("click", function(d, i) {
             dispatcher.call("selectPhase", this, d.data.name);
 
-            svg.selectAll(".phases > g").each(function(d) {
-              d3.select(this).call(highlightPhase, d.data === currentPhase);
-            });
-
             processData();
             draw();
           })
@@ -170,6 +169,11 @@ module.exports = function() {
       // Exit
       phaseMerge.exit().remove();
 
+      // Highlight
+      svg.selectAll(".phases > g").each(function(d) {
+        d3.select(this).call(highlightPhase, d.data === currentPhase);
+      });
+
       function textTransform(d) {
         var angle = midAngle(d.startAngle, d.endAngle);
 
@@ -183,7 +187,20 @@ module.exports = function() {
       }
 
       function highlightPhase(selection, highlight) {
+        // XXX: Copied from PhaseMap
+        function highlightColor(color) {
+          var hcl = d3.hcl(color);
+          hcl.c *= 2;
+
+          return hcl;
+        }
+
         selection.select("path")
+            .style("fill", function(d) {
+              return highlight ?
+                     highlightColor(colorScale(d.data.name)) :
+                     colorScale(d.data.name);
+            })
             .style("stroke-width", highlight ? 2 : null);
 
         selection.select("text")
@@ -209,9 +226,7 @@ module.exports = function() {
 //        d.fy = radius * Math.sin(sa - Math.PI / 2),
       });
 
-      console.log(data);
-
-      // Bind species data
+      // Nodes
       var nodeFillScale = d3.scaleLinear()
           .domain([0, d3.max(data.species, function(d) { return d.value; }) ])
           .range(["white", "black"]);
@@ -219,7 +234,8 @@ module.exports = function() {
       var node = svg.select(".species").selectAll(".species > g")
           .data(data.species);
 
-      var nodeEnter = node.enter().append("g")
+      // Node enter
+      node.enter().append("g")
         .append("circle")
           .attr("r", 5)
           .style("fill", function(d) { return nodeFillScale(d.value); })
@@ -227,18 +243,27 @@ module.exports = function() {
         .append("title")
           .text(function(d) { return d.name; });
 
-      // Bind link data
-      var linkColorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
-          .domain([1, -1]);
+      // Node exit
+      node.exit().remove();
+
+      // Node exit
+
+      // Links
+//      var linkColorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
+//          .domain([1, -1]);
+      var linkColorScale = d3.scaleLinear()
+          .domain([-1, 0, 1])
+          .range(["#00d", "#fff", "#d00"])
 
       var linkWidthScale = d3.scaleLinear()
           .domain([0, 1])
-          .range([0, 6]);
+          .range([0, 8]);
 
       var link = svg.select(".links").selectAll(".links > line")
           .data(links);
 
-      var linkEnter = link.enter().append("line")
+      // Link enter
+      link.enter().append("line")
           .style("stroke", function(d) {
             return linkColorScale(d.value);
           })
@@ -247,6 +272,9 @@ module.exports = function() {
           })
         .append("title")
           .text(function(d) { return d.value; });
+
+      // Link exit
+      link.exit().remove();
     }
   }
 
@@ -268,25 +296,28 @@ module.exports = function() {
           links.push({
             source: data.species[i],
             target: data.phases[j],
-            value: e
+            value: e,
+            forceValue: e
           });
         }
       });
     });
 
-    if (currentPhase) {
+    console.log(currentPhase);
+
+    if (currentPhase !== null) {
       var index = data.phases.indexOf(currentPhase);
 
       console.log(data);
 
       data.speciesMatrices[index].forEach(function(d, i) {
-        console.log(d);
         d.forEach(function(e, j) {
           if (Math.abs(e) > 0) {
             links.push({
               source: data.species[i],
               target: data.species[j],
-              value: e
+              value: e,
+              forceValue: e
             });
           }
         });
@@ -294,14 +325,19 @@ module.exports = function() {
     }
 
     force.nodes(nodes);
+
     force.force("link").links(links)
         //.distance(function(d) {
         //  return distanceScale(Math.abs(d.value));
         //});
-        .distance(0)
+        .distance(10)
         .strength(function(d) {
-          return strengthScale(Math.abs(d.value));
+          return strengthScale(Math.abs(d.forceValue));
         });
+
+    force.alpha(1);
+//    force.alphaDecay(0.001);
+    force.restart();
   }
 
   networkMap.update = function() {
