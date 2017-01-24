@@ -15,10 +15,6 @@ logger = logging.getLogger('django')
 
 # Create your views here.
 def index(request):
-    import sys
-    sys.path.append("/home/docker/pycharm-debug")
-    import pydevd
-    pydevd.settrace('172.17.0.1', port=21000, suspend=False)
     profile_data = utils.get_profile_list()
     model_fname = os.path.basename(profile_data[0]['models'][0]['fileName'])
     template = loader.get_template('cc_core/index.html')
