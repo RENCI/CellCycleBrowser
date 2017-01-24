@@ -1,4 +1,6 @@
 var React = require("react");
+var d3 = require("d3");
+var d3ScaleChromatic = require("d3-scale-chromatic");
 var SliderContainer = require("../containers/SliderContainer");
 var PropTypes = React.PropTypes;
 
@@ -12,6 +14,10 @@ var divStyle = {
 }
 
 function SpeciesSpeciesSliders(props) {
+  // TODO: Move to global settings somewhere
+  var colorScale = d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
+      .domain(props.phases);
+
   var tabs = props.phases.map(function (phase, i) {
     var sliders = [];
     props.species.forEach(function (upstream, j) {
@@ -51,14 +57,32 @@ function SpeciesSpeciesSliders(props) {
     return {
       tab: (
         <li className={"nav" + (i === 0 ? " active" : "")} key={i}>
-          <a href={"#" + tabId} data-toggle="tab">{phase}</a>
+          <a
+            href={"#" + tabId}
+            data-toggle="tab"
+            style={{
+              backgroundColor: colorScale(phase),
+              color: "black"
+            }}>
+              {phase}
+          </a>
         </li>
       ),
       content: (
         <div
           id={tabId}
-          key={i}
-          className={"tab-pane fade" + (i === 0 ? " in active" : "")}>
+          className={"tab-pane fade" + (i === 0 ? " in active" : "")}
+          style={{
+            borderStyle: "solid",
+            borderWidth: 2,
+            borderColor: colorScale(phase),
+            paddingLeft: 10,
+            paddingRight: 10,
+            marginBottom: 10,
+            borderBottomLeftRadius: 5,
+            borderBottomRightRadius: 5
+          }}
+          key={i}>
             {sliders}
         </div>
       )
