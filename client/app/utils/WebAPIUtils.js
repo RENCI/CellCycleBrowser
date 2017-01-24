@@ -91,8 +91,6 @@ function simulationParameters() {
   var controls = SimulationControlStore.getControls();
   var cellData = CellDataStore.getCellData();
 
-  console.log(controls);
-
   var trajectories = controls.parameters[controls.parameters.map(function (parameter) {
     return parameter.name;
   }).indexOf("numTrajectories")].value;
@@ -240,8 +238,6 @@ module.exports = {
 */
   runSimulation: function () {
     setupAjax();
-
-    console.log(simulationParameters());
 
     $.ajax({
       type: "POST",
