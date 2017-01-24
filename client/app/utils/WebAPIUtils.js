@@ -133,9 +133,6 @@ function simulationParameters() {
 
   return {
     trajectories: trajectories,
-    end: cellData.timeEnd,
-    timeUnit: cellData.timeUnit,
-    timeStepSize: cellData.timeStep,
     species: species,
     parameters: parameters
   };
@@ -244,9 +241,11 @@ module.exports = {
   runSimulation: function () {
     setupAjax();
 
+    console.log(simulationParameters());
+
     $.ajax({
       type: "POST",
-      url: "/runmodel/" + ModelStore.getModel().fileName,
+      url: "/runmodel/" + ModelStore.getModel().fileName,      
       data: simulationParameters(),
       success: function (data) {
         if (data.task_id) {
