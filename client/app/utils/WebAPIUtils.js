@@ -133,8 +133,8 @@ function simulationParameters() {
 
   return {
     trajectories: trajectories,
-    species: species,
-    parameters: parameters
+    species: JSON.stringify(species),
+    parameters: JSON.stringify(parameters)
   };
 }
 

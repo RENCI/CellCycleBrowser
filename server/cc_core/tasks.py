@@ -27,11 +27,11 @@ def run_model_task(filename, id_to_names, species, phases, traj='', species_val_
     smod = stochpy.SSA(IsInteractive=False)
     smod.Model(filename, settings.MODEL_INPUT_PATH)
     for sp_id, sp_val in species_val_dict.iteritems():
-        logger.debug('changing ' + sp_id + ' amount ' + sp_val)
+        logger.debug('changing ' + str(sp_id) + ' amount ' + str(sp_val))
         smod.ChangeInitialSpeciesCopyNumber(str(sp_id), float(sp_val))
 
     for id, val in sp_infl_para_dict.iteritems():
-        logger.debug('changing ' + id + ' parameter value ' + val)
+        logger.debug('changing ' + str(id) + ' parameter value ' + str(val))
         smod.ChangeParameter(str(id), float(val))
 
     # call a custom simulation method by setting cellcycle to True which automatically detects

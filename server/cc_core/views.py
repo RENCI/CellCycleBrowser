@@ -38,7 +38,6 @@ def get_profile_list(request):
     """
     It is invoked by an AJAX call, so it returns json object that holds data set list
     """
-
     profile_list = utils.get_profile_list()
 
     return HttpResponse(
@@ -87,9 +86,9 @@ def run_model(request, filename=''):
         # use a big end time value which is used by stochpy to indicate end time is not used
         # but rather simulation will end when the last phase is done in the simulation
         if 'species' not in request.POST:
-            sp_name_to_val_dict = {}
+            sp_name_to_val_list = []
         else:
-            sp_name_to_val_dict = json.loads(request.POST['species'])
+            sp_name_to_val_list = json.loads(request.POST['species'])
 
         if 'parameters' not in request.POST:
             sp_name_infl_para_list = []
@@ -97,16 +96,18 @@ def run_model(request, filename=''):
             sp_name_infl_para_list = json.loads(request.POST['parameters'])
 
         sp_id_to_val_dict = {}
-        for sp_name, sp_val in sp_name_to_val_dict.iteritems():
+        for item in sp_name_to_val_list:
+            sp_name = item['species']
+            sp_val = item['value']
             sp_id = name_to_ids[sp_name]
             sp_id_to_val_dict[sp_id] = sp_val
 
         sp_id_infl_para_dict = {}
         for p_dict_item in sp_name_infl_para_list:
-            phase = p_dict_item['phase'].strip()
-            name1 = p_dict_item['upstream'].strip() # species name which is an influencer
-            name2 = p_dict_item['downstream'].strip() # species or phase name which is an influencee
-            val = p_dict_item['value'].strip()
+            phase = p_dict_item.get('phase', None)
+            name1 = p_dict_item['upstream'] # species name which is an influencer
+            name2 = p_dict_item['downstream'] # species or phase name which is an influencee
+            val = p_dict_item['value']
             if phase:
                 para_id = 'a_' + phase + '_' + name1 + '_' + name2
             else:
