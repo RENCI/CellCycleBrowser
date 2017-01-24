@@ -97,7 +97,21 @@ HeatMap.draw = function(svg, layout, state) {
       //.range([0, layout.yScale.bandwidth()]);
       .range([layout.yScale.bandwidth(), layout.yScale.bandwidth()]);
 
-  var cellWidth = layout.xScale(state.data[0][1].time) - layout.xScale(state.data[0][0].time);
+  // XXX: Calculate this when receiving data
+  state.data.forEach(function(d) {
+    d.forEach(function(d, i, a) {
+      if (i < a.length - 1) {
+        d.stop = a[i + 1].time;
+      }
+      else {
+        d.stop = d.time + (d.time - a[i - 1].time);
+      }
+    });
+  });
+
+  function cellWidth(d) {
+    return layout.xScale(d.stop) - layout.xScale(d.time);
+  }
 
   var g = svg.select("g")
       .datum(state.data);
@@ -116,7 +130,7 @@ HeatMap.draw = function(svg, layout, state) {
       .attr("x", function(d) { return layout.xScale(d[0].time + rowOffset(d)); })
       .attr("y", function(d, i) { return layout.yScale(i); })
       .attr("width", function(d) {
-        return layout.xScale(d[d.length -1].time) - layout.xScale(d[0].time) + 10;
+        return layout.xScale(d[d.length -1].stop) - layout.xScale(d[0].time);
       })
       .attr("height", layout.yScale.bandwidth());
 

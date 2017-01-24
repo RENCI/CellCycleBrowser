@@ -85,6 +85,20 @@ HeatLine.draw = function(svg, layout, state) {
   var width = parseInt(svg.style("width"), 10),
       height = parseInt(svg.style("height"), 10);
 
+  // XXX: Calculate this when receiving data
+  state.data.forEach(function(d, i, a) {
+    if (i < a.length - 1) {
+      d.stop = a[i + 1].time;
+    }
+    else {
+      d.stop = d.time + (d.time - a[i - 1].time);
+    }
+  });
+
+  function cellWidth(d) {
+    return layout.xScale(d.stop) - layout.xScale(d.time);
+  }
+
   // Border
   var border = svg.select("g").select(".border")
       .style("shape-rendering", "crispEdges")
@@ -108,7 +122,7 @@ HeatLine.draw = function(svg, layout, state) {
   cell.enter().append("rect")
       .attr("class", "cell")
       .attr("x", function(d) { return layout.xScale(d.time); })
-      .attr("width", 10)
+      .attr("width", cellWidth)
       .attr("height", height)
       .attr("shape-rendering", "crispEdges")
       .attr("data-toggle", "tooltip")
@@ -140,7 +154,7 @@ HeatLine.draw = function(svg, layout, state) {
       })
     .merge(cell).transition()
       .attr("x", function(d) { return layout.xScale(d.time); })
-      .attr("width", 10)
+      .attr("width", cellWidth)
       .attr("height", height)
       .attr("data-original-title", function(d) {
         return d.value.toPrecision(3);
