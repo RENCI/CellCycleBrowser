@@ -9,7 +9,21 @@ PhaseLine.create = function(element, props, state) {
       .attr("width", props.width)
       .attr("height", props.height);
 
+  // Background
+  svg.append("rect")
+      .attr("width", "100%")
+      .attr("height", "100%")
+      .style("visibility", "hidden")
+      .style("pointer-events", "all")
+      .on("click", function() {
+        state.selectTrajectory({
+          id: null,
+          phases: []
+        });
+      });
+
   var g = svg.append("g");
+  
   g.append("g")
       .attr("class", "row");
     g.append("rect")

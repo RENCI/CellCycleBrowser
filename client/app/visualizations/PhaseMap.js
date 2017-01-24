@@ -9,8 +9,20 @@ PhaseMap.create = function(element, props, state) {
       .attr("width", props.width)
       .attr("height", props.height);
 
-  var g = svg.append("g");
+  // Background
+  svg.append("rect")
+      .attr("width", "100%")
+      .attr("height", "100%")
+      .style("visibility", "hidden")
+      .style("pointer-events", "all")
+      .on("click", function() {
+        state.selectTrajectory({
+          id: null,
+          phases: []
+        });
+      });
 
+  var g = svg.append("g");
 
   g.append("g")
       .attr("class", "rows");
@@ -24,12 +36,12 @@ PhaseMap.create = function(element, props, state) {
       .style("stroke", "none")
       .style("stroke-width", 2);
   g.append("rect")
-    .attr("class", "highlight2")
-    .style("shape-rendering", "crispEdges")
-    .style("pointer-events", "none")
-    .style("fill", "none")
-    .style("stroke", "none")
-    .style("stroke-width", 2);
+      .attr("class", "highlight2")
+      .style("shape-rendering", "crispEdges")
+      .style("pointer-events", "none")
+      .style("fill", "none")
+      .style("stroke", "none")
+      .style("stroke-width", 2);
 
   this.update(element, state);
 };
