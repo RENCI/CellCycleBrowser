@@ -70,7 +70,7 @@ function SpeciesPhaseSliders(props) {
             paddingRight: 10,
             marginBottom: 10,
             borderBottomLeftRadius: 5,
-            borderBottomRightRadius: 5,
+            borderBottomRightRadius: 5
           }}
           key={i}>
             {sliders}

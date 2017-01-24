@@ -40,6 +40,7 @@ ModelStore.dispatchToken = AppDispatcher.register(function (action) {
 
     case Constants.SELECT_MODEL:
       model = modelList[action.modelKey];
+      console.log(model);
       ModelStore.emitChange();
       break;
   }

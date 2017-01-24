@@ -188,7 +188,7 @@ var BrowserContainer = React.createClass({
 
     // Get the list of species present in cell data or model
     var cellSpecies = this.state.cellData.species;
-    var modelSpecies = this.state.model.species;
+    var modelSpecies = this.state.model.species ? this.state.model.species : [];
     var allSpecies = [];
 
     cellSpecies.forEach(function(species) {
@@ -205,9 +205,9 @@ var BrowserContainer = React.createClass({
     var speciesComponents = allSpecies.map(function(species, i) {
       // Cell data
       var cellData = [];
-      for (var i = 0; i < cellSpecies.length; i++) {
-        if (cellSpecies[i].name === species) {
-          cellData = cellSpecies[i].cells;
+      for (var j = 0; j < cellSpecies.length; j++) {
+        if (cellSpecies[j].name === species) {
+          cellData = cellSpecies[j].cells;
           break;
         }
       }
@@ -220,9 +220,9 @@ var BrowserContainer = React.createClass({
         }).indexOf(species);
 
         if (index >= 0) {
-          simulationData.push(trajectory.timeSteps.map(function(d, i) {
+          simulationData.push(trajectory.timeSteps.map(function(d, j) {
             return {
-              value: trajectory.species[index].values[i],
+              value: trajectory.species[index].values[j],
               time: d
             };
           }));

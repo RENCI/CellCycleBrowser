@@ -306,18 +306,22 @@ module.exports = function() {
     if (currentPhase !== null) {
       var index = data.phases.indexOf(currentPhase);
 
-      data.speciesMatrices[index].forEach(function(d, i) {
-        d.forEach(function(e, j) {
-          if (Math.abs(e) > 0) {
-            links.push({
-              source: data.species[i],
-              target: data.species[j],
-              value: e,
-              forceValue: e
-            });
-          }
+      // XXX: Probably need to move to setting current phase from phase name
+      // when linking with other views
+      if (index > -1) {
+        data.speciesMatrices[index].forEach(function(d, i) {
+          d.forEach(function(e, j) {
+            if (Math.abs(e) > 0) {
+              links.push({
+                source: data.species[i],
+                target: data.species[j],
+                value: e,
+                forceValue: e
+              });
+            }
+          });
         });
-      });
+      }
     }
 
     force.nodes(nodes);

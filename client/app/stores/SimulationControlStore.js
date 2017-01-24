@@ -23,7 +23,7 @@ var controls = {
   speciesInitialValues: {},
   speciesPhaseMatrix: {},
   speciesSpeciesMatrices: {}
-}
+};
 
 var SimulationControlStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
@@ -96,7 +96,9 @@ AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_PROFILE:
       AppDispatcher.waitFor([ModelStore.dispatchToken]);
-      createControls(ModelStore.getModel());
+      if (ModelStore.getModelList().length > 0) {
+        createControls(ModelStore.getModel());
+      }
       SimulationControlStore.emitChange();
       break;
 

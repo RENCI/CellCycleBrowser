@@ -33,14 +33,9 @@ var SliderContainer = React.createClass ({
     this.props.onChange(value);
   },
   componentWillReceiveProps: function (nextProps) {
-    // Clamp value
-    var value = Math.min(nextProps.max, Math.max(this.state.value, nextProps.min));
-
-    if (value !== this.state.value) {
-      this.setState({
-        value: value
-      });
-    }
+    this.setState({
+      value: nextProps.initialValue
+    });
   },
   render: function () {
     return (

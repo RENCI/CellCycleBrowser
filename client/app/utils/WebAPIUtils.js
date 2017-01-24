@@ -245,7 +245,7 @@ module.exports = {
 
     $.ajax({
       type: "POST",
-      url: "/runmodel/" + ModelStore.getModel().fileName,      
+      url: "/runmodel/" + ModelStore.getModel().fileName,
       data: simulationParameters(),
       success: function (data) {
         if (data.task_id) {
