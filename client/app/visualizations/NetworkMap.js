@@ -104,6 +104,19 @@ module.exports = function() {
     drawPhases();
     drawSpecies();
 
+    // Tooltips
+    $(".species > g").tooltip({
+      container: "body",
+      placement: "auto top",
+      animation: false
+    });
+
+    $(".links > line").tooltip({
+      container: "body",
+      placement: "auto top",
+      animation: false
+    });
+
     function drawPhases() {
       // TODO: Move to global settings somewhere
       var colorScale = d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
@@ -235,13 +248,16 @@ module.exports = function() {
           .data(data.species);
 
       // Node enter
-      node.enter().append("g")
-        .append("circle")
+      var nodeEnter = node.enter().append("g")
+          .attr("data-toggle", "tooltip");
+
+      nodeEnter.append("circle")
           .attr("r", 5)
-          .style("fill", function(d) { return nodeFillScale(d.value); })
-          .style("stroke", "black")
-        .append("title")
-          .text(function(d) { return d.name; });
+          .style("stroke", "black");
+
+      nodeEnter.merge(node)
+          .attr("data-original-title", nodeTooltip)
+          .style("fill", function(d) { return nodeFillScale(d.value); });
 
       // Node exit
       node.exit().remove();
@@ -263,18 +279,28 @@ module.exports = function() {
           .data(links);
 
       // Link enter
-      link.enter().append("line")
+      var linkEnter = link.enter().append("line")
+          .attr("data-toggle", "tooltip");
+
+      linkEnter.merge(link)
+          .attr("data-original-title", linkTooltip)
           .style("stroke", function(d) {
             return linkColorScale(d.value);
           })
           .style("stroke-width", function(d) {
             return linkWidthScale(Math.abs(d.value));
-          })
-        .append("title")
-          .text(function(d) { return d.value; });
+          });
 
       // Link exit
       link.exit().remove();
+
+      function nodeTooltip(d) {
+        return d.name + ": " + d.value;
+      }
+
+      function linkTooltip(d) {
+        return d.source.name + "→" + d.target.name + ": " + d.value;
+      }
     }
   }
 
