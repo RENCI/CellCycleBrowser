@@ -53,6 +53,13 @@ module.exports = {
       opacity: opacity
     });
   },
+  runSimulation: function() {
+    AppDispatcher.dispatch({
+      actionType: Constants.RUN_SIMULATION
+    });
+
+    WebAPIUtils.runSimulation();
+  },
   changeSimulationParameter: function(parameter, value) {
     AppDispatcher.dispatch({
       actionType: Constants.CHANGE_SIMULATION_PARAMETER,
