@@ -20,10 +20,12 @@ PhaseLine.create = function(element, props, state) {
           id: null,
           phases: []
         });
+
+        state.selectPhase("");
       });
 
   var g = svg.append("g");
-  
+
   g.append("g")
       .attr("class", "row");
     g.append("rect")
@@ -148,10 +150,13 @@ PhaseLine.draw = function(svg, layout, state) {
           id: "average",
           phases: d3.select(this.parentNode).datum()
         });
+
+        state.selectPhase(d.name);
       })
     .merge(cell)
       .style("fill", function(d) {
-        return state.active ?
+        return state.active ||
+               state.activePhase === d.name?
                highlightColor(state.colorScale(d.name)) :
                state.colorScale(d.name);
       })

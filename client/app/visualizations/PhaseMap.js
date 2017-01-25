@@ -20,6 +20,8 @@ PhaseMap.create = function(element, props, state) {
           id: null,
           phases: []
         });
+
+        state.selectPhase("");
       });
 
   var g = svg.append("g");
@@ -189,15 +191,18 @@ PhaseMap.draw = function(svg, layout, state) {
           g.select(".highlight")
               .style("stroke", "none");
         })
-        .on("click", function() {
+        .on("click", function(d) {
           state.selectTrajectory({
             id: rowIndex.toString(),
             phases: d3.select(this.parentNode).datum()
           });
+
+          state.selectPhase(d.name);
         })
       .merge(cell)
         .style("fill", function(d) {
-          return state.activeTrajectory.id === rowIndex.toString() ?
+          return state.activeTrajectory.id === rowIndex.toString() ||
+                 state.activePhase === d.name ?
                  highlightColor(state.colorScale(d.name)) :
                  state.colorScale(d.name);
         })

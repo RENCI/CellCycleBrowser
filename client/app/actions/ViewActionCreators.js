@@ -41,6 +41,12 @@ module.exports = {
       trajectory: trajectory
     });
   },
+  selectPhase: function(phase) {
+    AppDispatcher.dispatch({
+      actionType: Constants.SELECT_PHASE,
+      phase: phase
+    });
+  },
   changeShowPhaseOverlay: function(show) {
     AppDispatcher.dispatch({
       actionType: Constants.CHANGE_SHOW_PHASE_OVERLAY,

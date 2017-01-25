@@ -54,9 +54,6 @@ module.exports = function() {
           .style("pointer-events", "all")
           .on("click", function() {
             dispatcher.call("selectPhase", this, "");
-
-            processData();
-            draw();
           });
 
       var g = svgEnter.append("g");
@@ -139,9 +136,6 @@ module.exports = function() {
       var phaseEnter = phase.enter().append("g")
           .on("click", function(d, i) {
             dispatcher.call("selectPhase", this, d.data.name);
-
-            processData();
-            draw();
           })
           .on("mouseover", function() {
             d3.select(this).call(highlightPhase, true);
@@ -366,11 +360,6 @@ module.exports = function() {
     force.restart();
   }
 
-  networkMap.update = function() {
-    doLayout();
-    draw();
-  };
-
   networkMap.width = function(_) {
     if (!arguments.length) return width;
     width = _;
@@ -391,15 +380,18 @@ module.exports = function() {
 
   // Initialize event callbacks
   networkMap.selectPhase = function(_) {
-    var index = data.phases.map(function(d) { return d.name; }).indexOf(_);
+    if (data) {
+      var index = data.phases.map(function(d) { return d.name; }).indexOf(_);
 
-    currentPhase = index !== -1 ? data.phases[index] : null;
+      currentPhase = index !== -1 ? data.phases[index] : null;
+      processData();
+      draw();
+    }
 
     return networkMap;
   };
 
   networkMap.selectSpecies = function(_) {
-    console.log(_);
     return networkMap;
   };
 

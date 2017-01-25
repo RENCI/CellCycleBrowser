@@ -1,5 +1,6 @@
 var React = require("react");
 var SimulationControlStore = require("../stores/SimulationControlStore");
+var PhaseStore = require("../stores/PhaseStore");
 var RunSimulationButtonContainer = require("../containers/RunSimulationButtonContainer");
 var SimulationParameterSliders = require("../components/SimulationParameterSliders");
 var SpeciesValueSliders = require("../components/SpeciesValueSliders");
@@ -8,26 +9,38 @@ var SpeciesSpeciesSliders = require("../components/SpeciesSpeciesSliders");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
-function getStateFromStore() {
+function getStateFromSimulationControlStore() {
   return {
     controls: SimulationControlStore.getControls()
+  };
+}
+
+function getStateFromPhaseStore() {
+  return {
+    activePhase: PhaseStore.getPhase()
   };
 }
 
 var ControlsContainer = React.createClass ({
   getInitialState: function () {
     return {
-      controls: null
+      controls: null,
+      activePhase: getStateFromPhaseStore().activePhase
     };
   },
   componentDidMount: function () {
     SimulationControlStore.addChangeListener(this.onSimulationControlStoreChange);
+    PhaseStore.addChangeListener(this.onPhaseStoreChange);
   },
   componentWillUnmount: function () {
     SimulationControlStore.removeChangeListener(this.onSimulationControlStoreChange);
+    PhaseStore.removeChangeListener(this.onPhaseStoreChange);
   },
   onSimulationControlStoreChange: function () {
-    this.setState(getStateFromStore());
+    this.setState(getStateFromSimulationControlStore());
+  },
+  onPhaseStoreChange: function () {
+    this.setState(getStateFromPhaseStore());
   },
   handleSimulationParameterChange: function (data) {
     ViewActionCreators.changeSimulationParameter(
@@ -72,11 +85,13 @@ var ControlsContainer = React.createClass ({
           species={this.state.controls.species}
           phases={this.state.controls.phases}
           matrix={this.state.controls.speciesPhaseMatrix}
+          activePhase={this.state.activePhase}
           onChange={this.handleSpeciesPhaseSliderChange} />
         <SpeciesSpeciesSliders
           species={this.state.controls.species}
           phases={this.state.controls.phases}
           matrices={this.state.controls.speciesSpeciesMatrices}
+          activePhase={this.state.activePhase}
           onChange={this.handleSpeciesSpeciesSliderChange} />
       </div>
     );

@@ -2,9 +2,12 @@ var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
 var ModelStore = require("../stores/ModelStore");
+var PhaseStore = require("../stores/PhaseStore");
 var d3 = require("d3");
 //var ChordMap = require("../visualizations/ChordMap");
-var NetworkMap = require("../visualizations/NetworkMap")
+var NetworkMap = require("../visualizations/NetworkMap");
+var ViewActionCreators = require("../actions/ViewActionCreators");
+var Constants = require("../constants/Constants");
 
 // TODO: Move to css file
 var divStyle = {
@@ -18,23 +21,33 @@ var divStyle = {
 //var chordMap = ChordMap();
 var networkMap = NetworkMap();
 
-function getStateFromStore() {
+function getStateFromModelStore() {
   return {
     model: ModelStore.getModel()
+  };
+}
+
+function getStateFromPhaseStore() {
+  return {
+    phase: PhaseStore.getPhase()
   };
 }
 
 var MapVisualizationContainer = React.createClass ({
   getInitialState: function () {
     return {
-      model: null
+      model: null,
+      phase: PhaseStore.getPhase()
     };
   },
   componentDidMount: function() {
     ModelStore.addChangeListener(this.onModelChange);
+    PhaseStore.addChangeListener(this.onPhaseChange);
 
 //    chordMap.on("selectSpecies", this.handleSelectSpecies);
-    networkMap.on("selectSpecies", this.handleSelectSpecies);
+    networkMap
+        .on("selectPhase", this.handleSelectPhase)
+        .on("selectSpecies", this.handleSelectSpecies);
 
     this.resize();
 
@@ -46,26 +59,31 @@ var MapVisualizationContainer = React.createClass ({
   },
   componentWillUnmount: function () {
     ModelStore.removeChangeListener(this.onModelChange);
+    PhaseStore.removeChangeListener(this.onPhaseChange);
   },
   componentWillUpdate: function (props, state) {
-    this.drawMap(state.model);
+    this.drawMap(state);
 
     return false;
   },
   onModelChange: function () {
-    this.setState(getStateFromStore());
+    this.setState(getStateFromModelStore());
+  },
+  onPhaseChange: function () {
+    this.setState(getStateFromPhaseStore());
   },
   onResize: function () {
     this.resize();
   },
-  drawMap: function (model) {
-    if (!model) return;
+  drawMap: function (state) {
+    if (!state.model) return;
+
+    networkMap.selectPhase(state.phase);
 
     d3.select(this.getNode())
-        .datum(model)
+        .datum(state.model)
 //        .call(chordMap);
         .call(networkMap);
-
   },
   resize: function () {
     var width = this.getNode().clientWidth;
@@ -77,10 +95,13 @@ var MapVisualizationContainer = React.createClass ({
         .width(width)
         .height(width);
 
-    this.drawMap(this.state.model);
+    this.drawMap(this.state);
   },
   getNode: function () {
     return ReactDOM.findDOMNode(this);
+  },
+  handleSelectPhase: function(phase) {
+    ViewActionCreators.selectPhase(phase);
   },
   handleSelectSpecies: function (species) {
 //    chordMap.selectSpecies(species);

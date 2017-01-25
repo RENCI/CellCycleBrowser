@@ -17,7 +17,8 @@ var PhaseMapContainer = React.createClass ({
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     timeExtent: PropTypes.arrayOf(PropTypes.number),
     alignment: PropTypes.string.isRequired,
-    activeTrajectory: PropTypes.object.isRequired
+    activeTrajectory: PropTypes.object.isRequired,
+    activePhase: PropTypes.string.isRequired
   },
   componentDidMount: function() {
     PhaseMap.create(
@@ -39,7 +40,9 @@ var PhaseMapContainer = React.createClass ({
       timeExtent: this.props.timeExtent,
       alignment: this.props.alignment,
       activeTrajectory: this.props.activeTrajectory,
-      selectTrajectory: this.selectTrajectory
+      activePhase: this.props.activePhase,
+      selectTrajectory: this.selectTrajectory,
+      selectPhase: this.selectPhase
     };
   },
   componentWillUnmount: function() {
@@ -47,6 +50,9 @@ var PhaseMapContainer = React.createClass ({
   },
   selectTrajectory: function(trajectory) {
     ViewActionCreators.selectTrajectory(trajectory);
+  },
+  selectPhase: function(phase) {
+    ViewActionCreators.selectPhase(phase);
   },
   render: function() {
     // Style needs to be defined here to access data length

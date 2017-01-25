@@ -53,7 +53,8 @@ var PhaseLineContainer = React.createClass ({
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
     alignment: PropTypes.string.isRequired,
-    active: PropTypes.bool.isRequired
+    active: PropTypes.bool.isRequired,
+    activePhase: PropTypes.string.isRequired
   },
   componentDidMount: function() {
     PhaseLine.create(
@@ -75,7 +76,9 @@ var PhaseLineContainer = React.createClass ({
       timeExtent: this.props.timeExtent,
       alignment: this.props.alignment,
       active: this.props.active,
-      selectTrajectory: this.selectTrajectory
+      activePhase: this.props.activePhase,
+      selectTrajectory: this.selectTrajectory,
+      selectPhase: this.selectPhase
     };
   },
   componentWillUnmount: function() {
@@ -83,6 +86,9 @@ var PhaseLineContainer = React.createClass ({
   },
   selectTrajectory: function(trajectory) {
     ViewActionCreators.selectTrajectory(trajectory);
+  },
+  selectPhase: function(phase) {
+    ViewActionCreators.selectPhase(phase);
   },
   render: function() {
     return <div className="phaseLine" style={style}></div>

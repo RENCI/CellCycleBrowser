@@ -7,6 +7,7 @@ var FeatureStore = require("../stores/FeatureStore");
 var SimulationOutputStore = require("../stores/SimulationOutputStore");
 var AlignmentStore = require("../stores/AlignmentStore");
 var TrajectoryStore = require("../stores/TrajectoryStore");
+var PhaseStore = require("../stores/PhaseStore");
 var PhaseOverlayStore = require("../stores/PhaseOverlayStore");
 var BrowserControls = require("../components/BrowserControls");
 var Phases = require("../components/Phases");
@@ -101,6 +102,12 @@ function getStateFromTrajectoryStore() {
   }
 }
 
+function getStateFromPhaseStore() {
+  return {
+    activePhase: PhaseStore.getPhase()
+  }
+}
+
 function getStateFromPhaseOverlayStore() {
   return {
     showPhaseOverlay: PhaseOverlayStore.getShow(),
@@ -131,6 +138,7 @@ var BrowserContainer = React.createClass({
       simulationOutput: getStateFromSimulationOutputStore().simulationOutput,
       alignment: getStateFromAlignmentStore().alignment,
       activeTrajectory: getStateFromTrajectoryStore().activeTrajectory,
+      activePhase: getStateFromPhaseStore().activePhase,
       showPhaseOverlay: getStateFromPhaseOverlayStore().showPhaseOverlay,
       phaseOverlayOpacity: getStateFromPhaseOverlayStore().phaseOverlayOpacity
     };
@@ -142,6 +150,7 @@ var BrowserContainer = React.createClass({
     SimulationOutputStore.addChangeListener(this.onSimulationOutputChange);
     AlignmentStore.addChangeListener(this.onAlignmentChange);
     TrajectoryStore.addChangeListener(this.onTrajectoryChange);
+    PhaseStore.addChangeListener(this.onPhaseChange);
     PhaseOverlayStore.addChangeListener(this.onPhaseOverlayChange);
     tooltips();
   },
@@ -152,6 +161,7 @@ var BrowserContainer = React.createClass({
     SimulationOutputStore.removeChangeListener(this.onSimulationOutputChange);
     AlignmentStore.removeChangeListener(this.onAlignmentChange);
     TrajectoryStore.removeChangeListener(this.onTrajectoryChange);
+    PhaseStore.addChangeListener(this.onPhaseChange);
     PhaseOverlayStore.removeChangeListener(this.onPhaseOverlayChange);
   },
   componentDidUpdate: function () {
@@ -174,6 +184,9 @@ var BrowserContainer = React.createClass({
   },
   onTrajectoryChange: function () {
     this.setState(getStateFromTrajectoryStore());
+  },
+  onPhaseChange: function () {
+    this.setState(getStateFromPhaseStore());
   },
   onPhaseOverlayChange: function () {
     this.setState(getStateFromPhaseOverlayStore());
@@ -255,7 +268,8 @@ var BrowserContainer = React.createClass({
           phaseData={allPhaseData}
           timeExtent={timeExtent}
           alignment={this.state.alignment}
-          activeTrajectory={this.state.activeTrajectory} />
+          activeTrajectory={this.state.activeTrajectory}
+          activePhase={this.state.activePhase} />
         {speciesComponents}
       </div>
     );

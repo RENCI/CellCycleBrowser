@@ -43,10 +43,12 @@ function SpeciesPhaseSliders(props) {
 
     var tabId = "speciesPhase" + phase;
 
+    var active = (props.activePhase === "" && i === 0) || phase === props.activePhase;
+
     return {
       tab: (
         <li
-          className={"nav" + (i === 0 ? " active" : "")} key={i}>
+          className={"nav" + (active ? " active" : "")} key={i}>
             <a
               href={"#" + tabId}
               data-toggle="tab"
@@ -61,7 +63,7 @@ function SpeciesPhaseSliders(props) {
       content: (
         <div
           id={tabId}
-          className={"tab-pane fade" + (i === 0 ? " in active" : "")}
+          className={"tab-pane fade" + (active ? " in active" : "")}
           style={{
             borderStyle: "solid",
             borderWidth: 2,
@@ -107,6 +109,7 @@ SpeciesPhaseSliders.propTypes = {
   species: PropTypes.arrayOf(PropTypes.string).isRequired,
   phases: PropTypes.arrayOf(PropTypes.string).isRequired,
   matrix: PropTypes.object.isRequired,
+  activePhase: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired
 };
 

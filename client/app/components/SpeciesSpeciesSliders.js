@@ -53,10 +53,11 @@ function SpeciesSpeciesSliders(props) {
     });
 
     var tabId = "speciesSpecies" + phase;
+    var active = (props.activePhase === "" && i === 0) || phase === props.activePhase;
 
     return {
       tab: (
-        <li className={"nav" + (i === 0 ? " active" : "")} key={i}>
+        <li className={"nav" + (active ? " active" : "")} key={i}>
           <a
             href={"#" + tabId}
             data-toggle="tab"
@@ -71,7 +72,7 @@ function SpeciesSpeciesSliders(props) {
       content: (
         <div
           id={tabId}
-          className={"tab-pane fade" + (i === 0 ? " in active" : "")}
+          className={"tab-pane fade" + (active ? " in active" : "")}
           style={{
             borderStyle: "solid",
             borderWidth: 2,

@@ -75,7 +75,8 @@ function Phases(props) {
                 data={props.phaseData}
                 timeExtent={props.timeExtent}
                 alignment={props.alignment}
-                active={props.activeTrajectory.id === "average"} />
+                active={props.activeTrajectory.id === "average"}
+                activePhase={props.activePhase} />
             </div>
           </div>
           <div className="row in" id={collapseId}>
@@ -84,7 +85,8 @@ function Phases(props) {
                 data={props.phaseData}
                 timeExtent={props.timeExtent}
                 alignment={props.alignment}
-                activeTrajectory={props.activeTrajectory} />
+                activeTrajectory={props.activeTrajectory}
+                activePhase={props.activePhase} />
             </div>
           </div>
         </div>
@@ -97,7 +99,8 @@ Phases.propTypes = {
   phaseData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   alignment: PropTypes.string.isRequired,
-  activeTrajectory: PropTypes.object.isRequired
+  activeTrajectory: PropTypes.object.isRequired,
+  activePhase: PropTypes.string.isRequired
 };
 
 module.exports = Phases;
