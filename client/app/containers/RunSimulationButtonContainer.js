@@ -29,15 +29,11 @@ var RunSimulationButtonContainer = React.createClass ({
     this.setState(getStateFromStore());
   },
   handleButtonClick: function () {
-    ViewActionCreators.runSimulation();
-
-    // Use timer for label
+    // Create timer for label
     var count = 0;
-    var timer = setInterval(function() {
-      if (this.state.simulationOutputState === Constants.SIMULATION_OUTPUT_VALID) {
-        // Valid output, remove interval timer
-        clearInterval(timer);
-
+    (function timer() {
+      if (count > 0 &&
+          this.state.simulationOutputState === Constants.SIMULATION_OUTPUT_VALID) {
         // Reset label to default
         this.setState({
           label: defaultLabel
@@ -47,12 +43,16 @@ var RunSimulationButtonContainer = React.createClass ({
       }
 
       // Modify label
-      count++;
-
       this.setState({
         label: defaultLabel + ".".repeat(count % 4)
       });
-    }.bind(this), 500);
+
+      count++;
+
+      setTimeout(timer.bind(this), 500);
+    }.bind(this))();
+
+    ViewActionCreators.runSimulation();
   },
   render: function () {
     var disabled = this.state.simulationOutputState === Constants.SIMULATION_OUTPUT_INVALID;
