@@ -42,7 +42,6 @@ function SpeciesPhaseSliders(props) {
     });
 
     var tabId = "speciesPhase" + phase;
-
     var active = (props.activePhase === "" && i === 0) || phase === props.activePhase;
 
     return {

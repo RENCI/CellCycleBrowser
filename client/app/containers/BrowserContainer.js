@@ -253,6 +253,7 @@ var BrowserContainer = React.createClass({
           phaseData={this.state.showPhaseOverlay ? allPhaseData : [[]]}
           timeExtent={timeExtent}
           alignment={this.state.alignment}
+          activePhase={this.state.activePhase}
           phaseOverlayOpacity={this.state.phaseOverlayOpacity} />
       );
     }.bind(this));

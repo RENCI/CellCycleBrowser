@@ -178,8 +178,6 @@ HeatLine.draw = function(svg, layout, state) {
     return layout.xScale(d.stop);
   }
 
-  var r = 3;
-
   var phase = phaseRow.selectAll(".phase")
       .data(function(d) { return d; });
 
@@ -198,7 +196,8 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("x2", x2)
       .attr("y2", height / 2)
       .style("fill", "none")
-      .style("stroke", phaseColor)
+      .style("stroke", phaseColor)      
+      .style("stroke-width", strokeWidth)
       .style("stroke-dasharray", "5,5");
 
   phaseEnter.append("line")
@@ -210,6 +209,7 @@ HeatLine.draw = function(svg, layout, state) {
       .style("stroke", function (d) {
         return d3.color(phaseColor(d)).darker();
       })
+      .style("stroke-width", strokeWidth)
       .style("stroke-dasharray", "5,5")
       .style("stroke-dashoffset", 5);
 
@@ -238,7 +238,8 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("x1", x1)
       .attr("y1", height / 2)
       .attr("x2", x2)
-      .attr("y2", height / 2);
+      .attr("y2", height / 2)
+      .style("stroke-width", strokeWidth);
 
   // XXX: This is ugly, should probably just bind data for circles above since there are two
   phaseUpdate.selectAll("circle")
@@ -300,6 +301,14 @@ HeatLine.draw = function(svg, layout, state) {
 
   function phaseColor(d) {
     return state.phaseColorScale(d.name);
+  }
+
+  function r(d) {
+    return d.name === state.activePhase ? 5 : 3;
+  };
+
+  function strokeWidth(d) {
+    return d.name === state.activePhase ? 3 : 1;
   }
 };
 
