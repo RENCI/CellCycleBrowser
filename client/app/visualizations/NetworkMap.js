@@ -229,19 +229,32 @@ module.exports = function() {
         d.fy = radius * Math.sin(a);
       });
 
+      // Drag behavior, based on:
+      // http://bl.ocks.org/mbostock/2675ff61ea5e063ede2b5d63c08020c7
       var drag = d3.drag()
+          .on("start", function(d) {
+            if (!d3.event.active) {
+              force.alphaTarget(0.3).restart();
+            }
+
+            d.fx = d.x;
+            d.fy = d.y;
+          })
           .on("drag", function(d) {
             d.fx = d3.event.x;
             d.fy = d3.event.y;
+
+            $(this).tooltip("show");
           })
           .on("end", function(d) {
-            d.x = d.fx;
-            d.y = d.fy;
+            if (!d3.event.active) {
+              force.alphaTarget(0).alpha(1).restart();
+            }
+
             d.fx = null;
             d.fy = null;
 
-            force.alpha(1);
-            force.restart();
+            $(this).tooltip("hide");
           });
 
       // Nodes
