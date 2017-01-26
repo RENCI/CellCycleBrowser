@@ -60,10 +60,13 @@ module.exports = function() {
 
       // Groups for layout
       g.append("g")
-          .attr("class", "links");
+          .attr("class", "phases");
+
+      g.append("path")
+          .attr("class", "arrow");
 
       g.append("g")
-          .attr("class", "phases");
+          .attr("class", "links");
 
       g.append("g")
           .attr("class", "species");
@@ -100,6 +103,7 @@ module.exports = function() {
     // Draw phases and species
     drawPhases();
     drawSpecies();
+    drawArrow();
 
     // Tooltips
     $(".species > g").tooltip({
@@ -328,6 +332,20 @@ module.exports = function() {
       function linkTooltip(d) {
         return d.source.name + "→" + d.target.name + ": " + d.value;
       }
+    }
+
+    function drawArrow() {
+      // XXX: Copied from above
+      var radius = Math.min(width, height) / 2 - 40;
+
+      var arrow = d3.symbol()
+          .type(d3.symbolTriangle);
+
+      svg.select(".arrow")
+          .attr("d", arrow)
+          .attr("transform", "translate(" + 7 + "," + (-radius) + ")scale(1,1.5)rotate(90)")
+          .style("fill", "black")
+          .style("fill-opacity", 0.25);
     }
   }
 
