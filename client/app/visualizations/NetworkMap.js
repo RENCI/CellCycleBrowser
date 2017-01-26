@@ -60,10 +60,10 @@ module.exports = function() {
 
       // Groups for layout
       g.append("g")
-          .attr("class", "phases");
+          .attr("class", "links");
 
       g.append("g")
-          .attr("class", "links");
+          .attr("class", "phases");
 
       g.append("g")
           .attr("class", "species");
@@ -258,8 +258,14 @@ module.exports = function() {
           });
 
       // Nodes
+      var maxValue = d3.max(data.species, function(d) { return d.max; });
+
+      var rScale = d3.scaleLinear()
+          .domain([0, maxValue])
+          .range([3, 7]);
+
       var nodeFillScale = d3.scaleLinear()
-          .domain([0, d3.max(data.species, function(d) { return d.value; }) ])
+          .domain([0, maxValue])
           .range(["white", "black"]);
 
       var node = svg.select(".species").selectAll(".species > g")
@@ -271,11 +277,12 @@ module.exports = function() {
           .call(drag);
 
       nodeEnter.append("circle")
-          .attr("r", 5)
           .style("stroke", "black");
 
       nodeEnter.merge(node)
           .attr("data-original-title", nodeTooltip)
+        .select("circle")
+          .attr("r", function(d) { return rScale(d.value); })
           .style("fill", function(d) { return nodeFillScale(d.value); });
 
       // Node exit
@@ -299,7 +306,8 @@ module.exports = function() {
 
       // Link enter
       var linkEnter = link.enter().append("line")
-          .attr("data-toggle", "tooltip");
+          .attr("data-toggle", "tooltip")
+          .attr("stroke-linecap", "round");
 
       linkEnter.merge(link)
           .attr("data-original-title", linkTooltip)
