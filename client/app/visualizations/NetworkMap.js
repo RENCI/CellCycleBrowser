@@ -332,7 +332,21 @@ module.exports = function() {
         .domain([0, 1])
         .range([0, 1]);
 
-    nodes = data.phases.slice().concat(data.species).slice();
+    var newNodes = data.phases.slice().concat(data.species).slice();
+
+    // Copy previous node position
+    if (nodes) {
+      newNodes.forEach(function(d) {
+        nodes.forEach(function(e) {
+          if (d.name === e.name) {
+            d.x = e.x;
+            d.y = e.y;
+          }
+        });
+      });
+    }
+
+    nodes = newNodes;
 
     links = [];
     data.speciesPhaseMatrix.forEach(function(d, i) {
@@ -349,10 +363,10 @@ module.exports = function() {
     });
 
     if (currentPhase !== null) {
-      var index = data.phases.indexOf(currentPhase);
+      var index = data.phases.map(function(d) {
+        return d.name;
+      }).indexOf(currentPhase.name);
 
-      // XXX: Probably need to move to setting current phase from phase name
-      // when linking with other views
       if (index > -1) {
         data.speciesMatrices[index].forEach(function(d, i) {
           d.forEach(function(e, j) {
@@ -381,7 +395,6 @@ module.exports = function() {
         });
 
     force.alpha(1);
-//    force.alphaDecay(0.001);
     force.restart();
   }
 
@@ -409,6 +422,7 @@ module.exports = function() {
       var index = data.phases.map(function(d) { return d.name; }).indexOf(_);
 
       currentPhase = index !== -1 ? data.phases[index] : null;
+
       processData();
       draw();
     }

@@ -1,7 +1,7 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
-var ModelStore = require("../stores/ModelStore");
+var SimulationControlStore = require("../stores/SimulationControlStore");
 var PhaseStore = require("../stores/PhaseStore");
 var d3 = require("d3");
 //var ChordMap = require("../visualizations/ChordMap");
@@ -21,9 +21,45 @@ var divStyle = {
 //var chordMap = ChordMap();
 var networkMap = NetworkMap();
 
-function getStateFromModelStore() {
+function getStateFromSimulationControlStore() {
+  var controls = SimulationControlStore.getControls();
+
+  // Convert controls to model
+  // XXX: Use consistent represention for both?
+  var model = {};
+
+  model.phases = controls.phases.map(function(d) {
+    return {
+      name: d
+    };
+  });
+
+  model.species = controls.species.map(function(d) {
+    return {
+      name: d,
+      min: controls.speciesInitialValues[d].min,
+      max: controls.speciesInitialValues[d].max,
+      value: controls.speciesInitialValues[d].value
+    };
+  });
+
+  model.speciesPhaseMatrix = controls.species.map(function(species) {
+    return controls.phases.map(function(phase) {
+      return controls.speciesPhaseMatrix[species][phase].value;
+    });
+  });
+
+  model.speciesMatrices = controls.phases.map(function(phase) {
+    return controls.species.map(function(species1) {
+      return controls.species.map(function(species2) {
+        return species1 === species2 ? 0 :
+          controls.speciesSpeciesMatrices[phase][species1][species2].value;
+      });
+    });
+  });
+
   return {
-    model: ModelStore.getModel()
+    model: model
   };
 }
 
@@ -41,7 +77,7 @@ var MapVisualizationContainer = React.createClass ({
     };
   },
   componentDidMount: function() {
-    ModelStore.addChangeListener(this.onModelChange);
+    SimulationControlStore.addChangeListener(this.onSimulationControlChange);
     PhaseStore.addChangeListener(this.onPhaseChange);
 
 //    chordMap.on("selectSpecies", this.handleSelectSpecies);
@@ -58,7 +94,7 @@ var MapVisualizationContainer = React.createClass ({
     }.bind(this));
   },
   componentWillUnmount: function () {
-    ModelStore.removeChangeListener(this.onModelChange);
+    SimulationControlStore.removeChangeListener(this.onSimulationControlChange);
     PhaseStore.removeChangeListener(this.onPhaseChange);
   },
   componentWillUpdate: function (props, state) {
@@ -66,8 +102,8 @@ var MapVisualizationContainer = React.createClass ({
 
     return false;
   },
-  onModelChange: function () {
-    this.setState(getStateFromModelStore());
+  onSimulationControlChange: function () {
+    this.setState(getStateFromSimulationControlStore());
   },
   onPhaseChange: function () {
     this.setState(getStateFromPhaseStore());
