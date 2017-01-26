@@ -93,7 +93,7 @@ function Species(props) {
         <div>
           <div className="row" style={rowStyle}>
             <div className="col-sm-2 text-left" style={buttonColumnStyle}>
-              <CollapseButtonContainer targetId={simulationCollapseId}/>
+              <CollapseButtonContainer targetId={simulationCollapseId} />
               <div style={dataLabelStyle}>
                 Sim
               </div>

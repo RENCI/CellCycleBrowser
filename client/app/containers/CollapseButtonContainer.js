@@ -1,6 +1,8 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButton = require("../components/CollapseButton");
+var ViewActionCreators = require("../actions/ViewActionCreators");
+var AlignmentStore = require("../stores/AlignmentStore");
 
 var CollapseButtonContainer = React.createClass ({
   propTypes: {
@@ -11,10 +13,15 @@ var CollapseButtonContainer = React.createClass ({
       text: "-"
     };
   },
-  handleClick: function (e) {    
+  handleClick: function (e) {
     this.setState({
       text: this.state.text === "-" ? "+" : "-"
     });
+
+    // XXX: Hack to force render of browser container
+    if (this.state.text === "+") {
+      ViewActionCreators.selectAlignment(AlignmentStore.getAlignment());
+    }
   },
   render: function () {
     return (
