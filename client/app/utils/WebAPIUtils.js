@@ -143,7 +143,6 @@ function requestSimulationOutput(url) {
     type: "POST",
     url: url,
     success: function (data) {
-      console.log(data);
       ServerActionCreators.receiveSimulationOutput(data.result);
     },
     error: function (xhr, textStatus, errorThrown) {
