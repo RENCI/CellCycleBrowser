@@ -344,6 +344,7 @@ module.exports = function() {
       svg.select(".arrow")
           .attr("d", arrow)
           .attr("transform", "translate(" + 7 + "," + (-radius) + ")scale(1,1.5)rotate(90)")
+          .attr("pointer-events", "none")
           .style("fill", "black")
           .style("fill-opacity", 0.25);
     }
