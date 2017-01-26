@@ -33,7 +33,7 @@ function AlignmentSelect(props) {
             <span className="glyphicon glyphicon-align-justify" style={iconStyle}>
             </span>
           </label>
-          <label className="btn btn-default"  onClick={rightClick}>
+          <label className="btn btn-default"  onClick={rightClick} disabled>
             <input type="radio" />
             <span className="glyphicon glyphicon-align-right" style={iconStyle}>
             </span>
