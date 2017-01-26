@@ -143,7 +143,8 @@ function requestSimulationOutput(url) {
     type: "POST",
     url: url,
     success: function (data) {
-      ServerActionCreators.receiveSimulationOutput(data);
+      console.log(data);
+      ServerActionCreators.receiveSimulationOutput(data.result);
     },
     error: function (xhr, textStatus, errorThrown) {
       console.log(textStatus + ": " + errorThrown);
@@ -183,6 +184,8 @@ function pollSimulation(taskId) {
       }
 
       console.log(textStatus + ": " + errorThrown);
+
+      ServerActionCreators.receiveSimulationOutput([]);
     }
   });
 }
