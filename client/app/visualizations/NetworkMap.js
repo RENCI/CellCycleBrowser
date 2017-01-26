@@ -227,11 +227,22 @@ module.exports = function() {
 
         d.fx = radius * Math.cos(a);
         d.fy = radius * Math.sin(a);
-
-//        var a =
-//        d.fx = radius * Math.cos(sa - Math.PI / 2),
-//        d.fy = radius * Math.sin(sa - Math.PI / 2),
       });
+
+      var drag = d3.drag()
+          .on("drag", function(d) {
+            d.fx = d3.event.x;
+            d.fy = d3.event.y;
+          })
+          .on("end", function(d) {
+            d.x = d.fx;
+            d.y = d.fy;
+            d.fx = null;
+            d.fy = null;
+
+            force.alpha(1);
+            force.restart();
+          });
 
       // Nodes
       var nodeFillScale = d3.scaleLinear()
@@ -243,7 +254,8 @@ module.exports = function() {
 
       // Node enter
       var nodeEnter = node.enter().append("g")
-          .attr("data-toggle", "tooltip");
+          .attr("data-toggle", "tooltip")
+          .call(drag);
 
       nodeEnter.append("circle")
           .attr("r", 5)
