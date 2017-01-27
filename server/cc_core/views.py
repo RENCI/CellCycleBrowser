@@ -109,7 +109,14 @@ def run_model(request, filename=''):
             name2 = p_dict_item['downstream'] # species or phase name which is an influencee
             val = p_dict_item['value']
             if phase:
-                para_id = 'a_' + phase + '_' + name1 + '_' + name2
+                # special handling to make a_53BP1_p16 phase independent species-species interaction
+                # to work as set up in the initial SBML model. This will not be needed after we
+                # address the SBML model creation that handles all potential interactions in a
+                # systematic way
+                if phase == 'G1' and name1 == '53BP1' and name2 == 'p16':
+                    para_id = 'a_' + name1 + '_' + name2
+                else:
+                    para_id = 'a_' + phase + '_' + name1 + '_' + name2
             else:
                 para_id = 'a_' + name1 + '_' + name2
             sp_id_infl_para_dict[para_id] = val
