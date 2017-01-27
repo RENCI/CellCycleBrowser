@@ -1,5 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
+var Profile = require("../components/Profile");
 var MapArea = require("../components/MapArea");
 var BrowserContainer = require("../containers/BrowserContainer");
 var ControlsContainer = require("../containers/ControlsContainer");
@@ -9,7 +10,8 @@ var divClass = "container-fluid well well-sm";
 function MainSection(props) {
   // Check for models and cell data
   var hasModels = props.profile.models &&
-                props.profile.models.length > 0;
+                  props.profile.models.length > 0;
+
   var hasCellData = props.profile.cellData &&
                     props.profile.cellData.length > 0;
 
@@ -17,6 +19,11 @@ function MainSection(props) {
   if (hasModels && hasCellData) {
     return (
       <div className={divClass}>
+        <div className="row text-center">
+          <div className="col-md-6 col-md-offset-3 well well-small">
+            <Profile profile={props.profile} />
+          </div>
+        </div>
         <div className="row">
           <div className="col-md-3 text-center">
             <MapArea/>
@@ -34,6 +41,11 @@ function MainSection(props) {
   else if (hasModels) {
     return (
       <div className={divClass}>
+        <div className="row text-center">
+          <div className="col-md-6 col-md-offset-3 well well-small">
+            <Profile profile={props.profile} />
+          </div>
+        </div>
         <div className="row">
           <div className="col-md-3 col-md-offset-3 text-center">
             <MapArea/>
@@ -48,6 +60,11 @@ function MainSection(props) {
   else if (hasCellData) {
     return (
       <div className={divClass}>
+        <div className="row text-center">
+          <div className="col-md-6 col-md-offset-3 well well-small">
+            <Profile profile={props.profile} />
+          </div>
+        </div>
         <div className="row">
           <div className="col-md-6 col-md-offset-3 text-center">
             <BrowserContainer />
@@ -57,7 +74,13 @@ function MainSection(props) {
     );
   }
   else {
-    return null;
+    return (
+      <div className={divClass}>
+        <div className="row text-center">
+          <Profile profile={props.profile} />
+        </div>
+      </div>
+    );
   }
 }
 
