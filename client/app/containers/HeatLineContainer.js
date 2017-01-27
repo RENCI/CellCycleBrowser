@@ -54,7 +54,9 @@ function colorScale(data) {
         .range(["white", "black"]);
 */
   return d3.scaleLinear()
-      .domain(d3.extent(d3.merge(data), function(d) { return d.value; }))
+      .domain(d3.extent(d3.merge(data).filter(function(d) {
+        return d.value > -1;
+      }), function(d) { return d.value; }))
       .range(["white", "black"]);
 }
 
