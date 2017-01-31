@@ -13,6 +13,7 @@ module.exports = function() {
       data,
       nodes,
       links,
+      biLinks,
       currentPhase = null,
 
       // Layout
@@ -81,11 +82,18 @@ module.exports = function() {
   }
 
   function updateForce() {
-    svg.select(".links").selectAll("line")
+    svg.select(".links").selectAll("path")
+        .attr("d", function(d) {
+          return "M" + d.source.x + "," + d.source.y
+               + "S" + d.middle.x + "," + d.middle.y
+               + " " + d.target.x + "," + d.target.y;
+        });
+/*
         .attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
+*/
 
     svg.select(".species").selectAll(".species > g")
         .attr("transform", function(d) {
@@ -112,7 +120,7 @@ module.exports = function() {
       animation: false
     });
 
-    $(".links > line").tooltip({
+    $(".links > path").tooltip({
       container: "body",
       placement: "auto top",
       animation: false
@@ -299,22 +307,25 @@ module.exports = function() {
 //          .domain([1, -1]);
       var linkColorScale = d3.scaleLinear()
           .domain([-1, 0, 1])
-          .range(["#00d", "#fff", "#d00"])
+          .range(["#00d", "#ddd", "#d00"])
 
       var linkWidthScale = d3.scaleLinear()
           .domain([0, 1])
-          .range([0, 8]);
+          .range([1, 8]);
 
-      var link = svg.select(".links").selectAll(".links > line")
-          .data(links);
+      var link = svg.select(".links").selectAll(".links > path")
+          .data(biLinks);
 
       // Link enter
-      var linkEnter = link.enter().append("line")
+      var linkEnter = link.enter().append("path")
           .attr("data-toggle", "tooltip")
           .attr("stroke-linecap", "round");
 
-      linkEnter.merge(link)
+      linkEnter.merge(link).sort(function(a, b) {
+          return d3.descending(Math.abs(a.value), Math.abs(b.value));
+        })
           .attr("data-original-title", linkTooltip)
+          .style("fill", "none")
           .style("stroke", function(d) {
             return linkColorScale(d.value);
           })
@@ -330,7 +341,7 @@ module.exports = function() {
       }
 
       function linkTooltip(d) {
-        return d.source.name + "→" + d.target.name + ": " + d.value;
+        return d.middle.name + ": " + d.value;
       }
     }
 
@@ -361,29 +372,36 @@ module.exports = function() {
 
     var newNodes = data.phases.slice().concat(data.species).slice();
 
-    // Copy previous node position
-    if (nodes) {
-      newNodes.forEach(function(d) {
-        nodes.forEach(function(e) {
-          if (d.name === e.name) {
-            d.x = e.x;
-            d.y = e.y;
-          }
-        });
-      });
-    }
-
-    nodes = newNodes;
-
     links = [];
+    biLinks = [];
     data.speciesPhaseMatrix.forEach(function(d, i) {
       d.forEach(function(e, j) {
         if (Math.abs(e) > 0) {
+          var midNode = {
+            name: data.species[i].name + "→" + data.phases[j].name
+          };
+
+          newNodes.push(midNode);
+
           links.push({
             source: data.species[i],
+            target: midNode,
+            value: e,
+            forceValue: e
+          });
+
+          links.push({
+            source: midNode,
             target: data.phases[j],
             value: e,
             forceValue: e
+          });
+
+          biLinks.push({
+            source: data.species[i],
+            middle: midNode,
+            target: data.phases[j],
+            value: e
           });
         }
       });
@@ -398,17 +416,51 @@ module.exports = function() {
         data.speciesMatrices[index].forEach(function(d, i) {
           d.forEach(function(e, j) {
             if (Math.abs(e) > 0) {
+              var midNode = {
+                name: data.species[i].name + "→" + data.species[j].name
+              };
+
+              newNodes.push(midNode);
+
               links.push({
                 source: data.species[i],
+                target: midNode,
+                value: e,
+                forceValue: e
+              });
+
+              links.push({
+                source: midNode,
                 target: data.species[j],
                 value: e,
                 forceValue: e
+              });
+
+              biLinks.push({
+                source: data.species[i],
+                middle: midNode,
+                target: data.species[j],
+                value: e
               });
             }
           });
         });
       }
     }
+
+    // Copy previous node position
+    if (nodes) {
+      newNodes.forEach(function(d) {
+        nodes.forEach(function(e) {
+          if (d.name === e.name) {
+            d.x = e.x;
+            d.y = e.y;
+          }
+        });
+      });
+    }
+
+    nodes = newNodes;
 
     force.nodes(nodes);
 
