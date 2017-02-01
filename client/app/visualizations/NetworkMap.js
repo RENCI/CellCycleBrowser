@@ -47,6 +47,9 @@ module.exports = function() {
             d3.event.preventDefault();
           });
 
+      // Defs section for arrow markers for links
+      svgEnter.append("defs");
+
       // Background
       svgEnter.append("rect")
           .attr("width", "100%")
@@ -313,14 +316,37 @@ module.exports = function() {
           .domain([0, 1])
           .range([1, 8]);
 
+      var arrow = svg.select("defs").selectAll("marker")
+          .data(biLinks);
+
+      // Arrow enter
+      var arrowEnter = arrow.enter().append("marker")
+          .attr("viewBox", "0 0 10 10")
+          .attr("markerWidth", 3)
+          .attr("markerHeight", 2)
+          .attr("refX", 8)
+          .attr("refY", 5)
+          .attr("orient", "auto")
+        .append("path")
+          .attr("d", "M 0 0 L 10 5 L 0 10 z");
+
+      // Arrow update
+      arrowEnter.merge(arrow)
+          .attr("id", function(d) { return "arrowMarker_" + d.middle.name; })
+        .select("path")
+          .style("fill", function(d) { return linkColorScale(d.value); });
+
+      // Arrow exit
+      arrow.exit().remove();
+
       var link = svg.select(".links").selectAll(".links > path")
           .data(biLinks);
 
       // Link enter
       var linkEnter = link.enter().append("path")
-          .attr("data-toggle", "tooltip")
-          .attr("stroke-linecap", "round");
+          .attr("data-toggle", "tooltip");
 
+      // Link update
       linkEnter.merge(link).sort(function(a, b) {
           return d3.descending(Math.abs(a.value), Math.abs(b.value));
         })
@@ -331,6 +357,9 @@ module.exports = function() {
           })
           .style("stroke-width", function(d) {
             return linkWidthScale(Math.abs(d.value));
+          })
+          .style("marker-end", function(d, i) {
+            return "url(#" + ("arrowMarker_" + d.middle.name) + ")";
           });
 
       // Link exit
