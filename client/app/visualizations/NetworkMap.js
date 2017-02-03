@@ -17,14 +17,18 @@ module.exports = function() {
       currentPhase = null,
 
       // Layout
+      piePad = 0.04,
       pie = d3.pie()
           .value(function() { return 1; })
-          .padAngle(0.04),
+          .padAngle(piePad),
+      nodeRadiusScale = d3.scaleLinear()
+          .range([3, 7]);
       force = d3.forceSimulation()
           .force("link", d3.forceLink())
           .force("x", d3.forceX(0).strength(0.02))
           .force("y", d3.forceY(0).strength(0.02))
           .force("collide", d3.forceCollide(10))
+          .force("manyBody", d3.forceManyBody().strength(-15))
           .on("tick", updateForce),
 
       // Start with empty selection
@@ -85,18 +89,58 @@ module.exports = function() {
   }
 
   function updateForce() {
+    if (!data) return;
+
+    // Constrain to radius
+    var r = Math.min(width, height) / 2 - 70;
+
+    data.species.forEach(function(d) {
+      var dist = Math.sqrt(d.x * d.x + d.y * d.y);
+
+      if (dist > r) {
+        var scale = r / dist;
+        d.x *= scale;
+        d.y *= scale;
+      }
+    });
+
     svg.select(".links").selectAll("path")
         .attr("d", function(d) {
+          var reduction = d.target.value ? nodeRadiusScale(d.target.value) : 0;
+          reduction += +d3.select(this).style("stroke-width").slice(0, -2) * 3 / 2;
+
+          var middle = adjustDistance(d.target, d.middle, -reduction),
+              target = adjustDistance(middle, d.target, reduction);
+
           return "M" + d.source.x + "," + d.source.y
-               + "S" + d.middle.x + "," + d.middle.y
-               + " " + d.target.x + "," + d.target.y;
+               + "S" + middle.x + "," + middle.y
+               + " " + target.x + "," + target.y;
+
+          function adjustDistance(p1, p2, r) {
+            var vx = p2.x - p1.x,
+                vy = p2.y - p1.y,
+                d = Math.sqrt(vx * vx + vy * vy);
+
+            vx /= d;
+            vy /= d;
+
+            d -= r;
+
+            return {
+              x: p1.x + vx * d,
+              y: p1.y + vy *d
+            };
+          }
+        })
+        .each(function(d, i) {
+          var length = this.getTotalLength(),
+              // Could get width from link width scale, but would need to make global
+              width = +d3.select(this).style("stroke-width").slice(0, -2);
+
+          // Make length shorter to match marker
+          d3.select(this)
+//              .style("stroke-dasharray", length - width * 1.5 + 1);
         });
-/*
-        .attr("x1", function(d) { return d.source.x; })
-        .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
-        .attr("y2", function(d) { return d.target.y; });
-*/
 
     svg.select(".species").selectAll(".species > g")
         .attr("transform", function(d) {
@@ -111,9 +155,10 @@ module.exports = function() {
       .select("g")
         .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
 
-    // Draw phases and species
-    drawPhases();
-    drawSpecies();
+    // Draw the diagram
+    drawArcs();
+    drawNodes();
+    drawLinks();
     drawArrow();
 
     // Tooltips
@@ -129,7 +174,7 @@ module.exports = function() {
       animation: false
     });
 
-    function drawPhases() {
+    function drawArcs() {
       // TODO: Move to global settings somewhere
       var colorScale = d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
           .domain(data.phases.map(function(d) { return d.name; }));
@@ -230,18 +275,16 @@ module.exports = function() {
       }
     }
 
-    function drawSpecies() {
+    function drawNodes() {
       // Set fixed position for phases
       // XXX: Radius copied from above
       var radius = Math.min(width, height) / 2 - 60;
 
-      data.phases.forEach(function(d, i) {
-        var numPhases = data.phases.length;
+      pie(data.phases).forEach(function(d, i) {
+        var a = d.endAngle - Math.PI / 2 - piePad;
 
-        var a = i / numPhases * 2 * Math.PI - Math.PI / 2 + Math.PI / numPhases;
-
-        d.fx = radius * Math.cos(a);
-        d.fy = radius * Math.sin(a);
+        d.data.fx = radius * Math.cos(a);
+        d.data.fy = radius * Math.sin(a);
       });
 
       // Drag behavior, based on:
@@ -275,9 +318,8 @@ module.exports = function() {
       // Nodes
       var maxValue = d3.max(data.species, function(d) { return d.max; });
 
-      var rScale = d3.scaleLinear()
-          .domain([0, maxValue])
-          .range([3, 7]);
+      nodeRadiusScale
+          .domain([0, maxValue]);
 
       var nodeFillScale = d3.scaleLinear()
           .domain([0, maxValue])
@@ -297,15 +339,18 @@ module.exports = function() {
       nodeEnter.merge(node)
           .attr("data-original-title", nodeTooltip)
         .select("circle")
-          .attr("r", function(d) { return rScale(d.value); })
+          .attr("r", function(d) { return nodeRadiusScale(d.value); })
           .style("fill", function(d) { return nodeFillScale(d.value); });
 
       // Node exit
       node.exit().remove();
 
-      // Node exit
+      function nodeTooltip(d) {
+        return d.name + ": " + d.value;
+      }
+    }
 
-      // Links
+    function drawLinks() {
 //      var linkColorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
 //          .domain([1, -1]);
       var linkColorScale = d3.scaleLinear()
@@ -316,29 +361,36 @@ module.exports = function() {
           .domain([0, 1])
           .range([1, 8]);
 
-      var arrow = svg.select("defs").selectAll("marker")
+      // Bind data for markers
+      var marker = svg.select("defs").selectAll("marker")
           .data(biLinks);
 
-      // Arrow enter
-      var arrowEnter = arrow.enter().append("marker")
+      // Marker enter
+      var markerEnter = marker.enter().append("marker")
           .attr("viewBox", "0 0 10 10")
           .attr("markerWidth", 3)
-          .attr("markerHeight", 2)
-          .attr("refX", 8)
+          .attr("markerHeight", 3)
+          .attr("refX", 0)
           .attr("refY", 5)
-          .attr("orient", "auto")
-        .append("path")
-          .attr("d", "M 0 0 L 10 5 L 0 10 z");
+          .attr("orient", "auto");
 
-      // Arrow update
-      arrowEnter.merge(arrow)
-          .attr("id", function(d) { return "arrowMarker_" + d.middle.name; })
+      markerEnter.append("path");
+
+      // Marker update
+      markerEnter.merge(marker)
+          .attr("id", markerName)
         .select("path")
+          .attr("d", function(d) {
+            return d.value < 0 ?
+                   "M 0 0 L 5 0 L 5 10 L 0 10 z" :
+                   "M 0 0 L 5 5 L 0 10 z";
+          })
           .style("fill", function(d) { return linkColorScale(d.value); });
 
-      // Arrow exit
-      arrow.exit().remove();
+      // Marker exit
+      marker.exit().remove();
 
+      // Bind data for links
       var link = svg.select(".links").selectAll(".links > path")
           .data(biLinks);
 
@@ -358,19 +410,27 @@ module.exports = function() {
           .style("stroke-width", function(d) {
             return linkWidthScale(Math.abs(d.value));
           })
-          .style("marker-end", function(d, i) {
-            return "url(#" + ("arrowMarker_" + d.middle.name) + ")";
+          .style("stroke-linecap", "round")
+          .style("marker-end", null)
+          .style("marker-end", function(d) {
+            return "url(#" + markerName(d) + ")";
+          })
+          .each(function(d, i) {
+            var length = this.getTotalLength();
+
+            d3.select(this)
+//                .style("stroke-dasharray", length * 0.9);
           });
 
       // Link exit
       link.exit().remove();
 
-      function nodeTooltip(d) {
-        return d.name + ": " + d.value;
-      }
-
       function linkTooltip(d) {
         return d.middle.name + ": " + d.value;
+      }
+
+      function markerName(d) {
+        return "marker_" + d.middle.name;
       }
     }
 
@@ -497,7 +557,7 @@ module.exports = function() {
         //.distance(function(d) {
         //  return distanceScale(Math.abs(d.value));
         //});
-        .distance(10)
+        .distance(Math.min(width, height) / 20)
         .strength(function(d) {
           return strengthScale(Math.abs(d.forceValue));
         });
