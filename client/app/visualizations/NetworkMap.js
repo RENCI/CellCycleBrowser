@@ -68,7 +68,7 @@ module.exports = function() {
 
       // Groups for layout
       g.append("g")
-          .attr("class", "phases");
+          .attr("class", "arcs");
 
       g.append("path")
           .attr("class", "arrow");
@@ -77,7 +77,10 @@ module.exports = function() {
           .attr("class", "links");
 
       g.append("g")
-          .attr("class", "species");
+          .attr("class", "nodes");
+
+      g.append("g")
+          .attr("class", "nodeLabels")
 
 
       svg = svg.merge(svgEnter);
@@ -143,10 +146,14 @@ module.exports = function() {
 //              .style("stroke-dasharray", length - width * 1.5 + 1);
         });
 
-    svg.select(".species").selectAll(".species > g")
+    svg.select(".nodes").selectAll(".nodes > g")
         .attr("transform", function(d) {
           return "translate(" + d.x + "," + d.y + ")";
         });
+
+    svg.select(".nodeLabels").selectAll(".nodeLabels > text")
+        .attr("x", function(d) { return d.x; })
+        .attr("y", function(d) { return d.y - nodeRadiusScale(d.value); });
   }
 
   function draw() {
@@ -159,11 +166,12 @@ module.exports = function() {
     // Draw the diagram
     drawArcs();
     drawNodes();
+    drawNodeLabels();
     drawLinks();
     drawArrow();
 
     // Tooltips
-    $(".species > g").tooltip({
+    $(".nodes > g").tooltip({
       container: "body",
       placement: "auto top",
       animation: false
@@ -184,17 +192,17 @@ module.exports = function() {
       // XXX: SVG width seem to be a bit wider than container width. Maybe an
       // issue with margins. Need to look into this.
       var radius = Math.min(width, height) / 2 - 20;
-      var arc = d3.arc()
+      var arcShape = d3.arc()
           .cornerRadius(3)
           .outerRadius(radius)
           .innerRadius(radius - 40);
 
-      // Bind arc data
-      var phase = svg.select(".phases").selectAll(".phases > g")
+      // Bind phase data for arcs
+      var arc = svg.select(".arcs").selectAll(".arcs > g")
           .data(pie(data.phases));
 
       // Enter
-      var phaseEnter = phase.enter().append("g")
+      var arcEnter = arc.enter().append("g")
           .on("click", function(d, i) {
             dispatcher.call("selectPhase", this, d.data.name);
           })
@@ -207,14 +215,13 @@ module.exports = function() {
             }
           });
 
-      phaseEnter.append("path")
-          .attr("d", arc)
+      arcEnter.append("path")
+          .attr("d", arcShape)
           .style("fill", "white")
           .style("stroke", "white");
 
-      phaseEnter.append("text")
+      arcEnter.append("text")
           .text(function(d) { return d.data.name; })
-          .attr("class", "phaseLabel")
           .attr("transform", textTransform)
           .attr("dy", ".35em")
           .style("text-anchor", "middle")
@@ -223,29 +230,29 @@ module.exports = function() {
           .style("pointer-events", "none");
 
       // Enter + update
-      var phaseMerge = phaseEnter.merge(phase);
+      var arcUpdate = arcEnter.merge(arc);
 
-      phaseMerge.select("path")
+      arcUpdate.select("path")
+          .attr("d", arcShape)
           .style("fill", function(d) { return colorScale(d.data.name); })
-          .style("stroke", "#999")
-          .attr("d", arc);
+          .style("stroke", "#999");
 
-      phaseMerge.select("text")
+      arcUpdate.select("text")
           .style("fill", "black")
           .attr("transform", textTransform);
 
       // Exit
-      phaseMerge.exit().remove();
+      arc.exit().remove();
 
       // Highlight
-      svg.selectAll(".phases > g").each(function(d) {
+      svg.selectAll(".arcs > g").each(function(d) {
         d3.select(this).call(highlightPhase, d.data === currentPhase);
       });
 
       function textTransform(d) {
         var angle = midAngle(d.startAngle, d.endAngle);
 
-        return "translate(" + arc.centroid(d) + ")" +
+        return "translate(" + arcShape.centroid(d) + ")" +
                "rotate(" + (angle > 0 && angle < 180 ? -90 : 90) + ")" +
                "rotate(" + angle + ")";
       }
@@ -272,7 +279,7 @@ module.exports = function() {
             .style("stroke-width", highlight ? 2 : null);
 
         selection.select("text")
-            .style("font-weigth", highlight ? "bold" : null);
+            .style("font-weight", highlight ? "bold" : null);
       }
     }
 
@@ -327,7 +334,7 @@ module.exports = function() {
           .domain([0, maxValue])
           .range(["white", "black"]);
 */
-      var node = svg.select(".species").selectAll(".species > g")
+      var node = svg.select(".nodes").selectAll(".nodes > g")
           .data(data.species);
 
       // Node enter
@@ -339,6 +346,7 @@ module.exports = function() {
           .style("fill", "#ccc")
           .style("stroke", "black");
 
+      // Node update
       nodeEnter.merge(node)
           .attr("data-original-title", nodeTooltip)
         .select("circle")
@@ -351,6 +359,28 @@ module.exports = function() {
       function nodeTooltip(d) {
         return d.name + ": " + d.value;
       }
+    }
+
+    function drawNodeLabels() {
+      // Bind species data
+      var label = svg.select(".nodeLabels").selectAll(".nodeLabels > text")
+          .data(data.species);
+
+      // Label enter
+      var labelEnter = label.enter().append("text")
+          .style("fill", "black")
+          .attr("dy", "-.2em")
+          .style("text-anchor", "middle")
+          .style("pointer-events", "none");
+
+      // Label update
+      labelEnter.merge(label)
+          .text(function(d) { return d.name; })
+          .attr("x", function(d) { return d.x; })
+          .attr("y", function(d) { return d.y - nodeRadiusScale(d.value); });
+
+      // Label exit
+      label.exit().remove();
     }
 
     function drawLinks() {
@@ -442,8 +472,8 @@ module.exports = function() {
       var r = Math.min(width, height) / 2 - 40;
 
       // Make sure we line up with the start of the first arc by grabbing the
-      // position from the arc path itself
-      var arc = svg.select(".phases").select("path").attr("d"),
+      // x position from the arc path itself
+      var arc = svg.select(".arcs").select("path").attr("d"),
           x = arc.substr(1, arc.indexOf(",") - 1);
 
       svg.select(".arrow")
