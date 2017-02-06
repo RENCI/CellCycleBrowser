@@ -17,10 +17,10 @@ module.exports = function() {
       currentPhase = null,
 
       // Layout
-      piePad = 0.04,
+      piePadAngle = 0.04,
       pie = d3.pie()
           .value(function() { return 1; })
-          .padAngle(piePad),
+          .padAngle(piePadAngle),
       nodeRadiusScale = d3.scaleLinear()
           .range([3, 7]);
       force = d3.forceSimulation()
@@ -106,7 +106,8 @@ module.exports = function() {
 
     svg.select(".links").selectAll("path")
         .attr("d", function(d) {
-          var reduction = d.target.value ? nodeRadiusScale(d.target.value) : 0;
+          var reduction = typeof(d.target.value) !== "undefined" ?
+                          nodeRadiusScale(d.target.value) : 0;
           reduction += +d3.select(this).style("stroke-width").slice(0, -2) * 3 / 2;
 
           var middle = adjustDistance(d.target, d.middle, -reduction),
@@ -281,7 +282,7 @@ module.exports = function() {
       var radius = Math.min(width, height) / 2 - 60;
 
       pie(data.phases).forEach(function(d, i) {
-        var a = d.endAngle - Math.PI / 2 - piePad;
+        var a = d.endAngle - Math.PI / 2 - piePadAngle;
 
         d.data.fx = radius * Math.cos(a);
         d.data.fy = radius * Math.sin(a);
@@ -321,10 +322,11 @@ module.exports = function() {
       nodeRadiusScale
           .domain([0, maxValue]);
 
+/*
       var nodeFillScale = d3.scaleLinear()
           .domain([0, maxValue])
           .range(["white", "black"]);
-
+*/
       var node = svg.select(".species").selectAll(".species > g")
           .data(data.species);
 
@@ -334,13 +336,14 @@ module.exports = function() {
           .call(drag);
 
       nodeEnter.append("circle")
+          .style("fill", "#ccc")
           .style("stroke", "black");
 
       nodeEnter.merge(node)
           .attr("data-original-title", nodeTooltip)
         .select("circle")
           .attr("r", function(d) { return nodeRadiusScale(d.value); })
-          .style("fill", function(d) { return nodeFillScale(d.value); });
+//          .style("fill", function(d) { return nodeFillScale(d.value); });
 
       // Node exit
       node.exit().remove();
@@ -436,14 +439,16 @@ module.exports = function() {
 
     function drawArrow() {
       // XXX: Copied from above
-      var radius = Math.min(width, height) / 2 - 40;
+      var r = Math.min(width, height) / 2 - 40;
 
-      var arrow = d3.symbol()
-          .type(d3.symbolTriangle);
+      // Make sure we line up with the start of the first arc by grabbing the
+      // position from the arc path itself
+      var arc = svg.select(".phases").select("path").attr("d"),
+          x = arc.substr(1, arc.indexOf(",") - 1);
 
       svg.select(".arrow")
-          .attr("d", arrow)
-          .attr("transform", "translate(" + 7 + "," + (-radius) + ")scale(1,1.5)rotate(90)")
+          .attr("d", "M 0 -10 L 10 0 L 0 10 z")
+          .attr("transform", "translate(" + x + "," + (-r) + ")")
           .attr("pointer-events", "none")
           .style("fill", "black")
           .style("fill-opacity", 0.25);
