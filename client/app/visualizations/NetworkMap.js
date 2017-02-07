@@ -468,13 +468,12 @@ module.exports = function() {
     }
 
     function drawArrow() {
+      // Compute start of first arc, based on d3 arc padRadius formula
       // XXX: Copied from above
-      var r = Math.min(width, height) / 2 - 40;
-
-      // Make sure we line up with the start of the first arc by grabbing the
-      // x position from the arc path itself
-      var arc = svg.select(".arcs").select("path").attr("d"),
-          x = arc.substr(1, arc.indexOf(",") - 1);
+      var or = Math.min(width, height) / 2 - 20,
+          ir = or - 40;
+          padRadius = Math.sqrt(ir * ir + or * or),
+          x = padRadius * piePadAngle / 2;
 
       svg.select(".arrow")
           .attr("d", "M 0 -10 L 10 0 L 0 10 z")
