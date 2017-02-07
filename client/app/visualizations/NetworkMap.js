@@ -51,8 +51,34 @@ module.exports = function() {
             d3.event.preventDefault();
           });
 
-      // Defs section for arrow markers for links
-      svgEnter.append("defs");
+      // Defs section for label drop shadow filter and arrow markers for links
+      var filter = svgEnter.append("defs").append("filter")
+          .attr("id", "labelShadow");
+
+      filter.append("feFlood")
+          .attr("flood-color", "#fff");
+
+      filter.append("feComposite")
+          .attr("in2", "SourceGraphic")
+          .attr("operator", "in");
+/*
+      filter.append("feMorphology")
+          .attr("operator", "dilate")
+          .attr("radius", 1);
+
+      filter.append("feGaussianBlur")
+          .attr("stdDeviation", 2);
+*/
+      filter.append("feOffset")
+          .attr("dx", 0.5)
+          .attr("dy", 0.5);
+
+      var feMerge = filter.append("feMerge");
+
+      feMerge.append("feMergeNode")
+
+      feMerge.append("feMergeNode")
+          .attr("in", "SourceGraphic");
 
       // Background
       svgEnter.append("rect")
@@ -151,9 +177,10 @@ module.exports = function() {
           return "translate(" + d.x + "," + d.y + ")";
         });
 
-    svg.select(".nodeLabels").selectAll(".nodeLabels > text")
-        .attr("x", function(d) { return d.x; })
-        .attr("y", function(d) { return d.y - nodeRadiusScale(d.value); });
+    svg.select(".nodeLabels").selectAll(".nodeLabels > g")
+        .attr("transform", function(d) {
+          return "translate(" + d.x + "," + (d.y - nodeRadiusScale(d.value)) + ")";
+        });
   }
 
   function draw() {
@@ -363,21 +390,39 @@ module.exports = function() {
 
     function drawNodeLabels() {
       // Bind species data
-      var label = svg.select(".nodeLabels").selectAll(".nodeLabels > text")
+      var label = svg.select(".nodeLabels").selectAll(".nodeLabels > g")
           .data(data.species);
 
       // Label enter
-      var labelEnter = label.enter().append("text")
-          .style("fill", "black")
-          .attr("dy", "-.2em")
-          .style("text-anchor", "middle")
+      var labelEnter = label.enter().append("g")
           .style("pointer-events", "none");
+
+      labelEnter.append("rect")
+          .attr("rx", 5)
+          .attr("ry", 5)
+          .style("fill", "#eee")
+          .style("fill-opacity", 0.5);
+
+      labelEnter.append("text")
+          .attr("dy", "-.2em")
+          .style("fill", "black")
+          .style("text-anchor", "middle");
 
       // Label update
       labelEnter.merge(label)
-          .text(function(d) { return d.name; })
-          .attr("x", function(d) { return d.x; })
-          .attr("y", function(d) { return d.y - nodeRadiusScale(d.value); });
+          .each(function(d) {
+            var bbox = d3.select(this).select("text").node().getBoundingClientRect(),
+                w = bbox.width + 4,
+                h = bbox.height;
+
+            d3.select(this).select("rect")
+                .attr("x", -w / 2)
+                .attr("y", -h)
+                .attr("width", w)
+                .attr("height", h);
+          })
+        .select("text")
+          .text(function(d) { return d.name; });
 
       // Label exit
       label.exit().remove();
@@ -471,7 +516,8 @@ module.exports = function() {
       // Compute start of first arc, based on d3 arc padRadius formula
       // XXX: Copied from above
       var or = Math.min(width, height) / 2 - 20,
-          ir = or - 40;
+          ir = or - 40,
+          r = (or + ir) / 2,
           padRadius = Math.sqrt(ir * ir + or * or),
           x = padRadius * piePadAngle / 2;
 
