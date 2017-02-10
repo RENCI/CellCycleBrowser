@@ -16,18 +16,63 @@
   <script type="text/javascript" src="{% static 'cc_core/js/data_ajax.js' %}"></script>
 </head>
 <body>
-  {# <div id="main"> {{ text_to_display }}</div> #}
-   {% csrf_token %}
-  {#  <span id ="model-run"> #}
-  {#    <button id="btn-run-model" type="button" class="btn btn-default margin_left" onclick="run_model_ajax('{{ model_input_file_name }}'); return false;">Run Simulation</button> #}
-  {#  </span> #}
-
+  {% csrf_token %}
   <input type="hidden" id="task_id" name="task_id" value=''>
-  <div id='simulation-status-info' class='alert alert-success' style='display:none'>
-      Please wait for the model simulation run to finish<span id='loading'>.</span>
-      <button id="btn-kill-model" type="button" class="btn btn-default margin_left" onclick="terminate_model_ajax(); return false;">Terminate Simulation</button>
-  </div>
+  <a id="btn-add-profile" type="button" class="btn btn-default margin_left" data-toggle="modal" data-target="#add-profile-dialog">
+    <span>Add new profile</span>
+  </a>
   <div id="app"></div>
+  <div class="modal fade" id="add-profile-dialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="form-add-profile" role="form" action="/add_profile/" method="post" id="addProfile">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="add-new-profile-title">Add new profile</h4>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_pname">Profile Name: </label>
+                        <input id="pname" class="form-control" name="pname" placeholder="Profile name" value="" type="text" />
+                    </div>
+                    <div class="form-group">
+                        <label for="id_pdesc">Profile Description:</label>
+                        <input id="pdesc" class="form-control" name="pdesc" placeholder="Profile Description" value="" type="text" />
+                    </div>
+                    <div class="form-group">
+                    <label for="id_cell_sel_file">Upload a csv cell data</label>
+                    <input type="file" class="btn-add-access" name="files" id="cell-sel-file" multiple/>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_cdname">Cell Data Name:</label>
+                        <input id="cdname" class="form-control" name="cdname" placeholder="Cell Data Name" value="" type="text" />
+                    </div>
+                    <div class="form-group">
+                        <label for="id_cddesc">Cell Data Description:</label>
+                        <input id="cddesc" class="form-control" name="cddesc" placeholder="Cell Data Description" value="" type="text" />
+                    </div>
+                    <div class="form-group">
+                    <label for="id_model_sel_file">Upload a SBML model data</label>
+                    <input type="file" class="btn-add-access" name="files" id="cell-model-file" multiple/>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_cdname">Model Data Name:</label>
+                        <input id="mdname" class="form-control" name="mdname" placeholder="Model Data Name" value="" type="text" />
+                    </div>
+                    <div class="form-group">
+                        <label for="id_cddesc">Model Data Description:</label>
+                        <input id="mddesc" class="form-control" name="mddesc" placeholder="Model Data Description" value="" type="text" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add New Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+  </div>
   <script type="text/javascript" src="{% static 'cc_core/js/index_bundle.js' %}"></script>
 </body>
 </html>

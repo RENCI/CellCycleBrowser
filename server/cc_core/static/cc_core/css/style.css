@@ -6,13 +6,20 @@ li a {
     color: blue;
 }
 
+.btn-add-access {
+	height: 34px;
+	border-radius: 0;
+	width: 100%;
+	margin-top: 7px;
+}
+
 .btn-default {
 	background-color: #eee;
 	background-image: -webkit-linear-gradient(#fcfcfc, #eee);
 	background-image: linear-gradient(#fcfcfc, #eee);
 }
 
-#model-run {
+#btn-add-profile {
 	border: 1px solid #909090;
     padding: 10px;
     border-radius: 4px;
