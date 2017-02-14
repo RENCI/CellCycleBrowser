@@ -18,14 +18,14 @@
 <body>
   {% csrf_token %}
   <input type="hidden" id="task_id" name="task_id" value=''>
-  <a id="btn-add-profile" type="button" class="btn btn-default margin_left" data-toggle="modal" data-target="#add-profile-dialog">
-    <span>Add new profile</span>
+  <a id="btn-icon-add-profile" data-toggle="modal" data-target="#add-profile-dialog">
+  <span data-toggle="tooltip" data-placement="auto" title="Add new profile" class="glyphicon glyphicon-plus-sign icon-button icon-blue"></span>
   </a>
   <div id="app"></div>
   <div class="modal fade" id="add-profile-dialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-lg">
         <div class="modal-content">
-            <form class="form-add-profile" role="form" action="/add_profile/" method="post" id="addProfile">
+            <form class="form-add-profile" role="form" action="/add_profile/" method="POST" enctype="multipart/form-data" id="addProfile">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title" id="add-new-profile-title">Add new profile</h4>
@@ -40,29 +40,37 @@
                         <label for="id_pdesc">Profile Description:</label>
                         <input id="pdesc" class="form-control" name="pdesc" placeholder="Profile Description" value="" type="text" />
                     </div>
+                    <hr>
                     <div class="form-group">
-                    <label for="id_cell_sel_file">Upload a csv cell data</label>
-                    <input type="file" class="btn-add-access" name="files" id="cell-sel-file" multiple/>
+                    <label for="id_cell_sel_file">Upload csv cell data</label>
+                    <input type="file" class="btn-add-access" name="cell_files" id="cell-sel-file" multiple/>
+                    <p class="help-block">You can upload multiple csv cell datasets simultaneously.</p>
                     </div>
                     <div class="form-group">
-                        <label for="id_cdname">Cell Data Name:</label>
-                        <input id="cdname" class="form-control" name="cdname" placeholder="Cell Data Name" value="" type="text" />
+                        <label for="id_cdname">Cell Data Display Name:</label>
+                        <input id="cdname" class="form-control" name="cdname" placeholder="cell_data_file_name:cell_data_display_name" value="" type="text" />
+                        <p class="help-block">The input must be in the format of cell_data_file_name:cell_data_display_name to accommodate multiple datasets.</p>
                     </div>
                     <div class="form-group">
                         <label for="id_cddesc">Cell Data Description:</label>
-                        <input id="cddesc" class="form-control" name="cddesc" placeholder="Cell Data Description" value="" type="text" />
+                        <input id="cddesc" class="form-control" name="cddesc" placeholder="cell_data_file_name:cell_data_description" value="" type="text" />
+                        <p class="help-block">The input must be in the format of cell_data_file_name:cell_data_description to accommodate multiple datasets.</p>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                    <label for="id_model_sel_file">Upload SBML model data</label>
+                    <input type="file" class="btn-add-access" name="model_files" id="cell-model-file" multiple/>
+                    <p class="help-block">You can upload multiple SBML model datasets simultaneously.</p>
                     </div>
                     <div class="form-group">
-                    <label for="id_model_sel_file">Upload a SBML model data</label>
-                    <input type="file" class="btn-add-access" name="files" id="cell-model-file" multiple/>
-                    </div>
-                    <div class="form-group">
-                        <label for="id_cdname">Model Data Name:</label>
-                        <input id="mdname" class="form-control" name="mdname" placeholder="Model Data Name" value="" type="text" />
+                        <label for="id_cdname">Model Data Display Name:</label>
+                        <input id="mdname" class="form-control" name="mdname" placeholder="model_data_file_name:model_data_display_name" value="" type="text" />
+                        <p class="help-block">The input must be in the format of model_data_file_name:model_data_display_name to accommodate multiple datasets.</p>
                     </div>
                     <div class="form-group">
                         <label for="id_cddesc">Model Data Description:</label>
-                        <input id="mddesc" class="form-control" name="mddesc" placeholder="Model Data Description" value="" type="text" />
+                        <input id="mddesc" class="form-control" name="mddesc" placeholder="model_data_file_name:model_data_description" value="" type="text" />
+                        <p class="help-block">The input must be in the format of model_data_file_name:model_data_description to accommodate multiple datasets.</p>
                     </div>
                 </div>
                 <div class="modal-footer">

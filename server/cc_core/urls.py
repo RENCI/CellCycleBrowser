@@ -16,5 +16,6 @@ urlpatterns = [
     url(r'^check_task_status/$', views.check_task_status, name='check_task_status'),
     url(r'^get_model_result/(?P<filename>[A-z0-9_.]+)$', views.get_model_result,
         name="get_model_result"),
+    url(r'^add_profile/$', views.add_profile, name='add_profile'),
     url(r'^terminate_model_run/$', views.terminate_model_run, name="terminate_model_run"),
 ]

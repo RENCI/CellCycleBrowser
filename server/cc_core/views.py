@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import logging
 
 from django.http import HttpResponse, JsonResponse
@@ -15,14 +16,13 @@ logger = logging.getLogger('django')
 
 # Create your views here.
 def index(request):
-    profile_data = utils.get_profile_list()
-    model_fname = os.path.basename(profile_data[0]['models'][0]['fileName'])
+    import sys
+    sys.path.append("/home/docker/pycharm-debug")
+    import pydevd
+    pydevd.settrace('172.17.0.1', port=21000, suspend=False)
     template = loader.get_template('cc_core/index.html')
     context = {
-        'SITE_TITLE': settings.SITE_TITLE,
-        'model_input_file_name': model_fname,
-        'task_id': '',
-        'text_to_display': "This Cell Cycle Browser allows exploration and simulation of the human cell cycle.",
+        'SITE_TITLE': settings.SITE_TITLE
     }
     return HttpResponse(template.render(context, request))
 
@@ -64,6 +64,50 @@ def get_profile(request):
         json.dumps(data),
         content_type='application/json'
     )
+
+
+def add_profile(request):
+    pname = request.POST.get('pname')
+    pdesc = request.POST.get('pdesc')
+    cdfiles = request.FILES.getlist('cell_files')
+    for cdfile in cdfiles:
+        source = cdfile.file.name
+        target = os.path.join(settings.CELL_DATA_PATH, cdfile.name)
+        shutil.copy(source, target)
+
+    cdnames = request.POST.get('cdname')
+    if ';' in cdnames:
+        cdname_list = cdnames.split(';')
+    else:
+        cdname_list = [cdnames.strip()]
+    cddescs = request.POST.get('cddesc')
+    if ';' in cddescs:
+        cddesc_list = cddescs.split(';')
+    else:
+        cddesc_list = [cddescs.strip()]
+    mdfiles = request.FILES.getlist('model_files')
+    for mdfile in mdfiles:
+        source = mdfile.file.name
+        target = os.path.join(settings.MODEL_INPUT_PATH, mdfile.name)
+        shutil.copy(source, target)
+
+    mdnames = request.POST.get('mdname')
+    if ';' in mdnames:
+        mdname_list = mdnames.split(';')
+    else:
+        mdname_list = [mdnames.strip()]
+    mddescs = request.POST.get('mddesc')
+    if ';' in mddescs:
+        mddesc_list = mddescs.split(';')
+    else:
+        mddesc_list = [mddescs.strip()]
+
+
+    template = loader.get_template('cc_core/index.html')
+    context = {
+        'SITE_TITLE': settings.SITE_TITLE
+    }
+    return HttpResponse(template.render(context, request))
 
 
 def send_parameter(request):
