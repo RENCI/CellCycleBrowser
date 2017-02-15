@@ -10,9 +10,6 @@ rabbitmq:
 cellcycle:
   build: .
   container_name: cellcycle
-  cap_add:
-    - SYS_ADMIN
-  privileged: true
   environment:
     POSTGRES_PASSWORD: postgres
     POSTGRES_USER: postgres
@@ -22,6 +19,7 @@ cellcycle:
   volumes:
     # cellcycle repository
     - "/home/ccbuild/CellCycleBrowser/server:/home/docker/cellcycle"
+    - "/home/ccbuild/CellCycleBrowser/server/Stochpy:/home/docker/Stochpy"
     # log files
     - "/home/ccbuild/CellCycleBrowser/server/log:/var/log/cellcycle"
     # shared location for uwsgi.sock between containers
@@ -45,11 +43,11 @@ defaultworker:
     POSTGRES_DB: postgres
     REDIS_HOST: redis
     REDIS_PORT: 6379
-    C_FORCE_ROOT: 1
   volumes_from:
     - cellcycle
   volumes:
     - "/var/run/docker.sock:/docker.sock"
+    - "/home/ccbuild/CellCycleBrowser/server/Stochpy:/home/docker/Stochpy"
   links:
     - db:db
     - redis:redis

@@ -15,7 +15,7 @@ RUN python setup.py install
 RUN apt-get clean
 RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/src/StochPy-2.3.zip /usr/src/StochPy-2.3
 
-USER root
+USER docker
 WORKDIR /home/docker/cellcycle
 
 CMD ["/bin/bash"]
