@@ -10,5 +10,6 @@ HOST_USER_GID: 1000
 ### Nginx configuration ###
 USE_NGINX: false
 NGINX_DIR: nginx
+NGINX_CONF_FILE: cc-nginx.conf
 
 ### REQUIRES BLANK LINE AFTER LAST VARIABLE DEFINITION ###

@@ -219,7 +219,7 @@ LOGGING = {
         'syslog': {
             'level': 'WARNING',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/cellcycle/system.log',
+            'filename': '/home/docker/cellcycle/log/system.log',
             'formatter': 'simple',
             'maxBytes': 1024*1024*15, # 15MB
             'backupCount': 10,
@@ -227,7 +227,7 @@ LOGGING = {
         'djangolog': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/cellcycle/django.log',
+            'filename': '/home/docker/cellcycle/log/django.log',
             'formatter': 'verbose',
             'maxBytes': 1024*1024*15, # 15MB
             'backupCount': 10,
@@ -235,7 +235,7 @@ LOGGING = {
         'cellcyclelog': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/cellcycle/cellcycle.log',
+            'filename': '/home/docker/cellcycle/log/cellcycle.log',
             'formatter': 'verbose',
             'maxBytes': 1024*1024*15, # 15MB
             'backupCount': 10,

@@ -65,8 +65,6 @@ start_nginx() {
     fi
     if [[ $USE_NGINX = 'true' ]]; then
         echo "*** INFO: Using cc-nginx.conf ***"
-        NGINX_CONF_FILE=cc-nginx.conf
-        export NGINX_CONF_FILE=$NGINX_CONF_FILE
         ./init-nginx
     else
         echo "*** INFO: Not using Nginx ***"
