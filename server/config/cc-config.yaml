@@ -5,7 +5,8 @@ FQDN_OR_IP: localhost
 CC_PATH: /home/ccbuild/CellCycleBrowser/server
 CC_DATABASE: pg.cc-testing.sql
 CC_MEDIA_FILES: media.cc-testing.tar.gz
-
+HOST_USER_UID: 1000
+HOST_USER_GID: 1000
 ### Nginx configuration ###
 USE_NGINX: false
 NGINX_DIR: nginx

@@ -95,6 +95,8 @@ restart_cc() {
 preflight_cc() {
     echo "*** PREFLIGHT ***";
     echo $CC_PATH
+    sed -i 's!HOST_USER_UID!'${HOST_USER_UID}'!g' ${CC_PATH}/Dockerfile
+    sed -i 's!HOST_USER_GID!'${HOST_USER_UID}'!g' ${CC_PATH}/Dockerfile
     if [[ $USE_NGINX = 'true' ]]; then
         echo "*** INFO: Using Nginx ***"
         # enable SSH server for debugging purposes
