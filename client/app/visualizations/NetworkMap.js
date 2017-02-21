@@ -137,7 +137,9 @@ module.exports = function() {
         .attr("d", function(d) {
           var reduction = typeof(d.target.value) !== "undefined" ?
                           nodeRadiusScale(d.target.value) : 0;
-          reduction += +d3.select(this).style("stroke-width").slice(0, -2) * 3 / 2;
+//          reduction += +d3.select(this).style("stroke-width").slice(0, -2) * 3 / 2;
+          // XXX: This is half of the marker size. Should make a variable.
+          reduction += 10;
 
           var middle = adjustDistance(d.target, d.middle, -reduction),
               target = adjustDistance(middle, d.target, reduction);
@@ -433,7 +435,7 @@ module.exports = function() {
 //          .domain([1, -1]);
       var linkColorScale = d3.scaleLinear()
           .domain([-1, 0, 1])
-          .range(["#00d", "#ddd", "#d00"])
+          .range(["#00d", "#ddd", "#d00"]);
 
       var linkWidthScale = d3.scaleLinear()
           .domain([0, 1])
@@ -446,11 +448,12 @@ module.exports = function() {
       // Marker enter
       var markerEnter = marker.enter().append("marker")
           .attr("viewBox", "0 0 10 10")
-          .attr("markerWidth", 3)
-          .attr("markerHeight", 3)
+          .attr("markerWidth", 20)
+          .attr("markerHeight", 20)
           .attr("refX", 0)
           .attr("refY", 5)
-          .attr("orient", "auto");
+          .attr("orient", "auto")
+          .attr("markerUnits", "userSpaceOnUse");
 
       markerEnter.append("path");
 
