@@ -5,14 +5,14 @@
 
 NAME="cellcycle"                                # Name of the application
 DJANGODIR=/home/docker/cellcycle                # Django project directory
-SOCKFILE=/var/run/gunicorn.sock                 # we will communicte using this unix socket
-USER=root                                       # the user to run as
-GROUP=root                                      # the group to run as
+SOCKFILE=/home/docker/cellcycle/log/gunicorn.sock                 # we will communicte using this unix socket
+USER=docker                                      # the user to run as
+GROUP=docker                                      # the group to run as
 # how many worker processes should Gunicorn spawn
 NUM_WORKERS=$(python -c "exec(\"import multiprocessing\nprint( multiprocessing.cpu_count() * 2 + 1)\")")
 DJANGO_SETTINGS_MODULE=cellcycle.settings        # which settings file should Django use
 DJANGO_WSGI_MODULE=cellcycle.wsgi                # WSGI module name
-GUNICORN_LOG=/var/log/cellcycle/gunicorn.log     # path to logfile
+GUNICORN_LOG=/home/docker/cellcycle/log/gunicorn.log     # path to logfile
 TIMEOUT_PERIOD=300                              # timeout period in seconds
 
 ### Do not edit below this line ###

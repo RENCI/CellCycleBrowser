@@ -44,7 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    "django.contrib.redirects",
     'django.contrib.sessions',
+    "django.contrib.sites",
+    "django.contrib.sitemaps",
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
@@ -83,6 +86,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'cellcycle.wsgi.application'
 
+# make django file uploader to always write uploaded file to a temporary directory
+# rather than holding uploaded file in memory for small files.
+FILE_UPLOAD_MAX_MEMORY_SIZE = 0
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
@@ -213,7 +219,7 @@ LOGGING = {
         'syslog': {
             'level': 'WARNING',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/cellcycle/system.log',
+            'filename': '/home/docker/cellcycle/log/system.log',
             'formatter': 'simple',
             'maxBytes': 1024*1024*15, # 15MB
             'backupCount': 10,
@@ -221,7 +227,7 @@ LOGGING = {
         'djangolog': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/cellcycle/django.log',
+            'filename': '/home/docker/cellcycle/log/django.log',
             'formatter': 'verbose',
             'maxBytes': 1024*1024*15, # 15MB
             'backupCount': 10,
@@ -229,7 +235,7 @@ LOGGING = {
         'cellcyclelog': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/cellcycle/cellcycle.log',
+            'filename': '/home/docker/cellcycle/log/cellcycle.log',
             'formatter': 'verbose',
             'maxBytes': 1024*1024*15, # 15MB
             'backupCount': 10,

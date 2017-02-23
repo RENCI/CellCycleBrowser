@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import logging
 
 from django.http import HttpResponse, JsonResponse
@@ -15,14 +16,9 @@ logger = logging.getLogger('django')
 
 # Create your views here.
 def index(request):
-    profile_data = utils.get_profile_list()
-    model_fname = os.path.basename(profile_data[0]['models'][0]['fileName'])
     template = loader.get_template('cc_core/index.html')
     context = {
-        'SITE_TITLE': settings.SITE_TITLE,
-        'model_input_file_name': model_fname,
-        'task_id': '',
-        'text_to_display': "This Cell Cycle Browser allows exploration and simulation of the human cell cycle.",
+        'SITE_TITLE': settings.SITE_TITLE
     }
     return HttpResponse(template.render(context, request))
 
@@ -64,6 +60,101 @@ def get_profile(request):
         json.dumps(data),
         content_type='application/json'
     )
+
+
+def add_profile(request):
+    # create profile data to write to profile json file
+    data = {}
+    data['name'] = request.POST.get('pname')
+    data['description'] = request.POST.get('pdesc')
+    cell_data_list = []
+    cdfiles = request.FILES.getlist('cell_files')
+    filename_to_idx = {}
+    idx = 0
+    for cdfile in cdfiles:
+        source = cdfile.file.name
+        target = os.path.join(settings.CELL_DATA_PATH, cdfile.name)
+        shutil.copy(source, target)
+        cell_data_list.append({'fileName':cdfile.name})
+        filename_to_idx[cdfile.name] = idx
+        idx += 1
+
+    cdnames = request.POST.get('cdname')
+    if ';' in cdnames:
+        cdname_list = cdnames.split(';')
+    else:
+        cdname_list = [cdnames.strip()]
+    for cdname in cdname_list:
+        name_pair = cdname.split(':')
+        cell_data_list[filename_to_idx[name_pair[0]]]['name'] = name_pair[1]
+
+    cddescs = request.POST.get('cddesc')
+    if ';' in cddescs:
+        cddesc_list = cddescs.split(';')
+    else:
+        cddesc_list = [cddescs.strip()]
+    for cddesc in cddesc_list:
+        desc_pair = cddesc.split(':')
+        cell_data_list[filename_to_idx[desc_pair[0]]]['description'] = desc_pair[1]
+
+    data['cellData'] = cell_data_list
+
+    filename_to_idx = {}
+    idx = 0
+    model_data_list = []
+    mdfiles = request.FILES.getlist('model_files')
+    for mdfile in mdfiles:
+        source = mdfile.file.name
+        target = os.path.join(settings.MODEL_INPUT_PATH, mdfile.name)
+        shutil.copy(source, target)
+        model_data_list.append({'fileName': mdfile.name})
+        filename_to_idx[mdfile.name] = idx
+        idx += 1
+
+    mdnames = request.POST.get('mdname')
+    if ';' in mdnames:
+        mdname_list = mdnames.split(';')
+    else:
+        mdname_list = [mdnames.strip()]
+
+    for mdname in mdname_list:
+        name_pair = mdname.split(':')
+        model_data_list[filename_to_idx[name_pair[0]]]['name'] = name_pair[1]
+
+    mddescs = request.POST.get('mddesc')
+    if ';' in mddescs:
+        mddesc_list = mddescs.split(';')
+    else:
+        mddesc_list = [mddescs.strip()]
+    for mddesc in mddesc_list:
+        desc_pair = mddesc.split(':')
+        model_data_list[filename_to_idx[desc_pair[0]]]['description'] = desc_pair[1]
+
+    data['models'] = model_data_list
+
+    pname_list = data['name'].split()
+    profile_file_name = '_'.join(pname_list)
+    profile_file_name = profile_file_name + '.json'
+    profile_file_full_path = os.path.join('data', 'config', profile_file_name)
+    with open(profile_file_full_path, 'w') as out:
+        out.write(json.dumps(data))
+
+    # update profile_list.json
+    profile_list_name = os.path.join('data', 'config', 'profile_list.json')
+    with open(profile_list_name, 'r') as f:
+        json_profile_data = json.load(f)
+
+    json_profile_data.append({'fileName': profile_file_full_path,
+                              'group': 1})
+
+    with open(profile_list_name, 'w') as f:
+        f.write(json.dumps(json_profile_data))
+
+    template = loader.get_template('cc_core/index.html')
+    context = {
+        'SITE_TITLE': settings.SITE_TITLE
+    }
+    return HttpResponse(template.render(context, request))
 
 
 def send_parameter(request):

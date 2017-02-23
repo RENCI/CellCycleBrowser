@@ -10,6 +10,7 @@
 /server/cc_core/static/cc_core/js/index*
 /server/cc_core/static/cc_core/images
 /server/static
+/server/Stochpy
 /server/log
 /server/config/local-env.sh
 /server/celeryd.pid

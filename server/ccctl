@@ -65,8 +65,6 @@ start_nginx() {
     fi
     if [[ $USE_NGINX = 'true' ]]; then
         echo "*** INFO: Using cc-nginx.conf ***"
-        NGINX_CONF_FILE=cc-nginx.conf
-        export NGINX_CONF_FILE=$NGINX_CONF_FILE
         ./init-nginx
     else
         echo "*** INFO: Not using Nginx ***"
@@ -95,6 +93,8 @@ restart_cc() {
 preflight_cc() {
     echo "*** PREFLIGHT ***";
     echo $CC_PATH
+    sed -i 's!HOST_USER_UID!'${HOST_USER_UID}'!g' ${CC_PATH}/Dockerfile
+    sed -i 's!HOST_USER_GID!'${HOST_USER_UID}'!g' ${CC_PATH}/Dockerfile
     if [[ $USE_NGINX = 'true' ]]; then
         echo "*** INFO: Using Nginx ***"
         # enable SSH server for debugging purposes
@@ -207,6 +207,14 @@ loadmedia_cc() {
     cd -
 }
 
+migrate_cc() {
+    echo "MIGRATE:"
+    echo "  - docker exec cellcycle python manage.py migrate sites"
+    docker exec cellcycle python manage.py migrate sites
+    echo "  - docker exec cellcycle python manage.py migrate"
+    docker exec cellcycle python manage.py migrate
+}
+
 deploy_cc_nodb() {
     echo "*** DEPLOY - NO DB ***"
     build_cc
@@ -218,7 +226,7 @@ deploy_cc_nodb() {
     done
     start_nginx
     docker exec cellcycle python manage.py collectstatic --no-input
-    docker exec cellcycle python manage.py migrate
+    migrate_cc
     restart_cc
 }
 
@@ -232,7 +240,7 @@ deploy_dev_cc_nodb() {
         sleep 1
     done
     docker exec cellcycle python manage.py collectstatic --no-input
-    docker exec cellcycle python manage.py migrate
+    migrate_cc
     restart_cc
 }
 
