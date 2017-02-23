@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cell Cycle Browser</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'cc_core/css/style.css' %}" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+</head>
+<body>
+  <div class="row well">
+    <div class="media">
+      <div class="media-left media-middle text-center" style="width:25%;">
+        <img src="/static/cc_core/images/cells.gif" style="width:40%;" />
+      </div>
+      <div class="media-body media-middle text-center">
+        <h1>Cell Cycle Browser</h1>
+      </div>
+      <div class="media-right media-middle text-center" style="width:25%;">
+        <div>
+          <img src="/static/cc_core/images/medium_blue_450px.png" style="width: 60%;" />
+        </div>
+        <div>
+        <img src="/static/cc_core/images/RENCI-Official-Logo-No-Tagline-cropped-alpha.png"
+          style="width: 30%;" />
+        </div>
+      </div>
+    </div>
+  </div>
+{% block content %}{% endblock content %}
+</body>
+</html>
