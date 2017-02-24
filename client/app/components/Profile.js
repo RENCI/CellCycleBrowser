@@ -9,10 +9,16 @@ function Profile(props) {
                     "";
 
   return (
-    <div>
-      <ProfileSelectContainer />
-      <ProfileDescription description={description} />
-    </div>
+        <div>
+            <div>
+              <ProfileSelectContainer />
+              <ProfileDescription description={description} />
+            </div>
+            <div>
+              <a href="/login/">Add new profile</a>
+            </div>
+        </div>
+
   );
 }
 
