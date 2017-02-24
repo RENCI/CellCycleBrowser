@@ -6,6 +6,8 @@ import logging
 from django.http import HttpResponse, JsonResponse
 from django.template import loader
 from django.conf import settings
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 from . import utils
 from .tasks import run_model_task
@@ -62,7 +64,12 @@ def get_profile(request):
     )
 
 
-def add_profile(request):
+@login_required
+def add_profile_request(request):
+    return render(request, 'cc_core/add-profile.html')
+
+
+def add_profile_to_server(request):
     # create profile data to write to profile json file
     data = {}
     data['name'] = request.POST.get('pname')

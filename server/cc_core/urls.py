@@ -1,10 +1,13 @@
 from django.conf.urls import url
+from django.contrib.auth import views as auth_views
 
 from . import views
 
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^login/$', auth_views.login, {'template_name': 'cc_core/login.html'}, name='login'),
+    url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
     url(r'^data/config/(?P<filename>[A-z0-9_.]+)$', views.serve_config_data,
         name='serve_config_data'),
     url(r'^parameters/(?P<filename>[A-z0-9_.]+)$', views.extract_parameters,
@@ -16,6 +19,7 @@ urlpatterns = [
     url(r'^check_task_status/$', views.check_task_status, name='check_task_status'),
     url(r'^get_model_result/(?P<filename>[A-z0-9_.]+)$', views.get_model_result,
         name="get_model_result"),
-    url(r'^add_profile/$', views.add_profile, name='add_profile'),
+    url(r'^add_profile_request/$', views.add_profile_request, name='add_profile_request'),
+    url(r'^add_profile_to_server/$', views.add_profile_to_server, name='add_profile_to_server'),
     url(r'^terminate_model_run/$', views.terminate_model_run, name="terminate_model_run"),
 ]
