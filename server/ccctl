@@ -193,6 +193,9 @@ loaddb_cc() {
     docker exec cellcycle createdb -U postgres -h db postgres --encoding UNICODE --template=template0
     docker exec cellcycle psql -U postgres -h db -f ${CC_DATABASE} --quiet
     docker exec cellcycle python manage.py collectstatic --no-input
+    echo "  - docker exec cellcycle python manage.py migrate sites"
+    docker exec cellcycle python manage.py migrate sites
+    echo "  - docker exec cellcycle python manage.py migrate"
     docker exec cellcycle python manage.py migrate
 }
 
@@ -215,21 +218,6 @@ migrate_cc() {
     docker exec cellcycle python manage.py migrate
 }
 
-deploy_cc_nodb() {
-    echo "*** DEPLOY - NO DB ***"
-    build_cc
-    run_cc
-    echo "*** INFO: Allowing containers to start up ***"
-    for pc in $(seq 10 -1 1); do
-        echo -ne "$pc ...\033[0K\r"
-        sleep 1
-    done
-    start_nginx
-    docker exec cellcycle python manage.py collectstatic --no-input
-    migrate_cc
-    restart_cc
-}
-
 deploy_dev_cc_nodb() {
     echo "*** DEPLOY - NO DB ***"
     build_cc
@@ -247,7 +235,6 @@ deploy_dev_cc_nodb() {
 deploy_dev_cc() {
     echo "*** DEPLOY DEVELOPMENT - WITH DB ***"
     build_cc
-    preflight_cc
     run_cc
     echo "*** INFO: Allowing containers to start up ***"
     for pc in $(seq 10 -1 1); do
@@ -255,15 +242,27 @@ deploy_dev_cc() {
         sleep 1
     done
     loaddb_cc
-    loadmedia_cc
+    restart_cc
+}
+
+deploy_prod_cc_nodb() {
+    echo "*** DEPLOY - NO DB ***"
+    build_cc
+    run_cc
+    echo "*** INFO: Allowing containers to start up ***"
+    for pc in $(seq 10 -1 1); do
+        echo -ne "$pc ...\033[0K\r"
+        sleep 1
+    done
+    start_nginx
+    docker exec cellcycle python manage.py collectstatic --no-input
+    migrate_cc
     restart_cc
 }
 
 deploy_prod_cc() {
     echo "*** DEPLOY PRODUCTION - WITH DB ***"
     build_cc
-    restore_cc
-    preflight_cc
     run_cc
     echo "*** INFO: Allowing containers to start up ***"
     for pc in $(seq 10 -1 1); do
@@ -272,7 +271,6 @@ deploy_prod_cc() {
     done
     start_nginx
     loaddb_cc
-    loadmedia_cc
     restart_cc
 }
 
@@ -296,7 +294,7 @@ case "$1" in
         ;;
     deploy_prod) deploy_prod_cc $1
         ;;
-    deploy_nodb) deploy_cc_nodb $1
+    deploy_prod_nodb) deploy_prod_cc_nodb $1
         ;;
     loaddb) loaddb_cc $1
         ;;
