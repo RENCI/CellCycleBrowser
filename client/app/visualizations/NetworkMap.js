@@ -17,7 +17,7 @@ module.exports = function() {
       currentPhase = null,
 
       // Layout
-      piePadAngle = 0.04,
+      piePadAngle = 0.25,
       pie = d3.pie()
           .value(function() { return 1; })
           .padAngle(piePadAngle),
@@ -96,8 +96,8 @@ module.exports = function() {
       g.append("g")
           .attr("class", "arcs");
 
-      g.append("path")
-          .attr("class", "arrow");
+      g.append("g")
+          .attr("class", "arrows");
 
       g.append("g")
           .attr("class", "links");
@@ -137,7 +137,9 @@ module.exports = function() {
         .attr("d", function(d) {
           var reduction = typeof(d.target.value) !== "undefined" ?
                           nodeRadiusScale(d.target.value) : 0;
-          reduction += +d3.select(this).style("stroke-width").slice(0, -2) * 3 / 2;
+//          reduction += +d3.select(this).style("stroke-width").slice(0, -2) * 3 / 2;
+          // XXX: This is half of the marker size. Should make a variable.
+          reduction += 10;
 
           var middle = adjustDistance(d.target, d.middle, -reduction),
               target = adjustDistance(middle, d.target, reduction);
@@ -192,10 +194,10 @@ module.exports = function() {
 
     // Draw the diagram
     drawArcs();
+    drawArrows();
     drawNodes();
     drawNodeLabels();
     drawLinks();
-    drawArrow();
 
     // Tooltips
     $(".nodes > g").tooltip({
@@ -316,7 +318,7 @@ module.exports = function() {
       var radius = Math.min(width, height) / 2 - 60;
 
       pie(data.phases).forEach(function(d, i) {
-        var a = d.endAngle - Math.PI / 2 - piePadAngle;
+        var a = d.endAngle - Math.PI / 2;
 
         d.data.fx = radius * Math.cos(a);
         d.data.fy = radius * Math.sin(a);
@@ -432,8 +434,8 @@ module.exports = function() {
 //      var linkColorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
 //          .domain([1, -1]);
       var linkColorScale = d3.scaleLinear()
-          .domain([-1, 0, 1])
-          .range(["#00d", "#ddd", "#d00"])
+          .domain([-1, 0, Number.EPSILON, 1])
+          .range(["#00d", "#bbd", "#dbb", "#d00"]);
 
       var linkWidthScale = d3.scaleLinear()
           .domain([0, 1])
@@ -446,11 +448,12 @@ module.exports = function() {
       // Marker enter
       var markerEnter = marker.enter().append("marker")
           .attr("viewBox", "0 0 10 10")
-          .attr("markerWidth", 3)
-          .attr("markerHeight", 3)
+          .attr("markerWidth", 20)
+          .attr("markerHeight", 20)
           .attr("refX", 0)
           .attr("refY", 5)
-          .attr("orient", "auto");
+          .attr("orient", "auto")
+          .attr("markerUnits", "userSpaceOnUse");
 
       markerEnter.append("path");
 
@@ -512,7 +515,10 @@ module.exports = function() {
       }
     }
 
-    function drawArrow() {
+    function drawArrows() {
+      // XXX: Radius copied from above
+      var radius = Math.min(width, height) / 2 - 41;
+/*
       // Compute start of first arc, based on d3 arc padRadius formula
       // XXX: Copied from above
       var or = Math.min(width, height) / 2 - 20,
@@ -520,13 +526,25 @@ module.exports = function() {
           r = (or + ir) / 2,
           padRadius = Math.sqrt(ir * ir + or * or),
           x = padRadius * piePadAngle / 2;
+*/
+      var arrow = svg.select(".arrows").selectAll(".arrows > path")
+          .data(pie(data.phases));
 
-      svg.select(".arrow")
-          .attr("d", "M 0 -10 L 10 0 L 0 10 z")
-          .attr("transform", "translate(" + x + "," + (-r) + ")")
+      var arrowEnter = arrow.enter().append("path")
           .attr("pointer-events", "none")
-          .style("fill", "black")
-          .style("fill-opacity", 0.25);
+          .style("fill", "#eee")
+          .style("stroke", "#999");
+
+      arrowEnter.merge(arrow)
+//          .attr("d", "M 0 -10 L 10 0 L 0 10 z")
+          .attr("d", "M -10 -15 L 10 0 L -10 15 z")
+          .attr("transform", function(d) {
+            var a = d.endAngle * 180 / Math.PI - 90;
+
+            return "rotate(" + a + ")translate(" + radius + ",0)rotate(90)";
+          });
+
+      arrow.exit().remove();
     }
   }
 
