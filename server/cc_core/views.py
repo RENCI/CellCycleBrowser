@@ -66,7 +66,22 @@ def get_profile(request):
 
 @login_required
 def add_profile_request(request):
-    return render(request, 'cc_core/add-profile.html')
+    profiles = utils.get_profile_list()
+    cell_data_names = set()
+    model_data_names = set()
+    for p in profiles:
+        if 'cellData' in p:
+            for cd in p['cellData']:
+                cell_data_names.add(cd['fileName'].encode("utf-8"))
+        if 'models' in p:
+            for md in p['models']:
+                model_data_names.add(md['fileName'].encode("utf-8"))
+
+    context = {
+        'cell_data_names': cell_data_names,
+        'model_data_names': model_data_names
+    }
+    return render(request, 'cc_core/add-profile.html', context)
 
 
 def add_profile_to_server(request):
