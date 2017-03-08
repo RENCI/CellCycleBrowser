@@ -91,6 +91,7 @@ def add_profile_to_server(request):
     data['description'] = request.POST.get('pdesc')
     cell_data_list = []
     cdfiles = request.FILES.getlist('cell_files')
+    cdselnames = request.POST.getlist('cell_sel_names')
     filename_to_idx = {}
     idx = 0
     for cdfile in cdfiles:
@@ -99,6 +100,11 @@ def add_profile_to_server(request):
         shutil.copy(source, target)
         cell_data_list.append({'fileName':cdfile.name})
         filename_to_idx[cdfile.name] = idx
+        idx += 1
+
+    for cdselname in cdselnames:
+        cell_data_list.append({'fileName': cdselname})
+        filename_to_idx[cdselname] = idx
         idx += 1
 
     cdnames = request.POST.get('cdname')
@@ -131,6 +137,12 @@ def add_profile_to_server(request):
         shutil.copy(source, target)
         model_data_list.append({'fileName': mdfile.name})
         filename_to_idx[mdfile.name] = idx
+        idx += 1
+
+    mdselnames = request.POST.getlist('model_sel_names')
+    for mdselname in mdselnames:
+        model_data_list.append({'fileName': mdselname})
+        filename_to_idx[mdselname] = idx
         idx += 1
 
     mdnames = request.POST.get('mdname')
