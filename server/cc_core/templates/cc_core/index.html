@@ -18,9 +18,6 @@
 <body>
   {% csrf_token %}
   <input type="hidden" id="task_id" name="task_id" value=''>
-  <a href="/login/" id="btn-icon-add-profile" data-toggle="modal">
-  <span data-toggle="tooltip" data-placement="auto" title="Add new profile" class="glyphicon glyphicon-plus-sign icon-button icon-blue"></span>
-  </a>
   <div id="app"></div>
   <script type="text/javascript" src="{% static 'cc_core/js/index_bundle.js' %}"></script>
 </body>
