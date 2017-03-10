@@ -29,6 +29,11 @@ var SimulationOutputStore = assign({}, EventEmitter.prototype, {
 
 SimulationOutputStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
+    case Constants.RECEIVE_PROFILE:
+      simulationOutput = [];
+      SimulationOutputStore.emitChange();
+      break;
+
     case Constants.RUN_SIMULATION:
       state = Constants.SIMULATION_OUTPUT_INVALID;
       SimulationOutputStore.emitChange();
