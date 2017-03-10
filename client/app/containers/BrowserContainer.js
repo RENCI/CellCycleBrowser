@@ -13,6 +13,8 @@ var BrowserControls = require("../components/BrowserControls");
 var Phases = require("../components/Phases");
 var Species = require("../components/Species");
 
+var DataStore = require("../stores/DataStore");
+
 function computeTimeExtent(cellData, simulationOutput) {
   // Get time extent across cell and simulation data
   var timeExtent = [];

@@ -23,7 +23,7 @@ var AlignmentStore = assign({}, EventEmitter.prototype, {
   }
 });
 
-AppDispatcher.register(function (action) {
+AlignmentStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.SELECT_ALIGNMENT:
       alignment = action.alignment;

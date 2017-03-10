@@ -37,7 +37,7 @@ var FeatureStore = assign({}, EventEmitter.prototype, {
   }
 });
 
-AppDispatcher.register(function (action) {
+FeatureStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.SELECT_FEATURE:
       featureKey = action.featureKey;

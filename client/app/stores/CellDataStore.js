@@ -30,16 +30,16 @@ var CellDataStore = assign({}, EventEmitter.prototype, {
 
 CellDataStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
-    case Constants.SELECT_CELL_DATA:
-      cellData = cellDataList[action.cellDataKey];
-      CellDataStore.emitChange();
-      break;
-
     case Constants.RECEIVE_PROFILE:
       AppDispatcher.waitFor([ProfileStore.dispatchToken]);
       var profile = ProfileStore.getProfile();
       cellDataList = profile.cellData ? profile.cellData : [];
       cellData = cellDataList.length > 0 ? cellDataList[0] : {};
+      CellDataStore.emitChange();
+      break;
+
+    case Constants.SELECT_CELL_DATA:
+      cellData = cellDataList[action.cellDataKey];
       CellDataStore.emitChange();
       break;
   }
