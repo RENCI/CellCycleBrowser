@@ -117,6 +117,14 @@ def extract_info_from_model(filename):
       ],
       ...
     ]
+    "reactions": [
+      {
+        "reactant": "G1_001",
+        "product": "G1_002",
+        "kf": 0.33
+      },
+      ...
+    ]
     :param filename: the model file name
     :return: JSON string as detailed above
     """
@@ -177,6 +185,32 @@ def extract_info_from_model(filename):
 
         return_object['species'] = species_list
         return_object['phases'] = phases
+
+        # extract reactions
+        react_list = []
+        reactions = model.getListOfReactions()
+        for react in reactions:
+            reactant = react.getListOfReactants().get(0)
+            if reactant:
+                react_species = species_id_to_names[reactant.getSpecies()]
+            else:
+                continue
+            product = react.getListOfProducts().get(0)
+            if product:
+                product_species = species_id_to_names[product.getSpecies()]
+            else:
+                continue
+            react_dict = OrderedDict()
+            react_dict['reactant'] = react_species
+            react_dict['product'] = product_species
+            kl = react.getKineticLaw()
+            if kl:
+                param_list = kl.getListOfParameters()
+                if param_list:
+                    react_dict[param_list[0].getName()] = param_list[0].getValue()
+                    react_list.append(react_dict)
+
+        return_object['reactions'] = react_list
 
         # extract speciesPhaseMatrix and speciesMatrix
         species_name_list = [s['name'] for s in species_list]
@@ -285,6 +319,7 @@ def load_model(model):
     modelData['phases'] = data['phases']
     modelData['speciesPhaseMatrix'] = data['speciesPhaseMatrix']
     modelData['speciesMatrices'] = data['speciesMatrices']
+    modelData['reactions'] = data['reactions']
 
     return modelData
 
