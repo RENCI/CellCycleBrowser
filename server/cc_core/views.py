@@ -3,11 +3,12 @@ import os
 import shutil
 import logging
 
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.template import loader
 from django.conf import settings
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 from . import utils
 from .tasks import run_model_task
@@ -18,9 +19,11 @@ logger = logging.getLogger('django')
 
 # Create your views here.
 def index(request):
+    
     template = loader.get_template('cc_core/index.html')
     context = {
-        'SITE_TITLE': settings.SITE_TITLE
+        'SITE_TITLE': settings.SITE_TITLE,
+        'status_msg': ''
     }
     return HttpResponse(template.render(context, request))
 
@@ -64,24 +67,62 @@ def get_profile(request):
     )
 
 
-@login_required
-def add_profile_request(request):
+@login_required()
+def add_or_delete_profile_request(request):
     profiles = utils.get_profile_list()
-    cell_data_names = set()
-    model_data_names = set()
-    for p in profiles:
-        if 'cellData' in p:
-            for cd in p['cellData']:
-                cell_data_names.add(cd['fileName'].encode("utf-8"))
-        if 'models' in p:
-            for md in p['models']:
-                model_data_names.add(md['fileName'].encode("utf-8"))
+    referer = request.META['HTTP_REFERER']
+    is_add_profile = False
+    is_delete_profile = False
+    if 'add_profile' in referer:
+        is_add_profile = True
+    if 'delete_profile' in referer:
+        is_delete_profile = True
 
-    context = {
-        'cell_data_names': cell_data_names,
-        'model_data_names': model_data_names
-    }
-    return render(request, 'cc_core/add-profile.html', context)
+    if is_add_profile:
+        cell_data_names = set()
+        model_data_names = set()
+        for p in profiles:
+            if 'cellData' in p:
+                for cd in p['cellData']:
+                    cell_data_names.add(cd['fileName'].encode("utf-8"))
+            if 'models' in p:
+                for md in p['models']:
+                    model_data_names.add(md['fileName'].encode("utf-8"))
+
+        context = {
+            'cell_data_names': cell_data_names,
+            'model_data_names': model_data_names
+        }
+        return render(request, 'cc_core/add-profile.html', context)
+
+    if is_delete_profile:
+        profile_names = set()
+        for p in profiles:
+            profile_names.add(p['name'])
+        context = {
+            'profile_data_names': profile_names
+        }
+        return render(request, 'cc_core/delete-profile.html', context)
+
+
+def delete_profile_from_server(request):
+    # delete profile data from server
+    sel_profile_name = request.POST.get('profile_sel_name', '')
+
+    if sel_profile_name:
+        try:
+            utils.delete_profile(sel_profile_name)
+        except Exception as ex:
+            messages.error(request, ex.message)
+            return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+        template = loader.get_template('cc_core/index.html')
+        context = {
+            'SITE_TITLE': settings.SITE_TITLE,
+            'status_msg': 'Congratulations! The selected profile has been deleted successfully.'
+        }
+        return HttpResponse(template.render(context, request))
+
 
 
 def add_profile_to_server(request):
@@ -186,7 +227,8 @@ def add_profile_to_server(request):
 
     template = loader.get_template('cc_core/index.html')
     context = {
-        'SITE_TITLE': settings.SITE_TITLE
+        'SITE_TITLE': settings.SITE_TITLE,
+        'status_msg': 'Congratulations! The new profile has been added successfully.'
     }
     return HttpResponse(template.render(context, request))
 

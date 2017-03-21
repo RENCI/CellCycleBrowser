@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Existing Profile{% endblock %}
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <h2>Delete an existing profile from cell cycle browser</h2>
+      <form class="form-horizontal" role="form" action="/delete_profile_from_server/" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="profile_sel_names">Select an existing profile</label>
+            <select class="form-control" name="profile_sel_name" id="profile_sel_name">
+                {% for fname in profile_data_names %}
+                    <option value={{ fname }}>{{ fname }}</option>
+                {% endfor %}
+            </select>
+            <p class="help-block">Select an existing profile to delete.</p>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Delete Selected Profile</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

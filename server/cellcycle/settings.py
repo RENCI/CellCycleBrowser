@@ -193,7 +193,7 @@ ROOT_URLCONF = "%s.urls" % PROJECT_DIRNAME
 
 CRISPY_TEMPLATE_PACK = 'bootstrap'
 
-LOGIN_REDIRECT_URL = '/add_profile_request/'
+LOGIN_REDIRECT_URL = '/add_or_delete_profile_request/'
 
 # input data and model path
 MODEL_INPUT_PATH = 'data/models/input'

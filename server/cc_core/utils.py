@@ -338,6 +338,26 @@ def get_profile_list():
     return data
 
 
+def delete_profile(pname):
+    profile_config_name = "data/config/profile_list.json"
+    with open(profile_config_name, 'r') as profile_config_file:
+        config_data = json.load(profile_config_file)
+        for pdata in config_data:
+            p_filename = pdata['fileName']
+            if os.path.isfile(p_filename):
+                with open(p_filename, 'r') as profile_file:
+                    data = json.load(profile_file)
+                    if data['name'] == pname:
+                        # delete this profile
+                        os.remove(p_filename)
+                        config_data.remove(pdata)
+                        break
+
+    # update profile_list
+    with open(profile_config_name, 'w') as f:
+        f.write(json.dumps(config_data))
+
+
 def get_phase_start_stop(data):
     """
     Get start and stop for a phase or subphase from the input time series data where start is
