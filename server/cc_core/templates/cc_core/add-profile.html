@@ -73,9 +73,18 @@
             <p class="help-block">The input must be in the format of model_data_file_name:model_data_description separated by colon for multiple datasets.</p>
         </div>
         <div class="form-group">
-          <div class="col-sm-offset-2 col-sm-10">
+          <div class="col-sm-offset-6 col-sm-6">
             <button type="submit" class="btn btn-primary btn-lg btn-block">Add New Profile</button>
           </div>
+          {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    {% if message.tags == 'error' %}
+                    <li style="color: red">{{ message }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+          {% endif %}
         </div>
       </form>
     </div>

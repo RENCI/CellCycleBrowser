@@ -19,13 +19,11 @@
   {% csrf_token %}
   <input type="hidden" id="task_id" name="task_id" value=''>
   {% if status_msg %}
-      <div class="col-sm-12">
-        <div class="alert alert-success alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">x</span>
-            </button>
-            <span>{{ status_msg }}</span>
-        </div>
+      <div class="row alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">x</span>
+          </button>
+          <span>{{ status_msg }}</span>
       </div>
   {% endif %}
   <div id="app"></div>
