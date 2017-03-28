@@ -250,7 +250,6 @@ module.exports = function() {
           .style("stroke", "white");
 
       arcEnter.append("text")
-          .text(function(d) { return d.data.name; })
           .attr("transform", textTransform)
           .attr("dy", ".35em")
           .style("text-anchor", "middle")
@@ -267,6 +266,7 @@ module.exports = function() {
           .style("stroke", "#999");
 
       arcUpdate.select("text")
+          .text(function(d) { return d.data.name; })
           .style("fill", "black")
           .attr("transform", textTransform);
 
