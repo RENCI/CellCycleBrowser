@@ -59,6 +59,8 @@ def extract_species_and_phases_from_model(filename):
     for sp in species_lst:
         name = sp.getName()
         id = sp.getId()
+        if not name:
+            name = id
         id_to_names[id] = name
         name_to_ids[name] = id
         species.append(id)
@@ -144,10 +146,13 @@ def extract_info_from_model(filename):
         species_id_to_names = {}
         for sp in species:
             name = sp.getName()
+            if not name:
+                # use ID as name if name attribute is not available
+                name=sp.getId()
             id = sp.getId()
             species_id_to_names[id] = name
             species_dict = {}
-            species_dict['name'] = sp.getName()
+            species_dict['name'] = name
             species_dict['value'] = sp.getInitialAmount()
             # TO DO: extract min and max info from the model
             species_dict['min'] = 0
@@ -207,7 +212,10 @@ def extract_info_from_model(filename):
             if kl:
                 param_list = kl.getListOfParameters()
                 if param_list:
-                    react_dict[param_list[0].getName()] = param_list[0].getValue()
+                    pname = param_list[0].getName()
+                    if not pname:
+                        pname = param_list[0].getId()
+                    react_dict[pname] = param_list[0].getValue()
                     react_list.append(react_dict)
 
         return_object['reactions'] = react_list
@@ -230,7 +238,10 @@ def extract_info_from_model(filename):
 
         paras = model.getListOfParameters()
         for para in paras:
-            para_names = para.getName().split('_')
+            pname = para.getName()
+            if not pname:
+                pname = para.getId()
+            para_names = pname.split('_')
             name1 = para_names[1]
             name2 = para_names[2]
             if name1 in species_name_list and name2 in phase_name_list:
@@ -398,12 +409,17 @@ def extract_parameters(filename):
     for sp in species:
         name = sp.getName()
         id = sp.getId()
+        if not name:
+            name = id
         id_to_names[id] = name
     paras = model.getListOfParameters()
     paras_list = []
     for para in paras:
         paras_dict = {}
-        paras_dict['name'] = para.getName()
+        pname = para.getName()
+        if not pname:
+            pname = para.getId()
+        paras_dict['name'] = pname
         paras_dict['value'] = para.getValue()
         paras_list.append(paras_dict)
         id_to_names[para.getId()] = paras_dict['name']
@@ -427,7 +443,10 @@ def extract_parameters(filename):
         if kl:
             param_list = kl.getListOfParameters()
             if param_list:
-                react_dict['name'] = param_list[0].getName()
+                pname = param_list[0].getName()
+                if not pname:
+                    pname = param_list[0].getId()
+                react_dict['name'] = pname
                 react_dict['value'] = param_list[0].getValue()
                 pid = param_list[0].getId()
                 formula = kl.getFormula()
