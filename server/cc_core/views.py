@@ -19,7 +19,7 @@ logger = logging.getLogger('django')
 
 # Create your views here.
 def index(request):
-
+    
     template = loader.get_template('cc_core/index.html')
     context = {
         'SITE_TITLE': settings.SITE_TITLE,
@@ -88,16 +88,8 @@ def add_or_delete_profile_request(request):
                     is_delete_profile = True
 
     if is_add_profile:
-        cell_data_names = set()
-        model_data_names = set()
-        for p in profiles:
-            if 'cellData' in p:
-                for cd in p['cellData']:
-                    cell_data_names.add(cd['fileName'].encode("utf-8"))
-            if 'models' in p:
-                for md in p['models']:
-                    model_data_names.add(md['fileName'].encode("utf-8"))
-
+        cell_data_names, model_data_names = utils.get_all_cell_and_model_file_names(
+            profiles=profiles)
         context = {
             'cell_data_names': cell_data_names,
             'model_data_names': model_data_names
@@ -221,7 +213,7 @@ def add_profile_to_server(request):
         profile_file_name = profile_file_name + '.json'
         profile_file_full_path = os.path.join('data', 'config', profile_file_name)
         with open(profile_file_full_path, 'w') as out:
-            out.write(json.dumps(data))
+            out.write(json.dumps(data, indent=4))
 
         # update profile_list.json
         profile_list_name = os.path.join('data', 'config', 'profile_list.json')
@@ -232,7 +224,7 @@ def add_profile_to_server(request):
                                   'group': 1})
 
         with open(profile_list_name, 'w') as f:
-            f.write(json.dumps(json_profile_data))
+            f.write(json.dumps(json_profile_data, indent=4))
 
         template = loader.get_template('cc_core/index.html')
         context = {

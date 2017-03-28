@@ -349,8 +349,26 @@ def get_profile_list():
     return data
 
 
+def get_all_cell_and_model_file_names(profiles=None):
+    if not profiles:
+        profiles = get_profile_list()
+    cell_data_names = set()
+    model_data_names = set()
+    for p in profiles:
+        if 'cellData' in p:
+            for cd in p['cellData']:
+                cell_data_names.add(cd['fileName'].encode("utf-8"))
+        if 'models' in p:
+            for md in p['models']:
+                model_data_names.add(md['fileName'].encode("utf-8"))
+
+    return cell_data_names, model_data_names
+
+
 def delete_profile(pname):
     profile_config_name = "data/config/profile_list.json"
+    incl_cell_names = set()
+    incl_model_names = set()
     with open(profile_config_name, 'r') as profile_config_file:
         config_data = json.load(profile_config_file)
         for pdata in config_data:
@@ -359,6 +377,12 @@ def delete_profile(pname):
                 with open(p_filename, 'r') as profile_file:
                     data = json.load(profile_file)
                     if data['name'] == pname:
+                        if 'cellData' in data:
+                            for cd in data['cellData']:
+                                incl_cell_names.add(cd['fileName'].encode("utf-8"))
+                        if 'models' in data:
+                            for md in data['models']:
+                                incl_model_names.add(md['fileName'].encode("utf-8"))
                         # delete this profile
                         os.remove(p_filename)
                         config_data.remove(pdata)
@@ -366,7 +390,18 @@ def delete_profile(pname):
 
     # update profile_list
     with open(profile_config_name, 'w') as f:
-        f.write(json.dumps(config_data))
+        f.write(json.dumps(config_data, indent=4))
+
+    # delete cell data file and model data file if they are not used in other models
+    cell_data_names, model_data_names = get_all_cell_and_model_file_names()
+    for cd in incl_cell_names:
+        if cd not in cell_data_names:
+            cd_filename = os.path.join(settings.CELL_DATA_PATH, cd)
+            os.remove(cd_filename)
+    for md in incl_model_names:
+        if md not in model_data_names:
+            md_filename = os.path.join(settings.MODEL_INPUT_PATH, md)
+            os.remove(md_filename)
 
 
 def get_phase_start_stop(data):
