@@ -14,6 +14,8 @@ var divStyle = {
 }
 
 function SpeciesSpeciesSliders(props) {
+  if (props.species.length <= 1) return null;
+
   // TODO: Move to global settings somewhere
   var colorScale = d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
       .domain(props.phases);
