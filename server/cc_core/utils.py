@@ -59,6 +59,8 @@ def extract_species_and_phases_from_model(filename):
     for sp in species_lst:
         name = sp.getName()
         id = sp.getId()
+        if not name:
+            name = id
         id_to_names[id] = name
         name_to_ids[name] = id
         species.append(id)
@@ -144,10 +146,13 @@ def extract_info_from_model(filename):
         species_id_to_names = {}
         for sp in species:
             name = sp.getName()
+            if not name:
+                # use ID as name if name attribute is not available
+                name=sp.getId()
             id = sp.getId()
             species_id_to_names[id] = name
             species_dict = {}
-            species_dict['name'] = sp.getName()
+            species_dict['name'] = name
             species_dict['value'] = sp.getInitialAmount()
             # TO DO: extract min and max info from the model
             species_dict['min'] = 0
@@ -207,7 +212,10 @@ def extract_info_from_model(filename):
             if kl:
                 param_list = kl.getListOfParameters()
                 if param_list:
-                    react_dict[param_list[0].getName()] = param_list[0].getValue()
+                    pname = param_list[0].getName()
+                    if not pname:
+                        pname = param_list[0].getId()
+                    react_dict[pname] = param_list[0].getValue()
                     react_list.append(react_dict)
 
         return_object['reactions'] = react_list
@@ -230,7 +238,10 @@ def extract_info_from_model(filename):
 
         paras = model.getListOfParameters()
         for para in paras:
-            para_names = para.getName().split('_')
+            pname = para.getName()
+            if not pname:
+                pname = para.getId()
+            para_names = pname.split('_')
             name1 = para_names[1]
             name2 = para_names[2]
             if name1 in species_name_list and name2 in phase_name_list:
@@ -338,6 +349,61 @@ def get_profile_list():
     return data
 
 
+def get_all_cell_and_model_file_names(profiles=None):
+    if not profiles:
+        profiles = get_profile_list()
+    cell_data_names = set()
+    model_data_names = set()
+    for p in profiles:
+        if 'cellData' in p:
+            for cd in p['cellData']:
+                cell_data_names.add(cd['fileName'].encode("utf-8"))
+        if 'models' in p:
+            for md in p['models']:
+                model_data_names.add(md['fileName'].encode("utf-8"))
+
+    return cell_data_names, model_data_names
+
+
+def delete_profile(pname):
+    profile_config_name = "data/config/profile_list.json"
+    incl_cell_names = set()
+    incl_model_names = set()
+    with open(profile_config_name, 'r') as profile_config_file:
+        config_data = json.load(profile_config_file)
+        for pdata in config_data:
+            p_filename = pdata['fileName']
+            if os.path.isfile(p_filename):
+                with open(p_filename, 'r') as profile_file:
+                    data = json.load(profile_file)
+                    if data['name'] == pname:
+                        if 'cellData' in data:
+                            for cd in data['cellData']:
+                                incl_cell_names.add(cd['fileName'].encode("utf-8"))
+                        if 'models' in data:
+                            for md in data['models']:
+                                incl_model_names.add(md['fileName'].encode("utf-8"))
+                        # delete this profile
+                        os.remove(p_filename)
+                        config_data.remove(pdata)
+                        break
+
+    # update profile_list
+    with open(profile_config_name, 'w') as f:
+        f.write(json.dumps(config_data, indent=4))
+
+    # delete cell data file and model data file if they are not used in other models
+    cell_data_names, model_data_names = get_all_cell_and_model_file_names()
+    for cd in incl_cell_names:
+        if cd not in cell_data_names:
+            cd_filename = os.path.join(settings.CELL_DATA_PATH, cd)
+            os.remove(cd_filename)
+    for md in incl_model_names:
+        if md not in model_data_names:
+            md_filename = os.path.join(settings.MODEL_INPUT_PATH, md)
+            os.remove(md_filename)
+
+
 def get_phase_start_stop(data):
     """
     Get start and stop for a phase or subphase from the input time series data where start is
@@ -378,12 +444,17 @@ def extract_parameters(filename):
     for sp in species:
         name = sp.getName()
         id = sp.getId()
+        if not name:
+            name = id
         id_to_names[id] = name
     paras = model.getListOfParameters()
     paras_list = []
     for para in paras:
         paras_dict = {}
-        paras_dict['name'] = para.getName()
+        pname = para.getName()
+        if not pname:
+            pname = para.getId()
+        paras_dict['name'] = pname
         paras_dict['value'] = para.getValue()
         paras_list.append(paras_dict)
         id_to_names[para.getId()] = paras_dict['name']
@@ -407,7 +478,10 @@ def extract_parameters(filename):
         if kl:
             param_list = kl.getListOfParameters()
             if param_list:
-                react_dict['name'] = param_list[0].getName()
+                pname = param_list[0].getName()
+                if not pname:
+                    pname = param_list[0].getId()
+                react_dict['name'] = pname
                 react_dict['value'] = param_list[0].getValue()
                 pid = param_list[0].getId()
                 formula = kl.getFormula()

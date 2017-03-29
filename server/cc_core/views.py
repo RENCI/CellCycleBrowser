@@ -3,11 +3,12 @@ import os
 import shutil
 import logging
 
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.template import loader
 from django.conf import settings
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 from . import utils
 from .tasks import run_model_task
@@ -18,9 +19,11 @@ logger = logging.getLogger('django')
 
 # Create your views here.
 def index(request):
+    
     template = loader.get_template('cc_core/index.html')
     context = {
-        'SITE_TITLE': settings.SITE_TITLE
+        'SITE_TITLE': settings.SITE_TITLE,
+        'status_msg': ''
     }
     return HttpResponse(template.render(context, request))
 
@@ -64,131 +67,175 @@ def get_profile(request):
     )
 
 
-@login_required
-def add_profile_request(request):
+@login_required()
+def add_or_delete_profile_request(request):
     profiles = utils.get_profile_list()
-    cell_data_names = set()
-    model_data_names = set()
-    for p in profiles:
-        if 'cellData' in p:
-            for cd in p['cellData']:
-                cell_data_names.add(cd['fileName'].encode("utf-8"))
-        if 'models' in p:
-            for md in p['models']:
-                model_data_names.add(md['fileName'].encode("utf-8"))
+    referer = request.META['HTTP_REFERER']
+    is_add_profile = False
+    is_delete_profile = False
+    if 'add_profile' in referer:
+        is_add_profile = True
+    if 'delete_profile' in referer:
+        is_delete_profile = True
 
-    context = {
-        'cell_data_names': cell_data_names,
-        'model_data_names': model_data_names
-    }
-    return render(request, 'cc_core/add-profile.html', context)
+    if not is_add_profile and not is_delete_profile:
+        storage = messages.get_messages(request)
+        for message in storage:
+            if message.tags == 'info':
+                if message.message == 'AddProfile':
+                    is_add_profile = True
+                if message.message == 'DeleteProfile':
+                    is_delete_profile = True
+
+    if is_add_profile:
+        cell_data_names, model_data_names = utils.get_all_cell_and_model_file_names(
+            profiles=profiles)
+        context = {
+            'cell_data_names': cell_data_names,
+            'model_data_names': model_data_names
+        }
+        return render(request, 'cc_core/add-profile.html', context)
+
+    if is_delete_profile:
+        profile_names = set()
+        for p in profiles:
+            profile_names.add(p['name'])
+        context = {
+            'profile_data_names': profile_names
+        }
+        return render(request, 'cc_core/delete-profile.html', context)
+
+
+def delete_profile_from_server(request):
+    # delete profile data from server
+    sel_profile_name = request.POST.get('profile_sel_name', '')
+
+    if sel_profile_name:
+        try:
+            utils.delete_profile(sel_profile_name)
+            template = loader.get_template('cc_core/index.html')
+            context = {
+                'SITE_TITLE': settings.SITE_TITLE,
+                'status_msg': 'Congratulations! The selected profile has been deleted successfully.'
+            }
+            return HttpResponse(template.render(context, request))
+        except Exception as ex:
+            messages.error(request, ex.message)
+            messages.info(request, 'DeleteProfile')
+            return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
 def add_profile_to_server(request):
     # create profile data to write to profile json file
     data = {}
-    data['name'] = request.POST.get('pname')
-    data['description'] = request.POST.get('pdesc')
-    cell_data_list = []
-    cdfiles = request.FILES.getlist('cell_files')
-    cdselnames = request.POST.getlist('cell_sel_names')
-    filename_to_idx = {}
-    idx = 0
-    for cdfile in cdfiles:
-        source = cdfile.file.name
-        target = os.path.join(settings.CELL_DATA_PATH, cdfile.name)
-        shutil.copy(source, target)
-        cell_data_list.append({'fileName':cdfile.name})
-        filename_to_idx[cdfile.name] = idx
-        idx += 1
+    try:
+        data['name'] = request.POST.get('pname')
+        data['description'] = request.POST.get('pdesc')
+        cell_data_list = []
+        cdfiles = request.FILES.getlist('cell_files')
+        cdselnames = request.POST.getlist('cell_sel_names')
+        filename_to_idx = {}
+        idx = 0
+        for cdfile in cdfiles:
+            source = cdfile.file.name
+            target = os.path.join(settings.CELL_DATA_PATH, cdfile.name)
+            shutil.copy(source, target)
+            cell_data_list.append({'fileName':cdfile.name})
+            filename_to_idx[cdfile.name] = idx
+            idx += 1
 
-    for cdselname in cdselnames:
-        cell_data_list.append({'fileName': cdselname})
-        filename_to_idx[cdselname] = idx
-        idx += 1
+        for cdselname in cdselnames:
+            cell_data_list.append({'fileName': cdselname})
+            filename_to_idx[cdselname] = idx
+            idx += 1
 
-    cdnames = request.POST.get('cdname')
-    if ';' in cdnames:
-        cdname_list = cdnames.split(';')
-    else:
-        cdname_list = [cdnames.strip()]
-    for cdname in cdname_list:
-        name_pair = cdname.split(':')
-        cell_data_list[filename_to_idx[name_pair[0]]]['name'] = name_pair[1]
+        cdnames = request.POST.get('cdname')
+        if ';' in cdnames:
+            cdname_list = cdnames.split(';')
+        else:
+            cdname_list = [cdnames.strip()]
+        for cdname in cdname_list:
+            name_pair = cdname.split(':')
+            cell_data_list[filename_to_idx[name_pair[0]]]['name'] = name_pair[1]
 
-    cddescs = request.POST.get('cddesc')
-    if ';' in cddescs:
-        cddesc_list = cddescs.split(';')
-    else:
-        cddesc_list = [cddescs.strip()]
-    for cddesc in cddesc_list:
-        desc_pair = cddesc.split(':')
-        cell_data_list[filename_to_idx[desc_pair[0]]]['description'] = desc_pair[1]
+        cddescs = request.POST.get('cddesc')
+        if ';' in cddescs:
+            cddesc_list = cddescs.split(';')
+        else:
+            cddesc_list = [cddescs.strip()]
+        for cddesc in cddesc_list:
+            desc_pair = cddesc.split(':')
+            cell_data_list[filename_to_idx[desc_pair[0]]]['description'] = desc_pair[1]
 
-    data['cellData'] = cell_data_list
+        data['cellData'] = cell_data_list
 
-    filename_to_idx = {}
-    idx = 0
-    model_data_list = []
-    mdfiles = request.FILES.getlist('model_files')
-    for mdfile in mdfiles:
-        source = mdfile.file.name
-        target = os.path.join(settings.MODEL_INPUT_PATH, mdfile.name)
-        shutil.copy(source, target)
-        model_data_list.append({'fileName': mdfile.name})
-        filename_to_idx[mdfile.name] = idx
-        idx += 1
+        filename_to_idx = {}
+        idx = 0
+        model_data_list = []
+        mdfiles = request.FILES.getlist('model_files')
+        for mdfile in mdfiles:
+            source = mdfile.file.name
+            target = os.path.join(settings.MODEL_INPUT_PATH, mdfile.name)
+            shutil.copy(source, target)
+            model_data_list.append({'fileName': mdfile.name})
+            filename_to_idx[mdfile.name] = idx
+            idx += 1
 
-    mdselnames = request.POST.getlist('model_sel_names')
-    for mdselname in mdselnames:
-        model_data_list.append({'fileName': mdselname})
-        filename_to_idx[mdselname] = idx
-        idx += 1
+        mdselnames = request.POST.getlist('model_sel_names')
+        for mdselname in mdselnames:
+            model_data_list.append({'fileName': mdselname})
+            filename_to_idx[mdselname] = idx
+            idx += 1
 
-    mdnames = request.POST.get('mdname')
-    if ';' in mdnames:
-        mdname_list = mdnames.split(';')
-    else:
-        mdname_list = [mdnames.strip()]
+        mdnames = request.POST.get('mdname')
+        if ';' in mdnames:
+            mdname_list = mdnames.split(';')
+        else:
+            mdname_list = [mdnames.strip()]
 
-    for mdname in mdname_list:
-        name_pair = mdname.split(':')
-        model_data_list[filename_to_idx[name_pair[0]]]['name'] = name_pair[1]
+        for mdname in mdname_list:
+            name_pair = mdname.split(':')
+            model_data_list[filename_to_idx[name_pair[0]]]['name'] = name_pair[1]
 
-    mddescs = request.POST.get('mddesc')
-    if ';' in mddescs:
-        mddesc_list = mddescs.split(';')
-    else:
-        mddesc_list = [mddescs.strip()]
-    for mddesc in mddesc_list:
-        desc_pair = mddesc.split(':')
-        model_data_list[filename_to_idx[desc_pair[0]]]['description'] = desc_pair[1]
+        mddescs = request.POST.get('mddesc')
+        if ';' in mddescs:
+            mddesc_list = mddescs.split(';')
+        else:
+            mddesc_list = [mddescs.strip()]
+        for mddesc in mddesc_list:
+            desc_pair = mddesc.split(':')
+            model_data_list[filename_to_idx[desc_pair[0]]]['description'] = desc_pair[1]
 
-    data['models'] = model_data_list
+        data['models'] = model_data_list
 
-    pname_list = data['name'].split()
-    profile_file_name = '_'.join(pname_list)
-    profile_file_name = profile_file_name + '.json'
-    profile_file_full_path = os.path.join('data', 'config', profile_file_name)
-    with open(profile_file_full_path, 'w') as out:
-        out.write(json.dumps(data))
+        pname_list = data['name'].split()
+        profile_file_name = '_'.join(pname_list)
+        profile_file_name = profile_file_name + '.json'
+        profile_file_full_path = os.path.join('data', 'config', profile_file_name)
+        with open(profile_file_full_path, 'w') as out:
+            out.write(json.dumps(data, indent=4))
 
-    # update profile_list.json
-    profile_list_name = os.path.join('data', 'config', 'profile_list.json')
-    with open(profile_list_name, 'r') as f:
-        json_profile_data = json.load(f)
+        # update profile_list.json
+        profile_list_name = os.path.join('data', 'config', 'profile_list.json')
+        with open(profile_list_name, 'r') as f:
+            json_profile_data = json.load(f)
 
-    json_profile_data.append({'fileName': profile_file_full_path,
-                              'group': 1})
+        json_profile_data.append({'fileName': profile_file_full_path,
+                                  'group': 1})
 
-    with open(profile_list_name, 'w') as f:
-        f.write(json.dumps(json_profile_data))
+        with open(profile_list_name, 'w') as f:
+            f.write(json.dumps(json_profile_data, indent=4))
 
-    template = loader.get_template('cc_core/index.html')
-    context = {
-        'SITE_TITLE': settings.SITE_TITLE
-    }
-    return HttpResponse(template.render(context, request))
+        template = loader.get_template('cc_core/index.html')
+        context = {
+            'SITE_TITLE': settings.SITE_TITLE,
+            'status_msg': 'Congratulations! The new profile has been added successfully.'
+        }
+        return HttpResponse(template.render(context, request))
+    except Exception as ex:
+        messages.error(request, ex.message)
+        messages.info(request, 'AddProfile')
+        return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
 def send_parameter(request):

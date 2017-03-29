@@ -15,7 +15,7 @@ function Profile(props) {
               <ProfileDescription description={description} />
             </div>
             <div>
-              <a href="/login/">Add new profile</a>
+              <a href="/add_profile/login/">Add new profile</a>&nbsp;&nbsp;<a href="/delete_profile/login/">Delete profile</a>
             </div>
         </div>
 
