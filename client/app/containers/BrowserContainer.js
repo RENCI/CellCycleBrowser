@@ -66,6 +66,12 @@ function phaseData(simulationOutput) {
   });
 }
 
+function getStateFromDataStore() {
+  return {
+    data: DataStore.getData()
+  }
+}
+
 function getStateFromCellDataStore() {
   return {
     cellDataList: CellDataStore.getCellDataList(),
@@ -117,7 +123,6 @@ function getStateFromPhaseOverlayStore() {
   }
 }
 
-
 // Enable bootstrap tooltips
 // XXX: This will search the entire page, should perhaps use selector within
 // this element
@@ -132,6 +137,7 @@ function tooltips() {
 var BrowserContainer = React.createClass({
   getInitialState: function () {
     return {
+      data: getStateFromDataStore().data,
       cellDataList: [],
       cellData: null,
       model: null,
@@ -146,6 +152,7 @@ var BrowserContainer = React.createClass({
     };
   },
   componentDidMount: function () {
+    DataStore.addChangeListener(this.onDataChange);
     CellDataStore.addChangeListener(this.onCellDataChange);
     ModelStore.addChangeListener(this.onModelChange);
     FeatureStore.addChangeListener(this.onFeatureChange);
@@ -157,6 +164,7 @@ var BrowserContainer = React.createClass({
     tooltips();
   },
   componentWillUnmount: function() {
+    DataStore.removeChangeListener(this.onDataChange);
     CellDataStore.removeChangeListener(this.onCellDataChange);
     ModelStore.removeChangeListener(this.onModelChange);
     FeatureStore.removeChangeListener(this.onFeatureChange);
@@ -168,6 +176,9 @@ var BrowserContainer = React.createClass({
   },
   componentDidUpdate: function () {
     tooltips();
+  },
+  onDataChange: function () {
+    this.setState(getStateFromDataStore());
   },
   onCellDataChange: function () {
     this.setState(getStateFromCellDataStore());

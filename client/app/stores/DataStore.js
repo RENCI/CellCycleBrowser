@@ -20,7 +20,9 @@ var feature = "";
 var alignment = "";
 
 // Output data
-var data = {};
+var data = {
+  species: []
+};
 
 function updateData() {
   console.log("DATA!");
@@ -42,14 +44,18 @@ function updateData() {
 
   // Combine cell data and simulation output per species
   data.species = allSpecies.map(function(species) {
-    // Cell data
+    // Cell data for this species
     var cd = [];
     for (var i = 0; i < cellSpecies.length; i++) {
-      if (cellSpecies.name === species) {
+      if (cellSpecies[i].name === species) {
         cd = cellSpecies[i].cells.map(function(cell) {
+          var featureIndex = cell.features.map(function(d) {
+            return d.name;
+          }).indexOf(feature);
+
           return {
             name: cell.name,
-            data: cell.features[feature].map(function(d) {
+            values: cell.features[featureIndex].values.map(function(d) {
               return {
                 start: d.time,
                 stop: d.stop,
@@ -58,15 +64,24 @@ function updateData() {
             })
           };
         });
+
+        break;
       }
     }
 
     console.log(cd);
 
-    // Simulation output
-    var simulationOutput = [];
+    // Simulation output for this species
+    var so = [];
 
+    return {
+      name: species,
+      cellData: cd,
+      simulationOutput: so
+    };
   });
+
+  console.log(data);
 
   return data;
 }
@@ -97,7 +112,7 @@ AppDispatcher.register(function (action) {
       model = ModelStore.getModel();
       cellData = CellDataStore.getCellData();
       simulationOutput = SimulationOutputStore.getSimulationOutput();
-      feature = FeatureStore.getFeatureKey();
+      feature = FeatureStore.getFeatureList()[FeatureStore.getFeatureKey()];
       data = updateData();
       DataStore.emitChange();
       break;
@@ -113,7 +128,7 @@ AppDispatcher.register(function (action) {
       AppDispatcher.waitFor([CellDataStore.dispatchToken,
                              FeatureStore.dispatchToken]);
       cellData = CellDataStore.getCellData();
-      feature = FeatureStore.getFeatureKey();
+      feature = FeatureStore.getFeatureList()[FeatureStore.getFeatureKey()];
       data = updateData();
       DataStore.emitChange();
       break;
@@ -128,7 +143,7 @@ AppDispatcher.register(function (action) {
 
     case Constants.SELECT_FEATURE:
       AppDispatcher.waitFor([FeatureStore.dispatchToken]);
-      feature = FeatureStore.getFeatureKey();
+      feature = FeatureStore.getFeatureList()[FeatureStore.getFeatureKey()];
       data = updateData();
       DataStore.emitChange();
       break;
@@ -142,4 +157,4 @@ AppDispatcher.register(function (action) {
   }
 });
 
-module.exports = CellDataStore;
+module.exports = DataStore;
