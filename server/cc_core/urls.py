@@ -26,5 +26,7 @@ url(r'^delete_profile/login/$', auth_views.login, {'template_name': 'cc_core/log
     url(r'^add_profile_to_server/$', views.add_profile_to_server, name='add_profile_to_server'),
     url(r'^delete_profile_from_server/$', views.delete_profile_from_server,
         name='delete_profile_from_server'),
+    url(r'^create_sbml_model/$', views.create_sbml_model, name='create_sbml_model'),
+    url(r'^delete_sbml_model/(?P<filename>[A-z0-9_.]+)$', views.delete_sbml_model, name='delete_sbml_model'),
     url(r'^terminate_model_run/$', views.terminate_model_run, name="terminate_model_run"),
 ]

@@ -19,7 +19,6 @@ logger = logging.getLogger('django')
 
 # Create your views here.
 def index(request):
-    
     template = loader.get_template('cc_core/index.html')
     context = {
         'SITE_TITLE': settings.SITE_TITLE,
@@ -236,6 +235,73 @@ def add_profile_to_server(request):
         messages.error(request, ex.message)
         messages.info(request, 'AddProfile')
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+
+def create_sbml_model(request):
+    # request must be a JSON request
+    num_g1 = request.POST.get('num_G1', None)
+    rate_g1 = request.POST.get('rate_G1', None)
+    num_s = request.POST.get('num_S', None)
+    rate_s = request.POST.get('rate_S', None)
+    num_g2m = request.POST.get('num_G2M', None)
+    rate_g2m = request.POST.get('rate_G2M', None)
+    sbml_fname = request.POST.get('sbml_file_name', '')
+
+    response_data = {}
+
+    if num_g1 and rate_g1 and num_s and rate_s and num_g2m and rate_g2m and sbml_fname:
+        try:
+            utils.createSBMLModel_CC_serial(int(num_g1), float(rate_g1),
+                                            int(num_s), float(rate_s),
+                                            int(num_g2m), float(rate_g2m),
+                                            os.path.join(settings.MODEL_INPUT_PATH, sbml_fname))
+        except Exception as ex:
+            response_data["error"] = ex.message + ' for creating SBML model'
+            return HttpResponse(
+                json.dumps(response_data),
+                content_type='application/json'
+            )
+
+    else:
+        response_data["error"] = 'Invalid input parameters for creating SBML model'
+        return HttpResponse(
+            json.dumps(response_data),
+            content_type='application/json'
+        )
+
+    response_data["new_model_filename"] = sbml_fname
+
+    return HttpResponse(
+        json.dumps(response_data),
+        content_type='application/json'
+    )
+
+
+def delete_sbml_model(request, filename):
+    response_data = {}
+    full_fname = os.path.join(settings.MODEL_INPUT_PATH, filename)
+    try:
+        if os.path.isfile(full_fname):
+            # delete this model file
+            os.remove(filename)
+            response_data["success"] = 'The SBML model data file has been deleted successfully'
+            return HttpResponse(
+                json.dumps(response_data),
+                content_type='application/json'
+            )
+        else:
+            response_data["error"] = 'The SBML model data file does not exist'
+            return HttpResponse(
+                json.dumps(response_data),
+                content_type='application/json'
+            )
+
+    except Exception as ex:
+        response_data["error"] = 'Invalid SBML model data file name'
+        return HttpResponse(
+            json.dumps(response_data),
+            content_type='application/json'
+        )
 
 
 def send_parameter(request):

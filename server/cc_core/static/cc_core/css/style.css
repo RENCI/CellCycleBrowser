@@ -44,3 +44,7 @@ top:5%;
 left:25%;
 outline: none;
 }
+
+.text-red {
+	color: #E74C3C;
+}

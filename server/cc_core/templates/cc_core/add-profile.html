@@ -48,9 +48,16 @@
         </div>
         <hr>
         <div class="form-group">
-            <label for="model_sel_files">Upload SBML model data</label>
+            <label for="model_sel_files">Upload SBML model data or create your own SBML model data</label>
             <input type="file" class="btn-add-access" name="model_files" id="model_sel_files" multiple/>
             <p class="help-block">You can upload multiple SBML model datasets simultaneously.</p>
+            <a type="button" class="btn btn-default" data-toggle="modal" data-target="#create-sbml-model-dialog">Create your own SBML model data</a>
+            <p class="help-block">You can create your own SBML sequential model data where each subphase follows over each other.</p>
+            <input type="hidden" id="new_sbml_model_file_name" name="new_sbml_model_file_name" value="">
+            <h2 id="create-sbml-error" style="color: red"></h2>
+            <h2 id="create-sbml-success" style="color: green"></h2>
+            <a id="delete-sbml-model" type="button" class="btn-link hidden-form"></a>
+
         </div>
         <div class="form-group">
             <label for="model_sel_names">Select existing SBML model data</label>
@@ -89,6 +96,56 @@
       </form>
     </div>
   </div>
+
+  <div class="modal fade" id="create-sbml-model-dialog" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form class="form-create-sbml" role="form" action="/create_sbml_model/" method="post" id="create_sbml_form">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="create-sbml-model-title">Create your own SBML model</h4>
+                </div>
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <p>
+                        Input the information below for each phase <strong>G1</strong>, <strong>S</strong>,
+                        and <strong>G2M</strong> to have a sequential SBML model created for you.
+                        The SBML model will be created follwing a sequential model where each subphase
+                        follows over each other.
+                    </p>
+                    <div class="form-group">
+                        <label for="num_G1">Number of subphases in G1:</label>
+                        <input id="num_G1" class="form-control" type="text" name="num_G1" placeholder="Number of subphases in G1" value="" />
+                        <label for="rate_G1">Rate of G1:</label>
+                        <input id="rate_G1" class="form-control" type="text" name="rate_G1" placeholder="Rate of G1" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="num_S">Number of subphases in S:</label>
+                        <input id="num_S" class="form-control" type="text" name="num_S" placeholder="Number of subphases in S" value="" />
+                        <label for="rate_S">Rate of S:</label>
+                        <input id="rate_S" class="form-control" type="text" name="rate_S" placeholder="Rate of S" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="num_G2M">Number of subphases in G2M:</label>
+                        <input id="num_G2M" class="form-control" type="text" name="num_G2M" placeholder="Number of subphases in G2M" value="" />
+                        <label for="rate_G2M">Rate of G2M:</label>
+                        <input id="rate_G2M" class="form-control" type="text" name="rate_G2M" placeholder="Rate of G2M" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label for="sbml_file_name">File name for the new SBML model:</label>
+                        <input id="sbml_file_name" class="form-control" type="text" name="sbml_file_name" placeholder="SBML file name, e.g., sbml_model.xml" value="" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </form>
+        </div>
+    </div>
+  </div>
+
   {% block extra_js %}
     <script type="text/javascript">
     $(document).ready(function() {
@@ -205,6 +262,99 @@
                 $('#mdname').val(model_file_sel_str);
                 $('#mddesc').val(model_file_sel_str);
             }
+        });
+        $('#delete-sbml-model').on('click', function(event) {
+            event.preventDefault();
+            $.ajax({
+                url: "/delete_sbml_model/" + $('#new_sbml_model_file_name').val(),
+                type: "POST",
+                success: function(json) {
+                    if (json.error) {
+                        $('#create-sbml-error').text(json.error);
+                    }
+                    else {
+                        $('#create-sbml-error').text('');
+                        $('#create-sbml-success').text('You SBML model data file ' + json.new_model_filename + ' has been deleted successfully.');
+                        $('#delete-sbml-model').hide();
+                        search_str = json.new_model_filename + ":" + json.new_model_filename;
+                        if (model_name_sel_str == search_str)
+                            model_name_sel_str = '';
+                        else {
+                            idx = model_name_sel_str.indexOf(search_str);
+                            if (idx == 0)
+                                model_name_sel_str = model_name_sel_str.substr(search_str.length);
+                            else if (idx > 0)
+                                model_name_sel_str = model_name_sel_str.substr(0, idx) + model_name_sel_str.substr(idx + search_str.length);
+                        }
+                        if (model_file_sel_str.length > 0 && model_name_sel_str.length > 0) {
+                            $('#mdname').val(model_file_sel_str + ";" + model_name_sel_str);
+                            $('#mddesc').val(model_file_sel_str + ";" + model_name_sel_str);
+                        }
+                        else if (model_file_sel_str.length > 0) {
+                            $('#mdname').val(model_file_sel_str);
+                            $('#mddesc').val(model_file_sel_str);
+                        }
+                        else {
+                            $('#mdname').val(model_name_sel_str);
+                            $('#mddesc').val(model_name_sel_str);
+                        }
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    err_display_msg = xhr.status + ": " + xhr.responseText + ". Error Message: " + errmsg;
+                    console.log(err_display_msg);
+                    $('#create-sbml-error').text(err_display_msg);
+                }
+            });
+        });
+
+        $('#create_sbml_form').on('submit', function(event) {
+            event.preventDefault();
+            $.ajax({
+                url: "/create_sbml_model/",
+                type: "POST",
+                data: {
+                    num_G1: $('#num_G1').val(),
+                    rate_G1: $('#rate_G1').val(),
+                    num_S: $('#num_S').val(),
+                    rate_S: $('#rate_S').val(),
+                    num_G2M: $('#num_G2M').val(),
+                    rate_G2M: $('#rate_G2M').val(),
+                    sbml_file_name: $('#sbml_file_name').val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(json) {
+                    $('#create-sbml-model-dialog').modal('hide');
+                    if (json.error) {
+                        $('#create-sbml-error').text(json.error);
+                        $('#create-sbml-success').text('');
+                        $('#delete-sbml-model').hide();
+                    }
+                    else {
+                        $('#create-sbml-error').text('');
+                        $('#create-sbml-success').text('You SBML model data file ' + json.new_model_filename + ' has been created successfully.');
+                        $('#new_sbml_model_file_name').val(json.new_model_filename);
+                        $('#delete-sbml-model').show();
+                        model_name_sel_str += json.new_model_filename + ":" + json.new_model_filename;
+                        if (model_file_sel_str.length > 0) {
+                            $('#mdname').val(model_file_sel_str + ";" + model_name_sel_str);
+                            $('#mddesc').val(model_file_sel_str + ";" + model_name_sel_str);
+                        }
+                        else {
+                            $('#mdname').val(model_name_sel_str);
+                            $('#mddesc').val(model_name_sel_str);
+                        }
+                    }
+                },
+                error: function(xhr, errmsg, err) {
+                    err_display_msg = xhr.status + ": " + xhr.responseText + ". Error Message: " + errmsg;
+                    console.log(err_display_msg);
+                    $('#create-sbml-model-dialog').modal('hide');
+                    $('#create-sbml-error').text(err_display_msg);
+                    $('#create-sbml-success').text('');
+                    $('#delete-sbml-model').hide();
+                }
+            });
         });
      });
     </script>
