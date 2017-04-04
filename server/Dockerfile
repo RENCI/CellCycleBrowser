@@ -11,12 +11,19 @@ RUN unzip StochPy-2.3.zip
 WORKDIR /usr/src/StochPy-2.3
 RUN python setup.py install
 
+# install simplesbml
+WORKDIR /usr/src
+RUN wget https://github.com/sys-bio/simplesbml/archive/master.zip
+RUN unzip master.zip
+WORKDIR /usr/src/simplesbml-master
+RUN python setup.py install
+
 # Cleanup
 RUN apt-get clean
-RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/src/StochPy-2.3.zip /usr/src/StochPy-2.3
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/src/StochPy-2.3.zip /usr/src/StochPy-2.3 /usr/src/master.zip
 
-RUN usermod -u HOST_USER_UID docker
-RUN groupmod -g HOST_USER_GID docker
+RUN usermod -u 1000 docker
+RUN groupmod -g 1000 docker
 
 USER docker
 WORKDIR /home/docker/cellcycle
