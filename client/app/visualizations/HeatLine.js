@@ -62,7 +62,7 @@ HeatLine.layout = function(svg, state) {
   var width = parseInt(svg.style("width"), 10),
       height = parseInt(svg.style("height"), 10);
 
-  var timeExtent = d3.extent(state.data, function(d) { return d.time; });
+  var timeExtent = d3.extent(state.data, function(d) { return d.start; });
 
   var xScale = d3.scaleLinear()
       .domain(state.alignment === "left" ?
@@ -85,18 +85,8 @@ HeatLine.draw = function(svg, layout, state) {
   var width = parseInt(svg.style("width"), 10),
       height = parseInt(svg.style("height"), 10);
 
-  // XXX: Calculate this when receiving data
-  state.data.forEach(function(d, i, a) {
-    if (i < a.length - 1) {
-      d.stop = a[i + 1].time;
-    }
-    else {
-      d.stop = d.time + (d.time - a[i - 1].time);
-    }
-  });
-
   function cellWidth(d) {
-    return layout.xScale(d.stop) - layout.xScale(d.time);
+    return layout.xScale(d.stop) - layout.xScale(d.start);
   }
 
   // Border
@@ -106,9 +96,9 @@ HeatLine.draw = function(svg, layout, state) {
       .style("stroke", "#ddd")
       .style("stroke-width", 4)
     .transition()
-      .attr("x", layout.xScale(state.data[0].time))
-      .attr("width", layout.xScale(state.data[state.data.length - 1].time) -
-                     layout.xScale(state.data[0].time) + 10)
+      .attr("x", layout.xScale(state.data[0].start))
+      .attr("width", layout.xScale(state.data[state.data.length - 1].stop) -
+                     layout.xScale(state.data[0].start))
       .attr("height", height);
 
   // Row
@@ -121,7 +111,7 @@ HeatLine.draw = function(svg, layout, state) {
 
   cell.enter().append("rect")
       .attr("class", "cell")
-      .attr("x", function(d) { return layout.xScale(d.time); })
+      .attr("x", function(d) { return layout.xScale(d.start); })
       .attr("width", cellWidth)
       .attr("height", height)
       .attr("shape-rendering", "crispEdges")
@@ -153,7 +143,7 @@ HeatLine.draw = function(svg, layout, state) {
             .style("stroke", "none");
       })
     .merge(cell).transition()
-      .attr("x", function(d) { return layout.xScale(d.time); })
+      .attr("x", function(d) { return layout.xScale(d.start); })
       .attr("width", cellWidth)
       .attr("height", height)
       .attr("data-original-title", function(d) {
@@ -196,7 +186,7 @@ HeatLine.draw = function(svg, layout, state) {
       .attr("x2", x2)
       .attr("y2", height / 2)
       .style("fill", "none")
-      .style("stroke", phaseColor)      
+      .style("stroke", phaseColor)
       .style("stroke-width", strokeWidth)
       .style("stroke-dasharray", "5,5");
 

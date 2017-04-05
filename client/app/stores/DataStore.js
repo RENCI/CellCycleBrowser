@@ -25,8 +25,6 @@ var data = {
 };
 
 function updateData() {
-  console.log("DATA!");
-
   var data = {};
 
   // Get the list of species present in cell data or model
@@ -37,10 +35,6 @@ function updateData() {
   cellSpecies.concat(modelSpecies).forEach(function(species) {
     if (allSpecies.indexOf(species.name) === -1) allSpecies.push(species.name);
   });
-
-  console.log(allSpecies);
-  console.log(cellData);
-  console.log(simulationOutput);
 
   // Combine cell data and simulation output per species
   data.species = allSpecies.map(function(species) {
@@ -55,10 +49,10 @@ function updateData() {
 
           return {
             name: cell.name,
-            values: cell.features[featureIndex].values.map(function(d) {
+            values: cell.features[featureIndex].values.map(function(d, i, a) {
               return {
                 start: d.time,
-                stop: d.stop,
+                stop: i < a.length - 1 ? a[i + 1].time : d.time + (d.time - a[i - 1].time),
                 value: d.value
               };
             })
@@ -69,10 +63,23 @@ function updateData() {
       }
     }
 
-    console.log(cd);
-
     // Simulation output for this species
     var so = [];
+    simulationOutput.forEach(function(trajectory) {
+      var index = trajectory.species.map(function(s) {
+        return s.name;
+      }).indexOf(species);
+
+      if (index >= 0) {
+        so.push(trajectory.timeSteps.map(function(d, j, a) {
+          return {
+            value: trajectory.species[index].values[j],
+            start: d,
+            stop: j < a.length - 1 ? a[j + 1] : d + (d - a[j - 1])
+          };
+        }));
+      }
+    });
 
     return {
       name: species,
@@ -80,8 +87,6 @@ function updateData() {
       simulationOutput: so
     };
   });
-
-  console.log(data);
 
   return data;
 }

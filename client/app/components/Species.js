@@ -46,8 +46,8 @@ var visColumnStyle = {
 
 function Species(props) {
   // Generate feature data
-  var featureData = props.cells.map(function (cell, i) {
-    return cell.features[props.featureKey].values;
+  var featureData = props.cells.map(function (cell) {
+    return cell.values;
   });
 
   var simulationCollapseId = props.name + "SimulationCollapse";

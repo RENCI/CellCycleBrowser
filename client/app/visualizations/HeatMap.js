@@ -97,20 +97,8 @@ HeatMap.draw = function(svg, layout, state) {
       //.range([0, layout.yScale.bandwidth()]);
       .range([layout.yScale.bandwidth(), layout.yScale.bandwidth()]);
 
-  // XXX: Calculate this when receiving data
-  state.data.forEach(function(d) {
-    d.forEach(function(d, i, a) {
-      if (i < a.length - 1) {
-        d.stop = a[i + 1].time;
-      }
-      else {
-        d.stop = d.time + (d.time - a[i - 1].time);
-      }
-    });
-  });
-
   function cellWidth(d) {
-    return layout.xScale(d.stop) - layout.xScale(d.time);
+    return layout.xScale(d.stop) - layout.xScale(d.start);
   }
 
   var g = svg.select("g")
@@ -127,10 +115,10 @@ HeatMap.draw = function(svg, layout, state) {
       .style("stroke", "#ddd")
       .style("stroke-width", 4)
     .merge(border)//.transition()
-      .attr("x", function(d) { return layout.xScale(d[0].time + rowOffset(d)); })
+      .attr("x", function(d) { return layout.xScale(d[0].start + rowOffset(d)); })
       .attr("y", function(d, i) { return layout.yScale(i); })
       .attr("width", function(d) {
-        return layout.xScale(d[d.length -1].stop) - layout.xScale(d[0].time);
+        return layout.xScale(d[d.length -1].stop) - layout.xScale(d[0].start);
       })
       .attr("height", layout.yScale.bandwidth());
 
@@ -150,7 +138,7 @@ HeatMap.draw = function(svg, layout, state) {
 
   function cells(row, rowIndex) {
     function x(d) {
-      return layout.xScale(d.time + rowOffset(row));
+      return layout.xScale(d.start + rowOffset(row));
     }
 
     // Bind cell data
@@ -498,16 +486,16 @@ HeatMap.draw = function(svg, layout, state) {
 */
   function rowOffset(row) {
     return state.alignment === "right" ?
-           layout.xScale.domain()[1] - row[row.length - 1].time :
-           layout.xScale.domain()[0] - row[0].time;
+           layout.xScale.domain()[1] - row[row.length - 1].start :
+           layout.xScale.domain()[0] - row[0].start;
   }
 
   function color(d) {
 /*
     if (state.phases[0].length > 0) {
       return state.alignment === "right" ?
-              state.colorScale[rowIndex](d.time - row[row.length - 1].time)(d.value) :
-              state.colorScale[rowIndex](d.time - row[0].time)(d.value);
+              state.colorScale[rowIndex](d.start - row[row.length - 1].start)(d.value) :
+              state.colorScale[rowIndex](d.start - row[0].start)(d.value);
     }
     else {
       return state.colorScale(d.value);

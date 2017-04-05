@@ -66,29 +66,29 @@ function phaseColorScale(phases) {
 }
 
 function averageData(data, alignment) {
-  var timeExtent = d3.extent(d3.merge(data), function(d) { return d.time; });
+  var timeExtent = d3.extent(d3.merge(data), function(d) { return d.start; });
 
   var shiftData = data.map(function(d) {
     var valid = d.map(function(d) { return d.value >= 0; });
 
-    var first = d[valid.indexOf(true)].time;
-    var last = d[valid.lastIndexOf(true)].time;
+    var first = d[valid.indexOf(true)].start;
+    var last = d[valid.lastIndexOf(true)].start;
 
     return d.map(function(d) {
       return alignment === "left" ?
-             { value: d.value, time: d.time - (first - timeExtent[0]) } :
-             { value: d.value, time: d.time + (timeExtent[1] - last) }
+             { value: d.value, start: d.start - (first - timeExtent[0]) } :
+             { value: d.value, start: d.start + (timeExtent[1] - last) }
     });
   });
 
   // Get the average time step
-  var timeStep = d3.mean(d3.merge(data.map(function(d) {
-    return d3.pairs(d).map(function(d) { return d[1].time - d[0].time; });
+  var averageTimeStep = d3.mean(d3.merge(data.map(function(d) {
+    return d3.pairs(d).map(function(d) { return d[1].start - d[0].start; });
   })));
 
   // Generate time steps
-  var timeRange = d3.extent(d3.merge(shiftData), function(d) { return d.time; });
-  var timeSteps = d3.range(timeRange[0], timeRange[1] + timeStep, timeStep);
+  var timeRange = d3.extent(d3.merge(shiftData), function(d) { return d.start; });
+  var timeSteps = d3.range(timeRange[0], timeRange[1] + averageTimeStep, averageTimeStep);
 
   // Keep track of time step per array
   var t = shiftData.map(function() { return 0; });
@@ -103,11 +103,11 @@ function averageData(data, alignment) {
       // Find closest time step
       var closest = {
         index: t[i],
-        distance: Math.abs(d[t[i]].time - timeStep)
+        distance: Math.abs(d[t[i]].start - timeStep)
       };
 
       for (var j = t[i] + 1; j < d.length; j++) {
-        var distance = Math.abs(d[j].time - timeStep);
+        var distance = Math.abs(d[j].start - timeStep);
 
         if (distance > closest.distance) {
           break;
@@ -132,7 +132,8 @@ function averageData(data, alignment) {
 
     return {
       value: count > 0 ? value / count : 0,
-      time: timeStep
+      start: timeStep,
+      stop: timeStep + averageTimeStep,
     };
   });
 }

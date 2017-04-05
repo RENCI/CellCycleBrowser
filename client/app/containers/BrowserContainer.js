@@ -15,27 +15,24 @@ var Species = require("../components/Species");
 
 var DataStore = require("../stores/DataStore");
 
-function computeTimeExtent(cellData, simulationOutput) {
-  // Get time extent across cell and simulation data
+function computeTimeExtent(species) {
   var timeExtent = [];
 
-  if (cellData.species.length > 0) {
-    var values = cellData.species[0].cells[0].features[0].values.map(function(d) {
-      return d.time;
+  species.forEach(function(species) {
+    species.cellData.forEach(function(d) {
+      var first = d.values[0];
+      var last = d.values[d.values.length - 1];
+
+      timeExtent.push(first.start, last.stop);
     });
 
-    timeExtent.push(Math.min.apply(null, values));
-    timeExtent.push(Math.max.apply(null, values));
-  }
+    species.simulationOutput.forEach(function(d) {
+      var first = d[0];
+      var last = d[d.length - 1];
 
-  if (simulationOutput.length > 0) {
-    var values = [].concat.apply([], simulationOutput.map(function(trajectory) {
-      return trajectory.timeSteps;
-    }));
-
-    timeExtent.push(Math.min.apply(null, values));
-    timeExtent.push(Math.max.apply(null, values));
-  }
+      timeExtent.push(first.start, last.stop);
+    });
+  });
 
   return [ Math.min.apply(null, timeExtent), Math.max.apply(null, timeExtent) ];
 }
@@ -205,63 +202,22 @@ var BrowserContainer = React.createClass({
     this.setState(getStateFromPhaseOverlayStore());
   },
   render: function() {
-    if (!this.state.featureKey) return null;
+    var species = this.state.data.species;
 
-// XXX: TEST DATA
-//this.state.simulationOutput = testData;
+    if (species.length < 1) return null;
 
     var allPhaseData = phaseData(this.state.simulationOutput);
-
-    // Get the list of species present in cell data or model
-    var cellSpecies = this.state.cellData.species;
-    var modelSpecies = this.state.model.species ? this.state.model.species : [];
-    var allSpecies = [];
-
-    cellSpecies.forEach(function(species) {
-      if (allSpecies.indexOf(species.name) === -1) allSpecies.push(species.name);
-    });
-
-    modelSpecies.forEach(function(species) {
-      if (allSpecies.indexOf(species.name) === -1) allSpecies.push(species.name);
-    });
-
-    var timeExtent = computeTimeExtent(this.state.cellData, this.state.simulationOutput);
+    var timeExtent = computeTimeExtent(species);
 
     // Create GUI components for each species
-    var speciesComponents = allSpecies.map(function(species, i) {
-      // Cell data
-      var cellData = [];
-      for (var j = 0; j < cellSpecies.length; j++) {
-        if (cellSpecies[j].name === species) {
-          cellData = cellSpecies[j].cells;
-          break;
-        }
-      }
-
-      // Simulation output
-      var simulationData = [];
-      this.state.simulationOutput.forEach(function(trajectory) {
-        var index = trajectory.species.map(function(s) {
-          return s.name;
-        }).indexOf(species);
-
-        if (index >= 0) {
-          simulationData.push(trajectory.timeSteps.map(function(d, j) {
-            return {
-              value: trajectory.species[index].values[j],
-              time: d
-            };
-          }));
-        }
-      });
-
+    var speciesComponents = species.map(function(species, i) {
       return (
         <Species
           key={i}
-          name={species}
-          cells={cellData}
+          name={species.name}
+          cells={species.cellData}
           featureKey={this.state.featureKey}
-          simulationData={simulationData}
+          simulationData={species.simulationOutput}
           phases={this.state.showPhaseOverlay ? this.state.activeTrajectory.phases : []}
           phaseData={this.state.showPhaseOverlay ? allPhaseData : [[]]}
           timeExtent={timeExtent}
