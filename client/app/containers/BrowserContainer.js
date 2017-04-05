@@ -15,54 +15,6 @@ var Species = require("../components/Species");
 
 var DataStore = require("../stores/DataStore");
 
-function computeTimeExtent(species) {
-  var timeExtent = [];
-
-  species.forEach(function(species) {
-    species.cellData.forEach(function(d) {
-      var first = d.values[0];
-      var last = d.values[d.values.length - 1];
-
-      timeExtent.push(first.start, last.stop);
-    });
-
-    species.simulationOutput.forEach(function(d) {
-      var first = d[0];
-      var last = d[d.length - 1];
-
-      timeExtent.push(first.start, last.stop);
-    });
-  });
-
-  return [ Math.min.apply(null, timeExtent), Math.max.apply(null, timeExtent) ];
-}
-
-function phaseData(simulationOutput) {
-  // Map phase time steps to actual time
-  return simulationOutput.map(function(trajectory) {
-    var timeSteps = trajectory.timeSteps;
-
-    return trajectory.phases.map(function(phase) {
-      return {
-        name: phase.name,
-        start: timeSteps[phase.start],
-        stop: timeSteps[phase.stop],
-        subPhases: phase.subPhases.map(function(subPhase) {
-          return {
-            name: subPhase.name,
-            start: timeSteps[subPhase.start],
-            stop: timeSteps[subPhase.stop]
-          };
-        }).sort(function(a, b) {
-          return a.start - b.start;
-        })
-      };
-    }).sort(function(a, b) {
-      return a.start - b.start;
-    });
-  });
-}
-
 function getStateFromDataStore() {
   return {
     data: DataStore.getData()
@@ -206,9 +158,6 @@ var BrowserContainer = React.createClass({
 
     if (species.length < 1) return null;
 
-    var allPhaseData = phaseData(this.state.simulationOutput);
-    var timeExtent = computeTimeExtent(species);
-
     // Create GUI components for each species
     var speciesComponents = species.map(function(species, i) {
       return (
@@ -219,8 +168,8 @@ var BrowserContainer = React.createClass({
           featureKey={this.state.featureKey}
           simulationData={species.simulationOutput}
           phases={this.state.showPhaseOverlay ? this.state.activeTrajectory.phases : []}
-          phaseData={this.state.showPhaseOverlay ? allPhaseData : [[]]}
-          timeExtent={timeExtent}
+          phaseData={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}
+          timeExtent={this.state.data.timeExtent}
           alignment={this.state.alignment}
           activePhase={this.state.activePhase}
           phaseOverlayOpacity={this.state.phaseOverlayOpacity} />
@@ -233,10 +182,10 @@ var BrowserContainer = React.createClass({
         <BrowserControls
           cellDataList={this.state.cellDataList}
           featureList={this.state.featureList}
-          timeExtent={timeExtent} />
+          timeExtent={this.state.data.timeExtent} />
         <Phases
-          phaseData={allPhaseData}
-          timeExtent={timeExtent}
+          phaseData={this.state.data.phases}
+          timeExtent={this.state.data.timeExtent}
           alignment={this.state.alignment}
           activeTrajectory={this.state.activeTrajectory}
           activePhase={this.state.activePhase} />
