@@ -53,6 +53,8 @@ HeatMap.update = function(element, state) {
 //      .attr("width", props.width)
 //      .attr("height", props.height);
 
+console.log(state.data);
+
   // Filter invalid values
   state.data = state.data.map(function(d) {
     return d.filter(function(d) {

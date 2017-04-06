@@ -45,20 +45,15 @@ var visColumnStyle = {
 };
 
 function Species(props) {
-  // Generate feature data
-  var featureData = props.cells.map(function (cell) {
-    return cell.values;
-  });
-
-  var simulationCollapseId = props.name + "SimulationCollapse";
-  var cellDataCollapseId = props.name + "CellDataCollapse";
+  var simulationCollapseId = props.species.name + "SimulationCollapse";
+  var cellDataCollapseId = props.species.name + "CellDataCollapse";
 
   /// XXX: Copied from PhaseLineContainer
   function averagePhaseData(data, alignment) {
     var average = [];
 
-    data.forEach(function(trajectory, i) {
-      trajectory.forEach(function(phase, j) {
+    data.forEach(function (trajectory, i) {
+      trajectory.forEach(function (phase, j) {
         if (i === 0) {
           average.push({
             name: phase.name,
@@ -72,7 +67,7 @@ function Species(props) {
       });
     });
 
-    average.forEach(function(phase) {
+    average.forEach(function (phase) {
       phase.start /= data.length;
       phase.stop /= data.length;
     });
@@ -85,11 +80,11 @@ function Species(props) {
       <div className="row">
         <div className="col-sm-2">
           <div style={speciesLabelStyle}>
-            {props.name}
+            {props.species.name}
           </div>
         </div>
       </div>
-      {props.simulationData.length > 0 ?
+      {props.species.simulationOutput.length > 0 ?
         <div>
           <div className="row" style={rowStyle}>
             <div className="col-sm-2 text-left" style={buttonColumnStyle}>
@@ -99,29 +94,33 @@ function Species(props) {
               </div>
             </div>
             <div className="col-sm-10" style={visColumnStyle}>
-              <HeatLineContainer
-                data={props.simulationData}
-                phases={averagePhaseData(props.phaseData)}
+              <HeatMapContainer
+                data={[props.species.simulationOutputAverage]}
+                dataExtent={props.species.simulationOutputExtent}
+                phases={[averagePhaseData(props.phaseData)]}
                 timeExtent={props.timeExtent}
                 alignment={props.alignment}
                 activePhase={props.activePhase}
-                phaseOverlayOpacity={props.phaseOverlayOpacity} />
+                phaseOverlayOpacity={props.phaseOverlayOpacity}
+                height={34} />
             </div>
           </div>
           <div className="row in" id={simulationCollapseId}>
             <div className="col-sm-10 col-sm-offset-2">
               <HeatMapContainer
-                data={props.simulationData}
+                data={props.species.simulationOutput}
+                dataExtent={props.species.simulationOutputExtent}
                 phases={props.phaseData}
                 timeExtent={props.timeExtent}
                 alignment={props.alignment}
                 activePhase={props.activePhase}
-                phaseOverlayOpacity={props.phaseOverlayOpacity} />
+                phaseOverlayOpacity={props.phaseOverlayOpacity}
+                height={props.species.simulationOutput.length * 20} />
             </div>
           </div>
         </div>
       : null}
-      {featureData.length > 0 ?
+      {props.species.cellData.length > 0 ?
         <div>
           <div className="row" style={rowStyle}>
             <div className="col-sm-2 text-left" style={buttonColumnStyle}>
@@ -131,24 +130,28 @@ function Species(props) {
               </div>
             </div>
             <div className="col-sm-10" style={visColumnStyle}>
-              <HeatLineContainer
-                data={featureData}
-                phases={props.phases}
+              <HeatMapContainer
+                data={[props.species.cellDataAverage]}
+                dataExtent={props.species.cellDataExtent}
+                phases={[props.phases]}
                 timeExtent={props.timeExtent}
                 alignment={props.alignment}
                 activePhase={props.activePhase}
-                phaseOverlayOpacity={props.phaseOverlayOpacity} />
+                phaseOverlayOpacity={props.phaseOverlayOpacity}
+                height={34} />
             </div>
           </div>
           <div className="row in" id={cellDataCollapseId}>
             <div className="col-sm-10 col-sm-offset-2">
               <HeatMapContainer
-                data={featureData}
-                phases={props.cells.map(function() { return props.phases; })}
+                data={props.species.cellData.map(function (d) { return d.values; })}
+                dataExtent={props.species.cellDataExtent}
+                phases={props.species.cellData.map(function () { return props.phases; })}
                 timeExtent={props.timeExtent}
                 alignment={props.alignment}
                 activePhase={props.activePhase}
-                phaseOverlayOpacity={props.phaseOverlayOpacity} />
+                phaseOverlayOpacity={props.phaseOverlayOpacity}
+                height={props.species.cellData.length * 20} />
             </div>
           </div>
         </div>
@@ -158,16 +161,14 @@ function Species(props) {
 }
 
 Species.propTypes = {
-  name: PropTypes.string.isRequired,
-  cells: PropTypes.arrayOf(PropTypes.object).isRequired,
-  featureKey: PropTypes.string.isRequired,
-  simulationData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  species: PropTypes.object.isRequired,
   phases: PropTypes.arrayOf(PropTypes.object).isRequired,
   phaseData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
-  alignment: PropTypes.string.isRequired,
   activePhase: PropTypes.string.isRequired,
-  phaseOverlayOpacity: PropTypes.number.isRequired
+  phaseOverlayOpacity: PropTypes.number.isRequired,
+
+  alignment: PropTypes.string.isRequired
 };
 
 module.exports = Species;

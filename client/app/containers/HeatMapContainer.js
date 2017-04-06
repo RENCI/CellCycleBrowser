@@ -5,7 +5,7 @@ var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
 var HeatMap = require("../visualizations/HeatMap");
 
-function colorScale(data) {
+function colorScale(dataExtent) {
   // TODO: Currently normalizing per heatmap. Might want this to be global
   // across all heatmaps
 /*
@@ -45,11 +45,15 @@ function colorScale(data) {
         .domain(extent)
         .range(["white", "black"]);
 */
-
+/*
   return d3.scaleLinear()
       .domain(d3.extent(d3.merge(data).filter(function(d) {
         return d.value > -1;
       }), function(d) { return d.value; }))
+      .range(["white", "black"]);
+*/
+  return d3.scaleLinear()
+      .domain(dataExtent)
       .range(["white", "black"]);
 }
 
@@ -61,11 +65,13 @@ function phaseColorScale(phases) {
 var HeatMapContainer = React.createClass ({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+    dataExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
     phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     timeExtent: PropTypes.arrayOf(PropTypes.number),
     alignment: PropTypes.string.isRequired,
     activePhase: PropTypes.string.isRequired,
-    phaseOverlayOpacity: PropTypes.number.isRequired
+    phaseOverlayOpacity: PropTypes.number.isRequired,
+    height: PropTypes.number.isRequired
   },
   componentDidMount: function() {
     HeatMap.create(
@@ -83,7 +89,8 @@ var HeatMapContainer = React.createClass ({
   getChartState: function() {
     return {
       data: this.props.data,
-      colorScale: colorScale(this.props.data),
+      dataExtent: this.props.dataExtent,
+      colorScale: colorScale(this.props.dataExtent),
       phases: this.props.phases,
       phaseColorScale: phaseColorScale(this.props.phases),
       timeExtent: this.props.timeExtent,
@@ -98,7 +105,7 @@ var HeatMapContainer = React.createClass ({
   render: function() {
     // Style needs to be defined here to access data length
     var style = {
-      height: this.props.data.length * 20,
+      height: this.props.height,
       borderLeft: "2px solid #ddd",
       backgroundColor: "#eee"
     };
