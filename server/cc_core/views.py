@@ -186,6 +186,12 @@ def add_profile_to_server(request):
             filename_to_idx[mdselname] = idx
             idx += 1
 
+        new_created_model_name = request.POST.get('new_sbml_model_file_name', '')
+        if new_created_model_name:
+            model_data_list.append({'fileName': new_created_model_name})
+            filename_to_idx[new_created_model_name] = idx
+            idx += 1
+
         mdnames = request.POST.get('mdname')
         if ';' in mdnames:
             mdname_list = mdnames.split(';')
@@ -283,8 +289,8 @@ def delete_sbml_model(request, filename):
     try:
         if os.path.isfile(full_fname):
             # delete this model file
-            os.remove(filename)
-            response_data["success"] = 'The SBML model data file has been deleted successfully'
+            os.remove(full_fname)
+            response_data["new_model_filename"] = filename
             return HttpResponse(
                 json.dumps(response_data),
                 content_type='application/json'

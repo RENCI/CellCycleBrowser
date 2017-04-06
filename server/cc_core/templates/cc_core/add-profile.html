@@ -54,10 +54,9 @@
             <a type="button" class="btn btn-default" data-toggle="modal" data-target="#create-sbml-model-dialog">Create your own SBML model data</a>
             <p class="help-block">You can create your own SBML sequential model data where each subphase follows over each other.</p>
             <input type="hidden" id="new_sbml_model_file_name" name="new_sbml_model_file_name" value="">
-            <h2 id="create-sbml-error" style="color: red"></h2>
-            <h2 id="create-sbml-success" style="color: green"></h2>
-            <a id="delete-sbml-model" type="button" class="btn-link hidden-form"></a>
-
+            <a id="delete-sbml-model" type="button" class="btn btn-default hidden-form" data-toggle="modal" data-target="#delete-sbml-model-dialog">Delete SBML model data you just created</a>
+            <p id="delete-sbml-model-help-block" class="help-block">You can delete the just created SBML model data if you don't want it to be included in the profile.</p>
+            <h2 id="create-or-delete-sbml-msg"></h2>
         </div>
         <div class="form-group">
             <label for="model_sel_names">Select existing SBML model data</label>
@@ -142,6 +141,24 @@
                     <button type="submit" class="btn btn-primary">Create</button>
                 </div>
             </form>
+        </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="delete-sbml-model-dialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="delete-sbml-model-title">Delete the new SBML model</h4>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete the new SBML model you just created?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                <a id="delete-sbml-model-btn" type="button" class="btn btn-danger">Delete</a>
+            </div>
         </div>
     </div>
   </div>
@@ -263,19 +280,25 @@
                 $('#mddesc').val(model_file_sel_str);
             }
         });
-        $('#delete-sbml-model').on('click', function(event) {
+        $('#delete-sbml-model-btn').on('click', function(event) {
             event.preventDefault();
             $.ajax({
                 url: "/delete_sbml_model/" + $('#new_sbml_model_file_name').val(),
                 type: "POST",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
                 success: function(json) {
+                    $('#delete-sbml-model-dialog').modal('hide');
                     if (json.error) {
-                        $('#create-sbml-error').text(json.error);
+                        $('#create-or-delete-sbml-msg').text(json.error);
+                        $('#create-or-delete-sbml-msg').css({"color":"red"});
                     }
                     else {
-                        $('#create-sbml-error').text('');
-                        $('#create-sbml-success').text('You SBML model data file ' + json.new_model_filename + ' has been deleted successfully.');
+                        $('#create-or-delete-sbml-msg').text('Your SBML model data file ' + json.new_model_filename + ' has been deleted successfully.');
+                        $('#create-or-delete-sbml-msg').css({"color":"green"});
                         $('#delete-sbml-model').hide();
+                        $('#delete-sbml-model-help-block').hide();
                         search_str = json.new_model_filename + ":" + json.new_model_filename;
                         if (model_name_sel_str == search_str)
                             model_name_sel_str = '';
@@ -303,7 +326,9 @@
                 error: function(xhr, errmsg, err) {
                     err_display_msg = xhr.status + ": " + xhr.responseText + ". Error Message: " + errmsg;
                     console.log(err_display_msg);
-                    $('#create-sbml-error').text(err_display_msg);
+                    $('#create-or-delete-sbml-msg').text(err_display_msg);
+                    $('#create-or-delete-sbml-msg').css({"color":"red"});
+                    $('#delete-sbml-model-dialog').modal('hide');
                 }
             });
         });
@@ -326,15 +351,17 @@
                 success: function(json) {
                     $('#create-sbml-model-dialog').modal('hide');
                     if (json.error) {
-                        $('#create-sbml-error').text(json.error);
-                        $('#create-sbml-success').text('');
+                        $('#create-or-delete-sbml-msg').text(json.error);
+                        $('#create-or-delete-sbml-msg').css({"color":"red"});
                         $('#delete-sbml-model').hide();
+                        $('#delete-sbml-model-help-block').hide();
                     }
                     else {
-                        $('#create-sbml-error').text('');
-                        $('#create-sbml-success').text('You SBML model data file ' + json.new_model_filename + ' has been created successfully.');
+                        $('#create-or-delete-sbml-msg').text('Your SBML model data file ' + json.new_model_filename + ' has been created successfully. However, you can delete the new SBML model data if you want by clicking on the button above.');
+                        $('#create-or-delete-sbml-msg').css({"color":"green"});
                         $('#new_sbml_model_file_name').val(json.new_model_filename);
                         $('#delete-sbml-model').show();
+                        $('#delete-sbml-model-help-block').show();
                         model_name_sel_str += json.new_model_filename + ":" + json.new_model_filename;
                         if (model_file_sel_str.length > 0) {
                             $('#mdname').val(model_file_sel_str + ";" + model_name_sel_str);
@@ -350,9 +377,10 @@
                     err_display_msg = xhr.status + ": " + xhr.responseText + ". Error Message: " + errmsg;
                     console.log(err_display_msg);
                     $('#create-sbml-model-dialog').modal('hide');
-                    $('#create-sbml-error').text(err_display_msg);
-                    $('#create-sbml-success').text('');
+                    $('#create-or-delete-sbml-msg').text(err_display_msg);
+                    $('#create-or-delete-sbml-msg').css({"color":"red"});
                     $('#delete-sbml-model').hide();
+                    $('#delete-sbml-model-help-block').hide();
                 }
             });
         });
