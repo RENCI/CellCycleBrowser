@@ -55,9 +55,10 @@
             <p class="help-block">You can create your own SBML sequential model data where each subphase follows over each other.</p>
             <input type="hidden" id="new_sbml_model_file_name" name="new_sbml_model_file_name" value="">
             <a id="delete-sbml-model" type="button" class="btn btn-default hidden-form" data-toggle="modal" data-target="#delete-sbml-model-dialog">Delete SBML model data you just created</a>
-            <p id="delete-sbml-model-help-block" class="help-block">You can delete the just created SBML model data if you don't want it to be included in the profile.</p>
+            <p id="delete-sbml-model-help-block" class="help-block hidden-form">You can delete the just created SBML model data if you don't want it to be included in the profile.</p>
             <h2 id="create-or-delete-sbml-msg"></h2>
         </div>
+        <hr>
         <div class="form-group">
             <label for="model_sel_names">Select existing SBML model data</label>
             <select class="form-control" name="model_sel_names" id="model_sel_names" multiple>
