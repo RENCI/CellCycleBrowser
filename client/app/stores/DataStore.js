@@ -17,7 +17,7 @@ var simulationOutput = [];
 
 // Input parameters
 var feature = "";
-var alignment = "";
+var alignment = AlignmentStore.getAlignment();
 
 // Output data
 var data = {
@@ -33,25 +33,31 @@ function updateData() {
   // Compute time extent across all data
   data.timeExtent = computeTimeExtent(data.species);
 
+  // Align data
+  alignData(data.species, data.timeExtent, alignment);
+
+  // Average data
+  averageData(data.species);
+
   // Map phase time steps to actual time
   data.phases = mapPhases(simulationOutput);
 
   function mapSpecies(cellData, model) {
     // Get the list of species present in cell data or model
-    var cellSpecies = cellData.species;
+    var cellSpecies = cellData.species ? cellData.species : [];
     var modelSpecies = model.species ? model.species : [];
-    var allSpecies = [];
+    var speciesNames = [];
 
     cellSpecies.concat(modelSpecies).forEach(function (species) {
-      if (allSpecies.indexOf(species.name) === -1) allSpecies.push(species.name);
+      if (speciesNames.indexOf(species.name) === -1) speciesNames.push(species.name);
     });
 
     // Combine cell data and simulation output per species
-    return allSpecies.map(function (species) {
+    return speciesNames.map(function (speciesName) {
       // Cell data for this species
       var cd = [];
       for (var i = 0; i < cellSpecies.length; i++) {
-        if (cellSpecies[i].name === species) {
+        if (cellSpecies[i].name === speciesName) {
           cd = cellSpecies[i].cells.map(function (cell) {
             var featureIndex = cell.features.map(function (d) {
               return d.name;
@@ -65,7 +71,9 @@ function updateData() {
                   stop: i < a.length - 1 ? a[i + 1].time : d.time + (d.time - a[i - 1].time),
                   value: d.value
                 };
-              }).filter(function (d) { return d.value >= 0; })
+              }).filter(function (d) {
+                return !isNaN(d.value);
+              })
             };
           });
 
@@ -78,7 +86,7 @@ function updateData() {
       simulationOutput.forEach(function (trajectory) {
         var index = trajectory.species.map(function (s) {
           return s.name;
-        }).indexOf(species);
+        }).indexOf(speciesName);
 
         if (index >= 0) {
           so.push(trajectory.timeSteps.map(function (d, j, a) {
@@ -92,17 +100,103 @@ function updateData() {
       });
 
       return {
-        name: species,
+        name: speciesName,
         cellData: cd,
-        cellDataAverage: averageData(cd.map(function (d) { return d.values; })),
         cellDataExtent: dataExtent(cd.map(function(d) { return d.values; })),
         simulationOutput: so,
-        simulationOutputAverage: averageData(so),
         simulationOutputExtent: dataExtent(so)
       };
     });
+  }
 
-    function averageData(timeSeries) {
+  function dataExtent(timeSeries) {
+    if (timeSeries.length === 0) return [];
+
+    var min = Math.min.apply(null, timeSeries.map(function (d) {
+      return Math.min.apply(null, d.map(function (d) { return d.value; }));
+    }));
+
+    var max = Math.max.apply(null, timeSeries.map(function (d) {
+      return Math.max.apply(null, d.map(function (d) { return d.value; }));
+    }));
+
+    return [min, max];
+  }
+
+  function computeTimeExtent(species) {
+    var timeExtent = [];
+
+    species.forEach(function(species) {
+      species.cellData.forEach(function(d) {
+        var first = d.values[0];
+        var last = d.values[d.values.length - 1];
+
+        timeExtent.push(first.start, last.stop);
+      });
+
+      species.simulationOutput.forEach(function(d) {
+        var first = d[0];
+        var last = d[d.length - 1];
+
+        timeExtent.push(first.start, last.stop);
+      });
+    });
+
+    return [ Math.min.apply(null, timeExtent), Math.max.apply(null, timeExtent) ];
+  }
+
+  function alignData(species, timeExtent, alignment) {
+    species.forEach(function (species) {
+      species.cellData.map(function (d) {
+        return d.values;
+      }).forEach(align);
+
+      species.simulationOutput.forEach(align);
+    });
+
+    function align(timeSeries) {
+      if (alignment === "left") {
+        var shift = timeExtent[0] - timeSeries[0].start;
+
+        timeSeries.forEach(function(d) {
+          d.start += shift;
+          d.stop += shift;
+        });
+      }
+      else if (alignment === "right") {
+        var shift = timeExtent[1] - timeSeries[timeSeries.length - 1].stop;
+
+        timeSeries.forEach(function(d) {
+          d.start += shift;
+          d.stop += shift;
+        });
+      }
+      else if (alignment === "justify") {
+        // Domain and range
+        var d0 = timeSeries[0].start;
+        var dw = timeSeries[timeSeries.length - 1].stop - d0;
+        var r0 = timeExtent[0];
+        var rw = timeExtent[1] - r0;
+
+        function justify(x) {
+          return r0 + (x - d0) / dw * rw;
+        }
+
+        timeSeries.forEach(function(d) {
+          d.start = justify(d.start);
+          d.stop = justify(d.stop);
+        });
+      }
+    }
+  }
+
+  function averageData(species) {
+    species.forEach( function(species) {
+      species.cellDataAverage = average(species.cellData.map(function (d) { return d.values; }));
+      species.simulationOutputAverage = average(species.simulationOutput);
+    });
+
+    function average(timeSeries) {
       if (timeSeries.length === 0) return [];
 
       // Get the average time step
@@ -133,15 +227,15 @@ function updateData() {
       }
 
       // Keep track of time step per array
-      var t = timeSeries.map(function () { return 0; });
+      var t = timeSeries.map(function () {
+        return 0;
+      });
 
       timeSteps.forEach(function (timeStep) {
         var value = 0;
         var count = 0;
 
         timeSeries.forEach(function (d, i) {
-          if (t[i] === d.length -1) return;
-
           // Find overlapping time steps
           for (var j = t[i]; j < d.length; j++) {
             if (d[j].stop >= timeStep.start && d[j].start <= timeStep.stop) {
@@ -149,54 +243,17 @@ function updateData() {
               count++;
               t[i] = j;
             }
+            else if (d[j].start > timeStep.stop) {
+              break;
+            }
           }
         });
 
         timeStep.value = count > 0 ? value / count : 0;
       });
 
-      console.log(timeSteps);
-
       return timeSteps;
     }
-  }
-
-  function dataExtent(timeSeries) {
-    if (timeSeries.length === 0) return [];
-
-    var min = Math.min.apply(null, timeSeries.map(function (d) {
-      return Math.min.apply(null, d.map(function (d) { return d.value; }));
-    }));
-
-    var max = Math.max.apply(null, timeSeries.map(function (d) {
-      return Math.max.apply(null, d.map(function (d) { return d.value; }));
-    }));
-
-    console.log(min, max);
-
-    return [min, max];
-  }
-
-  function computeTimeExtent(species) {
-    var timeExtent = [];
-
-    species.forEach(function(species) {
-      species.cellData.forEach(function(d) {
-        var first = d.values[0];
-        var last = d.values[d.values.length - 1];
-
-        timeExtent.push(first.start, last.stop);
-      });
-
-      species.simulationOutput.forEach(function(d) {
-        var first = d[0];
-        var last = d[d.length - 1];
-
-        timeExtent.push(first.start, last.stop);
-      });
-    });
-
-    return [ Math.min.apply(null, timeExtent), Math.max.apply(null, timeExtent) ];
   }
 
   function mapPhases(simulationOutput) {

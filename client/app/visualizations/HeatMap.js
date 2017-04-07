@@ -53,15 +53,6 @@ HeatMap.update = function(element, state) {
 //      .attr("width", props.width)
 //      .attr("height", props.height);
 
-console.log(state.data);
-
-  // Filter invalid values
-  state.data = state.data.map(function(d) {
-    return d.filter(function(d) {
-      return d.value >= 0;
-    });
-  });
-
   var layout = this.layout(svg, state);
 
   this.draw(svg, layout, state);
@@ -117,7 +108,7 @@ HeatMap.draw = function(svg, layout, state) {
       .style("stroke", "#ddd")
       .style("stroke-width", 4)
     .merge(border)//.transition()
-      .attr("x", function(d) { return layout.xScale(d[0].start + rowOffset(d)); })
+      .attr("x", function(d) { return layout.xScale(d[0].start); })
       .attr("y", function(d, i) { return layout.yScale(i); })
       .attr("width", function(d) {
         return layout.xScale(d[d.length -1].stop) - layout.xScale(d[0].start);
@@ -140,7 +131,7 @@ HeatMap.draw = function(svg, layout, state) {
 
   function cells(row, rowIndex) {
     function x(d) {
-      return layout.xScale(d.start + rowOffset(row));
+      return layout.xScale(d.start);
     }
 
     // Bind cell data
@@ -190,7 +181,7 @@ HeatMap.draw = function(svg, layout, state) {
         .style("fill", function(d) { return color(d, row, rowIndex); });
 
     // Exit
-    cell.exit().transition()
+    cell.exit()//.transition()
         .style("fill", "white")
         .remove();
   }
@@ -486,11 +477,6 @@ HeatMap.draw = function(svg, layout, state) {
         .remove();
   }
 */
-  function rowOffset(row) {
-    return state.alignment === "right" ?
-           layout.xScale.domain()[1] - row[row.length - 1].start :
-           layout.xScale.domain()[0] - row[0].start;
-  }
 
   function color(d) {
 /*

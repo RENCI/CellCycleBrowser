@@ -67,12 +67,8 @@ function createCellData(cellData) {
             return {
               name: d.key,
               values: timeKeys.map(function(key) {
-                var v = +d.values[0][key];
-
-                if (isNaN(v)) v = -1;
-
                 return {
-                  value: v,
+                  value: +d.values[0][key],
                   time: +key / 60
                 };
               })

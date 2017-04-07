@@ -12,7 +12,7 @@ function AlignmentSelect(props) {
   }
 
   function middleClick() {
-//    props.onClick("justify");
+    props.onClick("justify");
   }
 
   function rightClick() {
@@ -28,12 +28,12 @@ function AlignmentSelect(props) {
             <span className="glyphicon glyphicon-align-left" style={iconStyle}>
             </span>
           </label>
-          <label className="btn btn-default" onClick={middleClick} disabled>
+          <label className="btn btn-default" onClick={middleClick}>
             <input type="radio" />
             <span className="glyphicon glyphicon-align-justify" style={iconStyle}>
             </span>
           </label>
-          <label className="btn btn-default"  onClick={rightClick} disabled>
+          <label className="btn btn-default" onClick={rightClick}>
             <input type="radio" />
             <span className="glyphicon glyphicon-align-right" style={iconStyle}>
             </span>

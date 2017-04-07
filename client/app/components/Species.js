@@ -99,7 +99,6 @@ function Species(props) {
                 dataExtent={props.species.simulationOutputExtent}
                 phases={[averagePhaseData(props.phaseData)]}
                 timeExtent={props.timeExtent}
-                alignment={props.alignment}
                 activePhase={props.activePhase}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
                 height={34} />
@@ -112,7 +111,6 @@ function Species(props) {
                 dataExtent={props.species.simulationOutputExtent}
                 phases={props.phaseData}
                 timeExtent={props.timeExtent}
-                alignment={props.alignment}
                 activePhase={props.activePhase}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
                 height={props.species.simulationOutput.length * 20} />
@@ -135,7 +133,6 @@ function Species(props) {
                 dataExtent={props.species.cellDataExtent}
                 phases={[props.phases]}
                 timeExtent={props.timeExtent}
-                alignment={props.alignment}
                 activePhase={props.activePhase}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
                 height={34} />
@@ -148,7 +145,6 @@ function Species(props) {
                 dataExtent={props.species.cellDataExtent}
                 phases={props.species.cellData.map(function () { return props.phases; })}
                 timeExtent={props.timeExtent}
-                alignment={props.alignment}
                 activePhase={props.activePhase}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
                 height={props.species.cellData.length * 20} />
