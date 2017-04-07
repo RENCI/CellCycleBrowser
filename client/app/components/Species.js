@@ -48,33 +48,6 @@ function Species(props) {
   var simulationCollapseId = props.species.name + "SimulationCollapse";
   var cellDataCollapseId = props.species.name + "CellDataCollapse";
 
-  /// XXX: Copied from PhaseLineContainer
-  function averagePhaseData(data, alignment) {
-    var average = [];
-
-    data.forEach(function (trajectory, i) {
-      trajectory.forEach(function (phase, j) {
-        if (i === 0) {
-          average.push({
-            name: phase.name,
-            start: 0,
-            stop: 0
-          });
-        }
-
-        average[j].start += phase.start;
-        average[j].stop += phase.stop;
-      });
-    });
-
-    average.forEach(function (phase) {
-      phase.start /= data.length;
-      phase.stop /= data.length;
-    });
-
-    return average;
-  }
-
   return (
     <div className="text-left" style={outerStyle}>
       <div className="row">
@@ -97,7 +70,7 @@ function Species(props) {
               <HeatMapContainer
                 data={[props.species.simulationOutputAverage]}
                 dataExtent={props.species.simulationOutputExtent}
-                phases={[averagePhaseData(props.phaseData)]}
+                phases={[props.phaseAverage]}
                 timeExtent={props.timeExtent}
                 activePhase={props.activePhase}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
@@ -162,9 +135,7 @@ Species.propTypes = {
   phaseData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   activePhase: PropTypes.string.isRequired,
-  phaseOverlayOpacity: PropTypes.number.isRequired,
-
-  alignment: PropTypes.string.isRequired
+  phaseOverlayOpacity: PropTypes.number.isRequired
 };
 
 module.exports = Species;

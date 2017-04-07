@@ -22,7 +22,7 @@ function colorScale(data) {
       .domain(data[0].map(function(d) { return d.name; }));
 }
 
-function averageData(data, alignment) {
+function averageData(data) {
   var average = [];
 
   data.forEach(function(trajectory, i) {
@@ -52,7 +52,6 @@ var PhaseLineContainer = React.createClass ({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
-    alignment: PropTypes.string.isRequired,
     active: PropTypes.bool.isRequired,
     activePhase: PropTypes.string.isRequired
   },
@@ -71,10 +70,9 @@ var PhaseLineContainer = React.createClass ({
   },
   getChartState: function() {
     return {
-      data: averageData(this.props.data, this.props.alignment),
+      data: averageData(this.props.data),
       colorScale: colorScale(this.props.data),
       timeExtent: this.props.timeExtent,
-      alignment: this.props.alignment,
       active: this.props.active,
       activePhase: this.props.activePhase,
       selectTrajectory: this.selectTrajectory,

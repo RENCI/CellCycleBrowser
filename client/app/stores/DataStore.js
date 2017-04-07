@@ -23,6 +23,7 @@ var alignment = AlignmentStore.getAlignment();
 var data = {
   species: [],
   phases: [],
+  phaseAverage: [],
   timeExtent: []
 };
 
@@ -40,7 +41,10 @@ function updateData() {
   averageData(data.species);
 
   // Map phase time steps to actual time
-  data.phases = mapPhases(simulationOutput);
+  data.phases = mapPhases(simulationOutput, data.timeExtent, alignment);
+
+  // Average phases
+  data.phaseAverage = averagePhases(data.phases);
 
   function mapSpecies(cellData, model) {
     // Get the list of species present in cell data or model
@@ -256,20 +260,43 @@ function updateData() {
     }
   }
 
-  function mapPhases(simulationOutput) {
+  function mapPhases(simulationOutput, timeExtent, alignment) {
     return simulationOutput.map(function(trajectory) {
       var timeSteps = trajectory.timeSteps;
+
+      // XXX: Return a closure to save state
+      function align(x) {
+        if (alignment === "left") {
+          var shift = timeExtent[0] - timeSteps[0];
+
+          return x + shift;
+        }
+        else if (alignment === "right") {
+          var shift = timeExtent[1] - timeSteps[timeSteps.length - 1];
+
+          return x + shift;
+        }
+        else if (alignment === "justify") {
+          // Domain and range
+          var d0 = timeSteps[0];
+          var dw = timeSteps[timeSteps.length - 1] - d0;
+          var r0 = timeExtent[0];
+          var rw = timeExtent[1] - r0;
+
+          return r0 + (x - d0) / dw * rw
+        }
+      }
 
       return trajectory.phases.map(function(phase) {
         return {
           name: phase.name,
-          start: timeSteps[phase.start],
-          stop: timeSteps[phase.stop],
+          start: align(timeSteps[phase.start]),
+          stop: align(timeSteps[phase.stop]),
           subPhases: phase.subPhases.map(function(subPhase) {
             return {
               name: subPhase.name,
-              start: timeSteps[subPhase.start],
-              stop: timeSteps[subPhase.stop]
+              start: align(timeSteps[subPhase.start]),
+              stop: align(timeSteps[subPhase.stop])
             };
           }).sort(function(a, b) {
             return a.start - b.start;
@@ -279,6 +306,32 @@ function updateData() {
         return a.start - b.start;
       });
     });
+  }
+
+  function averagePhases(phases) {
+    var average = [];
+
+    phases.forEach(function (trajectory, i) {
+      trajectory.forEach(function (phase, j) {
+        if (i === 0) {
+          average.push({
+            name: phase.name,
+            start: 0,
+            stop: 0
+          });
+        }
+
+        average[j].start += phase.start;
+        average[j].stop += phase.stop;
+      });
+    });
+
+    average.forEach(function (phase) {
+      phase.start /= phases.length;
+      phase.stop /= phases.length;
+    });
+
+    return average;
   }
 }
 

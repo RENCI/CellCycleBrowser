@@ -16,7 +16,6 @@ var PhaseMapContainer = React.createClass ({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     timeExtent: PropTypes.arrayOf(PropTypes.number),
-    alignment: PropTypes.string.isRequired,
     activeTrajectory: PropTypes.object.isRequired,
     activePhase: PropTypes.string.isRequired
   },
@@ -38,7 +37,6 @@ var PhaseMapContainer = React.createClass ({
       data: this.props.data,
       colorScale: colorScale(this.props.data),
       timeExtent: this.props.timeExtent,
-      alignment: this.props.alignment,
       activeTrajectory: this.props.activeTrajectory,
       activePhase: this.props.activePhase,
       selectTrajectory: this.selectTrajectory,

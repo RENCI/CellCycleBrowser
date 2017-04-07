@@ -61,7 +61,7 @@ function Phases(props) {
           <TimeScaleContainer timeExtent={props.timeExtent} />
         </div>
       </div>
-      {props.phaseData.length > 0 ?
+      {props.phases.length > 0 ?
         <div>
           <div className="row" style={rowStyle}>
             <div className="col-sm-2 text-left" style={buttonColumnStyle}>
@@ -72,9 +72,8 @@ function Phases(props) {
             </div>
             <div className="col-sm-10" style={visColumnStyle}>
               <PhaseLineContainer
-                data={props.phaseData}
+                data={props.phases}
                 timeExtent={props.timeExtent}
-                alignment={props.alignment}
                 active={props.activeTrajectory.id === "average"}
                 activePhase={props.activePhase} />
             </div>
@@ -82,9 +81,8 @@ function Phases(props) {
           <div className="row in" id={collapseId}>
             <div className="col-sm-10 col-sm-offset-2">
               <PhaseMapContainer
-                data={props.phaseData}
+                data={props.phases}
                 timeExtent={props.timeExtent}
-                alignment={props.alignment}
                 activeTrajectory={props.activeTrajectory}
                 activePhase={props.activePhase} />
             </div>
@@ -96,9 +94,8 @@ function Phases(props) {
 }
 
 Phases.propTypes = {
-  phaseData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
-  alignment: PropTypes.string.isRequired,
   activeTrajectory: PropTypes.object.isRequired,
   activePhase: PropTypes.string.isRequired
 };
