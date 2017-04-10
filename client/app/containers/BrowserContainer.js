@@ -122,10 +122,10 @@ var BrowserContainer = React.createClass({
         <Species
           key={i}
           species={species}
-          phases={this.state.showPhaseOverlay ? this.state.activeTrajectory.phases : []}
-          phaseData={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}
-          phaseAverage={this.state.data.phaseAverage}
+          phases={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}
+          phaseAverage={this.state.showPhaseOverlay ? this.state.data.phaseAverage: []}
           timeExtent={this.state.data.timeExtent}
+          activePhases={this.state.showPhaseOverlay ? this.state.activeTrajectory.phases : []}
           activePhase={this.state.activePhase}
           phaseOverlayOpacity={this.state.phaseOverlayOpacity} />
       );

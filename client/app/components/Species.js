@@ -82,7 +82,7 @@ function Species(props) {
               <HeatMapContainer
                 data={props.species.simulationOutput}
                 dataExtent={props.species.simulationOutputExtent}
-                phases={props.phaseData}
+                phases={props.phases}
                 timeExtent={props.timeExtent}
                 activePhase={props.activePhase}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
@@ -104,7 +104,7 @@ function Species(props) {
               <HeatMapContainer
                 data={[props.species.cellDataAverage]}
                 dataExtent={props.species.cellDataExtent}
-                phases={[props.phases]}
+                phases={[props.activePhases]}
                 timeExtent={props.timeExtent}
                 activePhase={props.activePhase}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
@@ -116,7 +116,7 @@ function Species(props) {
               <HeatMapContainer
                 data={props.species.cellData.map(function (d) { return d.values; })}
                 dataExtent={props.species.cellDataExtent}
-                phases={props.species.cellData.map(function () { return props.phases; })}
+                phases={props.species.cellData.map(function () { return props.activePhases; })}
                 timeExtent={props.timeExtent}
                 activePhase={props.activePhase}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
@@ -131,9 +131,10 @@ function Species(props) {
 
 Species.propTypes = {
   species: PropTypes.object.isRequired,
-  phases: PropTypes.arrayOf(PropTypes.object).isRequired,
-  phaseData: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  phaseAverage: PropTypes.arrayOf(PropTypes.object).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
+  activePhases: PropTypes.arrayOf(PropTypes.object).isRequired,
   activePhase: PropTypes.string.isRequired,
   phaseOverlayOpacity: PropTypes.number.isRequired
 };

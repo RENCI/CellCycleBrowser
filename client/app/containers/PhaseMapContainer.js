@@ -16,8 +16,9 @@ var PhaseMapContainer = React.createClass ({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     timeExtent: PropTypes.arrayOf(PropTypes.number),
-    activeTrajectory: PropTypes.object.isRequired,
-    activePhase: PropTypes.string.isRequired
+    activeIndex: PropTypes.string.isRequired,
+    activePhase: PropTypes.string.isRequired,
+    height: PropTypes.number.isRequired
   },
   componentDidMount: function() {
     PhaseMap.create(
@@ -37,7 +38,7 @@ var PhaseMapContainer = React.createClass ({
       data: this.props.data,
       colorScale: colorScale(this.props.data),
       timeExtent: this.props.timeExtent,
-      activeTrajectory: this.props.activeTrajectory,
+      activeIndex: this.props.activeIndex,
       activePhase: this.props.activePhase,
       selectTrajectory: this.selectTrajectory,
       selectPhase: this.selectPhase
@@ -55,7 +56,7 @@ var PhaseMapContainer = React.createClass ({
   render: function() {
     // Style needs to be defined here to access data length
     var style = {
-      height: this.props.data.length * 20,
+      height: this.props.height,
       borderLeft: "2px solid #ddd",
       backgroundColor: "#eee"
     };

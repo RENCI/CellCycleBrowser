@@ -49,6 +49,8 @@ var visColumnStyle = {
 function Phases(props) {
   var collapseId = "phasesCollapse";
 
+  console.log(props.activeTrajectory);
+
   return (
     <div className="text-left" style={outerStyle}>
       <div className="row">
@@ -71,11 +73,12 @@ function Phases(props) {
               </div>
             </div>
             <div className="col-sm-10" style={visColumnStyle}>
-              <PhaseLineContainer
-                data={props.phases}
+              <PhaseMapContainer
+                data={[props.phaseAverage]}
                 timeExtent={props.timeExtent}
-                active={props.activeTrajectory.id === "average"}
-                activePhase={props.activePhase} />
+                activeIndex={props.activeTrajectory.id === "average" ? "0" : "-1"}
+                activePhase={props.activePhase}
+                height={34} />
             </div>
           </div>
           <div className="row in" id={collapseId}>
@@ -83,8 +86,10 @@ function Phases(props) {
               <PhaseMapContainer
                 data={props.phases}
                 timeExtent={props.timeExtent}
-                activeTrajectory={props.activeTrajectory}
-                activePhase={props.activePhase} />
+                activeIndex={props.activeTrajectory.id && props.activeTrajectory !== "average" ?
+                             props.activeTrajectory.id : "-1"}
+                activePhase={props.activePhase}
+                height={props.phases.length * 20} />
             </div>
           </div>
         </div>
@@ -95,6 +100,7 @@ function Phases(props) {
 
 Phases.propTypes = {
   phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  phaseAverage: PropTypes.arrayOf(PropTypes.object).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   activeTrajectory: PropTypes.object.isRequired,
   activePhase: PropTypes.string.isRequired

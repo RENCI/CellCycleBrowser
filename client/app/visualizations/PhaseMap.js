@@ -99,7 +99,7 @@ PhaseMap.draw = function(svg, layout, state) {
       .style("stroke", "#ddd")
       .style("stroke-width", 2)
     .merge(border).transition()
-      .attr("x", function(d) { return layout.xScale(d[0].start + rowOffset(d)); })
+      .attr("x", function(d) { return layout.xScale(d[0].start); })
       .attr("y", function(d, i) { return layout.yScale(i); })
       .attr("width", function(d) {
         return layout.xScale(d[d.length -1].stop) - layout.xScale(d[0].start);
@@ -126,7 +126,8 @@ PhaseMap.draw = function(svg, layout, state) {
 
   g.select(".borders").selectAll(".border")
     .filter(function(d, i) {
-      return state.activeTrajectory.id === i.toString()
+      console.log(state.activeIndex);
+      return state.activeIndex === i.toString()
     })
     .each(function() {
       var border = d3.select(this);
@@ -141,7 +142,6 @@ PhaseMap.draw = function(svg, layout, state) {
 
   function cells(row, rowIndex) {
     function x(d) {
-//      return layout.xScale(d.start + rowOffset(row));
       return layout.xScale(d.start);
     }
 
@@ -201,7 +201,7 @@ PhaseMap.draw = function(svg, layout, state) {
         })
       .merge(cell)
         .style("fill", function(d) {
-          return state.activeTrajectory.id === rowIndex.toString() ||
+          return state.activeIndex === rowIndex.toString() ||
                  state.activePhase === d.name ?
                  highlightColor(state.colorScale(d.name)) :
                  state.colorScale(d.name);
@@ -216,12 +216,6 @@ PhaseMap.draw = function(svg, layout, state) {
     cell.exit().transition()
         .style("fill", "white")
         .remove();
-  }
-
-  function rowOffset(row) {
-    return state.alignment === "right" ?
-           layout.xScale.domain()[1] - row[row.length - 1].stop :
-           layout.xScale.domain()[0] - row[0].start;
   }
 
   function highlightColor(color) {
