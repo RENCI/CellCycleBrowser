@@ -242,12 +242,12 @@ function updateData() {
         timeSeries.forEach(function (d, i) {
           // Find overlapping time steps
           for (var j = t[i]; j < d.length; j++) {
-            if (d[j].stop >= timeStep.start && d[j].start <= timeStep.stop) {
+            if (d[j].stop >= timeStep.start && d[j].start < timeStep.stop) {
               value += d[j].value;
               count++;
               t[i] = j;
             }
-            else if (d[j].start > timeStep.stop) {
+            else if (d[j].start >= timeStep.stop) {
               break;
             }
           }
