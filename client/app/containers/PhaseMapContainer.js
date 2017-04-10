@@ -18,7 +18,11 @@ var PhaseMapContainer = React.createClass ({
     timeExtent: PropTypes.arrayOf(PropTypes.number),
     activeIndex: PropTypes.string.isRequired,
     activePhase: PropTypes.string.isRequired,
-    height: PropTypes.number.isRequired
+    height: PropTypes.number.isRequired,
+    isAverage: PropTypes.bool
+  },
+  getDefautProps: {
+    isAverage: false
   },
   componentDidMount: function() {
     PhaseMap.create(
@@ -48,6 +52,10 @@ var PhaseMapContainer = React.createClass ({
     PhaseMap.destroy(ReactDOM.findDOMNode(this));
   },
   selectTrajectory: function(trajectory) {
+    if (this.props.isAverage) {
+      trajectory.id = "average";
+    }
+
     ViewActionCreators.selectTrajectory(trajectory);
   },
   selectPhase: function(phase) {

@@ -126,7 +126,6 @@ PhaseMap.draw = function(svg, layout, state) {
 
   g.select(".borders").selectAll(".border")
     .filter(function(d, i) {
-      console.log(state.activeIndex);
       return state.activeIndex === i.toString()
     })
     .each(function() {

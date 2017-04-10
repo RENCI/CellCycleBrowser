@@ -49,8 +49,6 @@ var visColumnStyle = {
 function Phases(props) {
   var collapseId = "phasesCollapse";
 
-  console.log(props.activeTrajectory);
-
   return (
     <div className="text-left" style={outerStyle}>
       <div className="row">
@@ -78,7 +76,8 @@ function Phases(props) {
                 timeExtent={props.timeExtent}
                 activeIndex={props.activeTrajectory.id === "average" ? "0" : "-1"}
                 activePhase={props.activePhase}
-                height={34} />
+                height={34}
+                isAverage={true} />
             </div>
           </div>
           <div className="row in" id={collapseId}>
