@@ -20,9 +20,6 @@ var ProfileListStore = assign({}, EventEmitter.prototype, {
   },
   getProfileList: function () {
     return profileList;
-  },
-  getDefaultProfile: function () {
-    return profileList[0];
   }
 });
 

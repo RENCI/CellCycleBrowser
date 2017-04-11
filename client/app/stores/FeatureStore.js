@@ -39,8 +39,10 @@ var FeatureStore = assign({}, EventEmitter.prototype, {
 
 FeatureStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
-    case Constants.SELECT_FEATURE:
-      featureKey = action.featureKey;
+    case Constants.RECEIVE_PROFILE:
+      AppDispatcher.waitFor([CellDataStore.dispatchToken]);
+      featureList = getFeatureList(CellDataStore.getCellData());
+      featureKey = featureList.length > 0 ? "0" : "";
       FeatureStore.emitChange();
       break;
 
@@ -51,10 +53,8 @@ FeatureStore.dispatchToken = AppDispatcher.register(function (action) {
       FeatureStore.emitChange();
       break;
 
-    case Constants.RECEIVE_PROFILE:
-      AppDispatcher.waitFor([CellDataStore.dispatchToken]);
-      featureList = getFeatureList(CellDataStore.getCellData());
-      featureKey = featureList.length > 0 ? "0" : "";
+    case Constants.SELECT_FEATURE:
+      featureKey = action.featureKey;
       FeatureStore.emitChange();
       break;
   }
