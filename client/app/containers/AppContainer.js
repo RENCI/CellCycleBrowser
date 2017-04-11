@@ -31,8 +31,8 @@ var AppContainer = React.createClass({
   render: function () {
     return (
       <div>
-        <HeaderSection profile={this.state.profile}/>
-        <MainSection profile={this.state.profile}/>
+        <HeaderSection profile={this.state.profile} />
+        <MainSection profile={this.state.profile} />
       </div>
     );
   }

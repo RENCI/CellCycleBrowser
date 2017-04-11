@@ -19,21 +19,25 @@ function AlignmentSelect(props) {
     props.onClick("right");
   }
 
+  function classes(alignment) {
+    return "btn btn-default" + (props.alignment === alignment ? " active" : "");
+  }
+
   return (
     <div className="row">
       <div className="col-sm-10 col-sm-offset-2">
-        <div className="btn-group btn-group-justified" data-toggle="buttons">
-          <label className="btn btn-default active" onClick={leftClick}>
+        <div className={"btn-group btn-group-justified"} data-toggle="buttons">
+          <label className={classes("left")} onClick={leftClick}>
             <input type="radio" />
             <span className="glyphicon glyphicon-align-left" style={iconStyle}>
             </span>
           </label>
-          <label className="btn btn-default" onClick={middleClick}>
+          <label className={classes("justify")} onClick={middleClick}>
             <input type="radio" />
             <span className="glyphicon glyphicon-align-justify" style={iconStyle}>
             </span>
           </label>
-          <label className="btn btn-default" onClick={rightClick}>
+          <label className={classes("right")} onClick={rightClick}>
             <input type="radio" />
             <span className="glyphicon glyphicon-align-right" style={iconStyle}>
             </span>
@@ -45,6 +49,7 @@ function AlignmentSelect(props) {
 }
 
 AlignmentSelect.propTypes = {
+  alignment: PropTypes.string.isRequired,
   onClick: PropTypes.func.isRequired
 };
 

@@ -1,6 +1,6 @@
 var React = require("react");
-var ProfileListStore = require("../stores/ProfileListStore");
 var ItemSelectContainer = require("./ItemSelectContainer");
+var ProfileListStore = require("../stores/ProfileListStore");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
