@@ -1,15 +1,17 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
+var PhaseColorStore = require("../stores/PhaseColorStore");
 var ViewActionCreators = require("../actions/ViewActionCreators");
+var PhaseMap = require("../visualizations/PhaseMap");
 var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
-var PhaseMap = require("../visualizations/PhaseMap");
 
-function colorScale(data) {
-  // TODO: Move to global settings somewhere
-  return d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
-      .domain(data[0].map(function(d) { return d.name; }));
+// Retrieve the current state from the store
+function getStateFromStore() {
+  return {
+    colorScale: PhaseColorStore.getColorScale()
+  };
 }
 
 var PhaseMapContainer = React.createClass ({
@@ -24,7 +26,14 @@ var PhaseMapContainer = React.createClass ({
   getDefautProps: {
     isAverage: false
   },
+  getInitialState: function () {
+    return {
+      colorScale: PhaseColorStore.getColorScale()
+    };
+  },
   componentDidMount: function() {
+    PhaseColorStore.addChangeListener(this.onPhaseColorChange);
+
     PhaseMap.create(
       ReactDOM.findDOMNode(this),
       {
@@ -34,13 +43,19 @@ var PhaseMapContainer = React.createClass ({
       this.getChartState()
     );
   },
+  onPhaseColorChange: function () {
+    this.setState(getStateFromStore());
+  },
+  componentWillUnmount: function() {
+    PhaseColorStore.removeChangeListener(this.onPhaseColorChange);
+  },
   componentDidUpdate: function() {
     PhaseMap.update(ReactDOM.findDOMNode(this), this.getChartState());
   },
   getChartState: function() {
     return {
       data: this.props.data,
-      colorScale: colorScale(this.props.data),
+      colorScale: this.state.colorScale,
       timeExtent: this.props.timeExtent,
       activeIndex: this.props.activeIndex,
       activePhase: this.props.activePhase,
