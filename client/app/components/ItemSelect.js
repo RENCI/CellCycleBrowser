@@ -7,12 +7,8 @@ var dropdownStyle = {
 
 function ItemSelect(props) {
   function option(option, i) {
-    var name = option.description ?
-      option.name + ":" :
-      option.name;
-
-    var desc = option.description ?
-      <span className="small text-muted">{option.description}</span> :
+    var description = option.description ?
+      <span className="small text-muted">{": " + option.description}</span> :
       null;
 
     return (
@@ -23,20 +19,23 @@ function ItemSelect(props) {
           data-name={option.name}
           data-value={option.value}
           onClick={handleClick}>
-            {name} {desc}
+            {option.name} {description}
         </a>
       </li>
     );
   }
 
   function handleClick(e) {
-    var data = e.currentTarget.dataset;
-    var option = props.options.filter(function (d) {
-      return d.value === data.value;
-    })[0];
-
-    props.onChange(option);
+    props.onChange(e.currentTarget.dataset.value);
   }
+
+  var activeIndex = props.options.map(function(option) {
+    return option.value;
+  }).indexOf(props.activeValue);
+
+  var activeName = activeIndex === -1 ? "" : props.options[activeIndex].name;
+
+//  console.log(activeName);
 
   return (
     <div>
@@ -45,7 +44,7 @@ function ItemSelect(props) {
       </span>
       <div className="btn-group">
         <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown">
-          {props.activeOption.name} <span className="caret"></span>
+          {activeName} <span className="caret"></span>
         </button>
         <ul className="dropdown-menu">
           {props.options.map(option)}
@@ -58,7 +57,7 @@ function ItemSelect(props) {
 ItemSelect.propTypes = {
   label: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
-  activeOption: PropTypes.object.isRequired,
+  activeValue: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired
 };
 

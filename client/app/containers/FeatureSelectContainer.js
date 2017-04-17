@@ -1,8 +1,17 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
-var ItemSelectContainer = require("./ItemSelectContainer");
+var FeatureStore = require("../stores/FeatureStore");
+var ItemSelect = require("../components/ItemSelect");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
+// Retrieve the current state from the store
+function getStateFromStore() {
+  return {
+    featureList: FeatureStore.getFeatureList(),
+    feature: FeatureStore.getFeature()
+  };
+}
+
+// Use index for value to ensure unique values
 var featureOption = function (feature, i) {
   return {
     value: i.toString(),
@@ -10,18 +19,32 @@ var featureOption = function (feature, i) {
   };
 }
 
+function featureValue(feature, featureList) {
+  return featureList.indexOf(feature).toString();
+}
+
 var FeatureSelectContainer = React.createClass ({
-  propTypes: {
-    featureList: PropTypes.arrayOf(React.PropTypes.string).isRequired,
+  getInitialState: function () {
+    return getStateFromStore();
+  },
+  componentDidMount: function () {
+    FeatureStore.addChangeListener(this.onFeatureChange);
+  },
+  componentWillUnmount: function () {
+    FeatureStore.removeChangeListener(this.onFeatureChange);
+  },
+  onFeatureChange: function () {
+    this.setState(getStateFromStore);
   },
   handleChangeFeature: function (value) {
-    ViewActionCreators.selectFeature(value);
+    ViewActionCreators.selectFeature(+value);
   },
   render: function () {
     return (
-      <ItemSelectContainer
+      <ItemSelect
         label="Feature: "
-        options={this.props.featureList.map(featureOption)}
+        options={this.state.featureList.map(featureOption)}
+        activeValue={featureValue(this.state.feature, this.state.featureList)}
         onChange={this.handleChangeFeature} />
     );
   }

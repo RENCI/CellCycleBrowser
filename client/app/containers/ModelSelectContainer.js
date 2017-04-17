@@ -1,8 +1,17 @@
 var React = require("react");
 var ModelStore = require("../stores/ModelStore");
-var ItemSelectContainer = require("./ItemSelectContainer");
+var ItemSelect = require("../components/ItemSelect");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
+// Retrieve the current state from the store
+function getStateFromStore() {
+  return {
+    modelList: ModelStore.getModelList(),
+    modelValue: ModelStore.getModelIndex().toString()
+  };
+}
+
+// Use index for value to ensure unique values
 function modelOption(model, i) {
   return {
     value: i.toString(),
@@ -11,33 +20,28 @@ function modelOption(model, i) {
   };
 }
 
-function getStateFromStore() {
-  return {
-    modelList: ModelStore.getModelList()
-  };
-}
-
 var ModelSelectContainer = React.createClass ({
   getInitialState: function () {
     return getStateFromStore();
   },
   componentDidMount: function () {
-    ModelStore.addChangeListener(this.onModelListChange);
+    ModelStore.addChangeListener(this.onModelChange);
   },
   componentWillUnmount: function () {
-    ModelStore.removeChangeListener(this.onModelListChange);
+    ModelStore.removeChangeListener(this.onModelChange);
   },
-  onModelListChange: function () {
+  onModelChange: function () {
     this.setState(getStateFromStore());
   },
   handleChangeModel: function (value) {
-    ViewActionCreators.selectModel(value);
+    ViewActionCreators.selectModel(+value);
   },
   render: function () {
     return (
-      <ItemSelectContainer
+      <ItemSelect
         label="Model: "
         options={this.state.modelList.map(modelOption)}
+        activeValue={this.state.modelValue}
         onChange={this.handleChangeModel} />
     );
   }

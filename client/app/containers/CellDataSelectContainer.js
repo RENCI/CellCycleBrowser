@@ -1,8 +1,17 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
-var ItemSelectContainer = require("./ItemSelectContainer");
+var CellDataStore = require("../stores/CellDataStore");
+var ItemSelect = require("../components/ItemSelect");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
+// Retrieve the current state from the store
+function getStateFromStore() {
+  return {
+    cellDataList: CellDataStore.getCellDataList(),
+    cellDataValue: CellDataStore.getCellDataIndex().toString()
+  };
+}
+
+// Use index for value to ensure unique values
 var cellDataOption = function (cellData, i) {
   return {
     value: i.toString(),
@@ -12,18 +21,28 @@ var cellDataOption = function (cellData, i) {
 }
 
 var CellDataSelectContainer = React.createClass ({
-  propTypes: {
-    cellDataList: PropTypes.arrayOf(React.PropTypes.object).isRequired
+  getInitialState: function () {
+    return getStateFromStore();
+  },
+  componentDidMount: function () {
+    CellDataStore.addChangeListener(this.onCellDataChange);
+  },
+  componentWillUnmount: function () {
+    CellDataStore.removeChangeListener(this.onCellDataChange);
+  },
+  onCellDataChange: function () {
+    this.setState(getStateFromStore);
   },
   handleChangeCellData: function (value) {
-    ViewActionCreators.selectCellData(value);
+    ViewActionCreators.selectCellData(+value);
   },
   render: function () {
     return (
-        <ItemSelectContainer
-          label="Cell data: "
-          options={this.props.cellDataList.map(cellDataOption)}
-          onChange={this.handleChangeCellData} />
+      <ItemSelect
+        label="Cell data: "
+        options={this.state.cellDataList.map(cellDataOption)}
+        activeValue={this.state.cellDataValue}
+        onChange={this.handleChangeCellData} />
     );
   }
 });

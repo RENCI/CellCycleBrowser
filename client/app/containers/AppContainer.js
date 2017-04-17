@@ -21,6 +21,10 @@ var AppContainer = React.createClass({
   },
   componentDidMount: function () {
     ProfileStore.addChangeListener(this.onProfileChange);
+
+    // Bootstrap the application by getting initial data here
+    WebAPIUtils.getProfileList();
+    WebAPIUtils.getProfile(0);
   },
   componentWillUnmount: function() {
     ProfileStore.removeChangeListener(this.onProfileChange);
@@ -31,8 +35,8 @@ var AppContainer = React.createClass({
   render: function () {
     return (
       <div>
-        <HeaderSection profile={this.state.profile} />
-        <MainSection profile={this.state.profile} />
+        <HeaderSection />
+        <MainSection profile={this.state.profile}/>
       </div>
     );
   }

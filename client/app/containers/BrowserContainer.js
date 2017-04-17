@@ -2,8 +2,6 @@
 
 var React = require("react");
 var DataStore = require("../stores/DataStore");
-var CellDataStore = require("../stores/CellDataStore");
-var FeatureStore = require("../stores/FeatureStore");
 var TrajectoryStore = require("../stores/TrajectoryStore");
 var PhaseStore = require("../stores/PhaseStore");
 var PhaseOverlayStore = require("../stores/PhaseOverlayStore");
@@ -15,19 +13,6 @@ function getStateFromDataStore() {
   return {
     data: DataStore.getData()
   }
-}
-
-function getStateFromCellDataStore() {
-  return {
-    cellDataList: CellDataStore.getCellDataList()
-  };
-};
-
-function getStateFromFeatureStore() {
-  return {
-    featureList: FeatureStore.getFeatureList(),
-    featureKey: FeatureStore.getFeatureKey()
-  };
 }
 
 function getStateFromTrajectoryStore() {
@@ -63,20 +48,15 @@ function tooltips() {
 var BrowserContainer = React.createClass({
   getInitialState: function () {
     return {
-      data: getStateFromDataStore().data,
-      cellDataList: [],
-      featureList: [],
-      featureKey: "",
-      activeTrajectory: getStateFromTrajectoryStore().activeTrajectory,
-      activePhase: getStateFromPhaseStore().activePhase,
-      showPhaseOverlay: getStateFromPhaseOverlayStore().showPhaseOverlay,
-      phaseOverlayOpacity: getStateFromPhaseOverlayStore().phaseOverlayOpacity
+      data: DataStore.getData(),
+      activeTrajectory: TrajectoryStore.getTrajectory(),
+      activePhase: PhaseStore.getPhase(),
+      showPhaseOverlay: PhaseOverlayStore.getShow(),
+      phaseOverlayOpacity: PhaseOverlayStore.getOpacity()
     };
   },
   componentDidMount: function () {
     DataStore.addChangeListener(this.onDataChange);
-    CellDataStore.addChangeListener(this.onCellDataChange);
-    FeatureStore.addChangeListener(this.onFeatureChange);
     TrajectoryStore.addChangeListener(this.onTrajectoryChange);
     PhaseStore.addChangeListener(this.onPhaseChange);
     PhaseOverlayStore.addChangeListener(this.onPhaseOverlayChange);
@@ -84,8 +64,6 @@ var BrowserContainer = React.createClass({
   },
   componentWillUnmount: function() {
     DataStore.removeChangeListener(this.onDataChange);
-    CellDataStore.removeChangeListener(this.onCellDataChange);
-    FeatureStore.removeChangeListener(this.onFeatureChange);
     TrajectoryStore.removeChangeListener(this.onTrajectoryChange);
     PhaseStore.addChangeListener(this.onPhaseChange);
     PhaseOverlayStore.removeChangeListener(this.onPhaseOverlayChange);
@@ -95,12 +73,6 @@ var BrowserContainer = React.createClass({
   },
   onDataChange: function () {
     this.setState(getStateFromDataStore());
-  },
-  onCellDataChange: function () {
-    this.setState(getStateFromCellDataStore());
-  },
-  onFeatureChange: function () {
-    this.setState(getStateFromFeatureStore());
   },
   onTrajectoryChange: function () {
     this.setState(getStateFromTrajectoryStore());
@@ -135,8 +107,6 @@ var BrowserContainer = React.createClass({
       <div>
         <h2>Browser</h2>
         <BrowserControls
-          cellDataList={this.state.cellDataList}
-          featureList={this.state.featureList}
           timeExtent={this.state.data.timeExtent} />
         <Phases
           phases={this.state.data.phases}

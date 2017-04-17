@@ -6,17 +6,22 @@ var CellDataStore = require("./CellDataStore");
 
 var CHANGE_EVENT = "change";
 
-// Feature data
+// List of available features for current cell data set
 var featureList = [];
-var featureKey = "";
+
+// Active feature
+var feature = defaultFeature();
 
 function getFeatureList(cellData) {
-  if (!cellData.species) return [];
-  if (cellData.species.length === 0) return [];
+  if (!cellData.species || cellData.species.length === 0) return [];
 
   return cellData.species[0].cells[0].features.map(function (feature) {
     return feature.name;
   });
+}
+
+function defaultFeature() {
+  return featureList.length > 0 ? featureList[0] : "";
 }
 
 var FeatureStore = assign({}, EventEmitter.prototype, {
@@ -32,8 +37,8 @@ var FeatureStore = assign({}, EventEmitter.prototype, {
   getFeatureList: function () {
     return featureList;
   },
-  getFeatureKey: function () {
-    return featureKey;
+  getFeature: function () {
+    return feature;
   }
 });
 
@@ -42,19 +47,19 @@ FeatureStore.dispatchToken = AppDispatcher.register(function (action) {
     case Constants.RECEIVE_PROFILE:
       AppDispatcher.waitFor([CellDataStore.dispatchToken]);
       featureList = getFeatureList(CellDataStore.getCellData());
-      featureKey = featureList.length > 0 ? "0" : "";
+      feature = defaultFeature();
       FeatureStore.emitChange();
       break;
 
     case Constants.SELECT_CELL_DATA:
       AppDispatcher.waitFor([CellDataStore.dispatchToken]);
       featureList = getFeatureList(CellDataStore.getCellData());
-      featureKey = featureList.length > 0 ? "0" : "";
+      feature = defaultFeature();
       FeatureStore.emitChange();
       break;
 
     case Constants.SELECT_FEATURE:
-      featureKey = action.featureKey;
+      feature = featureList[action.featureKey];
       FeatureStore.emitChange();
       break;
   }

@@ -6,8 +6,10 @@ var ProfileStore = require("./ProfileStore");
 
 var CHANGE_EVENT = "change";
 
-// Cell data
+// List of available cell data sets for current profile
 var cellDataList = [];
+
+// Active cell data set
 var cellData = {};
 
 var CellDataStore = assign({}, EventEmitter.prototype, {
@@ -25,6 +27,9 @@ var CellDataStore = assign({}, EventEmitter.prototype, {
   },
   getCellData: function () {
     return cellData;
+  },
+  getCellDataIndex: function () {
+    return cellDataList.indexOf(cellData);
   }
 });
 

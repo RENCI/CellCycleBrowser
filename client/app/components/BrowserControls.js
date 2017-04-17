@@ -27,12 +27,10 @@ function BrowserControls(props) {
   return (
     <div>
       <div style={divStyle}>
-        <CellDataSelectContainer
-          cellDataList={props.cellDataList} />
+        <CellDataSelectContainer />
       </div>
       <div style={divStyle}>
-        <FeatureSelectContainer
-          featureList={props.featureList} />
+        <FeatureSelectContainer />
       </div>
       <AlignmentSelectContainer />
       <div className="row">
@@ -61,8 +59,6 @@ function BrowserControls(props) {
 }
 
 BrowserControls.propTypes = {
-  cellDataList: PropTypes.arrayOf(React.PropTypes.object).isRequired,
-  featureList: PropTypes.arrayOf(React.PropTypes.string).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired
 };
 

@@ -5,8 +5,12 @@ var Constants = require("../constants/Constants");
 
 var CHANGE_EVENT = "change";
 
-// Empty profile object
+// List of available profiles
+var profileList = [];
+
+// Active profile
 var profile = {};
+var profileIndex = -1;
 
 var ProfileStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
@@ -18,15 +22,32 @@ var ProfileStore = assign({}, EventEmitter.prototype, {
   removeChangeListener: function (callback) {
     this.removeListener(CHANGE_EVENT, callback);
   },
+  getProfileList: function () {
+    return profileList;
+  },
   getProfile: function () {
     return profile;
+  },
+  getProfileIndex: function () {
+    return profileIndex;
   }
 });
 
 ProfileStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
+    case Constants.RECEIVE_PROFILE_LIST:
+      profileList = action.profileList;
+      profile = {};
+      profileIndex = -1;
+      ProfileStore.emitChange();
+      break;
+
     case Constants.RECEIVE_PROFILE:
       profile = action.profile;
+      profileIndex = profileList.map(function (profile) {
+        // Assuming unique profile names
+        return profile.name;
+      }).indexOf(profile.name);
       ProfileStore.emitChange();
       break;
   }

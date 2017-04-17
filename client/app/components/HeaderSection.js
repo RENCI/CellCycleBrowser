@@ -1,8 +1,7 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
 var Header = require("./Header");
 
-function HeaderSection(props) {
+function HeaderSection() {
   return (
     <div className="row well">
       <div className="media">
@@ -30,9 +29,5 @@ function HeaderSection(props) {
     </div>
   );
 }
-
-HeaderSection.propTypes = {
-  profile: PropTypes.object.isRequired
-};
 
 module.exports = HeaderSection;

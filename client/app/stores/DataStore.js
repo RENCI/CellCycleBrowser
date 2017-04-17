@@ -361,7 +361,7 @@ AppDispatcher.register(function (action) {
       model = ModelStore.getModel();
       cellData = CellDataStore.getCellData();
       simulationOutput = SimulationOutputStore.getSimulationOutput();
-      feature = FeatureStore.getFeatureList()[FeatureStore.getFeatureKey()];
+      feature = FeatureStore.getFeature();
       updateData();
       DataStore.emitChange();
       break;
@@ -377,7 +377,7 @@ AppDispatcher.register(function (action) {
       AppDispatcher.waitFor([CellDataStore.dispatchToken,
                              FeatureStore.dispatchToken]);
       cellData = CellDataStore.getCellData();
-      feature = FeatureStore.getFeatureList()[FeatureStore.getFeatureKey()];
+      feature = FeatureStore.getFeature();
       updateData();
       DataStore.emitChange();
       break;
@@ -392,7 +392,7 @@ AppDispatcher.register(function (action) {
 
     case Constants.SELECT_FEATURE:
       AppDispatcher.waitFor([FeatureStore.dispatchToken]);
-      feature = FeatureStore.getFeatureList()[FeatureStore.getFeatureKey()];
+      feature = FeatureStore.getFeature();
       updateData();
       DataStore.emitChange();
       break;

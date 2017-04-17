@@ -6,8 +6,10 @@ var ProfileStore = require("./ProfileStore");
 
 var CHANGE_EVENT = "change";
 
-// Model data
+// List of available models for the current profile
 var modelList = [];
+
+// Active model
 var model = {};
 
 var ModelStore = assign({}, EventEmitter.prototype, {
@@ -25,6 +27,9 @@ var ModelStore = assign({}, EventEmitter.prototype, {
   },
   getModel: function () {
     return model;
+  },
+  getModelIndex: function () {
+    return modelList.indexOf(model);
   }
 });
 

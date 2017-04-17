@@ -12,9 +12,9 @@ var CHANGE_EVENT = "change";
 var colorScale = d3.scaleOrdinal(d3ScaleChromatic.schemeAccent);
 
 function phases(model) {
-  return model.phases.map((function (phase) {
+  return model.phases ? model.phases.map((function (phase) {
     return phase.name;
-  }));
+  })) : [];
 }
 
 var PhaseColorStore = assign({}, EventEmitter.prototype, {

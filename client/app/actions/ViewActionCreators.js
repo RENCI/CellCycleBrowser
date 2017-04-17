@@ -4,11 +4,6 @@ var WebAPIUtils = require("../utils/WebAPIUtils");
 
 module.exports = {
   selectProfile: function(profileIndex) {
-    AppDispatcher.dispatch({
-      actionType: Constants.SELECT_PROFILE,
-      profileIndex: profileIndex
-    });
-
     WebAPIUtils.getProfile(profileIndex);
   },
   selectModel: function(modelKey) {
