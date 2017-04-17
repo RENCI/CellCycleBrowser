@@ -1,8 +1,5 @@
 var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
-var ribbonArrow = require("./ribbonArrow/ribbonArrow");
-var ribbonArrowOverlay = require("./ribbonArrow/ribbonArrowOverlay");
-var ribbonCenterLine = require("./ribbonArrow/ribbonCenterLine");
 
 module.exports = function() {
       // Size
