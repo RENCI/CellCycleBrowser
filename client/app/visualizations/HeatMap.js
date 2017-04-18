@@ -14,18 +14,10 @@ module.exports = function () {
       phaseOverlayOpacity,
 
       // Scales
-      xScale = d3.scaleLinear(),
-      yScale = d3.scaleBand(),
-      colorScale = d3.scaleLinear()
-          .range(["white", "black"]),
-      heightScale = d3.scaleLinear(),
       phaseColorScale,
 
       // Start with empty selection
-      svg = d3.select(),
-
-      // Event dispatcher
-      dispatcher = d3.dispatch();
+      svg = d3.select();
 
   function heatMap(selection) {
     selection.each(function(d) {
@@ -66,14 +58,9 @@ module.exports = function () {
       var g = svgEnter.append("g");
 
       // Groups for layout
-      g.append("g")
-          .attr("class", "borders");
-
-      g.append("g")
-          .attr("class", "rows");
-
-      g.append("g")
-          .attr("class", "phaseRows");
+      g.append("g").attr("class", "borders");
+      g.append("g").attr("class", "rows");
+      g.append("g").attr("class", "phaseRows");
 
       g.append("rect")
           .attr("class", "highlight")
@@ -94,24 +81,25 @@ module.exports = function () {
     svg .attr("width", width)
         .attr("height", height);
 
-    // Update scales
-    xScale
+    // Create scales
+    var xScale = d3.scaleLinear()
         .domain(timeExtent)
         .range([0, width]);
 
-    yScale
+    var yScale = d3.scaleBand()
         .domain(d3.range(data.length))
         .range([0, height]);
 
-    heightScale
+    var heightScale = d3.scaleLinear()
         .domain(dataExtent)
         //.range([0, yScale.bandwidth()]);
         .range([yScale.bandwidth(), yScale.bandwidth()]);
 
-    colorScale
-        .domain(dataExtent);
+    var colorScale = d3.scaleLinear()
+        .domain(dataExtent)
+        .range(["white", "black"]);
 
-    // Draw the diagram
+    // Draw the visualization
     drawBorders();
     drawHeatMap();
     drawPhases();
@@ -194,7 +182,7 @@ module.exports = function () {
 
         // Exit
         cell.exit()//.transition()
-            .style("fill", "white")
+            //.style("fill", "white")
             .remove();
 
         function x(d) {

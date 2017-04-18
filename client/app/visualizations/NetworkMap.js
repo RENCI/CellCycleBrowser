@@ -91,20 +91,11 @@ module.exports = function() {
       var g = svgEnter.append("g");
 
       // Groups for layout
-      g.append("g")
-          .attr("class", "arcs");
-
-      g.append("g")
-          .attr("class", "arrows");
-
-      g.append("g")
-          .attr("class", "links");
-
-      g.append("g")
-          .attr("class", "nodes");
-
-      g.append("g")
-          .attr("class", "nodeLabels")
+      g.append("g").attr("class", "arcs");
+      g.append("g").attr("class", "arrows");
+      g.append("g").attr("class", "links");
+      g.append("g").attr("class", "nodes");
+      g.append("g").attr("class", "nodeLabels")
 
       svg = svg.merge(svgEnter);
 
@@ -189,7 +180,7 @@ module.exports = function() {
       .select("g")
         .attr("transform", "translate(" + (width / 2) + "," + (height / 2) + ")");
 
-    // Draw the diagram
+    // Draw the visualization
     drawArcs();
     drawArrows();
     drawNodes();

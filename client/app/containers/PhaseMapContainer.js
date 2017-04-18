@@ -7,6 +7,12 @@ var PhaseMap = require("../visualizations/PhaseMap");
 var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
 
+// TODO: Move to css file
+var style = {
+  borderLeft: "2px solid #ddd",
+  backgroundColor: "#eee"
+};
+
 // Retrieve the current state from the store
 function getStateFromStore() {
   return {
@@ -32,57 +38,72 @@ var PhaseMapContainer = React.createClass ({
     };
   },
   componentDidMount: function() {
+    // Create visualization function
+    this.phaseMap = PhaseMap()
+        .on("selectTrajectory", this.handleSelectTrajectory)
+        .on("selectPhase", this.handleSelectPhase);
+
     PhaseColorStore.addChangeListener(this.onPhaseColorChange);
 
-    PhaseMap.create(
-      ReactDOM.findDOMNode(this),
-      {
-        width: "100%",
-        height: "100%"
-      },
-      this.getChartState()
-    );
-  },
-  onPhaseColorChange: function () {
-    this.setState(getStateFromStore());
+    this.resize();
+
+    window.addEventListener("resize", function() {
+      // TODO: Create a store with window resize. Move event listener to
+      // top-level container and create a view action there
+      this.onResize();
+    }.bind(this));
   },
   componentWillUnmount: function() {
     PhaseColorStore.removeChangeListener(this.onPhaseColorChange);
   },
-  componentDidUpdate: function() {
-    PhaseMap.update(ReactDOM.findDOMNode(this), this.getChartState());
+  componentWillUpdate: function (props, state) {
+    this.drawPhaseMap(props, state);
+
+    return false;
   },
-  getChartState: function() {
-    return {
-      data: this.props.data,
-      colorScale: this.state.colorScale,
-      timeExtent: this.props.timeExtent,
-      activeIndex: this.props.activeIndex,
-      activePhase: this.props.activePhase,
-      selectTrajectory: this.selectTrajectory,
-      selectPhase: this.selectPhase
-    };
+  onPhaseColorChange: function () {
+    this.setState(getStateFromStore());
   },
-  componentWillUnmount: function() {
-    PhaseMap.destroy(ReactDOM.findDOMNode(this));
+  onResize: function () {
+    this.resize();
   },
-  selectTrajectory: function(trajectory) {
+  drawPhaseMap: function (props, state) {
+    // Set up phase map
+    this.phaseMap
+        .height(props.height)
+        .colorScale(this.state.colorScale)
+        .timeExtent(props.timeExtent)
+        .activeIndex(props.activeIndex)
+        .activePhase(props.activePhase)
+
+    // Draw phase map
+    d3.select(this.getNode())
+        .datum(props.data)
+        .call(this.phaseMap);
+  },
+  resize: function () {
+    var width = this.getNode().clientWidth;
+
+    this.phaseMap.width(width);
+
+    this.drawPhaseMap(this.props, this.state);
+  },
+  getNode: function () {
+    return ReactDOM.findDOMNode(this);
+  },
+  handleSelectTrajectory: function(trajectory) {
     if (this.props.isAverage) {
       trajectory.id = "average";
     }
 
     ViewActionCreators.selectTrajectory(trajectory);
   },
-  selectPhase: function(phase) {
+  handleSelectPhase: function(phase) {
     ViewActionCreators.selectPhase(phase);
   },
   render: function() {
-    // Style needs to be defined here to access data length
-    var style = {
-      height: this.props.height,
-      borderLeft: "2px solid #ddd",
-      backgroundColor: "#eee"
-    };
+    // Update height
+    style.height = this.props.height;
 
     return <div className="phaseMap" style={style}></div>
   }

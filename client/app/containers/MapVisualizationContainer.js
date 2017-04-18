@@ -18,8 +18,6 @@ var divStyle = {
   borderRadius: 5
 };
 
-var networkMap;
-
 function getStateFromSimulationControlStore() {
   var controls = SimulationControlStore.getControls();
 
@@ -76,9 +74,8 @@ var MapVisualizationContainer = React.createClass ({
     };
   },
   componentDidMount: function() {
-    networkMap = NetworkMap();
-
-    networkMap
+    // Create visualiztion function
+    this.networkMap = NetworkMap()
         .on("selectPhase", this.handleSelectPhase)
         .on("selectSpecies", this.handleSelectSpecies);
 
@@ -114,16 +111,16 @@ var MapVisualizationContainer = React.createClass ({
   drawMap: function (state) {
     if (!state.model) return;
 
-    networkMap.selectPhase(state.phase);
+    this.networkMap.selectPhase(state.phase);
 
     d3.select(this.getNode())
         .datum(state.model)
-        .call(networkMap);
+        .call(this.networkMap);
   },
   resize: function () {
     var width = this.getNode().clientWidth;
 
-    networkMap
+    this.networkMap
         .width(width)
         .height(width);
 

@@ -5,8 +5,6 @@ var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
 var HeatMap = require("../visualizations/HeatMap");
 
-var heatMap;
-
 // TODO: Move to css file
 var style = {
   borderLeft: "2px solid #ddd",
@@ -28,8 +26,9 @@ var HeatMapContainer = React.createClass ({
     phaseOverlayOpacity: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired
   },
-  componentDidMount: function() {
-    heatMap = HeatMap();
+  componentDidMount: function() {    
+    // Create visualiztion function
+    this.heatMap = HeatMap();
 
     this.resize();
 
@@ -49,7 +48,7 @@ var HeatMapContainer = React.createClass ({
   },
   drawHeatMap: function (props, state) {
     // Set up heat map
-    heatMap
+    this.heatMap
         .height(props.height)
         .dataExtent(props.dataExtent)
         .timeExtent(props.timeExtent)
@@ -61,12 +60,12 @@ var HeatMapContainer = React.createClass ({
     // Draw heat map
     d3.select(this.getNode())
         .datum(props.data)
-        .call(heatMap);
+        .call(this.heatMap);
   },
   resize: function () {
     var width = this.getNode().clientWidth;
 
-    heatMap.width(width);
+    this.heatMap.width(width);
 
     this.drawHeatMap(this.props, this.state);
   },
