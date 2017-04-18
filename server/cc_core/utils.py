@@ -245,11 +245,12 @@ def extract_info_from_model(filename):
                 pname = para.getId()
             para_names = pname.split('_')
             name1 = para_names[1]
-            name2 = para_names[2]
-            if name1 in species_name_list and name2 in phase_name_list:
-                s_p_dict[name1][name2] = para.getValue()
-            elif name1 in species_name_list and name2 in species_name_list:
-                s_s_dict[name1][name2] = para.getValue()
+            if len(para_names) > 2:
+                name2 = para_names[2]
+                if name1 in species_name_list and name2 in phase_name_list:
+                    s_p_dict[name1][name2] = para.getValue()
+                elif name1 in species_name_list and name2 in species_name_list:
+                    s_s_dict[name1][name2] = para.getValue()
 
         s_p_matrix = []
         for s_name, s_value in s_p_dict.iteritems():
@@ -308,7 +309,8 @@ def extract_info_from_model(filename):
                     for ss_name, ss_value in s_value.iteritems():
                         s_list.append(ss_value)
                     p_s_s_matrix.append(s_list)
-                s_s_matrix.append(p_s_s_matrix)
+                if p_s_s_matrix:
+                    s_s_matrix.append(p_s_s_matrix)
 
         return_object['speciesMatrices'] = s_s_matrix
 
@@ -541,7 +543,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         model.addAssignmentRule(var='G1', math=rule_G1)
 
         # Create parameters for rates of G1
-        model.addParameter(param_id='r_53BP1_G1', val=rate_G1)
+        model.addParameter(param_id='r_G1', val=rate_G1)
 
     # This will create all the species subphases for S, if num_S > 0
     if num_S > 0:
@@ -578,7 +580,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         model.addAssignmentRule(var='S', math=rule_S)
 
         # Create parameters for rates of S
-        model.addParameter(param_id='r_53BP1_S', val=rate_S)
+        model.addParameter(param_id='r_S', val=rate_S)
 
     # This will create all the species subphases for G2M
     if num_G2M > 0:
@@ -612,7 +614,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         model.addAssignmentRule(var='G2M', math=rule_G2M)
 
         # Create parameters for rates of G2M
-        model.addParameter(param_id='r_53BP1_G2M', val=rate_G2M)
+        model.addParameter(param_id='r_G2M', val=rate_G2M)
 
     # Create reactions going from each subphase of G1 to the next
     for i in range(1, num_G1):
@@ -620,7 +622,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         p = 'G1_' + str(i + 1)
         if is_G1_last and i == num_G1 - 1:
             p += '_end'
-        exp = 'r_53BP1_G1' + ' * ' + r
+        exp = 'r_G1' + ' * ' + r
         id_for_rxn = r + '_to_' + p
         model.addReaction(reactants=[r], products=[p], expression=exp, rxn_id=id_for_rxn)
     # Create rxn going from last G1 rxn to first S reaction, only if there are rxns present
@@ -643,7 +645,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
             p_name = 'G1_1'
     if p_name:
         model.addReaction(reactants=['G1_' + str(num_G1)], products=[p_name],
-                          expression='r_53BP1_G1 * G1_' + str(num_G1),
+                          expression='r_G1 * G1_' + str(num_G1),
                           rxn_id='G1_' + str(num_G1) + '_to_' + p_name)
 
     # Create reactions going from each subphase of S to the next
@@ -652,7 +654,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         p = 'S_' + str(i + 1)
         if is_S_last and i == num_S - 1:
             p += '_end'
-        exp = 'r_53BP1_S' + ' * ' + r
+        exp = 'r_S' + ' * ' + r
         id_for_rxn = r + '_to_' + p
         model.addReaction(reactants=[r], products=[p], expression=exp, rxn_id=id_for_rxn)
     # Create rxn going from last S rxn to first G2M reaction, only if S subphases exist
@@ -673,7 +675,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
 
         if p_name:
             model.addReaction(reactants=['S_' + str(num_S)], products=[p_name],
-                              expression='r_53BP1_S * S_' + str(num_S),
+                              expression='r_S * S_' + str(num_S),
                               rxn_id='S_' + str(num_S) + '_to_' + p_name)
     # Create reactions going from each subphase of G2M to the next
     for i in range(1, num_G2M):
@@ -681,7 +683,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         p = 'G2M_' + str(i + 1)
         if i == num_G2M - 1:
             p += '_end'
-        exp = 'r_53BP1_G2M' + ' * ' + r
+        exp = 'r_G2M' + ' * ' + r
         id_for_rxn = r + '_to_' + p
         model.addReaction(reactants=[r], products=[p], expression=exp, rxn_id=id_for_rxn)
 
@@ -690,17 +692,17 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         r_name = 'G2M_' + str(num_G2M) + '_end'
         if num_G1 > 0:
             model.addReaction(reactants=[r_name], products=['G1_1'],
-                              expression='r_53BP1_G2M * G2M_' + str(num_G2M) + '_end',
+                              expression='r_G2M * G2M_' + str(num_G2M) + '_end',
                               rxn_id='G2M_' + str(num_G2M) + '_end_to_G1_1')
         # Create rxn going from last G2M subphase back to first S subphase if no G1 subphases present
         elif num_S > 0:
             model.addReaction(reactants=[r_name], products=['S_1'],
-                              expression='r_53BP1_G2M * G2M_' + str(num_G2M) + '_end',
+                              expression='r_G2M * G2M_' + str(num_G2M) + '_end',
                               rxn_id='G2M_' + str(num_G2M) + '_end_to_S_1')
         # Create rnx going from last G2M subphase back to first G2M subphase if no G1 or S subphases present
         elif num_G2M > 1:
             model.addReaction(reactants=[r_name], products=['G2M_1'],
-                              expression='r_53BP1_G2M * G2M_' + str(num_G2M) + '_end',
+                              expression='r_G2M * G2M_' + str(num_G2M) + '_end',
                               rxn_id='G2M_' + str(num_G2M) + '_end_to_G2M_1')
 
     # Convert code to an sbml and write sbml to a file
