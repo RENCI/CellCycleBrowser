@@ -18,8 +18,7 @@ var divStyle = {
   borderRadius: 5
 };
 
-//var chordMap = ChordMap();
-var networkMap = NetworkMap();
+var networkMap;
 
 function getStateFromSimulationControlStore() {
   var controls = SimulationControlStore.getControls();
@@ -77,13 +76,14 @@ var MapVisualizationContainer = React.createClass ({
     };
   },
   componentDidMount: function() {
-    SimulationControlStore.addChangeListener(this.onSimulationControlChange);
-    PhaseStore.addChangeListener(this.onPhaseChange);
+    networkMap = NetworkMap();
 
-//    chordMap.on("selectSpecies", this.handleSelectSpecies);
     networkMap
         .on("selectPhase", this.handleSelectPhase)
         .on("selectSpecies", this.handleSelectSpecies);
+
+    SimulationControlStore.addChangeListener(this.onSimulationControlChange);
+    PhaseStore.addChangeListener(this.onPhaseChange);
 
     this.resize();
 
@@ -118,15 +118,11 @@ var MapVisualizationContainer = React.createClass ({
 
     d3.select(this.getNode())
         .datum(state.model)
-//        .call(chordMap);
         .call(networkMap);
   },
   resize: function () {
     var width = this.getNode().clientWidth;
 
-//    chordMap
-//        .width(width)
-//        .height(width);
     networkMap
         .width(width)
         .height(width);
@@ -136,11 +132,10 @@ var MapVisualizationContainer = React.createClass ({
   getNode: function () {
     return ReactDOM.findDOMNode(this);
   },
-  handleSelectPhase: function(phase) {
+  handleSelectPhase: function (phase) {
     ViewActionCreators.selectPhase(phase);
   },
   handleSelectSpecies: function (species) {
-//    chordMap.selectSpecies(species);
     networkMap.selectSpecies(species);
   },
   render: function () {

@@ -5,57 +5,13 @@ var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
 var HeatMap = require("../visualizations/HeatMap");
 
-function colorScale(dataExtent) {
-  // TODO: Currently normalizing per heatmap. Might want this to be global
-  // across all heatmaps
-/*
-  return d3.scaleQuantize()
-      .domain(d3.extent(d3.merge(data)))
-      //.range(["#f2f0f7", "#dadaeb", "#bcbddc", "#9e9ac8", "#756bb1", "#54278f"]);
-      //.range(["#ffffcc", "#a1dab4", "#41b6c4", "#2c7fb8", "#253494"]);
-      .range(["#edf8fb", "#b2e2e2", "#66c2a4", "#2ca25f", "#006d2c"]);
-*/
-/*
-  return d3.scaleSequential(d3ScaleChromatic.interpolateBuGn)
-        .domain(d3.extent(d3.merge(data), function(d) { return d.value; }));
-*/
-/*
-  var extent = d3.extent(d3.merge(data), function(d) { return d.value; });
+var heatMap;
 
-  return phases[0].length > 0 ?
-    data.map(function(d, i) {
-      return d3.scaleThreshold()
-          .domain(phases[i].map(function(d) {
-            return d.stop;
-          }))
-          .range([
-            d3.scaleSequential(d3ScaleChromatic.interpolateGreens)
-                .domain(extent),
-            d3.scaleSequential(d3ScaleChromatic.interpolatePurples)
-                .domain(extent),
-            d3.scaleSequential(d3ScaleChromatic.interpolateOranges)
-                .domain(extent),
-            d3.scaleLinear()
-                .domain(extent)
-                .range(["white", "black"])
-          ]);
-    })
-    :
-    d3.scaleLinear()
-        .domain(extent)
-        .range(["white", "black"]);
-*/
-/*
-  return d3.scaleLinear()
-      .domain(d3.extent(d3.merge(data).filter(function(d) {
-        return d.value > -1;
-      }), function(d) { return d.value; }))
-      .range(["white", "black"]);
-*/
-  return d3.scaleLinear()
-      .domain(dataExtent)
-      .range(["white", "black"]);
-}
+// TODO: Move to css file
+var style = {
+  borderLeft: "2px solid #ddd",
+  backgroundColor: "#eee"
+};
 
 function phaseColorScale(phases) {
   return d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
@@ -73,40 +29,53 @@ var HeatMapContainer = React.createClass ({
     height: PropTypes.number.isRequired
   },
   componentDidMount: function() {
-    HeatMap.create(
-      ReactDOM.findDOMNode(this),
-      {
-        width: "100%",
-        height: "100%"
-      },
-      this.getChartState()
-    );
+    heatMap = HeatMap();
+
+    this.resize();
+
+    window.addEventListener("resize", function() {
+      // TODO: Create a store with window resize. Move event listener to
+      // top-level container and create a view action there
+      this.onResize();
+    }.bind(this));
   },
-  componentDidUpdate: function() {
-    HeatMap.update(ReactDOM.findDOMNode(this), this.getChartState());
+  componentWillUpdate: function (props, state) {
+    this.drawHeatMap(props, state);
+
+    return false;
   },
-  getChartState: function() {
-    return {
-      data: this.props.data,
-      dataExtent: this.props.dataExtent,
-      colorScale: colorScale(this.props.dataExtent),
-      phases: this.props.phases,
-      phaseColorScale: phaseColorScale(this.props.phases),
-      timeExtent: this.props.timeExtent,
-      activePhase: this.props.activePhase,
-      phaseOverlayOpacity: this.props.phaseOverlayOpacity
-    };
+  onResize: function () {
+    this.resize();
   },
-  componentWillUnmount: function() {
-    HeatMap.destroy(ReactDOM.findDOMNode(this));
+  drawHeatMap: function (props, state) {
+    // Set up heat map
+    heatMap
+        .height(props.height)
+        .dataExtent(props.dataExtent)
+        .timeExtent(props.timeExtent)
+        .phases(props.phases)
+        .phaseColorScale(phaseColorScale(props.phases))
+        .activePhase(props.activePhase)
+        .phaseOverlayOpacity(props.phaseOverlayOpacity);
+
+    // Draw heat map
+    d3.select(this.getNode())
+        .datum(props.data)
+        .call(heatMap);
+  },
+  resize: function () {
+    var width = this.getNode().clientWidth;
+
+    heatMap.width(width);
+
+    this.drawHeatMap(this.props, this.state);
+  },
+  getNode: function () {
+    return ReactDOM.findDOMNode(this);
   },
   render: function() {
-    // Style needs to be defined here to access data length
-    var style = {
-      height: this.props.height,
-      borderLeft: "2px solid #ddd",
-      backgroundColor: "#eee"
-    };
+    // Update height
+    style.height = this.props.height;
 
     return <div className="heatMap" style={style}></div>
   }

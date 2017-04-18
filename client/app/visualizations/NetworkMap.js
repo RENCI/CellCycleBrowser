@@ -38,6 +38,7 @@ module.exports = function() {
     selection.each(function(d) {
       data = d;
 
+      // Create skeletal chart
       svg = d3.select(this).selectAll("svg")
           .data([data]);
 
@@ -104,7 +105,6 @@ module.exports = function() {
 
       g.append("g")
           .attr("class", "nodeLabels")
-
 
       svg = svg.merge(svgEnter);
 

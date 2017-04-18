@@ -96,9 +96,7 @@ AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_PROFILE:
       AppDispatcher.waitFor([ModelStore.dispatchToken]);
-      if (ModelStore.getModelList().length > 0) {
-        createControls(ModelStore.getModel());
-      }
+      createControls(ModelStore.getModel());
       SimulationControlStore.emitChange();
       break;
 
