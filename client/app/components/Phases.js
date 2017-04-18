@@ -76,6 +76,7 @@ function Phases(props) {
                 timeExtent={props.timeExtent}
                 activeIndex={props.activeTrajectory.id === "average" ? "0" : "-1"}
                 activePhase={props.activePhase}
+                colorScale={props.colorScale}
                 height={34}
                 isAverage={true} />
             </div>
@@ -88,6 +89,7 @@ function Phases(props) {
                 activeIndex={props.activeTrajectory.id && props.activeTrajectory !== "average" ?
                              props.activeTrajectory.id : "-1"}
                 activePhase={props.activePhase}
+                colorScale={props.colorScale}
                 height={props.phases.length * 20} />
             </div>
           </div>
@@ -102,7 +104,8 @@ Phases.propTypes = {
   phaseAverage: PropTypes.arrayOf(PropTypes.object).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   activeTrajectory: PropTypes.object.isRequired,
-  activePhase: PropTypes.string.isRequired
+  activePhase: PropTypes.string.isRequired,
+  colorScale: PropTypes.func.isRequired
 };
 
 module.exports = Phases;

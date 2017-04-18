@@ -2,7 +2,6 @@ var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
 var d3 = require("d3");
-var d3ScaleChromatic = require("d3-scale-chromatic");
 var HeatMap = require("../visualizations/HeatMap");
 
 // TODO: Move to css file
@@ -11,22 +10,18 @@ var style = {
   backgroundColor: "#eee"
 };
 
-function phaseColorScale(phases) {
-  return d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
-      .domain(phases[0].map(function(d) { return d.name; }));
-}
-
 var HeatMapContainer = React.createClass ({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     dataExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
-    phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     timeExtent: PropTypes.arrayOf(PropTypes.number),
+    phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     activePhase: PropTypes.string.isRequired,
+    phaseColorScale: PropTypes.func.isRequired,
     phaseOverlayOpacity: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired
   },
-  componentDidMount: function() {    
+  componentDidMount: function() {
     // Create visualiztion function
     this.heatMap = HeatMap();
 
@@ -53,7 +48,7 @@ var HeatMapContainer = React.createClass ({
         .dataExtent(props.dataExtent)
         .timeExtent(props.timeExtent)
         .phases(props.phases)
-        .phaseColorScale(phaseColorScale(props.phases))
+        .phaseColorScale(props.phaseColorScale)
         .activePhase(props.activePhase)
         .phaseOverlayOpacity(props.phaseOverlayOpacity);
 

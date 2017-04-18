@@ -73,6 +73,7 @@ function Species(props) {
                 phases={[props.phaseAverage]}
                 timeExtent={props.timeExtent}
                 activePhase={props.activePhase}
+                phaseColorScale={props.phaseColorScale}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
                 height={34} />
             </div>
@@ -85,6 +86,7 @@ function Species(props) {
                 phases={props.phases}
                 timeExtent={props.timeExtent}
                 activePhase={props.activePhase}
+                phaseColorScale={props.phaseColorScale}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
                 height={props.species.simulationOutput.length * 20} />
             </div>
@@ -107,6 +109,7 @@ function Species(props) {
                 phases={[props.activePhases]}
                 timeExtent={props.timeExtent}
                 activePhase={props.activePhase}
+                phaseColorScale={props.phaseColorScale}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
                 height={34} />
             </div>
@@ -119,6 +122,7 @@ function Species(props) {
                 phases={props.species.cellData.map(function () { return props.activePhases; })}
                 timeExtent={props.timeExtent}
                 activePhase={props.activePhase}
+                phaseColorScale={props.phaseColorScale}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
                 height={props.species.cellData.length * 20} />
             </div>
@@ -136,6 +140,7 @@ Species.propTypes = {
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   activePhases: PropTypes.arrayOf(PropTypes.object).isRequired,
   activePhase: PropTypes.string.isRequired,
+  phaseColorScale: PropTypes.func.isRequired,
   phaseOverlayOpacity: PropTypes.number.isRequired
 };
 

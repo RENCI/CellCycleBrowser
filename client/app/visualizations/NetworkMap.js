@@ -1,5 +1,4 @@
 var d3 = require("d3");
-var d3ScaleChromatic = require("d3-scale-chromatic");
 
 module.exports = function() {
       // Size
@@ -27,6 +26,9 @@ module.exports = function() {
           .force("collide", d3.forceCollide(10))
           .force("manyBody", d3.forceManyBody().strength(-15))
           .on("tick", updateForce),
+
+      // Scales
+      phaseColorScale = d3.scaleOrdinal(),
 
       // Start with empty selection
       svg = d3.select(),
@@ -201,10 +203,6 @@ module.exports = function() {
     });
 
     function drawArcs() {
-      // TODO: Move to global settings somewhere
-      var colorScale = d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
-          .domain(data.phases.map(function(d) { return d.name; }));
-
       // Arc generator
       // XXX: SVG width seem to be a bit wider than container width. Maybe an
       // issue with margins. Need to look into this.
@@ -250,7 +248,7 @@ module.exports = function() {
 
       arcUpdate.select("path")
           .attr("d", arcShape)
-          .style("fill", function(d) { return colorScale(d.data.name); })
+          .style("fill", function(d) { return phaseColorScale(d.data.name); })
           .style("stroke", "#999");
 
       arcUpdate.select("text")
@@ -290,8 +288,8 @@ module.exports = function() {
         selection.select("path")
             .style("fill", function(d) {
               return highlight ?
-                     highlightColor(colorScale(d.data.name)) :
-                     colorScale(d.data.name);
+                     highlightColor(phaseColorScale(d.data.name)) :
+                     phaseColorScale(d.data.name);
             })
             .style("stroke-width", highlight ? 2 : null);
 
@@ -661,6 +659,12 @@ module.exports = function() {
   networkMap.height = function(_) {
     if (!arguments.length) return height;
     height = _;
+    return networkMap;
+  };
+
+  networkMap.phaseColorScale = function(_) {
+    if (!arguments.length) return phaseColorScale;
+    phaseColorScale = _;
     return networkMap;
   };
 

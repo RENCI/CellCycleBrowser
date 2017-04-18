@@ -2,6 +2,7 @@ var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
 var SimulationControlStore = require("../stores/SimulationControlStore");
+var PhaseColorStore = require("../stores/PhaseColorStore");
 var PhaseStore = require("../stores/PhaseStore");
 var d3 = require("d3");
 //var ChordMap = require("../visualizations/ChordMap");
@@ -60,6 +61,12 @@ function getStateFromSimulationControlStore() {
   };
 }
 
+function getStateFromPhaseColorStore() {
+  return {
+    phaseColorScale: PhaseColorStore.getColorScale()
+  };
+}
+
 function getStateFromPhaseStore() {
   return {
     phase: PhaseStore.getPhase()
@@ -70,7 +77,8 @@ var MapVisualizationContainer = React.createClass ({
   getInitialState: function () {
     return {
       model: null,
-      phase: PhaseStore.getPhase()
+      phase: PhaseStore.getPhase(),
+      phaseColorScale: PhaseColorStore.getColorScale()
     };
   },
   componentDidMount: function() {
@@ -80,6 +88,7 @@ var MapVisualizationContainer = React.createClass ({
         .on("selectSpecies", this.handleSelectSpecies);
 
     SimulationControlStore.addChangeListener(this.onSimulationControlChange);
+    PhaseColorStore.addChangeListener(this.onPhaseColorChange);
     PhaseStore.addChangeListener(this.onPhaseChange);
 
     this.resize();
@@ -92,6 +101,7 @@ var MapVisualizationContainer = React.createClass ({
   },
   componentWillUnmount: function () {
     SimulationControlStore.removeChangeListener(this.onSimulationControlChange);
+    PhaseColorStore.removeChangeListener(this.onPhaseColorChange);
     PhaseStore.removeChangeListener(this.onPhaseChange);
   },
   componentWillUpdate: function (props, state) {
@@ -102,6 +112,9 @@ var MapVisualizationContainer = React.createClass ({
   onSimulationControlChange: function () {
     this.setState(getStateFromSimulationControlStore());
   },
+  onPhaseColorChange: function () {
+    this.setState(getStateFromPhaseColorStore());
+  },
   onPhaseChange: function () {
     this.setState(getStateFromPhaseStore());
   },
@@ -111,7 +124,9 @@ var MapVisualizationContainer = React.createClass ({
   drawMap: function (state) {
     if (!state.model) return;
 
-    this.networkMap.selectPhase(state.phase);
+    this.networkMap
+        .phaseColorScale(state.phaseColorScale)
+        .selectPhase(state.phase);
 
     d3.select(this.getNode())
         .datum(state.model)

@@ -4,6 +4,7 @@ var React = require("react");
 var DataStore = require("../stores/DataStore");
 var TrajectoryStore = require("../stores/TrajectoryStore");
 var PhaseStore = require("../stores/PhaseStore");
+var PhaseColorStore = require("../stores/PhaseColorStore");
 var PhaseOverlayStore = require("../stores/PhaseOverlayStore");
 var BrowserControls = require("../components/BrowserControls");
 var Phases = require("../components/Phases");
@@ -12,26 +13,32 @@ var Species = require("../components/Species");
 function getStateFromDataStore() {
   return {
     data: DataStore.getData()
-  }
+  };
 }
 
 function getStateFromTrajectoryStore() {
   return {
     activeTrajectory: TrajectoryStore.getTrajectory()
-  }
+  };
 }
 
 function getStateFromPhaseStore() {
   return {
     activePhase: PhaseStore.getPhase()
-  }
+  };
+}
+
+function getStateFromPhaseColorStore() {
+  return {
+    phaseColorScale: PhaseColorStore.getColorScale()
+  };
 }
 
 function getStateFromPhaseOverlayStore() {
   return {
     showPhaseOverlay: PhaseOverlayStore.getShow(),
     phaseOverlayOpacity: PhaseOverlayStore.getOpacity()
-  }
+  };
 }
 
 // Enable bootstrap tooltips
@@ -51,6 +58,7 @@ var BrowserContainer = React.createClass({
       data: DataStore.getData(),
       activeTrajectory: TrajectoryStore.getTrajectory(),
       activePhase: PhaseStore.getPhase(),
+      phaseColorScale: PhaseColorStore.getColorScale(),
       showPhaseOverlay: PhaseOverlayStore.getShow(),
       phaseOverlayOpacity: PhaseOverlayStore.getOpacity()
     };
@@ -59,13 +67,15 @@ var BrowserContainer = React.createClass({
     DataStore.addChangeListener(this.onDataChange);
     TrajectoryStore.addChangeListener(this.onTrajectoryChange);
     PhaseStore.addChangeListener(this.onPhaseChange);
+    PhaseColorStore.addChangeListener(this.onPhaseColorChange);
     PhaseOverlayStore.addChangeListener(this.onPhaseOverlayChange);
     tooltips();
   },
   componentWillUnmount: function() {
     DataStore.removeChangeListener(this.onDataChange);
     TrajectoryStore.removeChangeListener(this.onTrajectoryChange);
-    PhaseStore.addChangeListener(this.onPhaseChange);
+    PhaseStore.removeChangeListener(this.onPhaseChange);
+    PhaseColorStore.removeChangeListener(this.onPhaseColorChange);
     PhaseOverlayStore.removeChangeListener(this.onPhaseOverlayChange);
   },
   componentDidUpdate: function () {
@@ -79,6 +89,9 @@ var BrowserContainer = React.createClass({
   },
   onPhaseChange: function () {
     this.setState(getStateFromPhaseStore());
+  },
+  onPhaseColorChange: function () {
+    this.setState(getStateFromPhaseColorStore());
   },
   onPhaseOverlayChange: function () {
     this.setState(getStateFromPhaseOverlayStore());
@@ -99,6 +112,7 @@ var BrowserContainer = React.createClass({
           timeExtent={this.state.data.timeExtent}
           activePhases={this.state.showPhaseOverlay ? this.state.activeTrajectory.phases : []}
           activePhase={this.state.activePhase}
+          phaseColorScale={this.state.phaseColorScale}
           phaseOverlayOpacity={this.state.phaseOverlayOpacity} />
       );
     }.bind(this));
@@ -113,7 +127,8 @@ var BrowserContainer = React.createClass({
           phaseAverage={this.state.data.phaseAverage}
           timeExtent={this.state.data.timeExtent}
           activeTrajectory={this.state.activeTrajectory}
-          activePhase={this.state.activePhase} />
+          activePhase={this.state.activePhase}
+          colorScale={this.state.phaseColorScale} />
         {speciesComponents}
       </div>
     );

@@ -14,7 +14,7 @@ module.exports = function () {
       phaseOverlayOpacity,
 
       // Scales
-      phaseColorScale,
+      phaseColorScale = d3.scaleOrdinal(),
 
       // Start with empty selection
       svg = d3.select();

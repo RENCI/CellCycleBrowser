@@ -1,11 +1,9 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
-var PhaseColorStore = require("../stores/PhaseColorStore");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var PhaseMap = require("../visualizations/PhaseMap");
 var d3 = require("d3");
-var d3ScaleChromatic = require("d3-scale-chromatic");
 
 // TODO: Move to css file
 var style = {
@@ -13,37 +11,24 @@ var style = {
   backgroundColor: "#eee"
 };
 
-// Retrieve the current state from the store
-function getStateFromStore() {
-  return {
-    colorScale: PhaseColorStore.getColorScale()
-  };
-}
-
 var PhaseMapContainer = React.createClass ({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     timeExtent: PropTypes.arrayOf(PropTypes.number),
     activeIndex: PropTypes.string.isRequired,
     activePhase: PropTypes.string.isRequired,
+    colorScale: PropTypes.func.isRequired,
     height: PropTypes.number.isRequired,
     isAverage: PropTypes.bool
   },
   getDefautProps: {
     isAverage: false
   },
-  getInitialState: function () {
-    return {
-      colorScale: PhaseColorStore.getColorScale()
-    };
-  },
   componentDidMount: function() {
     // Create visualization function
     this.phaseMap = PhaseMap()
         .on("selectTrajectory", this.handleSelectTrajectory)
         .on("selectPhase", this.handleSelectPhase);
-
-    PhaseColorStore.addChangeListener(this.onPhaseColorChange);
 
     this.resize();
 
@@ -53,16 +38,13 @@ var PhaseMapContainer = React.createClass ({
       this.onResize();
     }.bind(this));
   },
-  componentWillUnmount: function() {
-    PhaseColorStore.removeChangeListener(this.onPhaseColorChange);
-  },
   componentWillUpdate: function (props, state) {
     this.drawPhaseMap(props, state);
 
     return false;
   },
   onPhaseColorChange: function () {
-    this.setState(getStateFromStore());
+    this.setState(getStateFromPhaseColorStore());
   },
   onResize: function () {
     this.resize();
@@ -71,7 +53,7 @@ var PhaseMapContainer = React.createClass ({
     // Set up phase map
     this.phaseMap
         .height(props.height)
-        .colorScale(this.state.colorScale)
+        .colorScale(props.colorScale)
         .timeExtent(props.timeExtent)
         .activeIndex(props.activeIndex)
         .activePhase(props.activePhase)
