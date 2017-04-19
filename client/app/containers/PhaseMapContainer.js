@@ -5,11 +5,6 @@ var ViewActionCreators = require("../actions/ViewActionCreators");
 var PhaseMap = require("../visualizations/PhaseMap");
 var d3 = require("d3");
 
-var style = {
-  borderLeft: "2px solid #ddd",
-  backgroundColor: "#eee"
-};
-
 var PhaseMapContainer = React.createClass ({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
@@ -80,8 +75,12 @@ var PhaseMapContainer = React.createClass ({
     ViewActionCreators.selectPhase(phase);
   },
   render: function() {
-    // Update height
-    style.height = this.props.height;
+    // Create style here to update height and avoid mutated style warning
+    var style = {
+      borderLeft: "2px solid #ddd",
+      backgroundColor: "#eee",
+      height: this.props.height
+    };
 
     return <div style={style}></div>
   }

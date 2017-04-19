@@ -4,11 +4,6 @@ var PropTypes = React.PropTypes;
 var d3 = require("d3");
 var HeatMap = require("../visualizations/HeatMap");
 
-var style = {
-  borderLeft: "2px solid #ddd",
-  backgroundColor: "#eee"
-};
-
 var HeatMapContainer = React.createClass ({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
@@ -64,8 +59,12 @@ var HeatMapContainer = React.createClass ({
     return ReactDOM.findDOMNode(this);
   },
   render: function() {
-    // Update height
-    style.height = this.props.height;
+    // Create style here to update height and avoid mutated style warning
+    var style = {
+      borderLeft: "2px solid #ddd",
+      backgroundColor: "#eee",
+      height: this.props.height
+    };
 
     return <div style={style}></div>
   }
