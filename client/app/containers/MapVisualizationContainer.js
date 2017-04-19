@@ -100,7 +100,7 @@ var MapVisualizationContainer = React.createClass ({
     PhaseStore.removeChangeListener(this.onPhaseChange);
   },
   componentWillUpdate: function (props, state) {
-    this.drawMap(state);
+    this.drawVisualization(state);
 
     return false;
   },
@@ -116,7 +116,7 @@ var MapVisualizationContainer = React.createClass ({
   onResize: function () {
     this.resize();
   },
-  drawMap: function (state) {
+  drawVisualization: function (state) {
     if (!state.model) return;
 
     this.networkMap
@@ -134,7 +134,7 @@ var MapVisualizationContainer = React.createClass ({
         .width(width)
         .height(width);
 
-    this.drawMap(this.state);
+    this.drawVisualization(this.state);
   },
   getNode: function () {
     return ReactDOM.findDOMNode(this);
@@ -146,7 +146,7 @@ var MapVisualizationContainer = React.createClass ({
     networkMap.selectSpecies(species);
   },
   render: function () {
-    return <div className="Map" style={divStyle}></div>
+    return <div style={divStyle}></div>
   }
 });
 

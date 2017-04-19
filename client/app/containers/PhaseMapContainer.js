@@ -35,7 +35,7 @@ var PhaseMapContainer = React.createClass ({
     window.addEventListener("resize", this.onResize);
   },
   componentWillUpdate: function (props, state) {
-    this.drawPhaseMap(props, state);
+    this.drawVisualization(props, state);
 
     return false;
   },
@@ -45,7 +45,7 @@ var PhaseMapContainer = React.createClass ({
   onResize: function () {
     this.resize();
   },
-  drawPhaseMap: function (props, state) {
+  drawVisualization: function (props, state) {
     // Set up phase map
     this.phaseMap
         .height(props.height)
@@ -64,7 +64,7 @@ var PhaseMapContainer = React.createClass ({
 
     this.phaseMap.width(width);
 
-    this.drawPhaseMap(this.props, this.state);
+    this.drawVisualization(this.props, this.state);
   },
   getNode: function () {
     return ReactDOM.findDOMNode(this);
@@ -83,7 +83,7 @@ var PhaseMapContainer = React.createClass ({
     // Update height
     style.height = this.props.height;
 
-    return <div className="phaseMap" style={style}></div>
+    return <div style={style}></div>
   }
 });
 

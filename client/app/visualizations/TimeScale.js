@@ -71,10 +71,6 @@ module.exports = function() {
         .attr("dy", "1em");
   }
 
-  timeScale.update = function() {
-    draw();
-  };
-
   timeScale.width = function(_) {
     if (!arguments.length) return width;
     width = _;

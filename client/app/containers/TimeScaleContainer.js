@@ -26,14 +26,14 @@ var TimeScaleContainer = React.createClass ({
     window.addEventListener("resize", this.onResize);
   },
   componentWillUpdate: function (props, state) {
-    this.drawTimeScale(props.timeExtent);
+    this.drawVisualization(props.timeExtent);
 
     return false;
   },
   onResize: function () {
     this.resize();
   },
-  drawTimeScale: function (timeExtent) {
+  drawVisualization: function (timeExtent) {
     if (!timeExtent) return;
 
     // Draw time scale
@@ -46,13 +46,13 @@ var TimeScaleContainer = React.createClass ({
 
     this.timeScale.width(width);
 
-    this.drawTimeScale(this.props.timeExtent);
+    this.drawVisualization(this.props.timeExtent);
   },
   getNode: function () {
     return ReactDOM.findDOMNode(this);
   },
   render: function () {
-    return <div className="TimeScale" style={divStyle}></div>
+    return <div style={divStyle}></div>
   }
 });
 

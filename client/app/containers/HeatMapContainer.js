@@ -30,14 +30,14 @@ var HeatMapContainer = React.createClass ({
     window.addEventListener("resize", this.onResize);
   },
   componentWillUpdate: function (props, state) {
-    this.drawHeatMap(props, state);
+    this.drawVisualization(props, state);
 
     return false;
   },
   onResize: function () {
     this.resize();
   },
-  drawHeatMap: function (props, state) {
+  drawVisualization: function (props, state) {
     // Set up heat map
     this.heatMap
         .height(props.height)
@@ -58,7 +58,7 @@ var HeatMapContainer = React.createClass ({
 
     this.heatMap.width(width);
 
-    this.drawHeatMap(this.props, this.state);
+    this.drawVisualization(this.props, this.state);
   },
   getNode: function () {
     return ReactDOM.findDOMNode(this);
@@ -67,7 +67,7 @@ var HeatMapContainer = React.createClass ({
     // Update height
     style.height = this.props.height;
 
-    return <div className="heatMap" style={style}></div>
+    return <div style={style}></div>
   }
 });
 

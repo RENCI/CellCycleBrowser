@@ -4,7 +4,7 @@ var Profile = require("../components/Profile");
 var MapArea = require("../components/MapArea");
 var BrowserContainer = require("../containers/BrowserContainer");
 var ControlsContainer = require("../containers/ControlsContainer");
-var SummaryArea = require("../components/SummaryArea");
+var SummaryPlotsArea = require("../components/SummaryPlotsArea");
 
 var divClass = "container-fluid well well-sm";
 
@@ -28,7 +28,7 @@ function MainSection(props) {
         <div className="row">
           <div className="col-md-3 text-center">
             <MapArea/>
-            <SummaryArea />
+            <SummaryPlotsArea />
           </div>
           <div className="col-md-6 text-center">
             <BrowserContainer />
@@ -51,7 +51,7 @@ function MainSection(props) {
         <div className="row">
           <div className="col-md-4 col-md-offset-2 text-center">
             <MapArea/>
-            <SummaryArea />
+            <SummaryPlotsArea />
           </div>
           <div className="col-md-4 text-center">
             <ControlsContainer />
@@ -70,7 +70,7 @@ function MainSection(props) {
         </div>
         <div className="row">
           <div className="col-md-4 col-md-offset-1 text-center">
-            <SummaryArea />
+            <SummaryPlotsArea />
           </div>
           <div className="col-md-6 text-center">
             <BrowserContainer />
