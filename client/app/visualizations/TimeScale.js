@@ -36,7 +36,7 @@ module.exports = function() {
 
       svgEnter.append("g");
 
-      svg = svg.merge(svgEnter);
+      svg = svgEnter.merge(svg);
 
       draw();
     });

@@ -70,7 +70,7 @@ module.exports = function () {
           .style("stroke", "none")
           .style("stroke-width", 2);
 
-      svg = svg.merge(svgEnter);
+      svg = svgEnter.merge(svg);
 
       draw();
     });

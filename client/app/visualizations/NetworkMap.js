@@ -99,7 +99,7 @@ module.exports = function() {
       g.append("g").attr("class", "nodes");
       g.append("g").attr("class", "nodeLabels")
 
-      svg = svg.merge(svgEnter);
+      svg = svgEnter.merge(svg);
 
       // Create nodes and links
       processData();
