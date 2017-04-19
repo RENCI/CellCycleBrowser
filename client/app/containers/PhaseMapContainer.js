@@ -5,7 +5,6 @@ var ViewActionCreators = require("../actions/ViewActionCreators");
 var PhaseMap = require("../visualizations/PhaseMap");
 var d3 = require("d3");
 
-// TODO: Move to css file
 var style = {
   borderLeft: "2px solid #ddd",
   backgroundColor: "#eee"
@@ -32,11 +31,8 @@ var PhaseMapContainer = React.createClass ({
 
     this.resize();
 
-    window.addEventListener("resize", function() {
-      // TODO: Create a store with window resize. Move event listener to
-      // top-level container and create a view action there
-      this.onResize();
-    }.bind(this));
+    // Resize on window resize
+    window.addEventListener("resize", this.onResize);
   },
   componentWillUpdate: function (props, state) {
     this.drawPhaseMap(props, state);

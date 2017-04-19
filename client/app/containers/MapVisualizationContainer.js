@@ -5,12 +5,10 @@ var SimulationControlStore = require("../stores/SimulationControlStore");
 var PhaseColorStore = require("../stores/PhaseColorStore");
 var PhaseStore = require("../stores/PhaseStore");
 var d3 = require("d3");
-//var ChordMap = require("../visualizations/ChordMap");
 var NetworkMap = require("../visualizations/NetworkMap");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var Constants = require("../constants/Constants");
 
-// TODO: Move to css file
 var divStyle = {
   backgroundColor: "white",
   borderColor: "#ddd",
@@ -93,11 +91,8 @@ var MapVisualizationContainer = React.createClass ({
 
     this.resize();
 
-    window.addEventListener("resize", function() {
-      // TODO: Create a store with window resize. Move event listener to
-      // top-level container and create a view action there
-      this.onResize();
-    }.bind(this));
+    // Resize on window resize
+    window.addEventListener("resize", this.onResize);
   },
   componentWillUnmount: function () {
     SimulationControlStore.removeChangeListener(this.onSimulationControlChange);

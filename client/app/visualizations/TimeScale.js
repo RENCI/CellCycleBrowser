@@ -14,10 +14,7 @@ module.exports = function() {
           .tickSizeOuter(0),
 
       // Start with empty selection
-      svg = d3.select(),
-
-      // Event dispatcher
-      dispatcher = d3.dispatch("selectTime");
+      svg = d3.select();
 
   function timeScale(selection) {
     selection.each(function(d) {
@@ -56,7 +53,7 @@ module.exports = function() {
         .range([0, width]);
 
     // Draw axis
-    svg.select("g").transition()
+    svg.select("g")//.transition()
         .attr("transform", "translate(0," + (height - 1) + ")")
         .call(axis);
 
@@ -68,7 +65,7 @@ module.exports = function() {
     });
 
     // Move label
-    svg.select("text").transition()
+    svg.select("text")//.transition()
         .attr("y", 5)
         .attr("x", width / 2)
         .attr("dy", "1em");
@@ -89,20 +86,6 @@ module.exports = function() {
     height = _;
     return timeScale;
   };
-
-  // For registering event callbacks
-  timeScale.on = function() {
-    var value = dispatcher.on.apply(dispatcher, arguments);
-    return value === dispatcher ? timeScale : value;
-  };
-
-  // Initialize event callbacks
-  timeScale.selectTime = function(_) {
-    console.log(_);
-    return timeScale;
-  };
-
-  timeScale.on("selectTime", timeScale.selectTime);
 
   return timeScale;
 }
