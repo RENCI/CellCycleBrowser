@@ -1,4 +1,5 @@
 var d3 = require("d3");
+var d3Contour = require("d3-contour");
 
 module.exports = function() {
       // Size
@@ -40,6 +41,7 @@ module.exports = function() {
 
       // Groups for layout
       g.append("g").attr("class", "axes");
+      g.append("g").attr("class", "contours");
       g.append("g").attr("class", "points");
 
       svg = svgEnter.merge(svg);
@@ -55,8 +57,6 @@ module.exports = function() {
 
     // Normalized random distribution function
     var randn = normalRandom(6);
-
-    console.log(data);
 
     // Create phase objects with probabilities
     var phases = data.map(function(d) {
@@ -161,6 +161,7 @@ module.exports = function() {
 
     drawAxes();
     drawPoints();
+    drawContours();
 
     function drawAxes() {
       var gAxes = svg.select(".axes");
@@ -226,6 +227,33 @@ module.exports = function() {
 
       // Exit
       point.exit().remove();
+    }
+
+    function drawContours() {
+      // Create contours
+      var contours = d3Contour.contourDensity()
+        .x(function(d) { return xScale(d.x); })
+        .y(function(d) { return yScale(d.y); })
+        .size([innerWidth(), innerHeight()])
+    //      .bandwidth(40)
+        (cells);
+
+      // Bind contours
+      var contour = svg.select(".contours").selectAll(".contour")
+          .data(contours);
+
+      // Enter + update
+      contour.enter().append("path")
+          .attr("class", "contour")
+          .style("fill", "none")
+          .style("stroke", "black")
+          .style("stroke-opacity", 0.2)
+          .style("stroke-linejoin", "round")
+        .merge(contour)
+          .attr("d", d3.geoPath());
+
+      // Exit
+      contour.exit().remove();
     }
   };
 
