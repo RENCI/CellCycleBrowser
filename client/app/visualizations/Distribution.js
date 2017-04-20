@@ -104,16 +104,16 @@ module.exports = function() {
         cell.y = 1;
 
         // Random offset
-        cell.x += 0.5 * randn();
-        cell.y += 0.5 * randn();
+        cell.x += 0.2 * randn();
+        cell.y += 0.2 * randn();
       }
       else if (name.indexOf("G2") !== -1) {
         cell.x = 2;
         cell.y = 1;
 
         // Random offset
-        cell.x += 0.5 * randn();
-        cell.y += 0.5 * randn();
+        cell.x += 0.2 * randn();
+        cell.y += 0.2 * randn();
       }
       else if (name.indexOf("S") !== -1) {
         // Get S subphase index
@@ -124,9 +124,9 @@ module.exports = function() {
         cell.y = 2;
 
         // Random offset
-        var r = 2 * randn();
+        var r = 1 * randn();
         cell.x += r;
-        cell.y += -Math.abs(r) + 2 * randn();
+        cell.y += -Math.abs(r) + 1 * randn();
       }
       else {
         console.log("Phase not handled");
@@ -141,10 +141,10 @@ module.exports = function() {
         var rand = 0;
 
         for (var i = 0; i < n; i ++) {
-          rand += Math.random() - 0.5;
+          rand += Math.random();
         }
 
-        return rand / n;
+        return (rand - n / 2) / (n / 2);
       }
     }
   }
