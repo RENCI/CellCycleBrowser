@@ -5,7 +5,7 @@ var DistributionContainer = require("../containers/DistributionContainer");
 function DistributionArea(props) {
   return (
     <div>
-      <h3>Cell Cycle Distribution</h3>
+      <h3>Phase Distribution</h3>
       <DistributionContainer />
     </div>
   );

@@ -1,7 +1,7 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
-var DataStore = require("../stores/DataStore");
+var ModelStore = require("../stores/ModelStore");
 var d3 = require("d3");
 var Distribution = require("../visualizations/Distribution");
 
@@ -13,23 +13,23 @@ var divStyle = {
   borderRadius: 5
 };
 
-function getStateFromDataStore() {
+function getStateFromModelStore() {
   return {
-    data: DataStore.getData()
+    model: ModelStore.getModel()
   };
 }
 
 var DistributionContainer = React.createClass ({
   getInitialState: function () {
     return {
-      data: DataStore.getData()
+      model: ModelStore.getModel()
     };
   },
   componentDidMount: function() {
     // Create visualiztion function
-    this.Distribution = Distribution();
+    this.distribution = Distribution();
 
-    DataStore.addChangeListener(this.onDataChange);
+    ModelStore.addChangeListener(this.onModelChange);
 
     this.resize();
 
@@ -37,28 +37,30 @@ var DistributionContainer = React.createClass ({
     window.addEventListener("resize", this.onResize);
   },
   componentWillUnmount: function () {
-    DataStore.removeChangeListener(this.onDataChange);
+    ModelStore.removeChangeListener(this.onModelChange);
   },
   componentWillUpdate: function (props, state) {
     this.drawVisualization(state);
 
     return false;
   },
-  onDataChange: function () {
-    this.setState(getStateFromDataStore());
+  onModelChange: function () {
+    this.setState(getStateFromModelStore());
   },
   onResize: function () {
     this.resize();
   },
   drawVisualization: function (state) {
+    if (!state.model.reactions) return;
+
     d3.select(this.getNode())
-        .datum(state.data)
-        .call(this.Distribution);
+        .datum(state.model.reactions)
+        .call(this.distribution);
   },
   resize: function () {
     var width = this.getNode().clientWidth;
 
-    this.Distribution
+    this.distribution
         .width(width)
         .height(width);
 
