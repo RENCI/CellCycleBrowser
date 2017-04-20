@@ -38,6 +38,7 @@ module.exports = function() {
       // Groups for layout
       g.append("g").attr("class", "axes");
       g.append("g").attr("class", "curves");
+      g.append("g").attr("class", "legend");
 
       svg = svgEnter.merge(svg);
 
@@ -120,6 +121,7 @@ module.exports = function() {
 
     drawAxes();
     drawCurves();
+    drawLegend();
 
     function drawAxes() {
       var gAxes = svg.select(".axes");
@@ -218,6 +220,37 @@ module.exports = function() {
             .attr("cx", function(d) { return xScale(d[0]); })
             .attr("cy", function(d) { return yScale(d[1]); });
       }
+    }
+
+    function drawLegend() {
+      var spacing = 20;
+
+      var yScale = d3.scaleLinear()
+          .domain([0, curves.length - 1])
+          .range([0, (curves.length - 1) * spacing]);
+
+      var legend = svg.select(".legend")
+          .attr("transform", "translate(50,50)");
+
+      // Bind curve data
+      var curve = svg.select(".legend").selectAll(".item")
+          .data(curves);
+
+      // Enter
+      var curveEnter = curve.enter().append("g")
+          .attr("class", "item");
+
+      curveEnter.append("text");
+
+      curveEnter.append("line");
+
+      // Enter + update
+      var curveUpdate = curveEnter.merge(curve);
+
+      // XXX: Add code here
+
+      // Exit
+      curve.exit().remove();
     }
   };
 
