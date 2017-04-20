@@ -16,7 +16,7 @@ module.exports = function() {
       // Start with empty selection
       svg = d3.select();
 
-  function growthCurve(selection) {
+  function distribution(selection) {
     selection.each(function(d) {
       data = d;
 
@@ -24,7 +24,7 @@ module.exports = function() {
           .data([data]);
 
       var svgEnter = svg.enter().append("svg")
-          .attr("class", "growthCurve")
+          .attr("class", "Distribution")
           .on("mousedown", function() {
             // Stop text highlighting
             d3.event.preventDefault();
@@ -283,17 +283,17 @@ module.exports = function() {
     }
   };
 
-  growthCurve.width = function(_) {
+  distribution.width = function(_) {
     if (!arguments.length) return width;
     width = _;
-    return growthCurve;
+    return distribution;
   };
 
-  growthCurve.height = function(_) {
+  distribution.height = function(_) {
     if (!arguments.length) return height;
     height = _;
-    return growthCurve;
+    return distribution;
   };
 
-  return growthCurve;
+  return distribution;
 }
