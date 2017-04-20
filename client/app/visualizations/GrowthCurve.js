@@ -117,7 +117,14 @@ module.exports = function() {
 
     var colorScale = d3.scaleOrdinal()
         .domain(["Data", "Simulation"])
-        .range(["#2166ac", "#b2182b"])
+        .range(["#2166ac", "#b2182b"]);
+
+    function curveColor(d) {
+      return d.name.indexOf("Data") !== -1 ?
+             colorScale("Data") : colorScale("Simulation");
+    }
+
+    var circleRadius = 3;
 
     drawAxes();
     drawCurves();
@@ -195,8 +202,7 @@ module.exports = function() {
       function drawCurve(d) {
         var g = d3.select(this);
 
-        var color = d.name.indexOf("Data") !== -1 ?
-            colorScale("Data") : colorScale("Simulation");
+        var color = curveColor(d);
 
         // Curve
         var curve = g.selectAll("path")
@@ -213,7 +219,7 @@ module.exports = function() {
             .data(d.curve)
 
         point.enter().append("circle")
-            .attr("r", 3)
+            .attr("r", circleRadius)
             .style("fill", color)
             .style("stroke", "none")
           .merge(point)
@@ -223,14 +229,18 @@ module.exports = function() {
     }
 
     function drawLegend() {
-      var spacing = 20;
+      var x = 35,
+          y = 10,
+          spacing = 20,
+          lineX = -2,
+          lineWidth = 20;
 
-      var yScale = d3.scaleLinear()
+      var itemScale = d3.scaleLinear()
           .domain([0, curves.length - 1])
           .range([0, (curves.length - 1) * spacing]);
 
       var legend = svg.select(".legend")
-          .attr("transform", "translate(50,50)");
+          .attr("transform", "translate(" + x + "," + y + ")");
 
       // Bind curve data
       var curve = svg.select(".legend").selectAll(".item")
@@ -240,14 +250,35 @@ module.exports = function() {
       var curveEnter = curve.enter().append("g")
           .attr("class", "item");
 
-      curveEnter.append("text");
+      curveEnter.append("text")
+          .attr("dy", ".35em")
+          .style("font-size", "small")
+          .style("text-anchor", "start");
 
-      curveEnter.append("line");
+      curveEnter.append("line")
+          .attr("x1", lineX)
+          .attr("x2", lineX - lineWidth);
+
+      curveEnter.append("circle")
+          .attr("cx", lineX - lineWidth / 2)
+          .attr("r", circleRadius)
+          .style("stroke", "none");
 
       // Enter + update
-      var curveUpdate = curveEnter.merge(curve);
+      var curveUpdate = curveEnter.merge(curve)
+          .attr("transform", function(d, i) {
+            // Fudge y a bit for crisp line
+            return "translate(0," + (Math.round(itemScale(i)) + 0.5) + ")";
+          });
 
-      // XXX: Add code here
+      curveUpdate.selectAll("text")
+          .text(function(d) { return d.name; });
+
+      curveUpdate.selectAll("line")
+          .style("stroke", curveColor);
+
+      curveUpdate.selectAll("circle")
+          .style("fill", curveColor);
 
       // Exit
       curve.exit().remove();
