@@ -58,7 +58,7 @@ module.exports = function() {
     var n = 5000;
 
     // Normalized random distribution function
-    var randn = normalRandom(6);
+    var randn = d3.randomNormal();
 
     // Create phase objects with probabilities
     var phases = data.map(function(d) {
@@ -88,11 +88,11 @@ module.exports = function() {
 
     cells = d3.range(0, n).map(function() {
       var cell = {},
-          x = Math.random();
+          p = Math.random();
 
       // Determine phase for cell
       for (var i = 0; i < phases.length; i++) {
-        if (x < phases[i].cumP) {
+        if (p < phases[i].cumP) {
           cell.phase = phases[i];
           break;
         }
@@ -106,16 +106,16 @@ module.exports = function() {
         cell.y = 1;
 
         // Random offset
-        cell.x += 0.2 * randn();
-        cell.y += 0.2 * randn();
+        cell.x += 0.05 * randn();
+        cell.y += 0.05 * randn();
       }
       else if (name.indexOf("G2") !== -1) {
         cell.x = 2;
         cell.y = 1;
 
         // Random offset
-        cell.x += 0.2 * randn();
-        cell.y += 0.2 * randn();
+        cell.x += 0.05 * randn();
+        cell.y += 0.05 * randn();
       }
       else if (name.indexOf("S") !== -1) {
         // Get S subphase index
@@ -126,9 +126,9 @@ module.exports = function() {
         cell.y = 2;
 
         // Random offset
-        var r = 1 * randn();
+        var r = 0.25 * randn();
         cell.x += r;
-        cell.y += -Math.abs(r) + 1 * randn();
+        cell.y += -Math.abs(r) + 0.25 * randn();
       }
       else {
         console.log("Phase not handled");
@@ -137,18 +137,6 @@ module.exports = function() {
 
       return cell;
     });
-
-    function normalRandom(n) {
-      return function() {
-        var rand = 0;
-
-        for (var i = 0; i < n; i ++) {
-          rand += Math.random();
-        }
-
-        return (rand - n / 2) / (n / 2);
-      }
-    }
   }
 
   function createContours() {
@@ -256,7 +244,7 @@ module.exports = function() {
           }
         }
 
-        return "black";
+        return colorScale(contours[0].value);
       }
     }
 
