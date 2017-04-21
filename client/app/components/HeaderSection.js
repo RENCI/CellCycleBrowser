@@ -8,22 +8,20 @@ function HeaderSection() {
         <div className="media-left media-middle text-center" style={{width:"25%"}}>
           <img
             src="/static/cc_core/images/cells.gif"
-            style={{width: "40%"}} />
+            style={{width: "20%"}} />
         </div>
         <div className="media-body media-middle text-center">
           <Header header="Cell Cycle Browser" />
+          <a style={{marginRight: 20}}>About</a>
+          <a>Help</a>
         </div>
         <div className="media-right media-middle text-center" style={{width:"25%"}}>
-          <div>
           <img
             src="/static/cc_core/images/medium_blue_450px.png"
-            style={{width: "60%"}} />
-          </div>
-          <div>
+            style={{width: "60%", float: "left"}} />
           <img
             src="/static/cc_core/images/RENCI-Official-Logo-No-Tagline-cropped-alpha.png"
-            style={{width: "30%"}} />
-            </div>
+            style={{width: "30%", marginTop: 3, marginRight: 20}} />
         </div>
       </div>
     </div>

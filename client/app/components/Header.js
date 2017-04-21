@@ -2,7 +2,7 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 
 function Header(props) {
-  return <h1>{props.header}</h1>
+  return <h2>{props.header}</h2>
 }
 
 Header.propTypes = {
