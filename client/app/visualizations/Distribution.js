@@ -1,5 +1,6 @@
 var d3 = require("d3");
 var d3Contour = require("d3-contour");
+var d3ScaleChromatic = require("d3-scale-chromatic");
 
 module.exports = function() {
       // Size
@@ -12,6 +13,7 @@ module.exports = function() {
       // Data
       data = [],
       cells = [],
+      contours = [],
 
       // Scales
       xScale = d3.scaleLinear()
@@ -149,6 +151,16 @@ module.exports = function() {
     }
   }
 
+  function createContours() {
+    // Create contours
+    contours = d3Contour.contourDensity()
+      .x(function(d) { return xScale(d.x); })
+      .y(function(d) { return yScale(d.y); })
+      .size([innerWidth(), innerHeight()])
+  //      .bandwidth(40)
+      (cells);
+  }
+
   function draw() {
     // Update svg size
     svg .attr("width", width)
@@ -158,6 +170,9 @@ module.exports = function() {
     xScale.range([0, innerWidth()]);
 
     yScale.range([innerHeight(), 0]);
+
+    // Create contours, must be done after scales are updated
+    createContours();
 
     drawAxes();
     drawPoints();
@@ -213,31 +228,39 @@ module.exports = function() {
     }
 
     function drawPoints() {
+      // Create color scale from density contours
+      var colorScale = d3.scaleSequential(d3ScaleChromatic.interpolateYlOrRd)
+          .domain(d3.extent(contours, function(d) { return d.value; }));
+
       // Bind cell data
       var point = svg.select(".points").selectAll(".point")
           .data(cells);
 
       // Enter + update
       point.enter().append("circle")
-          .attr("r", 2)
-          .style("fill-opacity", 0.2)
+          .attr("r", 1)
         .merge(point)
           .attr("cx", function(d) { return xScale(d.x); })
-          .attr("cy", function(d) { return yScale(d.y); });
+          .attr("cy", function(d) { return yScale(d.y); })
+          .style("fill", color);
 
       // Exit
       point.exit().remove();
+
+      function color(d) {
+        for (var i = contours.length - 1; i >= 0; i--) {
+          var c = contours[i];
+
+          if (d3.polygonContains(c.coordinates[0][0], [xScale(d.x), yScale(d.y)])) {
+            return colorScale(c.value);
+          }
+        }
+
+        return "black";
+      }
     }
 
     function drawContours() {
-      // Create contours
-      var contours = d3Contour.contourDensity()
-        .x(function(d) { return xScale(d.x); })
-        .y(function(d) { return yScale(d.y); })
-        .size([innerWidth(), innerHeight()])
-    //      .bandwidth(40)
-        (cells);
-
       // Bind contours
       var contour = svg.select(".contours").selectAll(".contour")
           .data(contours);
@@ -247,7 +270,7 @@ module.exports = function() {
           .attr("class", "contour")
           .style("fill", "none")
           .style("stroke", "black")
-          .style("stroke-opacity", 0.2)
+          .style("stroke-opacity", 0.1)
           .style("stroke-linejoin", "round")
         .merge(contour)
           .attr("d", d3.geoPath());
