@@ -9,18 +9,25 @@ function Profile(props) {
                     "";
 
   return (
-        <div>
-            <div>
-              <ProfileSelectContainer />
-              <ProfileDescription description={description} />
-            </div>
-            <div>
-              <a href="/add_profile/login/">Add new profile</a>
-              &nbsp;&nbsp;
-              <a href="/delete_profile/login/">Delete profile</a>
-            </div>
+    <div className="row">
+      <div className="col-md-6">
+        <ProfileSelectContainer />
+        <div style={{marginTop: "10px"}}>
+          <a
+            style={{marginRight: "20px"}}
+            href="/add_profile/login/">
+            Add profile
+          </a>
+          <a
+            href="/delete_profile/login/">
+            Delete profile
+          </a>
         </div>
-
+      </div>
+      <div className="col-md-6">
+        <ProfileDescription description={description} />
+      </div>
+    </div>
   );
 }
 

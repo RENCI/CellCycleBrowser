@@ -5,7 +5,6 @@ var DistributionArea = require("../components/DistributionArea");
 function SummaryPlotsArea(props) {
   return (
     <div>
-      <h2>Summary Plots</h2>
       <GrowthCurveArea />
       <DistributionArea />
     </div>

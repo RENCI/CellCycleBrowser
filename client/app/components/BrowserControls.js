@@ -1,19 +1,8 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
-var CellDataSelectContainer = require("../containers/CellDataSelectContainer");
-var FeatureSelectContainer = require("../containers/FeatureSelectContainer");
 var AlignmentSelectContainer = require("../containers/AlignmentSelectContainer");
 var SliderContainer = require("../containers/SliderContainer");
 var ViewActionCreators = require("../actions/ViewActionCreators");
-
-var divStyle = {
-  display: "inline-block",
-  verticalAlign: "top",
-  marginLeft: 20,
-  marginRight: 20,
-  marginTop: 5,
-  marginBottom: 20
-};
 
 function handleShowPhaseOverlayChange(event) {
   ViewActionCreators.changeShowPhaseOverlay(event.target.checked);
@@ -26,12 +15,6 @@ function handlePhaseOverlayOpacityChange(value) {
 function BrowserControls(props) {
   return (
     <div>
-      <div style={divStyle}>
-        <CellDataSelectContainer />
-      </div>
-      <div style={divStyle}>
-        <FeatureSelectContainer />
-      </div>
       <AlignmentSelectContainer />
       <div className="row">
         <div className="col-sm-2 col-sm-offset-2">

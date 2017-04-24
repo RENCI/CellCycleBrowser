@@ -35,13 +35,11 @@ function ItemSelect(props) {
 
   var activeName = activeIndex === -1 ? "" : props.options[activeIndex].name;
 
-//  console.log(activeName);
-
   return (
     <div>
-      <span className="lead">
+      <strong>
         {props.label}
-      </span>
+      </strong>
       <div className="btn-group">
         <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown">
           {activeName} <span className="caret"></span>

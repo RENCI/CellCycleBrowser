@@ -1,6 +1,5 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
-var Profile = require("../components/Profile");
 var MapArea = require("../components/MapArea");
 var BrowserContainer = require("../containers/BrowserContainer");
 var ControlsContainer = require("../containers/ControlsContainer");
@@ -20,21 +19,16 @@ function MainSection(props) {
   if (hasModels && hasCellData) {
     return (
       <div className={divClass}>
-        <div className="row text-center">
-          <div className="col-md-6 col-md-offset-3 well well-small">
-            <Profile profile={props.profile} />
-          </div>
-        </div>
         <div className="row">
           <div className="col-md-3 text-center">
             <MapArea/>
-            <SummaryPlotsArea />
+            <ControlsContainer />
           </div>
           <div className="col-md-6 text-center">
             <BrowserContainer />
           </div>
           <div className="col-md-3 text-center">
-            <ControlsContainer />
+            <SummaryPlotsArea />
           </div>
         </div>
       </div>
@@ -43,18 +37,13 @@ function MainSection(props) {
   else if (hasModels) {
     return (
       <div className={divClass}>
-        <div className="row text-center">
-          <div className="col-md-6 col-md-offset-3 well well-small">
-            <Profile profile={props.profile} />
-          </div>
-        </div>
         <div className="row">
           <div className="col-md-4 col-md-offset-2 text-center">
             <MapArea/>
-            <SummaryPlotsArea />
+            <ControlsContainer />
           </div>
           <div className="col-md-4 text-center">
-            <ControlsContainer />
+            <SummaryPlotsArea />
           </div>
         </div>
       </div>
@@ -63,30 +52,19 @@ function MainSection(props) {
   else if (hasCellData) {
     return (
       <div className={divClass}>
-        <div className="row text-center">
-          <div className="col-md-6 col-md-offset-3 well well-small">
-            <Profile profile={props.profile} />
-          </div>
-        </div>
         <div className="row">
-          <div className="col-md-4 col-md-offset-1 text-center">
-            <SummaryPlotsArea />
-          </div>
-          <div className="col-md-6 text-center">
+          <div className="col-md-offset-3 col-md-6 text-center">
             <BrowserContainer />
+          </div>
+          <div className="col-md-4 text-center">
+            <SummaryPlotsArea />
           </div>
         </div>
       </div>
     );
   }
   else {
-    return (
-      <div className={divClass}>
-        <div className="row text-center">
-          <Profile profile={props.profile} />
-        </div>
-      </div>
-    );
+    return null;
   }
 }
 

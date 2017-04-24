@@ -69,8 +69,7 @@ var ControlsContainer = React.createClass ({
     if (!this.state.controls) return null;
 
     return (
-      <div>
-        <h2>Controls</h2>
+      <div style={{marginTop: "20px"}}>
         <div className="panel">
           <RunSimulationButtonContainer />
         </div>

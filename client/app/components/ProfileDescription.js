@@ -2,7 +2,7 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 
 var style = {
-  marginTop: 10
+  marginTop: 6
 };
 
 function ProfileDescription(props) {

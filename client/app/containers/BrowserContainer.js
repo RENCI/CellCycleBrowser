@@ -119,7 +119,6 @@ var BrowserContainer = React.createClass({
 
     return (
       <div>
-        <h2>Browser</h2>
         <BrowserControls
           timeExtent={this.state.data.timeExtent} />
         <Phases

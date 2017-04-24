@@ -2,6 +2,7 @@
 
 var React = require("react");
 var HeaderSection = require("../components/HeaderSection");
+var DataSelectionSection = require("../components/DataSelectionSection");
 var MainSection = require("../components/MainSection");
 var ProfileStore = require("../stores/ProfileStore");
 var WebAPIUtils = require("../utils/WebAPIUtils");
@@ -36,7 +37,8 @@ var AppContainer = React.createClass({
     return (
       <div>
         <HeaderSection />
-        <MainSection profile={this.state.profile}/>
+        <DataSelectionSection profile={this.state.profile} />
+        <MainSection profile={this.state.profile} />
       </div>
     );
   }
