@@ -98,7 +98,7 @@ function SpeciesSpeciesSliders(props) {
     <div className="panel panel-default">
       <button
         type="button"
-        className="btn btn-info"
+        className="btn btn-default"
         style={buttonStyle}
         data-toggle="collapse"
         data-target={"#" + collapseId}>

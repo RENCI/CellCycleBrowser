@@ -2,14 +2,18 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 
 var buttonStyle = {
-  width: 35
+  width: 35,
+  borderColor: "#ddd",
+  borderTop: "none",
+  borderLeft: "none",
+  borderWidth: "2px"
 };
 
 function CollapseButton(props) {
   return (
     <button
       type="button"
-      className="btn btn-info"
+      className="btn btn-default"
       data-toggle="collapse"
       data-target={"#" + props.targetId}
       style={buttonStyle}
