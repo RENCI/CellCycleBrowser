@@ -6,6 +6,7 @@ function SummaryPlotsArea(props) {
   return (
     <div>
       <GrowthCurveArea />
+      <div style={{height: 10}}></div>
       <DistributionArea />
     </div>
   );

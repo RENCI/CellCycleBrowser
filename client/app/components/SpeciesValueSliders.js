@@ -3,7 +3,8 @@ var SliderContainer = require("../containers/SliderContainer");
 var PropTypes = React.PropTypes;
 
 var buttonStyle = {
-  width: "100%"
+  width: "100%",
+  marginTop: -1
 }
 
 var divStyle = {

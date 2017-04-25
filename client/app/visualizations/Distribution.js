@@ -41,6 +41,7 @@ module.exports = function() {
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
+      g.append("g").attr("class", "title");
       g.append("g").attr("class", "axes");
       g.append("g").attr("class", "contours");
       g.append("g").attr("class", "points");
@@ -49,16 +50,6 @@ module.exports = function() {
 
       draw();
     });
-  }
-
-  function createContours() {
-    // Create contours
-    contours = d3Contour.contourDensity()
-      .x(function(d) { return xScale(d.x); })
-      .y(function(d) { return yScale(d.y); })
-      .size([innerWidth(), innerHeight()])
-  //      .bandwidth(40)
-      (data);
   }
 
   function draw() {
@@ -74,9 +65,32 @@ module.exports = function() {
     // Create contours, must be done after scales are updated
     createContours();
 
+    drawTitle();
     drawAxes();
     drawPoints();
     drawContours();
+
+    function createContours() {
+      // Create contours
+      contours = d3Contour.contourDensity()
+        .x(function(d) { return xScale(d.x); })
+        .y(function(d) { return yScale(d.y); })
+        .size([innerWidth(), innerHeight()])
+    //      .bandwidth(40)
+        (data);
+    }
+
+    function drawTitle() {
+      var title = svg.select(".title").selectAll("text")
+          .data(["Phase Distribution"]);
+
+      title.enter().append("text")
+          .text(function(d) { return d; })
+          .attr("dy", ".8em")
+          .style("text-anchor", "middle")
+        .merge(title)
+          .attr("x", innerWidth() / 2);
+    }
 
     function drawAxes() {
       var gAxes = svg.select(".axes");

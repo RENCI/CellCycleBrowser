@@ -3,13 +3,14 @@ var SliderContainer = require("../containers/SliderContainer");
 var PropTypes = React.PropTypes;
 
 var buttonStyle = {
-  width: "100%"
-}
+  width: "100%",
+  marginTop: -1
+};
 
 var divStyle = {
   marginLeft: 10,
   marginRight: 10
-}
+};
 
 function SimulationParameterSliders(props) {
   var sliders = props.parameters.map(function (parameter, i) {

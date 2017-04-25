@@ -3,11 +3,11 @@ var PropTypes = React.PropTypes;
 
 var buttonStyle = {
   width: 35,
-  borderColor: "#ddd",
-  borderTop: "none",
-  borderLeft: "none",
-  borderBottom: "none",
-  borderWidth: "2px"
+  borderColor: "#ccc",
+  marginTop: -1,
+  marginLeft: -1,
+  marginBottom: -1,
+  borderWidth: 1
 };
 
 function CollapseButton(props) {

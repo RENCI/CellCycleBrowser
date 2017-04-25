@@ -34,6 +34,7 @@ module.exports = function() {
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
+      g.append("g").attr("class", "title");
       g.append("g").attr("class", "axes");
       g.append("g").attr("class", "curves");
       g.append("g").attr("class", "legend");
@@ -124,9 +125,22 @@ module.exports = function() {
 
     var circleRadius = 3;
 
+    drawTitle();
     drawAxes();
     drawCurves();
     drawLegend();
+
+    function drawTitle() {
+      var title = svg.select(".title").selectAll("text")
+          .data(["Growth Curves"]);
+
+      title.enter().append("text")
+          .text(function(d) { return d; })
+          .attr("dy", ".8em")
+          .style("text-anchor", "middle")
+        .merge(title)
+          .attr("x", innerWidth() / 2);
+    }
 
     function drawAxes() {
       var gAxes = svg.select(".axes");
@@ -228,7 +242,7 @@ module.exports = function() {
 
     function drawLegend() {
       var x = 35,
-          y = 10,
+          y = 30,
           spacing = 20,
           lineX = -2,
           lineWidth = 20;

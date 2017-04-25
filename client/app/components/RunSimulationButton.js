@@ -1,7 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
-
 function RunSimulationButton(props) {
   return (
     <button
