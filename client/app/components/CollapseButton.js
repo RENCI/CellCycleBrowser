@@ -6,6 +6,7 @@ var buttonStyle = {
   borderColor: "#ddd",
   borderTop: "none",
   borderLeft: "none",
+  borderBottom: "none",
   borderWidth: "2px"
 };
 

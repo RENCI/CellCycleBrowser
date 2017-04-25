@@ -48,6 +48,9 @@ function Species(props) {
   var simulationCollapseId = props.species.name + "SimulationCollapse";
   var cellDataCollapseId = props.species.name + "CellDataCollapse";
 
+  var averageHeight = 32;
+  var trackHeight = 20;
+
   return (
     <div className="text-left" style={outerStyle}>
       <div className="row">
@@ -75,7 +78,7 @@ function Species(props) {
                 activePhase={props.activePhase}
                 phaseColorScale={props.phaseColorScale}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
-                height={34} />
+                height={averageHeight} />
             </div>
           </div>
           <div className="row in" id={simulationCollapseId}>
@@ -88,7 +91,7 @@ function Species(props) {
                 activePhase={props.activePhase}
                 phaseColorScale={props.phaseColorScale}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
-                height={props.species.simulationOutput.length * 20} />
+                height={props.species.simulationOutput.length * trackHeight} />
             </div>
           </div>
         </div>
@@ -111,7 +114,7 @@ function Species(props) {
                 activePhase={props.activePhase}
                 phaseColorScale={props.phaseColorScale}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
-                height={34} />
+                height={averageHeight} />
             </div>
           </div>
           <div className="row in" id={cellDataCollapseId}>
@@ -124,7 +127,7 @@ function Species(props) {
                 activePhase={props.activePhase}
                 phaseColorScale={props.phaseColorScale}
                 phaseOverlayOpacity={props.phaseOverlayOpacity}
-                height={props.species.cellData.length * 20} />
+                height={props.species.cellData.length * trackHeight} />
             </div>
           </div>
         </div>
