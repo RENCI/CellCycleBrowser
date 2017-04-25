@@ -5,9 +5,9 @@ var TimeScale = require("../visualizations/TimeScale");
 var d3 = require("d3");
 
 var divStyle = {
-  borderLeftColor: "#ddd",
+  borderLeftColor: "#ccc",
   borderLeftStyle: "solid",
-  borderLeftWidth: "2px",
+  borderLeftWidth: 1,
   paddingBottom: 0
 };
 

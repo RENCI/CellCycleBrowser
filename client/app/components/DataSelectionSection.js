@@ -6,9 +6,9 @@ var FeatureSelectContainer = require("../containers/FeatureSelectContainer");
 var ModelSelectContainer = require("../containers/ModelSelectContainer");
 
 var style = {
-  borderRightColor: "#ddd",
+  borderRightColor: "#ccc",
   borderRightStyle: "solid",
-  borderRightWidth: "1px"
+  borderRightWidth: 1
 };
 
 function DataSelectionSection(props) {

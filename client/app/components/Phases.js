@@ -7,10 +7,12 @@ var PhaseMapContainer = require("../containers/PhaseMapContainer");
 
 var outerStyle = {
   backgroundColor: "white",
-  borderColor: "#ddd",
+  borderColor: "#ccc",
   borderStyle: "solid",
-  borderWidth: "2px",
-  borderRadius: 5,
+  borderWidth: 1,
+  borderTopLeftRadius: 5,
+  borderTopRightRadius: 5,
+  borderBottomLeftRadius: 5,
   marginTop: 10,
   marginBottom: 10
 };
@@ -29,9 +31,9 @@ var phasesLabelStyle = {
 };
 
 var rowStyle = {
-  marginLeft: -2,
-  marginRight: -2,
-  border: "2px solid #ddd",
+  marginLeft: -1,
+  marginRight: -1,
+  border: "1px solid #ccc",
   borderTopLeftRadius: 5,
   borderBottomLeftRadius: 5
 };
@@ -48,6 +50,9 @@ var visColumnStyle = {
 
 function Phases(props) {
   var collapseId = "phasesCollapse";
+
+  var averageHeight = 32;
+  var trackHeight = 20;
 
   return (
     <div className="text-left" style={outerStyle}>
@@ -77,7 +82,7 @@ function Phases(props) {
                 activeIndex={props.activeTrajectory.id === "average" ? "0" : "-1"}
                 activePhase={props.activePhase}
                 colorScale={props.colorScale}
-                height={34}
+                height={averageHeight}
                 isAverage={true} />
             </div>
           </div>
@@ -90,7 +95,7 @@ function Phases(props) {
                              props.activeTrajectory.id : "-1"}
                 activePhase={props.activePhase}
                 colorScale={props.colorScale}
-                height={props.phases.length * 20} />
+                height={props.phases.length * trackHeight} />
             </div>
           </div>
         </div>

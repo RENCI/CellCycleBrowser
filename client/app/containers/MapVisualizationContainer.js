@@ -11,9 +11,9 @@ var Constants = require("../constants/Constants");
 
 var divStyle = {
   backgroundColor: "white",
-  borderColor: "#ddd",
+  borderColor: "#ccc",
   borderStyle: "solid",
-  borderWidth: "2px",
+  borderWidth: 1,
   borderRadius: 5
 };
 

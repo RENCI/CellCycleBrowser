@@ -61,7 +61,7 @@ var HeatMapContainer = React.createClass ({
   render: function() {
     // Create style here to update height and avoid mutated style warning
     var style = {
-      borderLeft: "2px solid #ddd",
+      borderLeft: "1px solid #ccc",
       backgroundColor: "#eee",
       height: this.props.height
     };

@@ -6,10 +6,12 @@ var HeatMapContainer = require("../containers/HeatMapContainer");
 
 var outerStyle = {
   backgroundColor: "white",
-  borderColor: "#ddd",
+  borderColor: "#ccc",
   borderStyle: "solid",
-  borderWidth: "2px",
-  borderRadius: 5,
+  borderWidth: 1,
+  borderTopLeftRadius: 5,
+  borderTopRightRadius: 5,
+  borderBottomLeftRadius: 5,
   marginBottom: 10
 };
 
@@ -27,9 +29,9 @@ var dataLabelStyle = {
 };
 
 var rowStyle = {
-  marginLeft: -2,
-  marginRight: -2,
-  border: "2px solid #ddd",
+  marginLeft: -1,
+  marginRight: -1,
+  border: "1px solid #ccc",
   borderTopLeftRadius: 5,
   borderBottomLeftRadius: 5
 };

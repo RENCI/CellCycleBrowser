@@ -5,7 +5,7 @@ var BrowserContainer = require("../containers/BrowserContainer");
 var ControlsContainer = require("../containers/ControlsContainer");
 var SummaryPlotsArea = require("../components/SummaryPlotsArea");
 
-var divClass = "container-fluid well well-sm";
+var divClass = "container-fluid well";
 
 function MainSection(props) {
   // Check for models and cell data
