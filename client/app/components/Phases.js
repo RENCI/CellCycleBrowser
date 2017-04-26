@@ -1,7 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
-var TimeScaleContainer = require("../containers/TimeScaleContainer");
 var PhaseLineContainer = require("../containers/PhaseLineContainer");
 var PhaseMapContainer = require("../containers/PhaseMapContainer");
 
@@ -17,28 +16,16 @@ var outerStyle = {
   marginBottom: 10
 };
 
-var timeLineRowStyle = {
-  marginLeft: -1,
-  marginRight: -1
-};
-
-var timeLineStyle = {
-  paddingLeft: 0,
-  paddingRight: 0,
-  borderLeft: "1px solid #ccc"
-};
-
 var labelStyle = {
   marginTop: 5,
   marginBottom: 5,
-  marginLeft: -5,
+  marginLeft: 10,
   fontWeight: "bold"
 };
 
-var phasesLabelStyle = {
-  float: "none",
-  display: "inline-block",
-  marginLeft: 10
+var descriptionStyle = {
+  fontWeight: "normal",
+  fontStyle: "italic"
 };
 
 var rowStyle = {
@@ -76,6 +63,10 @@ var collapseColStyle = {
 };
 
 function Phases(props) {
+  if (props.phases.length === 0) {
+    return null;
+  }
+
   var collapseId = "phasesCollapse";
 
   var averageHeight = 32;
@@ -83,50 +74,43 @@ function Phases(props) {
 
   return (
     <div className="text-left" style={outerStyle}>
-      <div className="row" style={timeLineRowStyle}>
-        <div className="col-sm-2">
+      <div className="row">
+        <div className="col-md-12">
           <div style={labelStyle}>
-            Time (h)
+            Phases
+            <span style={descriptionStyle}> - Simulation</span>
           </div>
-        </div>
-        <div className="col-sm-10 text-left" style={timeLineStyle}>
-          <TimeScaleContainer timeExtent={props.timeExtent} />
         </div>
       </div>
-      {props.phases.length > 0 ?
-        <div>
-          <div className="row" style={rowStyle}>
-            <div className="col-sm-2 text-left" style={buttonColumnStyle}>
-              <CollapseButtonContainer targetId={collapseId} />
-              <div style={phasesLabelStyle}>
-                Phases
-              </div>
-            </div>
-            <div className="col-sm-10" style={visColumnStyle}>
-              <PhaseMapContainer
-                data={[props.phaseAverage]}
-                timeExtent={props.timeExtent}
-                activeIndex={props.activeTrajectory.id === "average" ? "0" : "-1"}
-                activePhase={props.activePhase}
-                colorScale={props.colorScale}
-                height={averageHeight}
-                isAverage={true} />
-            </div>
+      <div>
+        <div className="row" style={rowStyle}>
+          <div className="col-md-2 text-left" style={buttonColumnStyle}>
+            <CollapseButtonContainer targetId={collapseId} />
           </div>
-          <div className="row in" id={collapseId} style={collapseRowStyle}>
-            <div className="col-sm-10 col-sm-offset-2" style={collapseColStyle}>
-              <PhaseMapContainer
-                data={props.phases}
-                timeExtent={props.timeExtent}
-                activeIndex={props.activeTrajectory.id && props.activeTrajectory !== "average" ?
-                             props.activeTrajectory.id : "-1"}
-                activePhase={props.activePhase}
-                colorScale={props.colorScale}
-                height={props.phases.length * trackHeight} />
-            </div>
+          <div className="col-md-10" style={visColumnStyle}>
+            <PhaseMapContainer
+              data={[props.phaseAverage]}
+              timeExtent={props.timeExtent}
+              activeIndex={props.activeTrajectory.id === "average" ? "0" : "-1"}
+              activePhase={props.activePhase}
+              colorScale={props.colorScale}
+              height={averageHeight}
+              isAverage={true} />
           </div>
         </div>
-      : null}
+        <div className="row in" id={collapseId} style={collapseRowStyle}>
+          <div className="col-md-10 col-md-offset-2" style={collapseColStyle}>
+            <PhaseMapContainer
+              data={props.phases}
+              timeExtent={props.timeExtent}
+              activeIndex={props.activeTrajectory.id && props.activeTrajectory !== "average" ?
+                           props.activeTrajectory.id : "-1"}
+              activePhase={props.activePhase}
+              colorScale={props.colorScale}
+              height={props.phases.length * trackHeight} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

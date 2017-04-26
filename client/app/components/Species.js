@@ -22,12 +22,6 @@ var speciesLabelStyle = {
   fontWeight: "bold"
 };
 
-var dataLabelStyle = {
-  float: "none",
-  display: "inline-block",
-  marginLeft: 20
-};
-
 var rowStyle = {
   marginLeft: -1,
   marginRight: -1,
@@ -72,7 +66,7 @@ function Species(props) {
   return (
     <div className="text-left" style={outerStyle}>
       <div className="row">
-        <div className="col-sm-2">
+        <div className="col-md-12">
           <div style={speciesLabelStyle}>
             {props.species.name}
           </div>
@@ -81,13 +75,10 @@ function Species(props) {
       {props.species.simulationOutput.length > 0 ?
         <div>
           <div className="row" style={rowStyle}>
-            <div className="col-sm-2 text-left" style={buttonColumnStyle}>
+            <div className="col-md-2 text-left" style={buttonColumnStyle}>
               <CollapseButtonContainer targetId={simulationCollapseId} />
-              <div style={dataLabelStyle}>
-                Sim
-              </div>
             </div>
-            <div className="col-sm-10" style={visColumnStyle}>
+            <div className="col-md-10" style={visColumnStyle}>
               <HeatMapContainer
                 data={[props.species.simulationOutputAverage]}
                 dataExtent={props.species.simulationOutputExtent}
@@ -100,7 +91,7 @@ function Species(props) {
             </div>
           </div>
           <div className="row in" id={simulationCollapseId} style={collapseRowStyle}>
-            <div className="col-sm-10 col-sm-offset-2" style={collapseColStyle}>
+            <div className="col-md-10 col-md-offset-2" style={collapseColStyle}>
               <HeatMapContainer
                 data={props.species.simulationOutput}
                 dataExtent={props.species.simulationOutputExtent}
@@ -117,13 +108,10 @@ function Species(props) {
       {props.species.cellData.length > 0 ?
         <div>
           <div className="row" style={rowStyle}>
-            <div className="col-sm-2 text-left" style={buttonColumnStyle}>
+            <div className="col-md-2 text-left" style={buttonColumnStyle}>
               <CollapseButtonContainer targetId={cellDataCollapseId} />
-              <div style={dataLabelStyle}>
-                Cell
-              </div>
             </div>
-            <div className="col-sm-10" style={visColumnStyle}>
+            <div className="col-md-10" style={visColumnStyle}>
               <HeatMapContainer
                 data={[props.species.cellDataAverage]}
                 dataExtent={props.species.cellDataExtent}
@@ -136,7 +124,7 @@ function Species(props) {
             </div>
           </div>
           <div className="row in" id={cellDataCollapseId} style={collapseRowStyle}>
-            <div className="col-sm-10 col-sm-offset-2" style={collapseColStyle}>
+            <div className="col-md-10 col-md-offset-2" style={collapseColStyle}>
               <HeatMapContainer
                 data={props.species.cellData.map(function (d) { return d.values; })}
                 dataExtent={props.species.cellDataExtent}

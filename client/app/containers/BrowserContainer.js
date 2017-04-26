@@ -7,6 +7,7 @@ var PhaseStore = require("../stores/PhaseStore");
 var PhaseColorStore = require("../stores/PhaseColorStore");
 var PhaseOverlayStore = require("../stores/PhaseOverlayStore");
 var BrowserControls = require("../components/BrowserControls");
+var TimeScale = require("../components/TimeScale");
 var Phases = require("../components/Phases");
 var Species = require("../components/Species");
 
@@ -120,6 +121,8 @@ var BrowserContainer = React.createClass({
     return (
       <div>
         <BrowserControls
+          timeExtent={this.state.data.timeExtent} />
+        <TimeScale
           timeExtent={this.state.data.timeExtent} />
         <Phases
           phases={this.state.data.phases}

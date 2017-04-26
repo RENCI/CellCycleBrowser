@@ -1,6 +1,5 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
-var AlignmentSelectContainer = require("../containers/AlignmentSelectContainer");
 var SliderContainer = require("../containers/SliderContainer");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
@@ -15,9 +14,8 @@ function handlePhaseOverlayOpacityChange(value) {
 function BrowserControls(props) {
   return (
     <div>
-      <AlignmentSelectContainer />
       <div className="row">
-        <div className="col-sm-2 col-sm-offset-2">
+        <div className="col-md-2 col-md-offset-2">
           <div className="checkbox">
             <label style={{marginTop: 24, width: "100%"}}>
               <input
@@ -27,7 +25,7 @@ function BrowserControls(props) {
             </label>
           </div>
         </div>
-        <div className="col-sm-8">
+        <div className="col-md-8">
           <SliderContainer
             label={"Phase overlay opacity"}
             min={0}
