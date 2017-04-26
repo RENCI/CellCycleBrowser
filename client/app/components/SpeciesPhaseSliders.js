@@ -4,6 +4,10 @@ var d3ScaleChromatic = require("d3-scale-chromatic");
 var SliderContainer = require("../containers/SliderContainer");
 var PropTypes = React.PropTypes;
 
+var panelStyle = {
+  marginBottom: 10
+};
+
 var buttonStyle = {
   width: "100%",
   marginTop: -1
@@ -85,7 +89,7 @@ function SpeciesPhaseSliders(props) {
   var collapseId = "speciesPhaseSliders";
 
   return (
-    <div className="panel panel-default">
+    <div className="panel panel-default" style={panelStyle}>
       <button
         type="button"
         className="btn btn-default"

@@ -2,12 +2,16 @@ var React = require("react");
 var SliderContainer = require("../containers/SliderContainer");
 var PropTypes = React.PropTypes;
 
+var panelStyle = {
+  marginBottom: 10
+};
+
 var buttonStyle = {
   width: "100%",
   marginTop: -1
 };
 
-var divStyle = {
+var collapseStyle = {
   marginLeft: 10,
   marginRight: 10
 };
@@ -36,7 +40,7 @@ function SimulationParameterSliders(props) {
   var collapseId = "modelParameterSliders";
 
   return (
-    <div className="panel panel-default">
+    <div className="panel panel-default" style={panelStyle}>
       <button
         type="button"
         className="btn btn-default"
@@ -45,7 +49,7 @@ function SimulationParameterSliders(props) {
         data-target={"#" + collapseId}>
           Simulation parameters
       </button>
-      <div className="in" id={collapseId} style={divStyle}>
+      <div className="in" id={collapseId} style={collapseStyle}>
         {sliders}
       </div>
     </div>

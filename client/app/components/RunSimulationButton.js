@@ -1,12 +1,16 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
+var style = {
+  width: "100%"
+};
+
 function RunSimulationButton(props) {
   return (
     <button
       type="button"
       className={"btn btn-success" + (props.disabled ? " disabled" : "")}
-      style={{width: "100%"}}
+      style={style}
       onClick={props.onClick}>
         {props.label}
     </button>
