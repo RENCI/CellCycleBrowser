@@ -2,7 +2,6 @@ var AppDispatcher = require("../dispatcher/AppDispatcher");
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
 var Constants = require("../constants/Constants");
-var ModelStore = require("./ModelStore");
 var CellDataStore = require("./CellDataStore");
 var SimulationOutputStore = require("./SimulationOutputStore");
 var FeatureStore = require("./FeatureStore");
@@ -11,7 +10,6 @@ var AlignmentStore = require("./AlignmentStore");
 var CHANGE_EVENT = "change";
 
 // Input data sets
-var model = {};
 var cellData = {};
 var simulationOutput = [];
 
@@ -119,72 +117,6 @@ function updateData() {
     });
 
     return simSpecies.concat(cellSpecies);
-/*
-    // Get the list of species present in cell data or model
-    var cellSpecies = cellData.species ? cellData.species : [];
-    var modelSpecies = model.species ? model.species : [];
-    var speciesNames = [];
-
-    cellSpecies.concat(modelSpecies).forEach(function (species) {
-      if (speciesNames.indexOf(species.name) === -1) speciesNames.push(species.name);
-    });
-
-    // Combine cell data and simulation output per species
-    return speciesNames.map(function (speciesName) {
-      // Cell data for this species
-      var cd = [];
-      for (var i = 0; i < cellSpecies.length; i++) {
-        if (cellSpecies[i].name === speciesName) {
-          cd = cellSpecies[i].cells.map(function (cell) {
-            var featureIndex = cell.features.map(function (d) {
-              return d.name;
-            }).indexOf(feature);
-
-            return {
-              name: cell.name,
-              values: cell.features[featureIndex].values.map(function (d, i, a) {
-                return {
-                  start: d.time,
-                  stop: i < a.length - 1 ? a[i + 1].time : d.time + (d.time - a[i - 1].time),
-                  value: d.value
-                };
-              }).filter(function (d) {
-                return !isNaN(d.value);
-              })
-            };
-          });
-
-          break;
-        }
-      }
-
-      // Simulation output for this species
-      var so = [];
-      simulationOutput.forEach(function (trajectory) {
-        var index = trajectory.species.map(function (s) {
-          return s.name;
-        }).indexOf(speciesName);
-
-        if (index >= 0) {
-          so.push(trajectory.timeSteps.map(function (d, j, a) {
-            return {
-              value: trajectory.species[index].values[j],
-              start: d,
-              stop: j < a.length - 1 ? a[j + 1] : d + (d - a[j - 1])
-            };
-          }));
-        }
-      });
-
-      return {
-        name: speciesName,
-        cellData: cd,
-        cellDataExtent: dataExtent(cd.map(function(d) { return d.values; })),
-        simulationOutput: so,
-        simulationOutputExtent: dataExtent(so)
-      };
-    });
-*/
   }
 
   function dataExtent(timeSeries) {
@@ -417,22 +349,12 @@ var DataStore = assign({}, EventEmitter.prototype, {
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_PROFILE:
-      AppDispatcher.waitFor([ModelStore.dispatchToken,
-                             CellDataStore.dispatchToken,
+      AppDispatcher.waitFor([CellDataStore.dispatchToken,
                              SimulationOutputStore.dispatchToken,
                              FeatureStore.dispatchToken]);
-
-      model = ModelStore.getModel();
       cellData = CellDataStore.getCellData();
       simulationOutput = SimulationOutputStore.getSimulationOutput();
       feature = FeatureStore.getFeature();
-      updateData();
-      DataStore.emitChange();
-      break;
-
-    case Constants.SELECT_MODEL:
-      AppDispatcher.waitFor([ModelStore.dispatchToken]);
-      model = ModelStore.getModel();
       updateData();
       DataStore.emitChange();
       break;
