@@ -19,11 +19,28 @@ logger = logging.getLogger('django')
 
 # Create your views here.
 def index(request):
+    #import sys
+    #sys.path.append("/home/docker/pycharm-debug")
+    #import pydevd
+    #pydevd.settrace('172.17.0.1', port=21000, suspend=False)
+
     template = loader.get_template('cc_core/index.html')
     context = {
         'SITE_TITLE': settings.SITE_TITLE,
         'status_msg': ''
     }
+    return HttpResponse(template.render(context, request))
+
+
+def about(request):
+    template = loader.get_template('cc_core/about.html')
+    context = {}
+    return HttpResponse(template.render(context, request))
+
+
+def help(request):
+    template = loader.get_template('cc_core/help.html')
+    context = {}
     return HttpResponse(template.render(context, request))
 
 
