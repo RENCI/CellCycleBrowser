@@ -2,10 +2,6 @@ var React = require("react");
 var SliderContainer = require("../containers/SliderContainer");
 var PropTypes = React.PropTypes;
 
-var panelStyle = {
-  marginBottom: 10
-};
-
 var buttonStyle = {
   width: "100%",
   marginTop: -1
@@ -40,7 +36,7 @@ function SimulationParameterSliders(props) {
   var collapseId = "modelParameterSliders";
 
   return (
-    <div className="panel panel-default" style={panelStyle}>
+    <div>
       <button
         type="button"
         className="btn btn-default"

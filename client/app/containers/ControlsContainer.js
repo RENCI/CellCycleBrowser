@@ -9,6 +9,14 @@ var SpeciesSpeciesSliders = require("../components/SpeciesSpeciesSliders");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
+var style = {
+  marginTop: 10
+};
+
+var runSimulationStyle = {
+  marginBottom: 10
+};
+
 function getStateFromSimulationControlStore() {
   return {
     controls: SimulationControlStore.getControls()
@@ -69,8 +77,8 @@ var ControlsContainer = React.createClass ({
     if (!this.state.controls) return null;
 
     return (
-      <div style={{marginTop: "20px"}}>
-        <div className="panel">
+      <div className="panel panel-default" style={style}>
+        <div style={runSimulationStyle}>
           <RunSimulationButtonContainer />
         </div>
         <SimulationParameterSliders
