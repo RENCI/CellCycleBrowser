@@ -9,6 +9,7 @@ from django.conf import settings
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.sessions.backends.db import SessionStore
 
 from . import utils
 from .tasks import run_model_task
@@ -40,6 +41,12 @@ def about(request):
 
 def help(request):
     template = loader.get_template('cc_core/help.html')
+    context = {}
+    return HttpResponse(template.render(context, request))
+
+
+def cell_data_meta(request, filename):
+    template = loader.get_template('cc_core/cell_meta.html')
     context = {}
     return HttpResponse(template.render(context, request))
 

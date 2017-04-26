@@ -8,6 +8,8 @@ from libsbml import *
 import simplesbml
 
 from django.conf import settings
+from django.contrib.sessions.backends.db import SessionStore
+from django.core.exceptions import ValidationError
 
 
 def load_cell_data_csv(cell_data):
@@ -17,8 +19,45 @@ def load_cell_data_csv(cell_data):
     if os.path.isfile(cell_data_filename):
         with open(cell_data_filename, 'r') as fp:
             # do data transpose before serving csv data to client
+            meta_dict = {cell_data_filename: {}}
             csv_data = csv.reader(fp)
-            data_list = [row for row in csv_data]
+            md_begin = False
+            md_end = False
+            first_data_row = ''
+
+            for row in csv_data:
+                if not row:
+                    # row is empty - filter out empty rows
+                    continue
+
+                if not md_begin:
+                    if row[0] == '<begin metadata>':
+                        md_begin = True
+                        continue
+                    else:
+                        # no metadata is defined for this cell data, no need for further check
+                        first_data_row = row
+                        break
+
+                if md_end:
+                    first_data_row = row
+                    break
+
+                if md_begin:
+                    if row[0] == '<end metadata>':
+                        md_end = True
+                        continue
+
+                    key = row[0]
+                    val = row[1]
+                    meta_dict[cell_data_filename][key] = val if len(row) == 2 else ', '.join(row[1:])
+
+            if md_begin and not md_end:
+                raise ValidationError('Cell Data is malformed: <begin metadata> tag '
+                                      'does not have <end metadata> matching tag')
+
+            data_list = [first_data_row] + [row for row in csv_data]
+
             for column in zip(*data_list):
                 for y in column:
                     data_str += y + ','
