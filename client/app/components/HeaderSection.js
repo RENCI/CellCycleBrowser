@@ -12,8 +12,8 @@ function HeaderSection() {
         </div>
         <div className="media-body media-middle text-center">
           <Header header="Cell Cycle Browser" />
-          <a style={{marginRight: 20}}>About</a>
-          <a>Help</a>
+          <a style={{marginRight: 20}} href="/about/">About</a>
+          <a href="/help/">Help</a>
         </div>
         <div className="media-right media-middle text-center" style={{width:"25%"}}>
           <img
