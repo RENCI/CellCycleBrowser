@@ -51,9 +51,9 @@ module.exports = function() {
 
     // Check for cell data
     var cellData = data.species.filter(function(d) {
-      return d.cellData.length > 0;
+      return d.source !== "Simulation";
     }).map(function(d) {
-      return d.cellData;
+      return d.data;
     });
 
     if (cellData.length > 0) {

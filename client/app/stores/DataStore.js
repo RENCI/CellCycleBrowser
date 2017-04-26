@@ -29,7 +29,7 @@ var data = {
 
 function updateData() {
   // Get data for each species
-  data.species = mapSpecies(cellData, model);
+  data.species = mapSpecies(cellData, simulationOutput);
 
   // Compute time extent across all data
   data.timeExtent = computeTimeExtent(data.species);
@@ -46,7 +46,80 @@ function updateData() {
   // Average phases
   data.phaseAverage = averagePhases(data.phases);
 
-  function mapSpecies(cellData, model) {
+  function mapSpecies() {
+    // Cell data
+    var cellSpecies = cellData.species.map(function (species) {
+      var data = species.cells.map(function (cell) {
+        var featureIndex = cell.features.map(function (d) {
+          return d.name;
+        }).indexOf(feature);
+
+        return {
+          name: cell.name,
+          values: cell.features[featureIndex].values.map(function (d, i, a) {
+            return {
+              start: d.time,
+              stop: i < a.length - 1 ? a[i + 1].time : d.time + (d.time - a[i - 1].time),
+              value: d.value
+            };
+          }).filter(function (d) {
+            return !isNaN(d.value);
+          })
+        };
+      });
+
+      return {
+        name: species.name,
+        source: cellData.name,
+        data: data,
+        dataExtent: dataExtent(data.map(function (d) { return d.values; }))
+      };
+    });
+
+    // Get all species names in simulation output
+    var speciesNames = [];
+    simulationOutput.forEach(function (trajectory) {
+      trajectory.species.forEach(function (species) {
+        if (speciesNames.indexOf(species.name) === -1) {
+          speciesNames.push(species.name);
+        }
+      });
+    });
+
+    // Simulation output
+    var simSpecies = speciesNames.map(function (speciesName) {
+      // Simulation output for this species
+      var data = [];
+
+      simulationOutput.forEach(function (trajectory) {
+        var index = trajectory.species.map(function (s) {
+          return s.name;
+        }).indexOf(speciesName);
+
+        if (index >= 0) {
+          data.push({
+            name: "Trajectory " + data.length,
+            values: trajectory.timeSteps.map(function (d, j, a) {
+              return {
+                value: trajectory.species[index].values[j],
+                start: d,
+                stop: j < a.length - 1 ? a[j + 1] : d + (d - a[j - 1])
+              };
+            })
+          });
+        }
+      });
+
+      return {
+        name: speciesName,
+        source: "Simulation",
+        data: data,
+        dataExtent: dataExtent(data.map(function (d) { return d.values; }))
+      };
+    });
+
+    return simSpecies.concat(cellSpecies);
+/*
     // Get the list of species present in cell data or model
     var cellSpecies = cellData.species ? cellData.species : [];
     var modelSpecies = model.species ? model.species : [];
@@ -111,6 +184,7 @@ function updateData() {
         simulationOutputExtent: dataExtent(so)
       };
     });
+*/
   }
 
   function dataExtent(timeSeries) {
@@ -131,16 +205,9 @@ function updateData() {
     var timeExtent = [];
 
     species.forEach(function(species) {
-      species.cellData.forEach(function(d) {
+      species.data.forEach(function(d) {
         var first = d.values[0];
         var last = d.values[d.values.length - 1];
-
-        timeExtent.push(first.start, last.stop);
-      });
-
-      species.simulationOutput.forEach(function(d) {
-        var first = d[0];
-        var last = d[d.length - 1];
 
         timeExtent.push(first.start, last.stop);
       });
@@ -151,11 +218,9 @@ function updateData() {
 
   function alignData(species, timeExtent, alignment) {
     species.forEach(function (species) {
-      species.cellData.map(function (d) {
+      species.data.map(function (d) {
         return d.values;
       }).forEach(align);
-
-      species.simulationOutput.forEach(align);
     });
 
     function align(timeSeries) {
@@ -196,8 +261,7 @@ function updateData() {
 
   function averageData(species) {
     species.forEach( function(species) {
-      species.cellDataAverage = average(species.cellData.map(function (d) { return d.values; }));
-      species.simulationOutputAverage = average(species.simulationOutput);
+      species.average = average(species.data.map(function (d) { return d.values; }));
     });
 
     function average(timeSeries) {

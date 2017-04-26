@@ -15,11 +15,16 @@ var outerStyle = {
   marginBottom: 10
 };
 
-var speciesLabelStyle = {
+var labelStyle = {
   marginTop: 5,
   marginBottom: 5,
   marginLeft: 10,
   fontWeight: "bold"
+};
+
+var descriptionStyle = {
+  fontWeight: "normal",
+  fontStyle: "italic"
 };
 
 var rowStyle = {
@@ -57,8 +62,9 @@ var collapseColStyle = {
 };
 
 function Species(props) {
-  var simulationCollapseId = props.species.name + "SimulationCollapse";
-  var cellDataCollapseId = props.species.name + "CellDataCollapse";
+  // Generate unique id for species
+  var collapseId = props.species.name + "_" + props.species.source + "_Collapse";
+  collapseId = collapseId.replace(/\s/g, "");
 
   var averageHeight = 32;
   var trackHeight = 20;
@@ -67,77 +73,43 @@ function Species(props) {
     <div className="text-left" style={outerStyle}>
       <div className="row">
         <div className="col-md-12">
-          <div style={speciesLabelStyle}>
+          <div style={labelStyle}>
             {props.species.name}
+            <span style={descriptionStyle}>{" - " + props.species.source}</span>
           </div>
         </div>
       </div>
-      {props.species.simulationOutput.length > 0 ?
-        <div>
-          <div className="row" style={rowStyle}>
-            <div className="col-md-2 text-left" style={buttonColumnStyle}>
-              <CollapseButtonContainer targetId={simulationCollapseId} />
-            </div>
-            <div className="col-md-10" style={visColumnStyle}>
-              <HeatMapContainer
-                data={[props.species.simulationOutputAverage]}
-                dataExtent={props.species.simulationOutputExtent}
-                phases={[props.phaseAverage]}
-                timeExtent={props.timeExtent}
-                activePhase={props.activePhase}
-                phaseColorScale={props.phaseColorScale}
-                phaseOverlayOpacity={props.phaseOverlayOpacity}
-                height={averageHeight} />
-            </div>
+      <div>
+        <div className="row" style={rowStyle}>
+          <div className="col-md-2 text-left" style={buttonColumnStyle}>
+            <CollapseButtonContainer targetId={collapseId} />
           </div>
-          <div className="row in" id={simulationCollapseId} style={collapseRowStyle}>
-            <div className="col-md-10 col-md-offset-2" style={collapseColStyle}>
-              <HeatMapContainer
-                data={props.species.simulationOutput}
-                dataExtent={props.species.simulationOutputExtent}
-                phases={props.phases}
-                timeExtent={props.timeExtent}
-                activePhase={props.activePhase}
-                phaseColorScale={props.phaseColorScale}
-                phaseOverlayOpacity={props.phaseOverlayOpacity}
-                height={props.species.simulationOutput.length * trackHeight} />
-            </div>
+          <div className="col-md-10" style={visColumnStyle}>
+            <HeatMapContainer
+              data={[props.species.average]}
+              dataExtent={props.species.dataExtent}
+              phases={[props.activePhases]}
+              timeExtent={props.timeExtent}
+              activePhase={props.activePhase}
+              phaseColorScale={props.phaseColorScale}
+              phaseOverlayOpacity={props.phaseOverlayOpacity}
+              height={averageHeight} />
           </div>
         </div>
-      : null}
-      {props.species.cellData.length > 0 ?
-        <div>
-          <div className="row" style={rowStyle}>
-            <div className="col-md-2 text-left" style={buttonColumnStyle}>
-              <CollapseButtonContainer targetId={cellDataCollapseId} />
-            </div>
-            <div className="col-md-10" style={visColumnStyle}>
-              <HeatMapContainer
-                data={[props.species.cellDataAverage]}
-                dataExtent={props.species.cellDataExtent}
-                phases={[props.activePhases]}
-                timeExtent={props.timeExtent}
-                activePhase={props.activePhase}
-                phaseColorScale={props.phaseColorScale}
-                phaseOverlayOpacity={props.phaseOverlayOpacity}
-                height={averageHeight} />
-            </div>
-          </div>
-          <div className="row in" id={cellDataCollapseId} style={collapseRowStyle}>
-            <div className="col-md-10 col-md-offset-2" style={collapseColStyle}>
-              <HeatMapContainer
-                data={props.species.cellData.map(function (d) { return d.values; })}
-                dataExtent={props.species.cellDataExtent}
-                phases={props.species.cellData.map(function () { return props.activePhases; })}
-                timeExtent={props.timeExtent}
-                activePhase={props.activePhase}
-                phaseColorScale={props.phaseColorScale}
-                phaseOverlayOpacity={props.phaseOverlayOpacity}
-                height={props.species.cellData.length * trackHeight} />
-            </div>
+        <div className="row in" id={collapseId} style={collapseRowStyle}>
+          <div className="col-md-10 col-md-offset-2" style={collapseColStyle}>
+            <HeatMapContainer
+              data={props.species.data.map(function (d) { return d.values; })}
+              dataExtent={props.species.dataExtent}
+              phases={props.species.data.map(function () { return props.activePhases; })}
+              timeExtent={props.timeExtent}
+              activePhase={props.activePhase}
+              phaseColorScale={props.phaseColorScale}
+              phaseOverlayOpacity={props.phaseOverlayOpacity}
+              height={props.species.data.length * trackHeight} />
           </div>
         </div>
-      : null}
+      </div>
     </div>
   );
 }
