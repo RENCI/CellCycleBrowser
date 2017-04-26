@@ -30,10 +30,6 @@ module.exports = function() {
             d3.event.preventDefault();
           });
 
-      svgEnter.append("text")
-          .text("Elapsed time (hours)")
-          .style("text-anchor", "middle");
-
       svgEnter.append("g");
 
       svg = svgEnter.merge(svg);
@@ -54,7 +50,7 @@ module.exports = function() {
 
     // Draw axis
     svg.select("g")//.transition()
-        .attr("transform", "translate(0," + (height - 1) + ")")
+        .attr("transform", "translate(0," + (height) + ")")
         .call(axis);
 
     // Remove first and last ticks
@@ -63,12 +59,6 @@ module.exports = function() {
     ticks.style("visibility", function(d, i) {
       return i === 0 || i === ticks.size() - 1 ? "hidden" : null;
     });
-
-    // Move label
-    svg.select("text")//.transition()
-        .attr("y", 5)
-        .attr("x", width / 2)
-        .attr("dy", "1em");
   }
 
   timeScale.width = function(_) {

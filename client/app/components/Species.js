@@ -33,7 +33,8 @@ var rowStyle = {
   marginRight: -1,
   border: "1px solid #ccc",
   borderTopLeftRadius: 5,
-  borderBottomLeftRadius: 5
+  borderBottomLeftRadius: 5,
+  marginBottom: -1
 };
 
 var buttonColumnStyle = {
@@ -42,8 +43,23 @@ var buttonColumnStyle = {
 };
 
 var visColumnStyle = {
-  paddingLeft: 5,
-  paddingRight:0
+  paddingLeft: 0,
+  paddingRight: 0,
+  borderLeft: "1px solid #ccc"
+};
+
+var collapseRowStyle = {
+  marginTop: 1,
+  marginLeft: -1,
+  marginRight: -1,
+  borderLeft: "1px solid #ccc",
+  borderRight: "1px solid #ccc"
+};
+
+var collapseColStyle = {
+  paddingLeft: 0,
+  paddingRight: 0,
+  borderLeft: "1px solid #ccc"
 };
 
 function Species(props) {
@@ -83,8 +99,8 @@ function Species(props) {
                 height={averageHeight} />
             </div>
           </div>
-          <div className="row in" id={simulationCollapseId}>
-            <div className="col-sm-10 col-sm-offset-2">
+          <div className="row in" id={simulationCollapseId} style={collapseRowStyle}>
+            <div className="col-sm-10 col-sm-offset-2" style={collapseColStyle}>
               <HeatMapContainer
                 data={props.species.simulationOutput}
                 dataExtent={props.species.simulationOutputExtent}
@@ -119,8 +135,8 @@ function Species(props) {
                 height={averageHeight} />
             </div>
           </div>
-          <div className="row in" id={cellDataCollapseId}>
-            <div className="col-sm-10 col-sm-offset-2">
+          <div className="row in" id={cellDataCollapseId} style={collapseRowStyle}>
+            <div className="col-sm-10 col-sm-offset-2" style={collapseColStyle}>
               <HeatMapContainer
                 data={props.species.cellData.map(function (d) { return d.values; })}
                 dataExtent={props.species.cellDataExtent}

@@ -4,11 +4,8 @@ var PropTypes = React.PropTypes;
 var TimeScale = require("../visualizations/TimeScale");
 var d3 = require("d3");
 
-var divStyle = {
-  borderLeftColor: "#ccc",
-  borderLeftStyle: "solid",
-  borderLeftWidth: 1,
-  paddingBottom: 0
+var style = {
+//  border: "1px solid black"
 };
 
 var TimeScaleContainer = React.createClass ({
@@ -18,7 +15,7 @@ var TimeScaleContainer = React.createClass ({
   componentDidMount: function() {
     // Create visualization function
     this.timeScale = TimeScale()
-        .height(45);
+        .height(25);
 
     this.resize();
 
@@ -52,7 +49,7 @@ var TimeScaleContainer = React.createClass ({
     return ReactDOM.findDOMNode(this);
   },
   render: function () {
-    return <div style={divStyle}></div>
+    return <div style={style}></div>
   }
 });
 

@@ -242,7 +242,7 @@ module.exports = function() {
 
     function drawLegend() {
       var x = 35,
-          y = 30,
+          y = 40,
           spacing = 20,
           lineX = -2,
           lineWidth = 20;

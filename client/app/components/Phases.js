@@ -17,10 +17,21 @@ var outerStyle = {
   marginBottom: 10
 };
 
+var timeLineRowStyle = {
+  marginLeft: -1,
+  marginRight: -1
+};
+
+var timeLineStyle = {
+  paddingLeft: 0,
+  paddingRight: 0,
+  borderLeft: "1px solid #ccc"
+};
+
 var labelStyle = {
   marginTop: 5,
   marginBottom: 5,
-  marginLeft: 10,
+  marginLeft: -5,
   fontWeight: "bold"
 };
 
@@ -35,7 +46,8 @@ var rowStyle = {
   marginRight: -1,
   border: "1px solid #ccc",
   borderTopLeftRadius: 5,
-  borderBottomLeftRadius: 5
+  borderBottomLeftRadius: 5,
+  marginBottom: -1
 };
 
 var buttonColumnStyle = {
@@ -44,8 +56,23 @@ var buttonColumnStyle = {
 };
 
 var visColumnStyle = {
-  paddingLeft: 5,
-  paddingRight: 0
+  paddingLeft: 0,
+  paddingRight: 0,
+  borderLeft: "1px solid #ccc"
+};
+
+var collapseRowStyle = {
+  marginTop: 1,
+  marginLeft: -1,
+  marginRight: -1,
+  borderLeft: "1px solid #ccc",
+  borderRight: "1px solid #ccc"
+};
+
+var collapseColStyle = {
+  paddingLeft: 0,
+  paddingRight: 0,
+  borderLeft: "1px solid #ccc"
 };
 
 function Phases(props) {
@@ -56,13 +83,13 @@ function Phases(props) {
 
   return (
     <div className="text-left" style={outerStyle}>
-      <div className="row">
+      <div className="row" style={timeLineRowStyle}>
         <div className="col-sm-2">
           <div style={labelStyle}>
-            Time line
+            Time (h)
           </div>
         </div>
-        <div className="col-sm-10 text-left">
+        <div className="col-sm-10 text-left" style={timeLineStyle}>
           <TimeScaleContainer timeExtent={props.timeExtent} />
         </div>
       </div>
@@ -86,8 +113,8 @@ function Phases(props) {
                 isAverage={true} />
             </div>
           </div>
-          <div className="row in" id={collapseId}>
-            <div className="col-sm-10 col-sm-offset-2">
+          <div className="row in" id={collapseId} style={collapseRowStyle}>
+            <div className="col-sm-10 col-sm-offset-2" style={collapseColStyle}>
               <PhaseMapContainer
                 data={props.phases}
                 timeExtent={props.timeExtent}
