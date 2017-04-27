@@ -46,7 +46,9 @@ function updateData() {
 
   function mapSpecies() {
     // Cell data
-    var cellSpecies = cellData.species.map(function (species) {
+    // XXX: Make make empty cell data have reasonable defaults
+    var cellSpecies = !cellData.species ? [] :
+    cellData.species.map(function (species) {
       var data = species.cells.map(function (cell) {
         var featureIndex = cell.features.map(function (d) {
           return d.name;

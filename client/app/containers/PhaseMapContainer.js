@@ -5,7 +5,7 @@ var ViewActionCreators = require("../actions/ViewActionCreators");
 var PhaseMap = require("../visualizations/PhaseMap");
 var d3 = require("d3");
 
-var PhaseMapContainer = React.createClass ({
+var PhaseMapContainer = React.createClass({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     timeExtent: PropTypes.arrayOf(PropTypes.number),
@@ -18,7 +18,7 @@ var PhaseMapContainer = React.createClass ({
   getDefautProps: {
     isAverage: false
   },
-  componentDidMount: function() {
+  componentDidMount: function () {
     // Create visualization function
     this.phaseMap = PhaseMap()
         .on("selectTrajectory", this.handleSelectTrajectory)

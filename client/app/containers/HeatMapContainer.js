@@ -4,7 +4,7 @@ var PropTypes = React.PropTypes;
 var d3 = require("d3");
 var HeatMap = require("../visualizations/HeatMap");
 
-var HeatMapContainer = React.createClass ({
+var HeatMapContainer = React.createClass({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     dataExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
@@ -15,7 +15,7 @@ var HeatMapContainer = React.createClass ({
     phaseOverlayOpacity: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired
   },
-  componentDidMount: function() {
+  componentDidMount: function () {
     // Create visualiztion function
     this.heatMap = HeatMap();
 

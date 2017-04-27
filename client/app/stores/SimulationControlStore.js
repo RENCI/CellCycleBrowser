@@ -41,6 +41,12 @@ var SimulationControlStore = assign({}, EventEmitter.prototype, {
 });
 
 function createControls(model) {
+  if (!model.species) {
+    controls.species = [];
+    controls.phases = [];
+    return;
+  }
+
   // Copy species and models
   controls.species = model.species.map(function (species) {
     return species.name;

@@ -53,7 +53,7 @@ function MainSection(props) {
     return (
       <div className={divClass}>
         <div className="row">
-          <div className="col-md-offset-3 col-md-6 text-center">
+          <div className="col-md-6 col-md-offset-1 text-center">
             <BrowserContainer />
           </div>
           <div className="col-md-4 text-center">
