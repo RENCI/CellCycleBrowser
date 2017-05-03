@@ -84,6 +84,9 @@ TEMPLATES = [
     },
 ]
 
+for i in range(0, len(TEMPLATES) - 1):
+    TEMPLATES[i]['OPTIONS']['debug'] = DEBUG
+
 WSGI_APPLICATION = 'cellcycle.wsgi.application'
 
 # make django file uploader to always write uploaded file to a temporary directory

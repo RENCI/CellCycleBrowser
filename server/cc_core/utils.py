@@ -10,6 +10,7 @@ import simplesbml
 from django.conf import settings
 from django.core.exceptions import ValidationError
 
+from .models import CellMetadata
 
 def load_cell_data_csv(cell_data):
     data_str = ''
@@ -57,8 +58,11 @@ def load_cell_data_csv(cell_data):
                                       'does not have <end metadata> matching tag')
 
             if meta_dict[file_base_name]:
-                # need to store meta_dict to database so that it is available for other requests
-                pass
+                # store meta_dict to database so that it is available for other requests
+                if not CellMetadata.objects.all().filter(cell_filename=file_base_name).exists():
+                    CellMetadata.objects.create(cell_filename=file_base_name,
+                                                metadata_dict=meta_dict[file_base_name])
+
             data_list = [first_data_row] + [row for row in csv_data]
 
             for column in zip(*data_list):

@@ -9,11 +9,10 @@ from django.conf import settings
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.sessions.backends.db import SessionStore
 
 from . import utils
 from .tasks import run_model_task
-
+from .models import CellMetadata
 
 logger = logging.getLogger('django')
 
@@ -46,6 +45,10 @@ def help(request):
 
 
 def cell_data_meta(request, filename):
+    if CellMetadata.objects.all().filter(cell_filename=filename).exists():
+        mdict = CellMetadata.objects.all().filter(cell_filename=filename).first().metadata_dict
+    else:
+        mdict = {}
     template = loader.get_template('cc_core/cell_meta.html')
     context = {}
     return HttpResponse(template.render(context, request))

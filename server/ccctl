@@ -190,7 +190,8 @@ loaddb_cc() {
     #    docker exec cellcycle psql -U postgres -h db -c \
     #    "select pg_terminate_backend(pid) from pg_stat_activity where datname='postgres';"
     docker exec cellcycle dropdb -U postgres -h db postgres
-    docker exec cellcycle createdb -U postgres -h db postgres --encoding UNICODE --template=template0
+    docker exec cellcycle psql -U postgres -h db -d template1 -w -c 'CREATE EXTENSION hstore;'
+    docker exec cellcycle createdb -U postgres -h db postgres --encoding UNICODE --template=template1
     docker exec cellcycle psql -U postgres -h db -f ${CC_DATABASE} --quiet
     docker exec cellcycle python manage.py collectstatic --no-input
     echo "  - docker exec cellcycle python manage.py migrate sites"
