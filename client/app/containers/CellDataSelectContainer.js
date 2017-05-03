@@ -7,6 +7,7 @@ var ViewActionCreators = require("../actions/ViewActionCreators");
 function getStateFromStore() {
   return {
     cellDataList: CellDataStore.getCellDataList(),
+    cellDataFileName: CellDataStore.getCellDataFileName(),
     cellDataValue: CellDataStore.getCellDataIndex().toString()
   };
 }
@@ -38,11 +39,15 @@ var CellDataSelectContainer = React.createClass ({
   },
   render: function () {
     return (
+      <div className="media-body media-middle text-center">
       <ItemSelect
         label="Cell data: "
         options={this.state.cellDataList.map(cellDataOption)}
         activeValue={this.state.cellDataValue}
         onChange={this.handleChangeCellData} />
+
+      <a style={{marginLeft: 20}} href={'/cell_data_meta/' + this.state.cellDataFileName + '/'}>Cell data metadata</a>
+    </div>
     );
   }
 });

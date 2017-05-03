@@ -39,6 +39,7 @@ function setupAjax() {
 function createCellData(cellData) {
   var cd = {};
   cd.name = cellData.name;
+  cd.fileName = cellData.fileName;
   cd.description = cellData.description;
   cd.timeUnit = cellData.timeUnit;
 

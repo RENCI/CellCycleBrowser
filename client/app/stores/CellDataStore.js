@@ -28,6 +28,9 @@ var CellDataStore = assign({}, EventEmitter.prototype, {
   getCellData: function () {
     return cellData;
   },
+  getCellDataFileName: function () {
+    return cellData.fileName;
+  },
   getCellDataIndex: function () {
     return cellDataList.indexOf(cellData);
   }
