@@ -3,18 +3,26 @@
 {% block title %}Help{% endblock %}
 
 {% block content %}
-     <div class="container">
+    <div class="container">
         <div class="row">
-            <h2>Help</h2>
+            <h2>Cell Data Set Information</h2>
         </div>
-        <div class="row">
-            <p>
-                The Human Cell Cycle Browser is an interactive tool for exploring, simulating, and perturbing
-                the human cell cycle. The browser has several overlapping functionalities. First, it provides
-                a high-resolution timeline of molecular events that occur as a cell progresses through the
-                cell cycle. Each timeline is constructed from time-lapse fluorescence images of single cells
-                that capture the activities of one or more cell cycle “species” - to be completed...
-            </p>
-        </div>
+        {% if metadata_dict %}
+            <div class="row">
+                <h3>Below is information for the cell data set you selected:</h3>
+            </div>
+            {% for key, value in metadata_dict.items %}
+                <div class="row">
+                    <label class = "col-sm-4">{{ key }}</label>
+                    <div class="col-sm-8">
+                        {{ value }}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="row">
+                <h3>The cell data set you selected does not have any metadata.</h3>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
