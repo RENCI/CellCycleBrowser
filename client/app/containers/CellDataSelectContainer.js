@@ -46,7 +46,7 @@ var CellDataSelectContainer = React.createClass ({
         activeValue={this.state.cellDataValue}
         onChange={this.handleChangeCellData} />
 
-      <a style={{marginLeft: 20}} href={'/cell_data_meta/' + this.state.cellDataFileName + '/'}>Cell data metadata</a>
+      <a style={{marginLeft: 20}} href={'/cell_data_meta/' + this.state.cellDataFileName + '/'}  target="_blank">Cell data metadata</a>
     </div>
     );
   }
