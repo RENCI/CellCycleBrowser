@@ -23,7 +23,7 @@ var alignmentStyle = {
 var labelStyle = {
   marginTop: 5,
   marginBottom: 5,
-  marginLeft: 10,
+  marginLeft: 5,
   fontWeight: "bold"
 };
 
@@ -39,6 +39,8 @@ var timeLineStyle = {
 };
 
 function TimeScale(props) {
+  var unit = props.alignment === "justify" ? "(%)" : "(h)";
+
   return (
     <div>
       <div style={alignmentStyle}>
@@ -48,11 +50,13 @@ function TimeScale(props) {
         <div className="row" style={rowStyle}>
           <div className="col-md-2">
             <div style={labelStyle}>
-              Time (h)
+              Time {unit}
             </div>
           </div>
           <div className="col-md-10 text-left" style={timeLineStyle}>
-            <TimeScaleContainer timeExtent={props.timeExtent} />
+            <TimeScaleContainer
+              timeExtent={props.timeExtent}
+              alignment={props.alignment} />
           </div>
         </div>
       </div>
@@ -61,7 +65,8 @@ function TimeScale(props) {
 }
 
 TimeScale.propTypes = {
-  timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired
+  timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
+  alignment: PropTypes.string.isRequired
 };
 
 module.exports = TimeScale;

@@ -2,18 +2,25 @@
 
 var React = require("react");
 var DataStore = require("../stores/DataStore");
+var AlignmentStore = require("../stores/AlignmentStore");
 var TrajectoryStore = require("../stores/TrajectoryStore");
 var PhaseStore = require("../stores/PhaseStore");
 var PhaseColorStore = require("../stores/PhaseColorStore");
 var PhaseOverlayStore = require("../stores/PhaseOverlayStore");
 var BrowserControls = require("../components/BrowserControls");
-var TimeScale = require("../components/TimeScale");
+var TimeScaleArea = require("../components/TimeScaleArea");
 var Phases = require("../components/Phases");
 var Species = require("../components/Species");
 
 function getStateFromDataStore() {
   return {
     data: DataStore.getData()
+  };
+}
+
+function getStateFromAlignmentStore() {
+  return {
+    alignment: AlignmentStore.getAlignment()
   };
 }
 
@@ -57,6 +64,7 @@ var BrowserContainer = React.createClass({
   getInitialState: function () {
     return {
       data: DataStore.getData(),
+      alignment: AlignmentStore.getAlignment(),
       activeTrajectory: TrajectoryStore.getTrajectory(),
       activePhase: PhaseStore.getPhase(),
       phaseColorScale: PhaseColorStore.getColorScale(),
@@ -66,6 +74,7 @@ var BrowserContainer = React.createClass({
   },
   componentDidMount: function () {
     DataStore.addChangeListener(this.onDataChange);
+    AlignmentStore.addChangeListener(this.onAlignmentChange);
     TrajectoryStore.addChangeListener(this.onTrajectoryChange);
     PhaseStore.addChangeListener(this.onPhaseChange);
     PhaseColorStore.addChangeListener(this.onPhaseColorChange);
@@ -74,6 +83,7 @@ var BrowserContainer = React.createClass({
   },
   componentWillUnmount: function() {
     DataStore.removeChangeListener(this.onDataChange);
+    AlignmentStore.removeChangeListener(this.onAlignmentChange);
     TrajectoryStore.removeChangeListener(this.onTrajectoryChange);
     PhaseStore.removeChangeListener(this.onPhaseChange);
     PhaseColorStore.removeChangeListener(this.onPhaseColorChange);
@@ -84,6 +94,9 @@ var BrowserContainer = React.createClass({
   },
   onDataChange: function () {
     this.setState(getStateFromDataStore());
+  },
+  onAlignmentChange: function () {
+    this.setState(getStateFromAlignmentStore());
   },
   onTrajectoryChange: function () {
     this.setState(getStateFromTrajectoryStore());
@@ -122,8 +135,9 @@ var BrowserContainer = React.createClass({
       <div>
         <BrowserControls
           timeExtent={this.state.data.timeExtent} />
-        <TimeScale
-          timeExtent={this.state.data.timeExtent} />
+        <TimeScaleArea
+          timeExtent={this.state.data.timeExtent}
+          alignment={this.state.alignment} />
         <Phases
           phases={this.state.data.phases}
           phaseAverage={this.state.data.phaseAverage}

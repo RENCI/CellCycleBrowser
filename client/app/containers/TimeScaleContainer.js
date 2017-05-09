@@ -4,13 +4,10 @@ var PropTypes = React.PropTypes;
 var TimeScale = require("../visualizations/TimeScale");
 var d3 = require("d3");
 
-var style = {
-//  border: "1px solid black"
-};
-
 var TimeScaleContainer = React.createClass ({
   propTypes: {
-    timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired
+    timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
+    alignment: PropTypes.string.isRequired
   },
   componentDidMount: function() {
     // Create visualization function
@@ -23,19 +20,22 @@ var TimeScaleContainer = React.createClass ({
     window.addEventListener("resize", this.onResize);
   },
   componentWillUpdate: function (props, state) {
-    this.drawVisualization(props.timeExtent);
+    this.drawVisualization(props);
 
     return false;
   },
   onResize: function () {
     this.resize();
   },
-  drawVisualization: function (timeExtent) {
-    if (!timeExtent) return;
+  drawVisualization: function (props) {
+    if (!props.timeExtent) return;
+
+    this.timeScale
+        .alignment(props.alignment);
 
     // Draw time scale
     d3.select(this.getNode())
-        .datum(timeExtent)
+        .datum(props.timeExtent)
         .call(this.timeScale);
   },
   resize: function () {
@@ -43,13 +43,13 @@ var TimeScaleContainer = React.createClass ({
 
     this.timeScale.width(width);
 
-    this.drawVisualization(this.props.timeExtent);
+    this.drawVisualization(this.props);
   },
   getNode: function () {
     return ReactDOM.findDOMNode(this);
   },
   render: function () {
-    return <div style={style}></div>
+    return <div></div>
   }
 });
 

@@ -9,6 +9,7 @@ module.exports = function() {
       timeExtent,
 
       // Layout
+      alignment = "left",
       scale = d3.scaleLinear(),
       axis = d3.axisTop(scale)
           .tickSizeOuter(0),
@@ -43,10 +44,22 @@ module.exports = function() {
     svg .attr("width", width)
         .attr("height", height);
 
-    // Set scale for axis
-    scale
-        .domain(timeExtent)
-        .range([0, width]);
+    // Set scale domain for axis based on alignment
+    if (alignment === "left") {
+      scale.domain(timeExtent);
+    }
+    else if (alignment === "justify") {
+      scale.domain([0, 100]);
+    }
+    else if (alignment === "right") {
+      scale.domain([-timeExtent[1], -timeExtent[0]]);
+    }
+
+    // Set scale range
+    scale.range([0, width]);
+
+    // Remove all ticks to fix issue with last tick
+    svg.selectAll(".tick").remove();
 
     // Draw axis
     svg.select("g")//.transition()
@@ -54,7 +67,7 @@ module.exports = function() {
         .call(axis);
 
     // Remove first and last ticks
-    var ticks = svg.selectAll(".tick");
+    var ticks = svg.selectAll(".tick")
 
     ticks.style("visibility", function(d, i) {
       return i === 0 || i === ticks.size() - 1 ? "hidden" : null;
@@ -70,6 +83,12 @@ module.exports = function() {
   timeScale.height = function(_) {
     if (!arguments.length) return height;
     height = _;
+    return timeScale;
+  };
+
+  timeScale.alignment = function(_) {
+    if (!arguments.length) return alignment;
+    alignment = _;
     return timeScale;
   };
 
