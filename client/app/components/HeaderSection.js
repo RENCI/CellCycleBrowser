@@ -7,8 +7,8 @@ function HeaderSection() {
       <div className="media">
         <div className="media-left media-middle text-center" style={{width:"25%"}}>
           <img
-            src="/static/cc_core/images/cells.gif"
-            style={{height: "50px"}} />
+            src="/static/cc_core/images/ccb_logo_alpha_cropped.png"
+            style={{height: "100px"}} />
         </div>
         <div className="media-body media-middle text-center">
           <Header header="Cell Cycle Browser" />
