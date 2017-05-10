@@ -6,6 +6,9 @@ var FeatureSelectContainer = require("../containers/FeatureSelectContainer");
 var ModelSelectContainer = require("../containers/ModelSelectContainer");
 
 var style = {
+  borderLeftColor: "#ccc",
+  borderLeftStyle: "solid",
+  borderLeftWidth: 1,
   borderRightColor: "#ccc",
   borderRightStyle: "solid",
   borderRightWidth: 1
@@ -14,7 +17,7 @@ var style = {
 function DataSelectionSection(props) {
   return (
     <div className="row well">
-      <div className="col-md-6 text-center" style={style}>
+      <div className="col-md-6 text-center">
         <Profile profile={props.profile} />
       </div>
       <div className="col-md-3 text-center" style={style}>
