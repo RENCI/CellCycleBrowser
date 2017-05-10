@@ -8,7 +8,6 @@
 /server/cellcycle/local_settings.py
 /server/data
 /server/cc_core/static/cc_core/js/index*
-/server/cc_core/static/cc_core/images
 /server/static
 /server/Stochpy
 /server/log
