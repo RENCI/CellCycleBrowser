@@ -33,7 +33,7 @@ function Slider(props) {
           htmlFor={sliderName}>
             {props.label}
         </label>
-        <div className="col-sm-12">
+        <div className="col-xs-12">
           <div className="input-group">
             <span className="input-group-addon">
               {props.min}

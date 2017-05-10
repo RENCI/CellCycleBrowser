@@ -25,7 +25,7 @@ function AlignmentSelect(props) {
 
   return (
     <div className="row">
-      <div className="col-sm-10 col-sm-offset-2">
+      <div className="col-xs-10 col-xs-offset-2">
         <div className={"btn-group btn-group-justified"} data-toggle="buttons">
           <label className={classes("left")} onClick={leftClick}>
             <input type="radio" />

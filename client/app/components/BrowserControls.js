@@ -15,7 +15,7 @@ function BrowserControls(props) {
   return (
     <div>
       <div className="row">
-        <div className="col-md-2 col-md-offset-2">
+        <div className="col-xs-2 col-xs-offset-2">
           <div className="checkbox">
             <label style={{marginTop: 24, width: "100%"}}>
               <input
@@ -25,7 +25,7 @@ function BrowserControls(props) {
             </label>
           </div>
         </div>
-        <div className="col-md-8">
+        <div className="col-xs-8">
           <SliderContainer
             label={"Phase overlay opacity"}
             min={0}

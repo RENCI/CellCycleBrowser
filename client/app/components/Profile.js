@@ -11,11 +11,11 @@ function Profile(props) {
 
   return (
     <div className="row">
-      <div className="col-md-6">
+      <div className="col-xs-6">
         <ProfileSelectContainer />
         <ProfileDescription description={description} />
       </div>
-      <div className="col-md-6" style={{paddingTop: 5}}>
+      <div className="col-xs-6" style={{paddingTop: 5}}>
         <ProfileAddDelete />
       </div>
     </div>

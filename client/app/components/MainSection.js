@@ -20,14 +20,14 @@ function MainSection(props) {
     return (
       <div className={divClass}>
         <div className="row">
-          <div className="col-md-3 text-center">
+          <div className="col-sm-3 text-center">
             <MapArea/>
             <ControlsContainer />
           </div>
-          <div className="col-md-6 text-center">
+          <div className="col-sm-6 text-center">
             <BrowserContainer />
           </div>
-          <div className="col-md-3 text-center">
+          <div className="col-sm-3 text-center">
             <SummaryPlotsArea />
           </div>
         </div>
@@ -38,11 +38,11 @@ function MainSection(props) {
     return (
       <div className={divClass}>
         <div className="row">
-          <div className="col-md-4 col-md-offset-2 text-center">
+          <div className="col-sm-4 col-sm-offset-2 text-center">
             <MapArea/>
             <ControlsContainer />
           </div>
-          <div className="col-md-4 text-center">
+          <div className="col-sm-4 text-center">
             <SummaryPlotsArea />
           </div>
         </div>
@@ -53,10 +53,10 @@ function MainSection(props) {
     return (
       <div className={divClass}>
         <div className="row">
-          <div className="col-md-6 col-md-offset-1 text-center">
+          <div className="col-sm-6 col-sm-offset-1 text-center">
             <BrowserContainer />
           </div>
-          <div className="col-md-4 text-center">
+          <div className="col-sm-4 text-center">
             <SummaryPlotsArea />
           </div>
         </div>

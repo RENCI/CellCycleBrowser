@@ -17,14 +17,14 @@ var style = {
 function DataSelectionSection(props) {
   return (
     <div className="row well">
-      <div className="col-md-6 text-center">
+      <div className="col-xs-6 text-center">
         <Profile profile={props.profile} />
       </div>
-      <div className="col-md-3 text-center" style={style}>
+      <div className="col-xs-3 text-center" style={style}>
           <CellDataSelectContainer />
           <FeatureSelectContainer />
       </div>
-      <div className="col-md-3 text-center">
+      <div className="col-xs-3 text-center">
           <ModelSelectContainer />
       </div>
     </div>

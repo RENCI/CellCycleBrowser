@@ -72,7 +72,7 @@ function Species(props) {
   return (
     <div className="text-left" style={outerStyle}>
       <div className="row">
-        <div className="col-md-12">
+        <div className="col-xs-12">
           <div style={labelStyle}>
             {props.species.name}
             <span style={descriptionStyle}>{" - " + props.species.source}</span>
@@ -81,10 +81,10 @@ function Species(props) {
       </div>
       <div>
         <div className="row" style={rowStyle}>
-          <div className="col-md-2 text-left" style={buttonColumnStyle}>
+          <div className="col-xs-2 text-left" style={buttonColumnStyle}>
             <CollapseButtonContainer targetId={collapseId} />
           </div>
-          <div className="col-md-10" style={visColumnStyle}>
+          <div className="col-xs-10" style={visColumnStyle}>
             <HeatMapContainer
               data={[props.species.average]}
               dataExtent={props.species.dataExtent}
@@ -97,7 +97,7 @@ function Species(props) {
           </div>
         </div>
         <div className="row in" id={collapseId} style={collapseRowStyle}>
-          <div className="col-md-10 col-md-offset-2" style={collapseColStyle}>
+          <div className="col-xs-10 col-xs-offset-2" style={collapseColStyle}>
             <HeatMapContainer
               data={props.species.data.map(function (d) { return d.values; })}
               dataExtent={props.species.dataExtent}
