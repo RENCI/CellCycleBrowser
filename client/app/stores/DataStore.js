@@ -54,17 +54,20 @@ function updateData() {
           return d.name;
         }).indexOf(feature);
 
+        var values = cell.features[featureIndex].values.map(function (d, i, a) {
+          return {
+            start: d.time,
+            stop: i < a.length - 1 ? a[i + 1].time : d.time + (d.time - a[i - 1].time),
+            value: d.value
+          };
+        }).filter(function (d) {
+          return !isNaN(d.value);
+        });
+
         return {
           name: cell.name,
-          values: cell.features[featureIndex].values.map(function (d, i, a) {
-            return {
-              start: d.time,
-              stop: i < a.length - 1 ? a[i + 1].time : d.time + (d.time - a[i - 1].time),
-              value: d.value
-            };
-          }).filter(function (d) {
-            return !isNaN(d.value);
-          })
+          values: values,
+          timeSpan: timeSpan(values)
         };
       });
 
@@ -97,15 +100,18 @@ function updateData() {
         }).indexOf(speciesName);
 
         if (index >= 0) {
+          var values = trajectory.timeSteps.map(function (d, j, a) {
+            return {
+              value: trajectory.species[index].values[j],
+              start: d,
+              stop: j < a.length - 1 ? a[j + 1] : d + (d - a[j - 1])
+            };
+          })
+
           data.push({
             name: "Trajectory " + data.length,
-            values: trajectory.timeSteps.map(function (d, j, a) {
-              return {
-                value: trajectory.species[index].values[j],
-                start: d,
-                stop: j < a.length - 1 ? a[j + 1] : d + (d - a[j - 1])
-              };
-            })
+            values: values,
+            timeSpan: timeSpan(values)
           });
         }
       });
@@ -133,6 +139,10 @@ function updateData() {
     }));
 
     return [min, max];
+  }
+
+  function timeSpan(values) {
+    return values[values.length -1].stop - values[0].start;
   }
 
   function computeTimeExtent(species) {
