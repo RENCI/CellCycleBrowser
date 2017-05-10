@@ -47,36 +47,26 @@ module.exports = function() {
   }
 
   function createCurves() {
-    curves = [];
-
-    // Check for cell data
-    var cellData = data.species.filter(function(d) {
-      return d.source !== "Simulation";
-    }).map(function(d) {
-      return d.data;
+    // Get all sources (simulation or cell data)
+    var sources = d3.set();
+    data.species.forEach(function(d) {
+      sources.add(d.source);
     });
 
-    if (cellData.length > 0) {
-      // Use first species for time span average
-      var timeSpan = d3.mean(cellData[0], function(d) {
-        return dataTimeSpan(d.values);
-      });
+    // Add a curve for each source
+    curves = sources.values().map(function(source) {
+      // Use first species for each source for time span
+      var species = data.species.filter(function(d) {
+        return d.source === source;
+      })[0];
 
-      curves.push({
-        name: "Data",
-        timeSpan: timeSpan
-      });
-    }
-
-    // Check for simulation output
-    if (data.phases.length > 0) {
-      var timeSpan = d3.mean(data.phases, dataTimeSpan);
-
-      curves.push({
-        name: "Simulation",
-        timeSpan: timeSpan
-      });
-    }
+      return {
+        name: source,
+        timeSpan: d3.mean(species.data, function(d) {
+          return d.timeSpan / 24;
+        })
+      };
+    });
 
     // Compute curves
     curves.forEach(function(curve) {
@@ -88,10 +78,6 @@ module.exports = function() {
         return Math.pow(2, (d / curve.timeSpan));
       }
     });
-
-    function dataTimeSpan(d) {
-      return (d[d.length - 1].stop - d[0].start) / 24;
-    }
   }
 
   function draw() {
@@ -115,12 +101,16 @@ module.exports = function() {
         .range([innerHeight(), 0]);
 
     var colorScale = d3.scaleOrdinal()
-        .domain(["Data", "Simulation"])
+        .domain(curves.map(function(d) {
+          return d.name;
+        }).sort(function(a, b) {
+          return a === "Simulation" ? 1 : d3.ascending(a, b);
+        }))
+        // XXX: Need to decide on a color map
         .range(["#2166ac", "#b2182b"]);
 
     function curveColor(d) {
-      return d.name.indexOf("Data") !== -1 ?
-             colorScale("Data") : colorScale("Simulation");
+      return colorScale(d.name);
     }
 
     var circleRadius = 3;
@@ -283,13 +273,13 @@ module.exports = function() {
             return "translate(0," + (Math.round(itemScale(i)) + 0.5) + ")";
           });
 
-      curveUpdate.selectAll("text")
+      curveUpdate.select("text")
           .text(function(d) { return d.name; });
 
-      curveUpdate.selectAll("line")
+      curveUpdate.select("line")
           .style("stroke", curveColor);
 
-      curveUpdate.selectAll("circle")
+      curveUpdate.select("circle")
           .style("fill", curveColor);
 
       // Exit
