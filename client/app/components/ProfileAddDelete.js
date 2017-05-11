@@ -5,10 +5,10 @@ function ProfileAddDelete(props) {
   return (
     <div>
       <a
-        style={{marginRight: "20px"}}
         href="/add_profile/login/">
         Add profile
       </a>
+      <br />
       <a
         href="/delete_profile/login/">
         Delete profile

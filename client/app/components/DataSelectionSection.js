@@ -22,7 +22,6 @@ function DataSelectionSection(props) {
       </div>
       <div className="col-xs-3 text-center" style={style}>
           <CellDataSelectContainer />
-          <FeatureSelectContainer />
       </div>
       <div className="col-xs-3 text-center">
           <ModelSelectContainer />

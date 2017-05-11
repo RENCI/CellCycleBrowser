@@ -1,14 +1,17 @@
 var React = require("react");
+var ReactDOM = require("react-dom");
 var CellDataStore = require("../stores/CellDataStore");
-var ItemSelect = require("../components/ItemSelect");
+var CellDataSelect = require("../components/CellDataSelect");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
 // Retrieve the current state from the store
 function getStateFromStore() {
   return {
-    cellDataList: CellDataStore.getCellDataList(),
+    cellDataList: CellDataStore.getCellDataList()
+/*    ,
     cellDataFileName: CellDataStore.getCellDataFileName(),
     cellDataValue: CellDataStore.getCellDataIndex().toString()
+*/
   };
 }
 
@@ -16,8 +19,7 @@ function getStateFromStore() {
 var cellDataOption = function (cellData, i) {
   return {
     value: i.toString(),
-    name: cellData.name,
-    description: cellData.description
+    data: cellData
   };
 }
 
@@ -27,6 +29,14 @@ var CellDataSelectContainer = React.createClass ({
   },
   componentDidMount: function () {
     CellDataStore.addChangeListener(this.onCellDataChange);
+
+    // XXX: Replace this with id passed to CellDataSelect?
+    $(ReactDOM.findDOMNode(this)).find("[data-toggle='popover']").popover({
+      container: "body",
+      content: function () {
+        return $($(this).data("popover-content")).html();
+      }
+    });
   },
   componentWillUnmount: function () {
     CellDataStore.removeChangeListener(this.onCellDataChange);
@@ -40,18 +50,11 @@ var CellDataSelectContainer = React.createClass ({
   render: function () {
     return (
       <div>
-        <ItemSelect
-          label="Cell data: "
+        <CellDataSelect
+          id="CellDataSelect"
           options={this.state.cellDataList.map(cellDataOption)}
-          activeValue={this.state.cellDataValue}
           onChange={this.handleChangeCellData} />
-        <a
-          style={{marginLeft: 20}}
-          href={'/cell_data_meta/' + this.state.cellDataFileName + '/'}
-          target="_blank">
-          Cell data metadata
-        </a>
-    </div>
+      </div>
     );
   }
 });

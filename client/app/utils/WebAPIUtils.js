@@ -37,13 +37,22 @@ function setupAjax() {
 }
 
 function createCellData(cellData) {
+  // Set metadata
   var cd = {};
   cd.name = cellData.name;
   cd.fileName = cellData.fileName;
   cd.description = cellData.description;
   cd.timeUnit = cellData.timeUnit;
 
+  // Parse the csv data
   var data = d3.csvParse(cellData.csv);
+
+  // Get the available features
+  cd.features = d3.nest()
+      .key(function(d) { return d.Feature; })
+      .entries(data).map(function(d) {
+        return d.key;
+      });
 
   // Nest by species, cell, and feature
   var nest = d3.nest()
@@ -54,7 +63,7 @@ function createCellData(cellData) {
 
   // Get keys for time samples
   var timeKeys = data.columns.filter(function(d) {
-    return d !== "Species" && d !== "Cell" && d !== "Feature";
+    return !isNaN(+d);
   });
 
   // Reformat data

@@ -1,14 +1,10 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
-var dropdownStyle = {
-  display: "inline-block"
-};
-
 function ItemSelect(props) {
   function option(option, i) {
     var description = option.description ?
-      <span className="small text-muted">{": " + option.description}</span> :
+      <span className="small text-muted">{option.description}</span> :
       null;
 
     return (
@@ -19,7 +15,7 @@ function ItemSelect(props) {
           data-name={option.name}
           data-value={option.value}
           onClick={handleClick}>
-            {option.name} {description}
+            {option.name + (description ? ": " : null)} {description}
         </a>
       </li>
     );
