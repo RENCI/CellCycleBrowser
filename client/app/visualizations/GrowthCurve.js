@@ -78,6 +78,13 @@ module.exports = function() {
         return Math.pow(2, (d / curve.timeSpan));
       }
     });
+
+    // Sort
+    curves = curves.sort(function(a, b) {
+      if (a.name === "Simulation") return 1;
+      else if (b.name === "Simulation") return -1;
+      return 0;
+    });
   }
 
   function draw() {
@@ -103,8 +110,6 @@ module.exports = function() {
     var colorScale = d3.scaleOrdinal()
         .domain(curves.map(function(d) {
           return d.name;
-        }).sort(function(a, b) {
-          return a === "Simulation" ? 1 : d3.ascending(a, b);
         }))
         // XXX: Need to decide on a color map
         .range(["#2166ac", "#b2182b"]);
@@ -212,9 +217,9 @@ module.exports = function() {
 
         curve.enter().append("path")
             .style("fill", "none")
-            .style("stroke", color)
           .merge(curve)
-            .attr("d", line);
+            .attr("d", line)
+            .style("stroke", color);
 
         // Points
         var point = g.selectAll("circle")
@@ -222,11 +227,11 @@ module.exports = function() {
 
         point.enter().append("circle")
             .attr("r", circleRadius)
-            .style("fill", color)
             .style("stroke", "none")
           .merge(point)
             .attr("cx", function(d) { return xScale(d[0]); })
-            .attr("cy", function(d) { return yScale(d[1]); });
+            .attr("cy", function(d) { return yScale(d[1]); })
+            .style("fill", color);
       }
     }
 
