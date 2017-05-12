@@ -30,12 +30,19 @@ var CellDataSelectContainer = React.createClass ({
   componentDidMount: function () {
     CellDataStore.addChangeListener(this.onCellDataChange);
 
-    // XXX: Replace this with id passed to CellDataSelect?
     $(ReactDOM.findDOMNode(this)).find("[data-toggle='popover']").popover({
       container: "body",
       content: function () {
         return $($(this).data("popover-content")).html();
       }
+    })
+    .on("shown.bs.popover", function(e) {
+      $(".cellDataPopoverContent :checkbox").on("change", function(e) {
+        console.log("yay1!");
+      });
+      $(".cellDataPopoverContent li").on("click", function(e) {
+        console.log("yay2!");
+      });
     });
   },
   componentWillUnmount: function () {
@@ -44,16 +51,19 @@ var CellDataSelectContainer = React.createClass ({
   onCellDataChange: function () {
     this.setState(getStateFromStore);
   },
-  handleChangeCellData: function (value) {
+  handleSelectCellData: function (value) {
     ViewActionCreators.selectCellData(+value);
+  },
+  handleSelectFeature: function (value) {
+//    ViewActionCreators.selectFeature(+value);
   },
   render: function () {
     return (
       <div>
         <CellDataSelect
-          id="CellDataSelect"
           options={this.state.cellDataList.map(cellDataOption)}
-          onChange={this.handleChangeCellData} />
+          onSelectCellData={this.handleSelectCellData}
+          onSelectFeature={this.handleSelectFeature} />
       </div>
     );
   }

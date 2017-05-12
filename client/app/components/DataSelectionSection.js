@@ -21,10 +21,10 @@ function DataSelectionSection(props) {
         <Profile profile={props.profile} />
       </div>
       <div className="col-xs-3 text-center" style={style}>
-          <CellDataSelectContainer />
+        <CellDataSelectContainer />
       </div>
       <div className="col-xs-3 text-center">
-          <ModelSelectContainer />
+        <ModelSelectContainer />
       </div>
     </div>
   );

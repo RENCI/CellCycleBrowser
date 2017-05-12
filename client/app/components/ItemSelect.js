@@ -37,8 +37,11 @@ function ItemSelect(props) {
         {props.label}
       </strong>
       <div className="btn-group">
-        <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown">
-          {activeName} <span className="caret"></span>
+        <button
+          type="button"
+          className="btn btn-default dropdown-toggle"
+          data-toggle="dropdown">
+            {activeName} <span className="caret"></span>
         </button>
         <ul className="dropdown-menu">
           {props.options.map(option)}
