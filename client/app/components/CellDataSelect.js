@@ -6,18 +6,6 @@ var tdStyle = {
   verticalAlign: "middle"
 };
 
-function handleCellDataChange(e) {
-  console.log(e);
-  console.log("celldata");
-//      props.onSelectCellData(e.currentTarget.dataset.value);
-}
-
-function handleFeatureClick(e) {
-  console.log(e);
-  console.log("feature");
-//      props.onSelectFeature(e.currentTarget.dataset.value);
-}
-
 function CellDataSelect(props) {
   function option(option, i) {
     var features = option.data.features.map(function (feature, i) {
@@ -25,8 +13,8 @@ function CellDataSelect(props) {
         <li key={i}>
           <a
             href="#"
-            data-name={feature}
-            data-value={i}>
+            data-feature={feature}
+            data-celldata={option.data.name}>
               {feature}
           </a>
         </li>
@@ -37,7 +25,8 @@ function CellDataSelect(props) {
       <tr key={i}>
         <td style={tdStyle}>
           <input
-            type="checkbox" />
+            type="checkbox"
+            data-celldata={option.data.name} />
         </td>
         <td style={tdStyle}>
           {option.data.name}
@@ -69,15 +58,7 @@ function CellDataSelect(props) {
     );
   }
 
-/*
-  var activeIndex = props.options.map(function(option) {
-    return option.value;
-  }).indexOf(props.activeValue);
-
-  var activeName = activeIndex === -1 ? "" : props.options[activeIndex].name;
-*/
-
-  var popoverClass = "cellDataPopover";
+  var popoverContentClass = "cellDataPopoverContent";
 
   return (
     <div>
@@ -87,11 +68,11 @@ function CellDataSelect(props) {
         data-toggle="popover"
         data-html="true"
         data-placement="bottom"
-        data-popover-content={"." + popoverClass}>
+        data-popover-content={"." + popoverContentClass}>
         Cell Data Select <span className="caret"></span>
       </button>
-      <div className={"hidden " + popoverClass}>
-        <table className="table table-hover table-condensed cellDataPopoverContent">
+      <div className={"hidden " + popoverContentClass}>
+        <table className={"table table-hover table-condensed " + props.popoverBodyClass}>
           <tbody>
             {props.options.map(option)}
           </tbody>
@@ -103,8 +84,7 @@ function CellDataSelect(props) {
 
 CellDataSelect.propTypes = {
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
-  onSelectCellData: PropTypes.func.isRequired,
-  onSelectFeature: PropTypes.func.isRequired
+  popoverBodyClass: PropTypes.string.isRequired
 };
 
 module.exports = CellDataSelect;

@@ -25,11 +25,15 @@ var cellDataOption = function (cellData, i) {
 
 var CellDataSelectContainer = React.createClass ({
   getInitialState: function () {
+    // Class for selecting popover body
+    this.popoverBodyClass = "cellDataPopoverBody";
+
     return getStateFromStore();
   },
   componentDidMount: function () {
     CellDataStore.addChangeListener(this.onCellDataChange);
 
+    // Enable popover
     $(ReactDOM.findDOMNode(this)).find("[data-toggle='popover']").popover({
       container: "body",
       content: function () {
@@ -37,13 +41,18 @@ var CellDataSelectContainer = React.createClass ({
       }
     })
     .on("shown.bs.popover", function(e) {
-      $(".cellDataPopoverContent :checkbox").on("change", function(e) {
-        console.log("yay1!");
+      // Need to set callbacks here, as callbacks are not cloned when creating popover
+      $("." + this.popoverBodyClass + " :checkbox").on("change", function(e) {
+        var t = e.currentTarget;
+        console.log(t.checked);
+        console.log(t.dataset.celldata);
       });
-      $(".cellDataPopoverContent li").on("click", function(e) {
-        console.log("yay2!");
+      $("." + this.popoverBodyClass + " li > a").on("click", function(e) {
+        var t = e.currentTarget;
+        console.log(t.dataset.celldata);
+        console.log(t.dataset.feature);
       });
-    });
+    }.bind(this));
   },
   componentWillUnmount: function () {
     CellDataStore.removeChangeListener(this.onCellDataChange);
@@ -62,8 +71,7 @@ var CellDataSelectContainer = React.createClass ({
       <div>
         <CellDataSelect
           options={this.state.cellDataList.map(cellDataOption)}
-          onSelectCellData={this.handleSelectCellData}
-          onSelectFeature={this.handleSelectFeature} />
+          popoverBodyClass={this.popoverBodyClass} />
       </div>
     );
   }
