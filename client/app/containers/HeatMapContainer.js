@@ -15,10 +15,13 @@ var HeatMapContainer = React.createClass({
     phaseOverlayOpacity: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired
   },
-  componentDidMount: function () {
+  getInitialState: function() {
     // Create visualiztion function
     this.heatMap = HeatMap();
 
+    return null;
+  },
+  componentDidMount: function () {
     this.resize();
 
     // Resize on window resize

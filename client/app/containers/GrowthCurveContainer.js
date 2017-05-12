@@ -21,14 +21,12 @@ function getStateFromDataStore() {
 
 var GrowthCurveContainer = React.createClass ({
   getInitialState: function () {
-    return {
-      data: DataStore.getData()
-    };
-  },
-  componentDidMount: function() {
-    // Create visualiztion function
+    // Create visualization function
     this.growthCurve = GrowthCurve();
 
+    return getStateFromDataStore();
+  },
+  componentDidMount: function() {
     DataStore.addChangeListener(this.onDataChange);
 
     this.resize();

@@ -18,12 +18,15 @@ var PhaseMapContainer = React.createClass({
   getDefautProps: {
     isAverage: false
   },
-  componentDidMount: function () {
+  getInitialState: function () {
     // Create visualization function
     this.phaseMap = PhaseMap()
         .on("selectTrajectory", this.handleSelectTrajectory)
         .on("selectPhase", this.handleSelectPhase);
 
+    return null;
+  },
+  componentDidMount: function () {
     this.resize();
 
     // Resize on window resize

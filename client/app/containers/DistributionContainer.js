@@ -109,12 +109,12 @@ function createCells(reactions) {
 
 var DistributionContainer = React.createClass ({
   getInitialState: function () {
+    // Create visualization function
+    this.distribution = Distribution();
+
     return getStateFromModelStore();
   },
   componentDidMount: function() {
-    // Create visualiztion function
-    this.distribution = Distribution();
-
     ModelStore.addChangeListener(this.onModelChange);
 
     this.resize();

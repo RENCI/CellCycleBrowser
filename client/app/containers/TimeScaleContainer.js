@@ -9,11 +9,14 @@ var TimeScaleContainer = React.createClass ({
     timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
     alignment: PropTypes.string.isRequired
   },
-  componentDidMount: function() {
+  getInitialState: function () {
     // Create visualization function
     this.timeScale = TimeScale()
         .height(25);
 
+    return null;
+  },
+  componentDidMount: function () {
     this.resize();
 
     // Resize on window resize

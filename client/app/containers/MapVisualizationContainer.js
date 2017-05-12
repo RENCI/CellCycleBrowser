@@ -73,6 +73,11 @@ function getStateFromPhaseStore() {
 
 var MapVisualizationContainer = React.createClass ({
   getInitialState: function () {
+    // Create visualization function
+    this.networkMap = NetworkMap()
+        .on("selectPhase", this.handleSelectPhase)
+        .on("selectSpecies", this.handleSelectSpecies);
+
     return {
       model: null,
       phase: PhaseStore.getPhase(),
@@ -80,11 +85,6 @@ var MapVisualizationContainer = React.createClass ({
     };
   },
   componentDidMount: function() {
-    // Create visualiztion function
-    this.networkMap = NetworkMap()
-        .on("selectPhase", this.handleSelectPhase)
-        .on("selectSpecies", this.handleSelectSpecies);
-
     SimulationControlStore.addChangeListener(this.onSimulationControlChange);
     PhaseColorStore.addChangeListener(this.onPhaseColorChange);
     PhaseStore.addChangeListener(this.onPhaseChange);
