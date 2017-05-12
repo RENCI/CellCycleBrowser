@@ -2,17 +2,12 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 var ItemSelect = require("./ItemSelect");
 
-var divStyle = {
-  marginLeft: 5,
-  textAlign: "right"
+var tdStyle = {
+  verticalAlign: "middle"
 };
 
 function CellDataSelect(props) {
   function option(option, i) {
-    var description = option.data.description ?
-      <span className="small text-muted">{option.data.description}</span> :
-      null;
-
     var features = option.data.features.map(function (feature, i) {
       return (
         <li
@@ -28,49 +23,35 @@ function CellDataSelect(props) {
     });
 
     return (
-      <div key={i} style={i === 0 ? null : {marginTop: 5}}>
-          <form className="form-inline">
-            <div className="form-group">
-              <div className="input-group">
-                <span className="input-group-addon" id="sizing-addon2">
-                  <div className="checkbox">
-                    <input type="checkbox"/>
-                  </div>
-                </span>
-                <label className="form-control">
-                  {option.data.name + (description ? ":" : null)} {description}
-                </label>
-              </div>
-            </div>
-            <div className="form-group" style={divStyle}>
-              <div className="btn-group">
-                <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                  Features <span className="caret"></span>
-                </button>
-                <ul className="dropdown-menu">
-                  {features}
-                </ul>
-              </div>
-            </div>
-            <div className="form-group" style={divStyle}>
-              <a
-                href={'/cell_data_meta/' + option.data.fileName + '/'}
-                target="_blank">
-                metadata
-              </a>
-            </div>
-          </form>
-      </div>
+      <tr key={i}>
+        <td style={tdStyle}>
+            <input type="checkbox" />
+        </td>
+        <td style={tdStyle}>
+          {option.data.name}
+        </td>
+        <td className="small text-muted" style={tdStyle}>
+          {option.data.description}
+        </td>
+        <td style={tdStyle}>
+          <div className="btn-group">
+            <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown">
+              Features <span className="caret"></span>
+            </button>
+            <ul className="dropdown-menu">
+              {features}
+            </ul>
+          </div>
+        </td>
+        <td style={tdStyle}>
+          <a
+            href={'/cell_data_meta/' + option.data.fileName + '/'}
+            target="_blank">
+            metadata
+          </a>
+        </td>
+      </tr>
     );
-/*
-<a
-  href="#"
-  data-name={option.name}
-  data-value={option.value}
-  onClick={handleClick}>
-    {option.name} {description}
-</a>
-*/
   }
 
   function handleClick(e) {
@@ -86,6 +67,8 @@ function CellDataSelect(props) {
   var activeName = activeIndex === -1 ? "" : props.options[activeIndex].name;
 */
 
+  var popoverId = "cellDataPopover";
+
   return (
     <div>
       <button
@@ -94,41 +77,18 @@ function CellDataSelect(props) {
         data-toggle="popover"
         data-html="true"
         data-placement="bottom"
-        data-popover-content="#a1">
+        data-popover-content={"#" + popoverId}>
         Cell Data Select <span className="caret"></span>
       </button>
-      <div id="a1" className="hide container-fluid">
-        {props.options.map(option)}
+      <div id={popoverId} className="hide table-responsive">
+        <table className="table table-hover table-condensed">
+          <tbody>
+            {props.options.map(option)}
+          </tbody>
+        </table>
       </div>
     </div>
   );
-
-/*
-  return (
-    <div>
-      <strong>
-        {"Cell Data: "}
-      </strong>
-      <div className="btn-group">
-        <button type="button" className="btn btn-default dropdown-toggle" data-toggle="dropdown">
-          Select <span className="caret"></span>
-        </button>
-        <ul className="dropdown-menu">
-          {props.options.map(option)}
-        </ul>
-      </div>
-    </div>
-  );
-*/
-
-/*
-<a
-  style={{marginLeft: 20}}
-  href={'/cell_data_meta/' + this.state.cellDataFileName + '/'}
-  target="_blank">
-  Cell data metadata
-</a>
-*/
 }
 
 CellDataSelect.propTypes = {
