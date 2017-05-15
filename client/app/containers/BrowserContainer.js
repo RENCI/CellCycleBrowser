@@ -133,8 +133,7 @@ var BrowserContainer = React.createClass({
 
     return (
       <div>
-        <BrowserControls
-          timeExtent={this.state.data.timeExtent} />
+        <BrowserControls />
         <TimeScaleArea
           timeExtent={this.state.data.timeExtent}
           alignment={this.state.alignment} />

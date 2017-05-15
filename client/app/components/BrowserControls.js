@@ -12,6 +12,8 @@ function handlePhaseOverlayOpacityChange(value) {
 }
 
 function BrowserControls(props) {
+  return null;
+/*
   return (
     <div>
       <div className="row">
@@ -37,10 +39,7 @@ function BrowserControls(props) {
       </div>
     </div>
   );
+*/
 }
-
-BrowserControls.propTypes = {
-  timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired
-};
 
 module.exports = BrowserControls;
