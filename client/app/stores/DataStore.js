@@ -73,6 +73,7 @@ function updateData() {
 
       return {
         name: species.name,
+        feature: feature,
         source: cellData.name,
         data: data,
         dataExtent: dataExtent(data.map(function (d) { return d.values; }))

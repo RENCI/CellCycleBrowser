@@ -18,13 +18,20 @@ var outerStyle = {
 var labelStyle = {
   marginTop: 5,
   marginBottom: 5,
-  marginLeft: 10,
+  marginLeft: 10
+};
+
+var nameStyle = {
   fontWeight: "bold"
 };
 
-var descriptionStyle = {
-  fontWeight: "normal",
+var featureStyle = {
   fontStyle: "italic"
+};
+
+var sourceStyle = {
+  marginRight: 10,
+  float: "right"
 };
 
 var rowStyle = {
@@ -69,13 +76,17 @@ function Species(props) {
   var averageHeight = 32;
   var trackHeight = 20;
 
+  var featureSpan = props.species.feature ?
+      <span style={featureStyle}>{" - " + props.species.feature}</span> : null;
+
   return (
     <div className="text-left" style={outerStyle}>
       <div className="row">
         <div className="col-xs-12">
           <div style={labelStyle}>
-            {props.species.name}
-            <span style={descriptionStyle}>{" - " + props.species.source}</span>
+            <span style={nameStyle}>{props.species.name}</span>
+            {featureSpan}
+            <span style={sourceStyle}>{props.species.source}</span>
           </div>
         </div>
       </div>
