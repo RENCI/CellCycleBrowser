@@ -27,20 +27,38 @@ function AlignmentSelect(props) {
     <div className="row">
       <div className="col-xs-10 col-xs-offset-2">
         <div className={"btn-group btn-group-justified"} data-toggle="buttons">
-          <label className={classes("left")} onClick={leftClick}>
-            <input type="radio" />
-            <span className="glyphicon glyphicon-align-left" style={iconStyle}>
-            </span>
+          <label
+            className={classes("left")}
+            data-toggle="tooltip"
+            data-container="body"
+            data-placement="auto top"
+            title="Align left"
+            onClick={leftClick}>
+              <input type="radio" />
+              <span className="glyphicon glyphicon-align-left" style={iconStyle}>
+              </span>
           </label>
-          <label className={classes("justify")} onClick={middleClick}>
-            <input type="radio" />
-            <span className="glyphicon glyphicon-align-justify" style={iconStyle}>
-            </span>
+          <label
+            className={classes("justify")}
+            data-toggle="tooltip"
+            data-container="body"
+            data-placement="auto top"
+            title="Stretch data" 
+            onClick={middleClick}>
+              <input type="radio" />
+              <span className="glyphicon glyphicon-align-justify" style={iconStyle}>
+              </span>
           </label>
-          <label className={classes("right")} onClick={rightClick}>
-            <input type="radio" />
-            <span className="glyphicon glyphicon-align-right" style={iconStyle}>
-            </span>
+          <label
+            className={classes("right")}
+            data-toggle="tooltip"
+            data-container="body"
+            data-placement="auto top"
+            title="Align right"
+            onClick={rightClick}>
+              <input type="radio" />
+              <span className="glyphicon glyphicon-align-right" style={iconStyle}>
+              </span>
           </label>
         </div>
       </div>

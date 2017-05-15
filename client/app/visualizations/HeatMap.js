@@ -104,6 +104,13 @@ module.exports = function () {
     drawHeatMap();
     drawPhases();
 
+    // Update toltips
+    $(".heatMap .cell").tooltip({
+      container: "body",
+      placement: "auto top",
+      animation: false
+    });
+
     function drawBorders() {
       // Borders
       var border = svg.select(".borders").selectAll(".border")

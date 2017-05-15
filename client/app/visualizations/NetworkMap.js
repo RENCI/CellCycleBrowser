@@ -189,14 +189,14 @@ module.exports = function() {
     drawNodeLabels();
     drawLinks();
 
-    // Tooltips
-    $(".nodes > g").tooltip({
+    // Update tooltips
+    $(".networkMap .nodes > g").tooltip({
       container: "body",
       placement: "auto top",
       animation: false
     });
 
-    $(".links > path").tooltip({
+    $(".networkMap .links > path").tooltip({
       container: "body",
       placement: "auto top",
       animation: false

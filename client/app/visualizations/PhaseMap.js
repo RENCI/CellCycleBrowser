@@ -97,6 +97,13 @@ module.exports = function () {
     drawBorders();
     drawPhaseMap();
 
+    // Update toltips
+    $(".phaseMap .cell").tooltip({
+      container: "body",
+      placement: "auto top",
+      animation: false
+    });
+
     function drawBorders() {
       // Borders
       var border = svg.select(".borders").selectAll(".border")
@@ -210,7 +217,6 @@ module.exports = function () {
         cell.exit()//.transition()
             //.style("fill", "white")
             .remove();
-
 
         function x(d) {
           return xScale(d.start);

@@ -49,17 +49,6 @@ function getStateFromPhaseOverlayStore() {
   };
 }
 
-// Enable bootstrap tooltips
-// XXX: This will search the entire page, should perhaps use selector within
-// this element
-function tooltips() {
-  $(".cell").tooltip({
-    container: "body",
-    placement: "auto top",
-    animation: false
-  });
-}
-
 var BrowserContainer = React.createClass({
   getInitialState: function () {
     return {
@@ -79,7 +68,6 @@ var BrowserContainer = React.createClass({
     PhaseStore.addChangeListener(this.onPhaseChange);
     PhaseColorStore.addChangeListener(this.onPhaseColorChange);
     PhaseOverlayStore.addChangeListener(this.onPhaseOverlayChange);
-    tooltips();
   },
   componentWillUnmount: function() {
     DataStore.removeChangeListener(this.onDataChange);
@@ -90,7 +78,10 @@ var BrowserContainer = React.createClass({
     PhaseOverlayStore.removeChangeListener(this.onPhaseOverlayChange);
   },
   componentDidUpdate: function () {
-    tooltips();
+    // Enable tooltips
+    // Placing here to capture any elements that might not have been drawn
+    // before data was loaded
+    $("[data-toggle='tooltip']").tooltip();
   },
   onDataChange: function () {
     this.setState(getStateFromDataStore());

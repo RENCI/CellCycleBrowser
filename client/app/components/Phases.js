@@ -19,13 +19,16 @@ var outerStyle = {
 var labelStyle = {
   marginTop: 5,
   marginBottom: 5,
-  marginLeft: 10,
+  marginLeft: 10
+};
+
+var nameStyle = {
   fontWeight: "bold"
 };
 
-var descriptionStyle = {
-  fontWeight: "normal",
-  fontStyle: "italic"
+var sourceStyle = {
+  marginRight: 10,
+  float: "right"
 };
 
 var rowStyle = {
@@ -77,8 +80,8 @@ function Phases(props) {
       <div className="row">
         <div className="col-xs-12">
           <div style={labelStyle}>
-            Phases
-            <span style={descriptionStyle}> - Simulation</span>
+            <span style={nameStyle}>Phases</span>
+            <span style={sourceStyle}>Simulation</span>
           </div>
         </div>
       </div>

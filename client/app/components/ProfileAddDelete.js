@@ -3,15 +3,24 @@ var PropTypes = React.PropTypes;
 
 function ProfileAddDelete(props) {
   return (
-    <div>
+    <div className="btn-group">
       <a
-        href="/add_profile/login/">
-        Add profile
+        href="/add_profile/login/"
+        className="btn btn-default"
+        data-toggle="tooltip"
+        data-container="body"
+        data-placement="auto top"
+        title="Add profile">
+          <span className="glyphicon glyphicon-plus-sign"></span>
       </a>
       <a
-        style={{marginLeft: "10px"}}
-        href="/delete_profile/login/">
-        Delete profile
+        href="/delete_profile/login/"
+        className="btn btn-default"
+        data-toggle="tooltip"
+        data-container="body"
+        data-placement="auto top"
+        title="Delete profile">
+        <span className="glyphicon glyphicon-minus-sign"></span>
       </a>
     </div>
   );
