@@ -8,8 +8,8 @@ function ProfileAddDelete(props) {
         href="/add_profile/login/">
         Add profile
       </a>
-      <br />
       <a
+        style={{marginLeft: "10px"}}
         href="/delete_profile/login/">
         Delete profile
       </a>

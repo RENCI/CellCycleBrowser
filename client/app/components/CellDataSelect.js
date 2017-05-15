@@ -2,6 +2,11 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 var ItemSelect = require("./ItemSelect");
 
+var outerStyle = {
+  marginTop: -1,
+  marginBottom: -1
+};
+
 var tdStyle = {
   verticalAlign: "middle"
 };
@@ -61,7 +66,10 @@ function CellDataSelect(props) {
   var popoverContentClass = "cellDataPopoverContent";
 
   return (
-    <div>
+    <div style={outerStyle}>
+      <strong>
+        {"Data Sets: "}
+      </strong>
       <button
         type="button"
         className="btn btn-default"
@@ -69,7 +77,7 @@ function CellDataSelect(props) {
         data-html="true"
         data-placement="bottom"
         data-popover-content={"." + popoverContentClass}>
-        Cell Data Select <span className="caret"></span>
+        Select <span className="caret"></span>
       </button>
       <div className={"hidden " + popoverContentClass}>
         <table className={"table table-hover table-condensed " + props.popoverBodyClass}>
