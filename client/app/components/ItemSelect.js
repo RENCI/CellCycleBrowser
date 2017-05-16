@@ -8,8 +8,7 @@ function ItemSelect(props) {
       null;
 
     return (
-      <li
-        key={i}>
+      <li key={i}>
         <a
           href="#"
           data-name={option.name}
@@ -43,7 +42,7 @@ function ItemSelect(props) {
           data-toggle="dropdown">
             {activeName} <span className="caret"></span>
         </button>
-        <ul className="dropdown-menu">
+        <ul className="dropdown-menu dropdown-menu-form">
           {props.options.map(option)}
         </ul>
       </div>

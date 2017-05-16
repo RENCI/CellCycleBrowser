@@ -16,7 +16,7 @@ function getStateFromStore() {
 }
 
 // Use index for value to ensure unique values
-var cellDataOption = function (cellData, i) {
+function cellDataOption(cellData, i) {
   return {
     value: i.toString(),
     data: cellData
@@ -35,7 +35,6 @@ var CellDataSelectContainer = React.createClass ({
 
     // Enable popover
     $(ReactDOM.findDOMNode(this)).find("[data-toggle='popover']").popover({
-      container: "body",
       content: function () {
         return $($(this).data("popover-content")).html();
       }
@@ -45,12 +44,7 @@ var CellDataSelectContainer = React.createClass ({
       $("." + this.popoverBodyClass + " :checkbox").on("change", function(e) {
         var t = e.currentTarget;
         console.log(t.checked);
-        console.log(t.dataset.celldata);
-      });
-      $("." + this.popoverBodyClass + " li > a").on("click", function(e) {
-        var t = e.currentTarget;
-        console.log(t.dataset.celldata);
-        console.log(t.dataset.feature);
+        console.log(t.dataset.value);
       });
     }.bind(this));
   },

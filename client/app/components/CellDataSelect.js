@@ -1,6 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
-var ItemSelect = require("./ItemSelect");
+var MultiSelect = require("./MultiSelect");
 
 var outerStyle = {
   marginTop: -1,
@@ -14,16 +14,11 @@ var tdStyle = {
 function CellDataSelect(props) {
   function option(option, i) {
     var features = option.data.features.map(function (feature, i) {
-      return (
-        <li key={i}>
-          <a
-            href="#"
-            data-feature={feature}
-            data-celldata={option.data.name}>
-              {feature}
-          </a>
-        </li>
-      );
+      return {
+        name: feature,
+        value: option.data.name + ":" + feature,
+        active: true
+      };
     });
 
     return (
@@ -31,7 +26,7 @@ function CellDataSelect(props) {
         <td style={tdStyle}>
           <input
             type="checkbox"
-            data-celldata={option.data.name} />
+            data-value={option.data.name} />
         </td>
         <td style={tdStyle}>
           {option.data.name}
@@ -40,17 +35,9 @@ function CellDataSelect(props) {
           {option.data.description}
         </td>
         <td style={tdStyle}>
-          <div className="btn-group">
-            <button
-              type="button"
-              className="btn btn-default dropdown-toggle"
-              data-toggle="dropdown">
-                Feature <span className="caret"></span>
-            </button>
-            <ul className="dropdown-menu">
-              {features}
-            </ul>
-          </div>
+          <MultiSelect
+            label="Features: "
+            options={features} />
         </td>
         <td style={tdStyle}>
           <a
@@ -74,6 +61,7 @@ function CellDataSelect(props) {
         type="button"
         className="btn btn-default"
         data-toggle="popover"
+        data-container="body"
         data-html="true"
         data-placement="bottom"
         data-popover-content={"." + popoverContentClass}>
