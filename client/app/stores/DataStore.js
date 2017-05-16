@@ -2,7 +2,7 @@ var AppDispatcher = require("../dispatcher/AppDispatcher");
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
 var Constants = require("../constants/Constants");
-var CellDataStore = require("./CellDataStore");
+var DataSetStore = require("./DataSetStore");
 var SimulationOutputStore = require("./SimulationOutputStore");
 var FeatureStore = require("./FeatureStore");
 var AlignmentStore = require("./AlignmentStore");
@@ -10,7 +10,7 @@ var AlignmentStore = require("./AlignmentStore");
 var CHANGE_EVENT = "change";
 
 // Input data sets
-var cellData = {};
+var dataSet = {};
 var simulationOutput = [];
 
 // Input parameters
@@ -27,7 +27,7 @@ var data = {
 
 function updateData() {
   // Get data for each species
-  data.species = mapSpecies(cellData, simulationOutput);
+  data.species = mapSpecies(dataSet, simulationOutput);
 
   // Compute time extent across all data
   data.timeExtent = computeTimeExtent(data.species);
@@ -47,8 +47,8 @@ function updateData() {
   function mapSpecies() {
     // Cell data
     // XXX: Make make empty cell data have reasonable defaults
-    var cellSpecies = !cellData.species ? [] :
-    cellData.species.map(function (species) {
+    var cellSpecies = !dataSet.species ? [] :
+    dataSet.species.map(function (species) {
       var data = species.cells.map(function (cell) {
         var featureIndex = cell.features.map(function (d) {
           return d.name;
@@ -74,7 +74,7 @@ function updateData() {
       return {
         name: species.name,
         feature: feature,
-        source: cellData.name,
+        source: dataSet.name,
         data: data,
         dataExtent: dataExtent(data.map(function (d) { return d.values; }))
       };
@@ -362,10 +362,10 @@ var DataStore = assign({}, EventEmitter.prototype, {
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_PROFILE:
-      AppDispatcher.waitFor([CellDataStore.dispatchToken,
+      AppDispatcher.waitFor([DataSetStore.dispatchToken,
                              SimulationOutputStore.dispatchToken,
                              FeatureStore.dispatchToken]);
-      cellData = CellDataStore.getCellData();
+      dataSet = DataSetStore.getDataSet();
       simulationOutput = SimulationOutputStore.getSimulationOutput();
       feature = FeatureStore.getFeature();
       updateData();
@@ -373,9 +373,9 @@ AppDispatcher.register(function (action) {
       break;
 
     case Constants.SELECT_CELL_DATA:
-      AppDispatcher.waitFor([CellDataStore.dispatchToken,
+      AppDispatcher.waitFor([DataSetStore.dispatchToken,
                              FeatureStore.dispatchToken]);
-      cellData = CellDataStore.getCellData();
+      dataSet = DataSetStore.getDataSet();
       feature = FeatureStore.getFeature();
       updateData();
       DataStore.emitChange();

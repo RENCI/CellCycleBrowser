@@ -1,37 +1,37 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
-var CellDataStore = require("../stores/CellDataStore");
-var CellDataSelect = require("../components/CellDataSelect");
+var DataSetStore = require("../stores/DataSetStore");
+var DataSetSelect = require("../components/DataSetSelect");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
 // Retrieve the current state from the store
 function getStateFromStore() {
   return {
-    cellDataList: CellDataStore.getCellDataList()
+    dataSetList: DataSetStore.getDataSetList()
 /*    ,
-    cellDataFileName: CellDataStore.getCellDataFileName(),
-    cellDataValue: CellDataStore.getCellDataIndex().toString()
+    dataSetFileName: DataSetStore.getDataSetFileName(),
+    dataSetValue: DataSetStore.getDataSetIndex().toString()
 */
   };
 }
 
 // Use index for value to ensure unique values
-function cellDataOption(cellData, i) {
+function dataSetOption(dataSet, i) {
   return {
     value: i.toString(),
-    data: cellData
+    data: dataSet
   };
 }
 
-var CellDataSelectContainer = React.createClass ({
+var DataSetSelectContainer = React.createClass ({
   getInitialState: function () {
     // Class for selecting popover body
-    this.popoverBodyClass = "cellDataPopoverBody";
+    this.popoverBodyClass = "dataSetPopoverBody";
 
     return getStateFromStore();
   },
   componentDidMount: function () {
-    CellDataStore.addChangeListener(this.onCellDataChange);
+    DataSetStore.addChangeListener(this.onDataSetChange);
 
     // Enable popover
     $(ReactDOM.findDOMNode(this)).find("[data-toggle='popover']").popover({
@@ -74,20 +74,20 @@ var CellDataSelectContainer = React.createClass ({
     }.bind(this));
   },
   componentWillUnmount: function () {
-    CellDataStore.removeChangeListener(this.onCellDataChange);
+    DataSetStore.removeChangeListener(this.onDataSetChange);
   },
-  onCellDataChange: function () {
+  onDataSetChange: function () {
     this.setState(getStateFromStore);
   },
   render: function () {
     return (
       <div>
-        <CellDataSelect
-          options={this.state.cellDataList.map(cellDataOption)}
+        <DataSetSelect
+          options={this.state.dataSetList.map(dataSetOption)}
           popoverBodyClass={this.popoverBodyClass} />
       </div>
     );
   }
 });
 
-module.exports = CellDataSelectContainer;
+module.exports = DataSetSelectContainer;

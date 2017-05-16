@@ -2,7 +2,7 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 var Profile = require("../components/Profile");
 var Model = require("../components/Model");
-var CellDataSelectContainer = require("../containers/CellDataSelectContainer");
+var DataSetSelectContainer = require("../containers/DataSetSelectContainer");
 
 var containerStyle = {
   paddingTop: 0,
@@ -29,7 +29,7 @@ function DataSelectionSection(props) {
           <Model />
         </div>
         <div className="col-xs-6 text-center">
-          <CellDataSelectContainer />
+          <DataSetSelectContainer />
         </div>
       </div>
     </div>

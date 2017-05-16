@@ -15,7 +15,7 @@ var labelStyle = {
   fontWeight: "normal !important"
 };
 
-function CellDataSelect(props) {
+function DataSetSelect(props) {
   function option(option, i) {
     var features = option.data.features.map(function (feature, i) {
       return {
@@ -56,7 +56,7 @@ function CellDataSelect(props) {
     );
   }
 
-  var popoverContentClass = "cellDataPopoverContent";
+  var popoverContentClass = "dataSetPopoverContent";
 
   return (
     <div style={outerStyle}>
@@ -84,9 +84,9 @@ function CellDataSelect(props) {
   );
 }
 
-CellDataSelect.propTypes = {
+DataSetSelect.propTypes = {
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
   popoverBodyClass: PropTypes.string.isRequired
 };
 
-module.exports = CellDataSelect;
+module.exports = DataSetSelect;

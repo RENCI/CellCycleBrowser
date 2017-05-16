@@ -2,7 +2,7 @@ var AppDispatcher = require("../dispatcher/AppDispatcher");
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
 var Constants = require("../constants/Constants");
-var CellDataStore = require("./CellDataStore");
+var DataSetStore = require("./DataSetStore");
 
 var CHANGE_EVENT = "change";
 
@@ -12,10 +12,10 @@ var featureList = [];
 // Active feature
 var feature = defaultFeature();
 
-function getFeatureList(cellData) {
-  if (!cellData.species || cellData.species.length === 0) return [];
+function getFeatureList(dataSet) {
+  if (!dataSet.species || dataSet.species.length === 0) return [];
 
-  return cellData.species[0].cells[0].features.map(function (feature) {
+  return dataSet.species[0].cells[0].features.map(function (feature) {
     return feature.name;
   });
 }
@@ -45,21 +45,21 @@ var FeatureStore = assign({}, EventEmitter.prototype, {
 FeatureStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_PROFILE:
-      AppDispatcher.waitFor([CellDataStore.dispatchToken]);
-      featureList = getFeatureList(CellDataStore.getCellData());
+      AppDispatcher.waitFor([DataSetStore.dispatchToken]);
+      featureList = getFeatureList(DataSetStore.getDataSet());
       feature = defaultFeature();
       FeatureStore.emitChange();
       break;
 
     case Constants.SELECT_CELL_DATA:
-      AppDispatcher.waitFor([CellDataStore.dispatchToken]);
-      featureList = getFeatureList(CellDataStore.getCellData());
+      AppDispatcher.waitFor([DataSetStore.dispatchToken]);
+      featureList = getFeatureList(DataSetStore.getDataSet());
       feature = defaultFeature();
       FeatureStore.emitChange();
       break;
 
     case Constants.SELECT_FEATURE:
-      feature = featureList[action.featureKey];
+      feature = action.feature.feature;
       FeatureStore.emitChange();
       break;
   }

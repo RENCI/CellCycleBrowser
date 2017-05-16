@@ -1,7 +1,7 @@
 var ServerActionCreators = require("../actions/ServerActionCreators");
 var ModelStore = require("../stores/ModelStore");
 var SimulationControlStore = require("../stores/SimulationControlStore");
-var CellDataStore = require("../stores/CellDataStore");
+var DataSetStore = require("../stores/DataSetStore");
 var d3 = require("d3");
 
 // Get a cookie for cross site request forgery (CSRF) protection
@@ -36,19 +36,19 @@ function setupAjax() {
   });
 }
 
-function createCellData(cellData) {
+function createDataSet(dataSet) {
   // Set metadata
-  var cd = {};
-  cd.name = cellData.name;
-  cd.fileName = cellData.fileName;
-  cd.description = cellData.description;
-  cd.timeUnit = cellData.timeUnit;
+  var ds = {};
+  ds.name = dataSet.name;
+  ds.fileName = dataSet.fileName;
+  ds.description = dataSet.description;
+  ds.timeUnit = dataSet.timeUnit;
 
   // Parse the csv data
-  var data = d3.csvParse(cellData.csv);
+  var data = d3.csvParse(dataSet.csv);
 
   // Get the available features
-  cd.features = d3.nest()
+  ds.features = d3.nest()
       .key(function(d) { return d.Feature; })
       .entries(data).map(function(d) {
         return d.key;
@@ -67,7 +67,7 @@ function createCellData(cellData) {
   });
 
   // Reformat data
-  cd.species = nest.map(function(d) {
+  ds.species = nest.map(function(d) {
     return {
       name: d.key,
       cells: d.values.map(function(d) {
@@ -89,13 +89,13 @@ function createCellData(cellData) {
     };
   });
 
-  return cd;
+  return ds;
 }
 
 function simulationParameters() {
   var model = ModelStore.getModel();
   var controls = SimulationControlStore.getControls();
-  var cellData = CellDataStore.getCellData();
+  var cellData = DataSetStore.getDataSet();
 
   var trajectories = controls.parameters[controls.parameters.map(function (parameter) {
     return parameter.name;
@@ -218,7 +218,7 @@ module.exports = {
       url: "/get_profile/",
       data: { index: profileIndex },
       success: function (data) {
-        if (data.cellData) data.cellData = data.cellData.map(createCellData);
+        if (data.cellData) data.cellData = data.cellData.map(createDataSet);
         ServerActionCreators.receiveProfile(data);
       },
       error: function (xhr, textStatus, errorThrown) {
