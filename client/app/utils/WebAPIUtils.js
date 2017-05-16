@@ -220,6 +220,10 @@ function getProfileList() {
   });
 }
 
+function getDataSetList() {
+  // XXX: Stub
+}
+
 // XXX: Temporary fix for mimicking new profile without embedded cell data
 var profile = {};
 
@@ -243,6 +247,8 @@ function getProfile(profileIndex) {
             active: true
           };
         });
+
+        ServerActionCreators.receiveDataSetList(data.dataSetList);
       }
 
       profile = data;
@@ -312,6 +318,7 @@ function runSimulation() {
 
 module.exports = {
   getProfileList: getProfileList,
+  getDataSetList: getDataSetList,
   getProfile: getProfile,
   runSimulation: runSimulation
 };

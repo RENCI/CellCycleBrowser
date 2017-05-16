@@ -17,13 +17,14 @@ var labelStyle = {
 
 function DataSetSelect(props) {
   function option(option, i) {
-    var features = option.data.features.map(function (feature, i) {
-      return {
-        name: feature,
-        value: option.data.name + ":" + feature,
-        active: true
-      };
-    });
+    var features = option.features ?
+      option.features.map(function (feature, i) {
+        return {
+          name: feature.name,
+          value: option.name + ":" + feature,
+          active: feature.active
+        };
+      }) : [];
 
     return (
       <tr key={i}>
@@ -32,13 +33,14 @@ function DataSetSelect(props) {
             <label>
               <input
                 type="checkbox"
-                data-value={option.data.name} />
-              {option.data.name}
+                defaultChecked={option.active}
+                data-value={option.name} />
+              {option.name}
             </label>
           </div>
         </td>
         <td className="small text-muted" style={tdStyle}>
-          {option.data.description}
+          {option.description}
         </td>
         <td style={tdStyle}>
           <MultiSelect
@@ -47,7 +49,7 @@ function DataSetSelect(props) {
         </td>
         <td style={tdStyle}>
           <a
-            href={'/cell_data_meta/' + option.data.fileName + '/'}
+            href={'/cell_data_meta/' + option.fileName + '/'}
             target="_blank">
             metadata
           </a>

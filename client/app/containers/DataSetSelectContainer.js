@@ -8,18 +8,6 @@ var ViewActionCreators = require("../actions/ViewActionCreators");
 function getStateFromStore() {
   return {
     dataSetList: DataSetStore.getDataSetList()
-/*    ,
-    dataSetFileName: DataSetStore.getDataSetFileName(),
-    dataSetValue: DataSetStore.getDataSetIndex().toString()
-*/
-  };
-}
-
-// Use index for value to ensure unique values
-function dataSetOption(dataSet, i) {
-  return {
-    value: i.toString(),
-    data: dataSet
   };
 }
 
@@ -83,7 +71,7 @@ var DataSetSelectContainer = React.createClass ({
     return (
       <div>
         <DataSetSelect
-          options={this.state.dataSetList.map(dataSetOption)}
+          options={this.state.dataSetList}
           popoverBodyClass={this.popoverBodyClass} />
       </div>
     );

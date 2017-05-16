@@ -9,6 +9,12 @@ module.exports = {
       profileList: profileList
     });
   },
+  receiveDataSetList: function (dataSetList) {
+    AppDispatcher.dispatch({
+      actionType: Constants.RECEIVE_DATA_SET_LIST,
+      dataSetList: dataSetList
+    });
+  },
   receiveProfile: function (profile) {
     AppDispatcher.dispatch({
       actionType: Constants.RECEIVE_PROFILE,

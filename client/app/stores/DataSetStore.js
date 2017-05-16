@@ -12,6 +12,18 @@ var dataSetList = [];
 // List of currently loaded data sets
 var dataSets = [];
 
+function matchDataSet(dataSet) {
+  // XXX: Use id instead of name when available
+  var index = dataSetList.map(function (d) {
+    return d.name;
+  }).indexOf(dataSet.name);
+
+  if (index !== -1) {
+    dataSetList[index].active = dataSet.active;
+    dataSetList[index].features = dataSet.features;
+  }
+}
+
 var DataSetStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
     this.emit(CHANGE_EVENT);
@@ -39,6 +51,11 @@ var DataSetStore = assign({}, EventEmitter.prototype, {
 
 DataSetStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
+    case Constants.RECEIVE_DATA_SET_LIST:
+      dataSetList = action.dataSetList;
+      DataSetStore.emitChange();
+      break;
+
     case Constants.RECEIVE_PROFILE:
       // Clear data sets
       // XXX: Could look at matching with currently loaded data sets
@@ -48,6 +65,7 @@ DataSetStore.dispatchToken = AppDispatcher.register(function (action) {
 
     case Constants.RECEIVE_DATA_SET:
       dataSets.push(action.dataSet);
+      matchDataSet(action.dataSet);
       DataSetStore.emitChange();
       break;
 
