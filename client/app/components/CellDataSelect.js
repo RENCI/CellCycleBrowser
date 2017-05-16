@@ -11,6 +11,10 @@ var tdStyle = {
   verticalAlign: "middle"
 };
 
+var labelStyle = {
+  fontWeight: "normal !important"
+};
+
 function CellDataSelect(props) {
   function option(option, i) {
     var features = option.data.features.map(function (feature, i) {
@@ -24,12 +28,14 @@ function CellDataSelect(props) {
     return (
       <tr key={i}>
         <td style={tdStyle}>
-          <input
-            type="checkbox"
-            data-value={option.data.name} />
-        </td>
-        <td style={tdStyle}>
-          {option.data.name}
+          <div className="checkbox">
+            <label>
+              <input
+                type="checkbox"
+                data-value={option.data.name} />
+              {option.data.name}
+            </label>
+          </div>
         </td>
         <td className="small text-muted" style={tdStyle}>
           {option.data.description}
