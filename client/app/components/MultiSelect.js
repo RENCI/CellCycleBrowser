@@ -1,24 +1,27 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
-var checkboxStyle = {
-  marginLeft: 20
-};
-
 function MultiSelect(props) {
   function option(option, i) {
     return (
-      <li key={i}>
-        <a className="checkbox" style={checkboxStyle}>
-          <input
-            type="checkbox"
-            defaultChecked={option.active}
-            data-value={option.value}
-            onChange={option.onChange} />
-          {option.name}
+      <li key={i} onClick={handleClick}>
+        <a className="checkbox">
+          <label>
+            <input
+              type="checkbox"
+              defaultChecked={option.active}
+              data-value={option.value}
+              onChange={option.onChange} />
+            {option.name}
+          </label>
         </a>
       </li>
     );
+  }
+
+  function handleClick(e) {
+    // Prevent closing of dropdown
+    e.stopPropagation();
   }
 
   return (
@@ -31,7 +34,8 @@ function MultiSelect(props) {
           data-toggle="dropdown">
             Select <span className="caret"></span>
         </button>
-        <ul className="dropdown-menu dropdown-menu-form">
+        <ul className="dropdown-menu dropdown-menu-form"
+          onClick={handleClick}>
           {props.options.map(option)}
         </ul>
       </div>
