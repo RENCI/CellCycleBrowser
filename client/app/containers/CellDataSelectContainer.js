@@ -49,9 +49,27 @@ var CellDataSelectContainer = React.createClass ({
 
       // Checkbox change
       $("." + this.popoverBodyClass + " :checkbox").on("change", function(e) {
-        var t = e.currentTarget;
-        console.log(t.checked);
-        console.log(t.dataset.value);
+        var t = e.currentTarget
+            value = t.dataset.value.split(":");
+
+        if (value.length === 1) {
+          // Data set
+          ViewActionCreators.selectDataSet({
+            dataSet: value[0],
+            active: t.checked
+          });
+        }
+        else if (value.length === 2) {
+          // Feature
+          ViewActionCreators.selectFeature({
+            dataSet: value[0],
+            feature: value[1],
+            active: t.checked
+          });
+        }
+        else {
+          console.log("Can't parse checkbox value: " + t.dataset.value);
+        }
       });
     }.bind(this));
   },
@@ -60,12 +78,6 @@ var CellDataSelectContainer = React.createClass ({
   },
   onCellDataChange: function () {
     this.setState(getStateFromStore);
-  },
-  handleSelectCellData: function (value) {
-    ViewActionCreators.selectCellData(+value);
-  },
-  handleSelectFeature: function (value) {
-//    ViewActionCreators.selectFeature(+value);
   },
   render: function () {
     return (

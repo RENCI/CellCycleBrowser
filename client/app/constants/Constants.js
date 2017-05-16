@@ -3,7 +3,7 @@ var keyMirror = require("keymirror");
 module.exports = keyMirror({
   SELECT_PROFILE: null,
   SELECT_MODEL: null,
-  SELECT_CELL_DATA: null,
+  SELECT_DATA_SET: null,
   SELECT_FEATURE: null,
   SELECT_ALIGNMENT: null,
   SELECT_TRAJECTORY: null,

@@ -12,16 +12,16 @@ module.exports = {
       modelKey: modelKey
     });
   },
-  selectCellData: function(cellDataKey) {
+  selectDataSet: function(dataSet) {
     AppDispatcher.dispatch({
-      actionType: Constants.SELECT_CELL_DATA,
-      cellDataKey: cellDataKey
+      actionType: Constants.SELECT_DATA_SET,
+      dataSet: dataSet
     });
   },
-  selectFeature: function(featureKey) {
+  selectFeature: function(feature) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_FEATURE,
-      featureKey: featureKey
+      feature: feature
     });
   },
   selectAlignment: function(alignment) {
