@@ -6,11 +6,11 @@ var ProfileStore = require("./ProfileStore");
 
 var CHANGE_EVENT = "change";
 
-// List of available data sets for current profile
+// List of available data sets
 var dataSetList = [];
 
-// Active data set
-var dataSet = {};
+// List of currently loaded data sets
+var dataSets = [];
 
 var DataSetStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
@@ -25,29 +25,37 @@ var DataSetStore = assign({}, EventEmitter.prototype, {
   getDataSetList: function () {
     return dataSetList;
   },
-  getDataSet: function () {
-    return dataSet;
+  getDataSets: function () {
+    return dataSets;
   },
-  getDataSetFileName: function () {
-    return dataSet.fileName;
-  },
-  getDataSetIndex: function () {
-    return dataSetList.indexOf(dataSet);
+  getDataSet: function (id) {
+    var index = dataSets.map(function (dataSet) {
+      return dataSet.id;
+    }).indexOf(id);
+
+    return index !== -1 ? dataSets[index] : null;
   }
 });
 
 DataSetStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_PROFILE:
-      AppDispatcher.waitFor([ProfileStore.dispatchToken]);
-      var profile = ProfileStore.getProfile();
-      dataSetList = profile.cellData ? profile.cellData : [];
-      dataSet = dataSetList.length > 0 ? dataSetList[0] : {};
+      // Clear data sets
+      // XXX: Could look at matching with currently loaded data sets
+      dataSets = [];
+      DataSetStore.emitChange();
+      break;
+
+    case Constants.RECEIVE_DATA_SET:
+      dataSets.push(action.dataSet);
       DataSetStore.emitChange();
       break;
 
     case Constants.SELECT_DATA_SET:
-      dataSet = dataSetList[dataSetList.indexOf(action.dataSet)];
+      var dataSet = DataSetStore.getDataSet(action.id);
+      if (dataSet) {
+        dataSet.active = !dataSet.active;
+      }
       DataSetStore.emitChange();
       break;
   }

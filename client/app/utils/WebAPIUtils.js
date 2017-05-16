@@ -50,33 +50,39 @@ function createDataSet(dataSet) {
   // Get the available features
   ds.features = d3.nest()
       .key(function(d) { return d.Feature; })
-      .entries(data).map(function(d) {
+      .entries(data).map(function (d) {
         return d.key;
+      }).map(function (feature, i) {
+        // Only first feature active
+        return {
+          name: feature,
+          active: i === 0
+        };
       });
 
   // Nest by species, cell, and feature
   var nest = d3.nest()
-      .key(function(d) { return d.Species; })
-      .key(function(d) { return d.Cell; })
-      .key(function(d) { return d.Feature; })
+      .key(function (d) { return d.Species; })
+      .key(function (d) { return d.Cell; })
+      .key(function (d) { return d.Feature; })
       .entries(data);
 
   // Get keys for time samples
-  var timeKeys = data.columns.filter(function(d) {
+  var timeKeys = data.columns.filter(function (d) {
     return !isNaN(+d);
   });
 
   // Reformat data
-  ds.species = nest.map(function(d) {
+  ds.species = nest.map(function (d) {
     return {
       name: d.key,
-      cells: d.values.map(function(d) {
+      cells: d.values.map(function (d) {
         return {
           name: d.key,
-          features: d.values.map(function(d) {
+          features: d.values.map(function (d) {
             return {
               name: d.key,
-              values: timeKeys.map(function(key) {
+              values: timeKeys.map(function (key) {
                 return {
                   value: +d.values[0][key],
                   time: +key / 60
@@ -195,73 +201,117 @@ function pollSimulation(taskId) {
   });
 }
 
-module.exports = {
-  getProfileList: function () {
-    setupAjax();
+function getProfileList() {
+  setupAjax();
 
-    $.ajax({
-      type: "POST",
-      url: "/get_profile_list/",
-      success: function (data) {
-        ServerActionCreators.receiveProfileList(data);
-      },
-      error: function (xhr, textStatus, errorThrown) {
-        console.log(textStatus + ": " + errorThrown);
-      }
-    });
-  },
-  getProfile: function (profileIndex) {
-    setupAjax();
+  $.ajax({
+    type: "POST",
+    url: "/get_profile_list/",
+    success: function (data) {
+      // Create an action
+      ServerActionCreators.receiveProfileList(data);
 
-    $.ajax({
-      type: "POST",
-      url: "/get_profile/",
-      data: { index: profileIndex },
-      success: function (data) {
-        if (data.cellData) data.cellData = data.cellData.map(createDataSet);
-        ServerActionCreators.receiveProfile(data);
-      },
-      error: function (xhr, textStatus, errorThrown) {
-        console.log(textStatus + ": " + errorThrown);
-      }
-    });
-  },
-/*
-  sendParameter: function(data) {
-    setupAjax();
-
-    $.ajax({
-      type: "POST",
-      url: "/send_parameter/",
-      data: data,
-      success: function (data) {
-        console.log(data)
-        //ServerActionCreators.receiveProfile(data);
-      },
-      error: function (xhr, textStatus, errorThrown) {
-        console.log(textStatus + ": " + errorThrown);
-      }
-    });
-  },
-*/
-  runSimulation: function () {
-    setupAjax();
-
-    $.ajax({
-      type: "POST",
-      url: "/runmodel/" + ModelStore.getModel().fileName,
-      data: simulationParameters(),
-      success: function (data) {
-        if (data.task_id) {
-          pollSimulation(data.task_id);
-        }
-        else {
-          console.log("Empty task_id. Simulation did not start successfully");
-        }
-      },
-      error: function (xhr, textStatus, errorThrown) {
-        console.log(textStatus + ": " + errorThrown);
-      }
-    });
-  }
+      // Request first profile
+      getProfile(0);
+    },
+    error: function (xhr, textStatus, errorThrown) {
+      console.log(textStatus + ": " + errorThrown);
+    }
+  });
 }
+
+// XXX: Temporary fix for mimicking new profile without embedded cell data
+var profile = {};
+
+function getProfile(profileIndex) {
+  setupAjax();
+
+  $.ajax({
+    type: "POST",
+    url: "/get_profile/",
+    data: { index: profileIndex },
+    success: function (data) {
+////////////////////////////////////////////////////////////////////////////////
+// XXX: Temporary fix for mimicking new profile without embedded cell data
+      if (data.cellData) {
+        data.dataSetList = data.cellData.map(function (cellData, i) {
+          return {
+            id: i,
+            name: cellData.name,
+            description: cellData.description,
+            fileName: cellData.fileName,
+            active: true
+          };
+        });
+      }
+
+      profile = data;
+////////////////////////////////////////////////////////////////////////////////
+
+      ServerActionCreators.receiveProfile(data);
+
+      // Request data sets
+      data.dataSetList.forEach(function (dataSet) {
+        getDataSet(dataSet.id);
+      });
+    },
+    error: function (xhr, textStatus, errorThrown) {
+      console.log(textStatus + ": " + errorThrown);
+    }
+  });
+}
+
+function getDataSet(id) {
+  // XXX: Temporary fix for mimicking new profile without embedded cell data
+  setTimeout(function() {
+    // Reformat the data
+    var dataSet = createDataSet(profile.cellData[id]);
+
+    // Create an action
+    ServerActionCreators.receiveDataSet(dataSet);
+  }, 1000);
+}
+/*
+sendParameter: function(data) {
+  setupAjax();
+
+  $.ajax({
+    type: "POST",
+    url: "/send_parameter/",
+    data: data,
+    success: function (data) {
+      console.log(data)
+      //ServerActionCreators.receiveProfile(data);
+    },
+    error: function (xhr, textStatus, errorThrown) {
+      console.log(textStatus + ": " + errorThrown);
+    }
+  });
+}
+*/
+function runSimulation() {
+  setupAjax();
+
+  $.ajax({
+    type: "POST",
+    url: "/runmodel/" + ModelStore.getModel().fileName,
+    data: simulationParameters(),
+    success: function (data) {
+      if (data.task_id) {
+        pollSimulation(data.task_id);
+      }
+      else {
+        console.log("Empty task_id. Simulation did not start successfully");
+      }
+    },
+    error: function (xhr, textStatus, errorThrown) {
+      console.log(textStatus + ": " + errorThrown);
+    }
+  });
+}
+
+module.exports = {
+  getProfileList: getProfileList,
+  getProfile: getProfile,
+  runSimulation: runSimulation
+};

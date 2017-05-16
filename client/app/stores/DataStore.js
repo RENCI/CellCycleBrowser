@@ -4,39 +4,35 @@ var assign = require("object-assign");
 var Constants = require("../constants/Constants");
 var DataSetStore = require("./DataSetStore");
 var SimulationOutputStore = require("./SimulationOutputStore");
-var FeatureStore = require("./FeatureStore");
 var AlignmentStore = require("./AlignmentStore");
 
 var CHANGE_EVENT = "change";
 
-// Input data sets
-var dataSet = {};
+// Inputs
+var dataSets = [];
 var simulationOutput = [];
-
-// Input parameters
-var feature = "";
 var alignment = AlignmentStore.getAlignment();
 
 // Output data
 var data = {
-  species: [],
+  tracks: [],
   phases: [],
   phaseAverage: [],
   timeExtent: []
 };
 
 function updateData() {
-  // Get data for each species
-  data.species = mapSpecies(dataSet, simulationOutput);
+  // Get data for each track
+  data.tracks = createTracks(dataSets, simulationOutput);
 
   // Compute time extent across all data
-  data.timeExtent = computeTimeExtent(data.species);
+  data.timeExtent = computeTimeExtent(data.tracks);
 
   // Align data
-  alignData(data.species, data.timeExtent, alignment);
+  alignData(data.tracks, data.timeExtent, alignment);
 
   // Average data
-  averageData(data.species);
+  averageData(data.tracks);
 
   // Map phase time steps to actual time
   data.phases = mapPhases(simulationOutput, data.timeExtent, alignment);
@@ -44,88 +40,99 @@ function updateData() {
   // Average phases
   data.phaseAverage = averagePhases(data.phases);
 
-  function mapSpecies() {
-    // Cell data
-    // XXX: Make make empty cell data have reasonable defaults
-    var cellSpecies = !dataSet.species ? [] :
-    dataSet.species.map(function (species) {
-      var data = species.cells.map(function (cell) {
-        var featureIndex = cell.features.map(function (d) {
-          return d.name;
-        }).indexOf(feature);
+  function createTracks() {
+    return dataSetTracks().concat(simulationTracks());
 
-        var values = cell.features[featureIndex].values.map(function (d, i, a) {
-          return {
-            start: d.time,
-            stop: i < a.length - 1 ? a[i + 1].time : d.time + (d.time - a[i - 1].time),
-            value: d.value
-          };
-        }).filter(function (d) {
-          return !isNaN(d.value);
+    function dataSetTracks() {
+      // Create empty array
+      var tracks = [];
+
+      dataSets.forEach(function (dataSet) {
+        dataSet.species.forEach(function (species) {
+          dataSet.features.forEach(function (feature) {
+            if (!feature.active) return;
+
+            var data = species.cells.map(function (cell) {
+              var featureIndex = cell.features.map(function (d) {
+                return d.name;
+              }).indexOf(feature.name);
+
+              var values = cell.features[featureIndex].values.map(function (d, i, a) {
+                return {
+                  start: d.time,
+                  stop: i < a.length - 1 ? a[i + 1].time : d.time + (d.time - a[i - 1].time),
+                  value: d.value
+                };
+              }).filter(function (d) {
+                return !isNaN(d.value);
+              });
+
+              return {
+                name: cell.name,
+                values: values,
+                timeSpan: timeSpan(values)
+              };
+            });
+
+            tracks.push({
+              species: species.name,
+              feature: feature.name,
+              source: dataSet.name,
+              data: data,
+              dataExtent: dataExtent(data.map(function (d) { return d.values; }))
+            });
+          });
+        });
+      });
+
+      return tracks;
+    }
+
+    function simulationTracks() {
+      // Get all species names in simulation output
+      var speciesNames = [];
+      simulationOutput.forEach(function (trajectory) {
+        trajectory.species.forEach(function (species) {
+          if (speciesNames.indexOf(species.name) === -1) {
+            speciesNames.push(species.name);
+          }
+        });
+      });
+
+      return speciesNames.map(function (speciesName) {
+        // Simulation output for this species
+        var data = [];
+
+        simulationOutput.forEach(function (trajectory) {
+          var index = trajectory.species.map(function (s) {
+            return s.name;
+          }).indexOf(speciesName);
+
+          if (index >= 0) {
+            var values = trajectory.timeSteps.map(function (d, j, a) {
+              return {
+                value: trajectory.species[index].values[j],
+                start: d,
+                stop: j < a.length - 1 ? a[j + 1] : d + (d - a[j - 1])
+              };
+            })
+
+            data.push({
+              name: "Trajectory " + data.length,
+              values: values,
+              timeSpan: timeSpan(values)
+            });
+          }
         });
 
         return {
-          name: cell.name,
-          values: values,
-          timeSpan: timeSpan(values)
+          species: speciesName,
+          source: "Simulation",
+          data: data,
+          dataExtent: dataExtent(data.map(function (d) { return d.values; }))
         };
       });
-
-      return {
-        name: species.name,
-        feature: feature,
-        source: dataSet.name,
-        data: data,
-        dataExtent: dataExtent(data.map(function (d) { return d.values; }))
-      };
-    });
-
-    // Get all species names in simulation output
-    var speciesNames = [];
-    simulationOutput.forEach(function (trajectory) {
-      trajectory.species.forEach(function (species) {
-        if (speciesNames.indexOf(species.name) === -1) {
-          speciesNames.push(species.name);
-        }
-      });
-    });
-
-    // Simulation output
-    var simSpecies = speciesNames.map(function (speciesName) {
-      // Simulation output for this species
-      var data = [];
-
-      simulationOutput.forEach(function (trajectory) {
-        var index = trajectory.species.map(function (s) {
-          return s.name;
-        }).indexOf(speciesName);
-
-        if (index >= 0) {
-          var values = trajectory.timeSteps.map(function (d, j, a) {
-            return {
-              value: trajectory.species[index].values[j],
-              start: d,
-              stop: j < a.length - 1 ? a[j + 1] : d + (d - a[j - 1])
-            };
-          })
-
-          data.push({
-            name: "Trajectory " + data.length,
-            values: values,
-            timeSpan: timeSpan(values)
-          });
-        }
-      });
-
-      return {
-        name: speciesName,
-        source: "Simulation",
-        data: data,
-        dataExtent: dataExtent(data.map(function (d) { return d.values; }))
-      };
-    });
-
-    return simSpecies.concat(cellSpecies);
+    }
   }
 
   function dataExtent(timeSeries) {
@@ -363,20 +370,23 @@ AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_PROFILE:
       AppDispatcher.waitFor([DataSetStore.dispatchToken,
-                             SimulationOutputStore.dispatchToken,
-                             FeatureStore.dispatchToken]);
-      dataSet = DataSetStore.getDataSet();
+                             SimulationOutputStore.dispatchToken]);
+      dataSets = DataSetStore.getDataSets();
       simulationOutput = SimulationOutputStore.getSimulationOutput();
-      feature = FeatureStore.getFeature();
       updateData();
       DataStore.emitChange();
       break;
 
-    case Constants.SELECT_CELL_DATA:
-      AppDispatcher.waitFor([DataSetStore.dispatchToken,
-                             FeatureStore.dispatchToken]);
-      dataSet = DataSetStore.getDataSet();
-      feature = FeatureStore.getFeature();
+    case Constants.RECEIVE_DATA_SET:
+      AppDispatcher.waitFor([DataSetStore.dispatchToken]);
+      dataSets = DataSetStore.getDataSets();
+      updateData();
+      DataStore.emitChange();
+    break;
+
+    case Constants.SELECT_DATA_SET:
+      AppDispatcher.waitFor([DataSetStore.dispatchToken]);
+      dataSets = DataSetStore.getDataSets();
       updateData();
       DataStore.emitChange();
       break;
@@ -384,14 +394,6 @@ AppDispatcher.register(function (action) {
     case Constants.RECEIVE_SIMULATION_OUTPUT:
       AppDispatcher.waitFor([SimulationOutputStore.dispatchToken]);
       simulationOutput = SimulationOutputStore.getSimulationOutput();
-      state = Constants.SIMULATION_OUTPUT_VALID;
-      updateData();
-      DataStore.emitChange();
-      break;
-
-    case Constants.SELECT_FEATURE:
-      AppDispatcher.waitFor([FeatureStore.dispatchToken]);
-      feature = FeatureStore.getFeature();
       updateData();
       DataStore.emitChange();
       break;

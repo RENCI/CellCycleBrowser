@@ -26,7 +26,6 @@ var AppContainer = React.createClass({
 
     // Bootstrap the application by getting initial data here
     WebAPIUtils.getProfileList();
-    WebAPIUtils.getProfile(0);
   },
   componentWillUnmount: function () {
     ProfileStore.removeChangeListener(this.onProfileChange);

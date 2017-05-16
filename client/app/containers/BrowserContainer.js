@@ -102,16 +102,16 @@ var BrowserContainer = React.createClass({
     this.setState(getStateFromPhaseOverlayStore());
   },
   render: function() {
-    var species = this.state.data.species;
+    var tracks = this.state.data.tracks;
 
-    if (species.length < 1) return null;
+    if (tracks.length < 1) return null;
 
-    // Create GUI components for each species
-    var speciesComponents = species.map(function(species, i) {
+    // Create GUI components for each track
+    var trackComponents = tracks.map(function(track, i) {
       return (
         <Species
           key={i}
-          species={species}
+          species={track}
           phases={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}
           phaseAverage={this.state.showPhaseOverlay ? this.state.data.phaseAverage: []}
           timeExtent={this.state.data.timeExtent}
@@ -135,7 +135,7 @@ var BrowserContainer = React.createClass({
           activeTrajectory={this.state.activeTrajectory}
           activePhase={this.state.activePhase}
           colorScale={this.state.phaseColorScale} />
-        {speciesComponents}
+        {trackComponents}
       </div>
     );
   }

@@ -20,6 +20,7 @@ module.exports = keyMirror({
 
   RECEIVE_PROFILE_LIST: null,
   RECEIVE_PROFILE: null,
+  RECEIVE_DATA_SET: null,
   RECEIVE_SIMULATION_OUTPUT: null,
 
   SIMULATION_OUTPUT_NONE: null,

@@ -49,20 +49,20 @@ module.exports = function() {
   function createCurves() {
     // Get all sources (simulation or cell data)
     var sources = d3.set();
-    data.species.forEach(function(d) {
+    data.tracks.forEach(function(d) {
       sources.add(d.source);
     });
 
     // Add a curve for each source
     curves = sources.values().map(function(source) {
-      // Use first species for each source for time span
-      var species = data.species.filter(function(d) {
+      // Use first track for each source for time span
+      var tracks = data.tracks.filter(function(d) {
         return d.source === source;
       })[0];
 
       return {
         name: source,
-        timeSpan: d3.mean(species.data, function(d) {
+        timeSpan: d3.mean(tracks.data, function(d) {
           return d.timeSpan / 24;
         })
       };

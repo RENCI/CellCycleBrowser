@@ -70,7 +70,10 @@ var collapseColStyle = {
 
 function Species(props) {
   // Generate unique id for species
-  var collapseId = props.species.name + "_" + props.species.source + "_Collapse";
+  // XXX: Could pass in array index for this?
+  var collapseId = props.species.species + "_" +
+                   props.species.feature + "_" +
+                   props.species.source + "_Collapse";
   collapseId = collapseId.replace(/\s/g, "");
 
   var averageHeight = 32;
@@ -84,7 +87,7 @@ function Species(props) {
       <div className="row">
         <div className="col-xs-12">
           <div style={labelStyle}>
-            <span style={nameStyle}>{props.species.name}</span>
+            <span style={nameStyle}>{props.species.species}</span>
             {featureSpan}
             <span style={sourceStyle}>{props.species.source}</span>
           </div>
