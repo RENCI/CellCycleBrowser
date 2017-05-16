@@ -43,7 +43,7 @@ var CellDataSelectContainer = React.createClass ({
       // Need to set callbacks here, as callbacks are not cloned when creating popover
 
       // Prevent closing of dropdown
-      $("." + this.popoverBodyClass + " li").on("click", function(e) {
+      $("." + this.popoverBodyClass + " ul").on("click", function(e) {
         e.stopPropagation();
       });
 

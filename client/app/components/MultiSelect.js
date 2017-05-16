@@ -4,7 +4,7 @@ var PropTypes = React.PropTypes;
 function MultiSelect(props) {
   function option(option, i) {
     return (
-      <li key={i} onClick={handleClick}>
+      <li key={i}>
         <a className="checkbox">
           <label>
             <input
@@ -34,9 +34,10 @@ function MultiSelect(props) {
           data-toggle="dropdown">
             Select <span className="caret"></span>
         </button>
-        <ul className="dropdown-menu dropdown-menu-form"
+        <ul
+          className="dropdown-menu dropdown-menu-form"
           onClick={handleClick}>
-          {props.options.map(option)}
+            {props.options.map(option)}
         </ul>
       </div>
     </div>
