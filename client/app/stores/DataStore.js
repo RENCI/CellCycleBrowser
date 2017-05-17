@@ -47,11 +47,13 @@ function updateData() {
       // Create empty array
       var tracks = [];
 
-      dataSets.forEach(function (dataSet) {
+      dataSets.filter(function(d) {
+        return d.active;
+      }).forEach(function (dataSet) {
         dataSet.species.forEach(function (species) {
-          dataSet.features.forEach(function (feature) {
-            if (!feature.active) return;
-
+          dataSet.features.filter(function(d) {
+            return d.active;
+          }).forEach(function (feature) {
             var data = species.cells.map(function (cell) {
               var featureIndex = cell.features.map(function (d) {
                 return d.name;

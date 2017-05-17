@@ -43,7 +43,7 @@ var DataSetSelectContainer = React.createClass ({
         if (value.length === 1) {
           // Data set
           ViewActionCreators.selectDataSet({
-            dataSet: value[0],
+            name: value[0],
             active: t.checked
           });
         }
@@ -51,7 +51,7 @@ var DataSetSelectContainer = React.createClass ({
           // Feature
           ViewActionCreators.selectFeature({
             dataSet: value[0],
-            feature: value[1],
+            name: value[1],
             active: t.checked
           });
         }

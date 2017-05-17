@@ -43,6 +43,7 @@ function createDataSet(dataSet) {
   ds.fileName = dataSet.fileName;
   ds.description = dataSet.description;
   ds.timeUnit = dataSet.timeUnit;
+  ds.active = true;
 
   // Parse the csv data
   var data = d3.csvParse(dataSet.csv);

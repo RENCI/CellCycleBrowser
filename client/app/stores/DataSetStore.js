@@ -24,6 +24,17 @@ function matchDataSet(dataSet) {
   }
 }
 
+function selectDataSet(container, dataSet) {
+  // XXX: Use id instead of name when available
+  var index = container.map(function (d) {
+    return d.name;
+  }).indexOf(dataSet.name);
+
+  if (index !== -1) {
+    container[index].active = dataSet.active;
+  }
+}
+
 var DataSetStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
     this.emit(CHANGE_EVENT);
@@ -39,13 +50,6 @@ var DataSetStore = assign({}, EventEmitter.prototype, {
   },
   getDataSets: function () {
     return dataSets;
-  },
-  getDataSet: function (id) {
-    var index = dataSets.map(function (dataSet) {
-      return dataSet.id;
-    }).indexOf(id);
-
-    return index !== -1 ? dataSets[index] : null;
   }
 });
 
@@ -58,7 +62,8 @@ DataSetStore.dispatchToken = AppDispatcher.register(function (action) {
 
     case Constants.RECEIVE_PROFILE:
       // Clear data sets
-      // XXX: Could look at matching with currently loaded data sets
+      // XXX: Could look at matching with currently loaded data sets instead
+      // of starting from scratch
       dataSets = [];
       DataSetStore.emitChange();
       break;
@@ -70,10 +75,8 @@ DataSetStore.dispatchToken = AppDispatcher.register(function (action) {
       break;
 
     case Constants.SELECT_DATA_SET:
-      var dataSet = DataSetStore.getDataSet(action.id);
-      if (dataSet) {
-        dataSet.active = !dataSet.active;
-      }
+      selectDataSet(dataSetList, action.dataSet);
+      selectDataSet(dataSets, action.dataSet);
       DataSetStore.emitChange();
       break;
   }
