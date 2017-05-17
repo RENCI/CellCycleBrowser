@@ -16,12 +16,16 @@ function HeaderSection() {
           <a href="/help/" target="_blank">Help</a>
         </div>
         <div className="media-right media-middle text-center" style={{width:"25%"}}>
-          <img
-            src="/static/cc_core/images/medium_blue_450px.png"
-            style={{height: "70px", float: "left"}} />
-          <img
-            src="/static/cc_core/images/RENCI-Official-Logo-No-Tagline-cropped-alpha.png"
-            style={{width: "80px", marginTop: 5, marginRight: 20}} />
+          <a href="http://www.unc.edu/">
+            <img
+              src="/static/cc_core/images/medium_blue_450px.png"
+              style={{height: "70px", float: "left"}} />
+          </a>
+          <a href="http://renci.org/">
+            <img
+              src="/static/cc_core/images/RENCI-Official-Logo-No-Tagline-cropped-alpha.png"
+              style={{width: "80px", marginTop: 5, marginRight: 20}} />
+          </a>
         </div>
       </div>
     </div>
