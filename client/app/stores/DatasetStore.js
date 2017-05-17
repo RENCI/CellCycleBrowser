@@ -26,13 +26,32 @@ function matchDataset(dataset) {
 
 function selectDataset(container, dataset) {
   // XXX: Use id instead of name when available
-  var index = container.map(function (d) {
-    return d.name;
-  }).indexOf(dataset.name);
+  var ds = find(container, "name", dataset.name);
 
-  if (index !== -1) {
-    container[index].active = dataset.active;
+  if (ds) {
+    ds.active = dataset.active;
   }
+}
+
+function selectFeature(container, feature) {
+  // XXX: Use id instead of name when available
+  var ds = find(container, "name", feature.dataset);
+
+  if (ds) {
+    var f = find(ds.features, "name", feature.name);
+
+    if (f) {
+      f.active = feature.active;
+    }
+  }
+}
+
+function find(array, key, value) {
+  for (var i = 0; i < array.length; i++) {
+    if (array[i][key] === value) return array[i];
+  }
+
+  return null;
 }
 
 var DatasetStore = assign({}, EventEmitter.prototype, {
@@ -79,6 +98,11 @@ DatasetStore.dispatchToken = AppDispatcher.register(function (action) {
       selectDataset(datasets, action.dataset);
       DatasetStore.emitChange();
       break;
+
+    case Constants.SELECT_FEATURE:
+      selectFeature(datasetList, action.feature);
+      selectFeature(datasets, action.feature);
+      DatasetStore.emitChange();
   }
 });
 

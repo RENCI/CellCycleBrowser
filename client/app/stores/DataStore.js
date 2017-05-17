@@ -393,6 +393,12 @@ AppDispatcher.register(function (action) {
       DataStore.emitChange();
       break;
 
+    case Constants.SELECT_FEATURE:
+      AppDispatcher.waitFor([DatasetStore.dispatchToken]);
+      datasets = DatasetStore.getDatasets();
+      updateData();
+      DatasetStore.emitChange();
+
     case Constants.RECEIVE_SIMULATION_OUTPUT:
       AppDispatcher.waitFor([SimulationOutputStore.dispatchToken]);
       simulationOutput = SimulationOutputStore.getSimulationOutput();

@@ -21,7 +21,7 @@ function DatasetSelect(props) {
       option.features.map(function (feature, i) {
         return {
           name: feature.name,
-          value: option.name + ":" + feature,
+          value: option.name + ":" + feature.name,
           active: feature.active
         };
       }) : [];

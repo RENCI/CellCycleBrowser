@@ -37,8 +37,8 @@ var DatasetSelectContainer = React.createClass ({
 
       // Checkbox change
       $("." + this.popoverBodyClass + " :checkbox").on("change", function(e) {
-        var t = e.currentTarget
-            value = t.dataset.value.split(":");
+        var t = e.currentTarget;
+        var value = t.dataset.value.split(":");
 
         if (value.length === 1) {
           // Dataset
