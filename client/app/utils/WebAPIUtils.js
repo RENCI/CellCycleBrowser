@@ -243,18 +243,22 @@ function getProfile(profileIndex) {
 ////////////////////////////////////////////////////////////////////////////////
 // XXX: Temporary fix for mimicking new profile without embedded cell data
       if (data.cellData) {
-        data.datasetList = data.cellData.map(function (cellData, i) {
+        data.datasetList = data.cellData.map(function (cellData, i, a) {
           return {
             id: cellData.name,
             name: cellData.name,
             description: cellData.description,
             fileName: cellData.fileName,
-            active: true,
+            active: i <= a.length / 2,
             index: i
           };
         });
 
         ServerActionCreators.receiveDatasetList(data.datasetList);
+
+        data.datasetList = data.datasetList.filter(function(d) {
+          return d.active;
+        });
       }
 
       profile = data;

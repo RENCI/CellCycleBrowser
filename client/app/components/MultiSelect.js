@@ -34,7 +34,8 @@ function MultiSelect(props) {
         <button
           type="button"
           className="btn btn-default dropdown-toggle"
-          data-toggle="dropdown">
+          data-toggle="dropdown"
+          disabled={!props.enabled}>
             Select <span className="caret"></span>
         </button>
         <ul
@@ -50,7 +51,12 @@ function MultiSelect(props) {
 MultiSelect.propTypes = {
   label: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
+  enabled: PropTypes.bool,
   onChange: PropTypes.func
+};
+
+MultiSelect.defaultProps = {
+  enabled: true
 };
 
 module.exports = MultiSelect;
