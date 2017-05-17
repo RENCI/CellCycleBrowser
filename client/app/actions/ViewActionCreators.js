@@ -19,7 +19,7 @@ module.exports = {
   },
   selectDataset: function(dataset) {
     AppDispatcher.dispatch({
-      actionType: Constants.SELECT_DATA_SET,
+      actionType: Constants.SELECT_DATASET,
       dataset: dataset
     });
   },

@@ -55,7 +55,7 @@ var DatasetStore = assign({}, EventEmitter.prototype, {
 
 DatasetStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
-    case Constants.RECEIVE_DATA_SET_LIST:
+    case Constants.RECEIVE_DATASET_LIST:
       datasetList = action.datasetList;
       DatasetStore.emitChange();
       break;
@@ -68,13 +68,13 @@ DatasetStore.dispatchToken = AppDispatcher.register(function (action) {
       DatasetStore.emitChange();
       break;
 
-    case Constants.RECEIVE_DATA_SET:
+    case Constants.RECEIVE_DATASET:
       datasets.push(action.dataset);
       matchDataset(action.dataset);
       DatasetStore.emitChange();
       break;
 
-    case Constants.SELECT_DATA_SET:
+    case Constants.SELECT_DATASET:
       selectDataset(datasetList, action.dataset);
       selectDataset(datasets, action.dataset);
       DatasetStore.emitChange();

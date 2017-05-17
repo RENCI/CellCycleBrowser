@@ -3,7 +3,7 @@ var keyMirror = require("keymirror");
 module.exports = keyMirror({
   SELECT_PROFILE: null,
   SELECT_MODEL: null,
-  SELECT_DATA_SET: null,
+  SELECT_DATASET: null,
   SELECT_FEATURE: null,
   SELECT_ALIGNMENT: null,
   SELECT_TRAJECTORY: null,
@@ -19,9 +19,9 @@ module.exports = keyMirror({
   CHANGE_SPECIES_SPECIES_INTERACTION: null,
 
   RECEIVE_PROFILE_LIST: null,
-  RECEIVE_DATA_SET_LIST: null,
+  RECEIVE_DATASET_LIST: null,
   RECEIVE_PROFILE: null,
-  RECEIVE_DATA_SET: null,
+  RECEIVE_DATASET: null,
   RECEIVE_SIMULATION_OUTPUT: null,
 
   SIMULATION_OUTPUT_NONE: null,

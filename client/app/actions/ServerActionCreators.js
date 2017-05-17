@@ -11,7 +11,7 @@ module.exports = {
   },
   receiveDatasetList: function (datasetList) {
     AppDispatcher.dispatch({
-      actionType: Constants.RECEIVE_DATA_SET_LIST,
+      actionType: Constants.RECEIVE_DATASET_LIST,
       datasetList: datasetList
     });
   },
@@ -23,7 +23,7 @@ module.exports = {
   },
   receiveDataset: function (dataset) {
     AppDispatcher.dispatch({
-      actionType: Constants.RECEIVE_DATA_SET,
+      actionType: Constants.RECEIVE_DATASET,
       dataset: dataset
     });
   },

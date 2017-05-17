@@ -379,14 +379,14 @@ AppDispatcher.register(function (action) {
       DataStore.emitChange();
       break;
 
-    case Constants.RECEIVE_DATA_SET:
+    case Constants.RECEIVE_DATASET:
       AppDispatcher.waitFor([DatasetStore.dispatchToken]);
       datasets = DatasetStore.getDatasets();
       updateData();
       DataStore.emitChange();
     break;
 
-    case Constants.SELECT_DATA_SET:
+    case Constants.SELECT_DATASET:
       AppDispatcher.waitFor([DatasetStore.dispatchToken]);
       datasets = DatasetStore.getDatasets();
       updateData();
