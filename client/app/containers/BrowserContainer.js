@@ -9,6 +9,7 @@ var PhaseColorStore = require("../stores/PhaseColorStore");
 var PhaseOverlayStore = require("../stores/PhaseOverlayStore");
 var BrowserControls = require("../components/BrowserControls");
 var TimeScaleArea = require("../components/TimeScaleArea");
+var TrackSortContainer = require("../containers/TrackSortContainer");
 var Phases = require("../components/Phases");
 var Species = require("../components/Species");
 
@@ -135,6 +136,7 @@ var BrowserContainer = React.createClass({
           activeTrajectory={this.state.activeTrajectory}
           activePhase={this.state.activePhase}
           colorScale={this.state.phaseColorScale} />
+        <TrackSortContainer />
         {trackComponents}
       </div>
     );

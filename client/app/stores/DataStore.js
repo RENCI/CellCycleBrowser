@@ -353,6 +353,25 @@ function updateData() {
   }
 }
 
+function sortTracks(sortMethod) {
+  data.tracks.sort(function (a, b) {
+    var va = a[sortMethod];
+    var vb = b[sortMethod];
+
+    // Hack to put simulation first
+    if (sortMethod === "source") {
+      va = va === "Simulation" ? "\0" : va;
+      vb = vb === "Simulation" ? "\0" : vb;
+    }
+
+    return ascending(va, vb);
+  });
+
+  function ascending(a, b) {
+    return !a || !b ? 0 : !a ? 1 : !b ? -1 : a < b ? -1 : a > b ? 1 : 0;
+  }
+}
+
 var DataStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
     this.emit(CHANGE_EVENT);
@@ -410,6 +429,11 @@ AppDispatcher.register(function (action) {
       AppDispatcher.waitFor([AlignmentStore.dispatchToken]);
       alignment = AlignmentStore.getAlignment();
       updateData();
+      DataStore.emitChange();
+      break;
+
+    case Constants.SORT_TRACKS:
+      sortTracks(action.sortMethod);
       DataStore.emitChange();
       break;
   }

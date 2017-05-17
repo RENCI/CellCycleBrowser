@@ -7,16 +7,8 @@ var iconStyle = {
 };
 
 function AlignmentSelect(props) {
-  function leftClick() {
-    props.onClick("left");
-  }
-
-  function middleClick() {
-    props.onClick("justify");
-  }
-
-  function rightClick() {
-    props.onClick("right");
+  function handleClick(e) {
+    props.onClick(e.target.dataset.value);
   }
 
   function classes(alignment) {
@@ -26,36 +18,39 @@ function AlignmentSelect(props) {
   return (
     <div className="row">
       <div className="col-xs-10 col-xs-offset-2">
-        <div className={"btn-group btn-group-justified"} data-toggle="buttons">
+        <div className="btn-group btn-group-justified" data-toggle="buttons">
           <label
             className={classes("left")}
+            data-value="left"
             data-toggle="tooltip"
             data-container="body"
             data-placement="auto top"
             title="Align left"
-            onClick={leftClick}>
+            onClick={handleClick}>
               <input type="radio" />
               <span className="glyphicon glyphicon-align-left" style={iconStyle}>
               </span>
           </label>
           <label
             className={classes("justify")}
+            data-value="justify"
             data-toggle="tooltip"
             data-container="body"
             data-placement="auto top"
-            title="Stretch data" 
-            onClick={middleClick}>
+            title="Stretch data"
+            onClick={handleClick}>
               <input type="radio" />
               <span className="glyphicon glyphicon-align-justify" style={iconStyle}>
               </span>
           </label>
           <label
             className={classes("right")}
+            data-value="right"
             data-toggle="tooltip"
             data-container="body"
             data-placement="auto top"
             title="Align right"
-            onClick={rightClick}>
+            onClick={handleClick}>
               <input type="radio" />
               <span className="glyphicon glyphicon-align-right" style={iconStyle}>
               </span>

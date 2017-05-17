@@ -6,6 +6,7 @@ module.exports = keyMirror({
   SELECT_DATASET: null,
   SELECT_FEATURE: null,
   SELECT_ALIGNMENT: null,
+  SORT_TRACKS: null,
   SELECT_TRAJECTORY: null,
   SELECT_PHASE: null,
 

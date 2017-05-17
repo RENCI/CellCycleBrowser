@@ -3,7 +3,7 @@ var Constants = require("../constants/Constants");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
 module.exports = {
-  selectProfile: function(profileIndex) {
+  selectProfile: function (profileIndex) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_PROFILE,
       profileIndex: profileIndex
@@ -11,76 +11,82 @@ module.exports = {
 
     WebAPIUtils.getProfile(profileIndex);
   },
-  selectModel: function(modelKey) {
+  selectModel: function (modelKey) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_MODEL,
       modelKey: modelKey
     });
   },
-  selectDataset: function(dataset) {
+  selectDataset: function (dataset) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_DATASET,
       dataset: dataset
     });
   },
-  selectFeature: function(feature) {
+  selectFeature: function (feature) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_FEATURE,
       feature: feature
     });
   },
-  selectAlignment: function(alignment) {
+  selectAlignment: function (alignment) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_ALIGNMENT,
       alignment: alignment
     });
   },
-  selectTrajectory: function(trajectory) {
+  sortTracks: function (sortMethod) {
+    AppDispatcher.dispatch({
+      actionType: Constants.SORT_TRACKS,
+      sortMethod: sortMethod
+    });
+  },
+  selectTrajectory: function (trajectory) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_TRAJECTORY,
       trajectory: trajectory
     });
   },
-  selectPhase: function(phase) {
+  selectPhase: function (phase) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_PHASE,
       phase: phase
     });
   },
-  changeShowPhaseOverlay: function(show) {
+  changeShowPhaseOverlay: function (show) {
     AppDispatcher.dispatch({
       actionType: Constants.CHANGE_SHOW_PHASE_OVERLAY,
       show: show
     });
   },
-  changePhaseOverlayOpacity: function(opacity) {
+  changePhaseOverlayOpacity: function (opacity) {
     AppDispatcher.dispatch({
       actionType: Constants.CHANGE_PHASE_OVERLAY_OPACITY,
       opacity: opacity
     });
   },
-  runSimulation: function() {
+  runSimulation: function () {
     AppDispatcher.dispatch({
       actionType: Constants.RUN_SIMULATION
     });
 
     WebAPIUtils.runSimulation();
   },
-  changeSimulationParameter: function(parameter, value) {
+  changeSimulationParameter: function (parameter, value) {
     AppDispatcher.dispatch({
       actionType: Constants.CHANGE_SIMULATION_PARAMETER,
       parameter: parameter,
       value: value
     });
   },
-  changeSpeciesInitialValue: function(species, value) {
+  changeSpeciesInitialValue: function (species, value) {
     AppDispatcher.dispatch({
       actionType: Constants.CHANGE_SPECIES_INITIAL_VALUE,
       species: species,
       value: value
     });
   },
-  changeSpeciesPhaseInteraction: function(species, phase, value) {
+  changeSpeciesPhaseInteraction: function (species, phase, value) {
     AppDispatcher.dispatch({
       actionType: Constants.CHANGE_SPECIES_PHASE_INTERACTION,
       species: species,
@@ -88,7 +94,7 @@ module.exports = {
       value: value
     });
   },
-  changeSpeciesSpeciesInteraction: function(phase, upstream, downstream, value) {
+  changeSpeciesSpeciesInteraction: function (phase, upstream, downstream, value) {
     AppDispatcher.dispatch({
       actionType: Constants.CHANGE_SPECIES_SPECIES_INTERACTION,
       phase: phase,
