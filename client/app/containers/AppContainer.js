@@ -18,7 +18,7 @@ function getStateFromStore() {
 var AppContainer = React.createClass({
   getInitialState: function () {
     return {
-      profile: {}
+      profile: null
     };
   },
   componentDidMount: function () {
@@ -35,12 +35,16 @@ var AppContainer = React.createClass({
     this.setState(getStateFromStore());
   },
   render: function () {
+    var hasProfile = this.state.profile && this.state.profile.name;
+
     return (
       <div>
         <ResizeContainer />
         <HeaderSection />
-        <DataSelectionSection profile={this.state.profile} />
-        <MainSection profile={this.state.profile} />
+        {hasProfile ?
+          <DataSelectionSection profile={this.state.profile} /> : null }
+        {hasProfile ?
+          <MainSection profile={this.state.profile} /> : null}
       </div>
     );
   }
