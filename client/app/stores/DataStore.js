@@ -368,7 +368,7 @@ function sortTracks(sortMethod) {
   });
 
   function ascending(a, b) {
-    return !a || !b ? 0 : !a ? 1 : !b ? -1 : a < b ? -1 : a > b ? 1 : 0;
+    return !a && !b ? 0 : !a ? -1 : !b ? 1 : a < b ? -1 : a > b ? 1 : 0;
   }
 }
 
