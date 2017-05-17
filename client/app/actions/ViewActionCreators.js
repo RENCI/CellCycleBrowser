@@ -17,10 +17,10 @@ module.exports = {
       modelKey: modelKey
     });
   },
-  selectDataSet: function(dataSet) {
+  selectDataset: function(dataset) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_DATA_SET,
-      dataSet: dataSet
+      dataset: dataset
     });
   },
   selectFeature: function(feature) {

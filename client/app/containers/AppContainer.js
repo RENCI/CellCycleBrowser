@@ -1,4 +1,4 @@
-// Controller-view for the application that stores the current data set
+// Controller-view for the application that stores the current dataset
 
 var React = require("react");
 var ResizeContainer = require("../containers/ResizeContainer");
@@ -26,7 +26,7 @@ var AppContainer = React.createClass({
 
     // Bootstrap the application by getting initial data here
     WebAPIUtils.getProfileList();
-    WebAPIUtils.getDataSetList();
+    WebAPIUtils.getDatasetList();
   },
   componentWillUnmount: function () {
     ProfileStore.removeChangeListener(this.onProfileChange);

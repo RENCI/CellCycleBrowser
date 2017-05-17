@@ -15,7 +15,7 @@ var labelStyle = {
   fontWeight: "normal !important"
 };
 
-function DataSetSelect(props) {
+function DatasetSelect(props) {
   function option(option, i) {
     var features = option.features ?
       option.features.map(function (feature, i) {
@@ -58,12 +58,12 @@ function DataSetSelect(props) {
     );
   }
 
-  var popoverContentClass = "dataSetPopoverContent";
+  var popoverContentClass = "datasetPopoverContent";
 
   return (
     <div style={outerStyle}>
       <strong>
-        {"Data Sets: "}
+        {"Datasets: "}
       </strong>
       <button
         type="button"
@@ -86,9 +86,9 @@ function DataSetSelect(props) {
   );
 }
 
-DataSetSelect.propTypes = {
+DatasetSelect.propTypes = {
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
   popoverBodyClass: PropTypes.string.isRequired
 };
 
-module.exports = DataSetSelect;
+module.exports = DatasetSelect;

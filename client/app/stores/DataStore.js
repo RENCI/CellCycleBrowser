@@ -2,14 +2,14 @@ var AppDispatcher = require("../dispatcher/AppDispatcher");
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
 var Constants = require("../constants/Constants");
-var DataSetStore = require("./DataSetStore");
+var DatasetStore = require("./DatasetStore");
 var SimulationOutputStore = require("./SimulationOutputStore");
 var AlignmentStore = require("./AlignmentStore");
 
 var CHANGE_EVENT = "change";
 
 // Inputs
-var dataSets = [];
+var datasets = [];
 var simulationOutput = [];
 var alignment = AlignmentStore.getAlignment();
 
@@ -23,7 +23,7 @@ var data = {
 
 function updateData() {
   // Get data for each track
-  data.tracks = createTracks(dataSets, simulationOutput);
+  data.tracks = createTracks(datasets, simulationOutput);
 
   // Compute time extent across all data
   data.timeExtent = computeTimeExtent(data.tracks);
@@ -41,17 +41,17 @@ function updateData() {
   data.phaseAverage = averagePhases(data.phases);
 
   function createTracks() {
-    return dataSetTracks().concat(simulationTracks());
+    return datasetTracks().concat(simulationTracks());
 
-    function dataSetTracks() {
+    function datasetTracks() {
       // Create empty array
       var tracks = [];
 
-      dataSets.filter(function(d) {
+      datasets.filter(function(d) {
         return d.active;
-      }).forEach(function (dataSet) {
-        dataSet.species.forEach(function (species) {
-          dataSet.features.filter(function(d) {
+      }).forEach(function (dataset) {
+        dataset.species.forEach(function (species) {
+          dataset.features.filter(function(d) {
             return d.active;
           }).forEach(function (feature) {
             var data = species.cells.map(function (cell) {
@@ -79,7 +79,7 @@ function updateData() {
             tracks.push({
               species: species.name,
               feature: feature.name,
-              source: dataSet.name,
+              source: dataset.name,
               data: data,
               dataExtent: dataExtent(data.map(function (d) { return d.values; }))
             });
@@ -371,24 +371,24 @@ var DataStore = assign({}, EventEmitter.prototype, {
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_PROFILE:
-      AppDispatcher.waitFor([DataSetStore.dispatchToken,
+      AppDispatcher.waitFor([DatasetStore.dispatchToken,
                              SimulationOutputStore.dispatchToken]);
-      dataSets = DataSetStore.getDataSets();
+      datasets = DatasetStore.getDatasets();
       simulationOutput = SimulationOutputStore.getSimulationOutput();
       updateData();
       DataStore.emitChange();
       break;
 
     case Constants.RECEIVE_DATA_SET:
-      AppDispatcher.waitFor([DataSetStore.dispatchToken]);
-      dataSets = DataSetStore.getDataSets();
+      AppDispatcher.waitFor([DatasetStore.dispatchToken]);
+      datasets = DatasetStore.getDatasets();
       updateData();
       DataStore.emitChange();
     break;
 
     case Constants.SELECT_DATA_SET:
-      AppDispatcher.waitFor([DataSetStore.dispatchToken]);
-      dataSets = DataSetStore.getDataSets();
+      AppDispatcher.waitFor([DatasetStore.dispatchToken]);
+      datasets = DatasetStore.getDatasets();
       updateData();
       DataStore.emitChange();
       break;

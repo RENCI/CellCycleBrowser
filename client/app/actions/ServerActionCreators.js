@@ -9,10 +9,10 @@ module.exports = {
       profileList: profileList
     });
   },
-  receiveDataSetList: function (dataSetList) {
+  receiveDatasetList: function (datasetList) {
     AppDispatcher.dispatch({
       actionType: Constants.RECEIVE_DATA_SET_LIST,
-      dataSetList: dataSetList
+      datasetList: datasetList
     });
   },
   receiveProfile: function (profile) {
@@ -21,10 +21,10 @@ module.exports = {
       profile: profile
     });
   },
-  receiveDataSet: function (dataSet) {
+  receiveDataset: function (dataset) {
     AppDispatcher.dispatch({
       actionType: Constants.RECEIVE_DATA_SET,
-      dataSet: dataSet
+      dataset: dataset
     });
   },
   receiveSimulationOutput: function(output) {

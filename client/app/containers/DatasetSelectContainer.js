@@ -1,25 +1,25 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
-var DataSetStore = require("../stores/DataSetStore");
-var DataSetSelect = require("../components/DataSetSelect");
+var DatasetStore = require("../stores/DatasetStore");
+var DatasetSelect = require("../components/DatasetSelect");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
 // Retrieve the current state from the store
 function getStateFromStore() {
   return {
-    dataSetList: DataSetStore.getDataSetList()
+    datasetList: DatasetStore.getDatasetList()
   };
 }
 
-var DataSetSelectContainer = React.createClass ({
+var DatasetSelectContainer = React.createClass ({
   getInitialState: function () {
     // Class for selecting popover body
-    this.popoverBodyClass = "dataSetPopoverBody";
+    this.popoverBodyClass = "datasetPopoverBody";
 
     return getStateFromStore();
   },
   componentDidMount: function () {
-    DataSetStore.addChangeListener(this.onDataSetChange);
+    DatasetStore.addChangeListener(this.onDatasetChange);
 
     // Enable popover
     $(ReactDOM.findDOMNode(this)).find("[data-toggle='popover']").popover({
@@ -41,8 +41,8 @@ var DataSetSelectContainer = React.createClass ({
             value = t.dataset.value.split(":");
 
         if (value.length === 1) {
-          // Data set
-          ViewActionCreators.selectDataSet({
+          // Dataset
+          ViewActionCreators.selectDataset({
             name: value[0],
             active: t.checked
           });
@@ -50,7 +50,7 @@ var DataSetSelectContainer = React.createClass ({
         else if (value.length === 2) {
           // Feature
           ViewActionCreators.selectFeature({
-            dataSet: value[0],
+            dataset: value[0],
             name: value[1],
             active: t.checked
           });
@@ -62,20 +62,20 @@ var DataSetSelectContainer = React.createClass ({
     }.bind(this));
   },
   componentWillUnmount: function () {
-    DataSetStore.removeChangeListener(this.onDataSetChange);
+    DatasetStore.removeChangeListener(this.onDatasetChange);
   },
-  onDataSetChange: function () {
+  onDatasetChange: function () {
     this.setState(getStateFromStore);
   },
   render: function () {
     return (
       <div>
-        <DataSetSelect
-          options={this.state.dataSetList}
+        <DatasetSelect
+          options={this.state.datasetList}
           popoverBodyClass={this.popoverBodyClass} />
       </div>
     );
   }
 });
 
-module.exports = DataSetSelectContainer;
+module.exports = DatasetSelectContainer;

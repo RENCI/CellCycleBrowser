@@ -1,7 +1,7 @@
 var ServerActionCreators = require("../actions/ServerActionCreators");
 var ModelStore = require("../stores/ModelStore");
 var SimulationControlStore = require("../stores/SimulationControlStore");
-var DataSetStore = require("../stores/DataSetStore");
+var DatasetStore = require("../stores/DatasetStore");
 var d3 = require("d3");
 
 // Get a cookie for cross site request forgery (CSRF) protection
@@ -36,17 +36,17 @@ function setupAjax() {
   });
 }
 
-function createDataSet(dataSet) {
+function createDataset(dataset) {
   // Set metadata
   var ds = {};
-  ds.name = dataSet.name;
-  ds.fileName = dataSet.fileName;
-  ds.description = dataSet.description;
-  ds.timeUnit = dataSet.timeUnit;
+  ds.name = dataset.name;
+  ds.fileName = dataset.fileName;
+  ds.description = dataset.description;
+  ds.timeUnit = dataset.timeUnit;
   ds.active = true;
 
   // Parse the csv data
-  var data = d3.csvParse(dataSet.csv);
+  var data = d3.csvParse(dataset.csv);
 
   // Get the available features
   ds.features = d3.nest()
@@ -102,7 +102,7 @@ function createDataSet(dataSet) {
 function simulationParameters() {
   var model = ModelStore.getModel();
   var controls = SimulationControlStore.getControls();
-  var cellData = DataSetStore.getDataSet();
+  var cellData = DatasetStore.getDataset();
 
   var trajectories = controls.parameters[controls.parameters.map(function (parameter) {
     return parameter.name;
@@ -221,7 +221,7 @@ function getProfileList() {
   });
 }
 
-function getDataSetList() {
+function getDatasetList() {
   // XXX: Stub
 }
 
@@ -239,7 +239,7 @@ function getProfile(profileIndex) {
 ////////////////////////////////////////////////////////////////////////////////
 // XXX: Temporary fix for mimicking new profile without embedded cell data
       if (data.cellData) {
-        data.dataSetList = data.cellData.map(function (cellData, i) {
+        data.datasetList = data.cellData.map(function (cellData, i) {
           return {
             id: i,
             name: cellData.name,
@@ -249,7 +249,7 @@ function getProfile(profileIndex) {
           };
         });
 
-        ServerActionCreators.receiveDataSetList(data.dataSetList);
+        ServerActionCreators.receiveDatasetList(data.datasetList);
       }
 
       profile = data;
@@ -257,9 +257,9 @@ function getProfile(profileIndex) {
 
       ServerActionCreators.receiveProfile(data);
 
-      // Request data sets
-      data.dataSetList.forEach(function (dataSet) {
-        getDataSet(dataSet.id);
+      // Request datasets
+      data.datasetList.forEach(function (dataset) {
+        getDataset(dataset.id);
       });
     },
     error: function (xhr, textStatus, errorThrown) {
@@ -268,14 +268,14 @@ function getProfile(profileIndex) {
   });
 }
 
-function getDataSet(id) {
+function getDataset(id) {
   // XXX: Temporary fix for mimicking new profile without embedded cell data
   setTimeout(function() {
     // Reformat the data
-    var dataSet = createDataSet(profile.cellData[id]);
+    var dataset = createDataset(profile.cellData[id]);
 
     // Create an action
-    ServerActionCreators.receiveDataSet(dataSet);
+    ServerActionCreators.receiveDataset(dataset);
   }, 1000);
 }
 /*
@@ -319,7 +319,7 @@ function runSimulation() {
 
 module.exports = {
   getProfileList: getProfileList,
-  getDataSetList: getDataSetList,
+  getDatasetList: getDatasetList,
   getProfile: getProfile,
   runSimulation: runSimulation
 };
