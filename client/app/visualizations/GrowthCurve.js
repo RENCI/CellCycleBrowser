@@ -107,12 +107,11 @@ module.exports = function() {
         })])
         .range([innerHeight(), 0]);
 
-    var colorScale = d3.scaleOrdinal()
+    // XXX: Need to decide on a color map
+    var colorScale = d3.scaleOrdinal(d3.schemeCategory10)
         .domain(curves.map(function(d) {
           return d.name;
-        }))
-        // XXX: Need to decide on a color map
-        .range(["#2166ac", "#b2182b"]);
+        }));
 
     function curveColor(d) {
       return colorScale(d.name);

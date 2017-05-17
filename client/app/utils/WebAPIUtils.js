@@ -102,7 +102,6 @@ function createDataset(dataset) {
 function simulationParameters() {
   var model = ModelStore.getModel();
   var controls = SimulationControlStore.getControls();
-  var cellData = DatasetStore.getDataset();
 
   var trajectories = controls.parameters[controls.parameters.map(function (parameter) {
     return parameter.name;
