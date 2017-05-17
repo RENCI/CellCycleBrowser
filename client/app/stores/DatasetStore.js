@@ -13,10 +13,9 @@ var datasetList = [];
 var datasets = [];
 
 function matchDataset(dataset) {
-  // XXX: Use id instead of name when available
   var index = datasetList.map(function (d) {
-    return d.name;
-  }).indexOf(dataset.name);
+    return d.id;
+  }).indexOf(dataset.id);
 
   if (index !== -1) {
     datasetList[index].active = dataset.active;
@@ -25,8 +24,7 @@ function matchDataset(dataset) {
 }
 
 function selectDataset(container, dataset) {
-  // XXX: Use id instead of name when available
-  var ds = find(container, "name", dataset.name);
+  var ds = find(container, "id", dataset.id);
 
   if (ds) {
     ds.active = dataset.active;
@@ -34,8 +32,7 @@ function selectDataset(container, dataset) {
 }
 
 function selectFeature(container, feature) {
-  // XXX: Use id instead of name when available
-  var ds = find(container, "name", feature.dataset);
+  var ds = find(container, "id", feature.datasetId);
 
   if (ds) {
     var f = find(ds.features, "name", feature.name);

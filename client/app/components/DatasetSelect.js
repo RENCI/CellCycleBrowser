@@ -21,7 +21,7 @@ function DatasetSelect(props) {
       option.features.map(function (feature, i) {
         return {
           name: feature.name,
-          value: option.name + ":" + feature.name,
+          value: feature.name + ":" + option.id,
           active: feature.active
         };
       }) : [];
@@ -34,7 +34,7 @@ function DatasetSelect(props) {
               <input
                 type="checkbox"
                 defaultChecked={option.active}
-                data-value={option.name} />
+                data-value={option.id} />
               {option.name}
             </label>
           </div>

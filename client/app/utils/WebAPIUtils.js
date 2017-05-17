@@ -44,6 +44,8 @@ function createDataset(dataset) {
   ds.description = dataset.description;
   ds.timeUnit = dataset.timeUnit;
   ds.active = true;
+  // XXX: Temporary fix until receiving ids from server
+  ds.id = ds.name;
 
   // Parse the csv data
   var data = d3.csvParse(dataset.csv);
@@ -235,16 +237,20 @@ function getProfile(profileIndex) {
     url: "/get_profile/",
     data: { index: profileIndex },
     success: function (data) {
+      // XXX: Temporary fix for giving profile an id
+      data.id = data.name;
+
 ////////////////////////////////////////////////////////////////////////////////
 // XXX: Temporary fix for mimicking new profile without embedded cell data
       if (data.cellData) {
         data.datasetList = data.cellData.map(function (cellData, i) {
           return {
-            id: i,
+            id: cellData.name,
             name: cellData.name,
             description: cellData.description,
             fileName: cellData.fileName,
-            active: true
+            active: true,
+            index: i
           };
         });
 
@@ -258,7 +264,7 @@ function getProfile(profileIndex) {
 
       // Request datasets
       data.datasetList.forEach(function (dataset) {
-        getDataset(dataset.id);
+        getDataset(dataset.index);
       });
     },
     error: function (xhr, textStatus, errorThrown) {

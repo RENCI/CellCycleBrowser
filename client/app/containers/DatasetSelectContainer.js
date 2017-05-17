@@ -36,29 +36,35 @@ var DatasetSelectContainer = React.createClass ({
       });
 
       // Checkbox change
-      $("." + this.popoverBodyClass + " :checkbox").on("change", function(e) {
-        var t = e.currentTarget;
-        var value = t.dataset.value.split(":");
+      $("." + this.popoverBodyClass + " :checkbox")
+          .each(function() {
+            // Hack to set checked properly, otherwise features for last dataset
+            // are not behaving as expected when first loaded
+            $(this).prop("defaultChecked", $(this).data("checked"));
+          })
+          .on("change", function(e) {
+            var t = e.currentTarget;
+            var value = t.dataset.value.split(":");
 
-        if (value.length === 1) {
-          // Dataset
-          ViewActionCreators.selectDataset({
-            name: value[0],
-            active: t.checked
+            if (value.length === 1) {
+              // Dataset
+              ViewActionCreators.selectDataset({
+                id: value[0],
+                active: t.checked
+              });
+            }
+            else if (value.length === 2) {
+              // Feature
+              ViewActionCreators.selectFeature({
+                name: value[0],
+                datasetId: value[1],
+                active: t.checked
+              });
+            }
+            else {
+              console.log("Can't parse checkbox value: " + t.dataset.value);
+            }
           });
-        }
-        else if (value.length === 2) {
-          // Feature
-          ViewActionCreators.selectFeature({
-            dataset: value[0],
-            name: value[1],
-            active: t.checked
-          });
-        }
-        else {
-          console.log("Can't parse checkbox value: " + t.dataset.value);
-        }
-      });
     }.bind(this));
   },
   componentWillUnmount: function () {

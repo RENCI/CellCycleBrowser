@@ -3,6 +3,8 @@ var PropTypes = React.PropTypes;
 
 function MultiSelect(props) {
   function option(option, i) {
+    // Use data-checked to save checked state and handle problems when embedded
+    // in popover
     return (
       <li key={i}>
         <a className="checkbox">
@@ -11,7 +13,8 @@ function MultiSelect(props) {
               type="checkbox"
               defaultChecked={option.active}
               data-value={option.value}
-              onChange={option.onChange} />
+              data-checked={option.active}
+              onChange={props.onChange} />
             {option.name}
           </label>
         </a>
