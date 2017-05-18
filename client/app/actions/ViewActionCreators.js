@@ -1,6 +1,7 @@
 var AppDispatcher = require("../dispatcher/AppDispatcher");
 var Constants = require("../constants/Constants");
 var WebAPIUtils = require("../utils/WebAPIUtils");
+var DatasetStore = require("../stores/DatasetStore");
 
 module.exports = {
   selectProfile: function (profileIndex) {
@@ -18,10 +19,20 @@ module.exports = {
     });
   },
   selectDataset: function (dataset) {
-    AppDispatcher.dispatch({
-      actionType: Constants.SELECT_DATASET,
-      dataset: dataset
-    });
+    if (DatasetStore.hasDataset(dataset.id)) {
+      AppDispatcher.dispatch({
+        actionType: Constants.SELECT_DATASET,
+        dataset: dataset
+      });
+    }
+    else {
+      // XXX: Temporary fix
+      var list = DatasetStore.getDatasetList();
+
+      WebAPIUtils.getDataset(list.map(function(d) {
+        return d.id;
+      }).indexOf(dataset.id));
+    }
   },
   selectFeature: function (feature) {
     AppDispatcher.dispatch({

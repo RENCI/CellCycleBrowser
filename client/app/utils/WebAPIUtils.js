@@ -227,7 +227,8 @@ function getDatasetList() {
 }
 
 // XXX: Temporary fix for mimicking new profile without embedded cell data
-var profile = {};
+var dataSets = [];
+var datasetList = [];
 
 function getProfile(profileIndex) {
   setupAjax();
@@ -243,25 +244,23 @@ function getProfile(profileIndex) {
 ////////////////////////////////////////////////////////////////////////////////
 // XXX: Temporary fix for mimicking new profile without embedded cell data
       if (data.cellData) {
-        data.datasetList = data.cellData.map(function (cellData, i, a) {
+        dataSets = data.cellData;
+        datasetList = data.cellData.map(function (cellData, i, a) {
           return {
             id: cellData.name,
             name: cellData.name,
             description: cellData.description,
             fileName: cellData.fileName,
-            active: i <= a.length / 2,
             index: i
           };
         });
 
-        ServerActionCreators.receiveDatasetList(data.datasetList);
+        ServerActionCreators.receiveDatasetList(datasetList);
 
-        data.datasetList = data.datasetList.filter(function(d) {
-          return d.active;
+        data.datasetList = datasetList.filter(function(d, i, a) {
+          return i <= a.length / 2;
         });
       }
-
-      profile = data;
 ////////////////////////////////////////////////////////////////////////////////
 
       ServerActionCreators.receiveProfile(data);
@@ -281,7 +280,7 @@ function getDataset(id) {
   // XXX: Temporary fix for mimicking new profile without embedded cell data
   setTimeout(function() {
     // Reformat the data
-    var dataset = createDataset(profile.cellData[id]);
+    var dataset = createDataset(dataSets[id]);
 
     // Create an action
     ServerActionCreators.receiveDataset(dataset);
@@ -329,6 +328,7 @@ function runSimulation() {
 module.exports = {
   getProfileList: getProfileList,
   getDatasetList: getDatasetList,
+  getDataset: getDataset,
   getProfile: getProfile,
   runSimulation: runSimulation
 };

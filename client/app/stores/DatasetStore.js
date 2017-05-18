@@ -66,6 +66,9 @@ var DatasetStore = assign({}, EventEmitter.prototype, {
   },
   getDatasets: function () {
     return datasets;
+  },
+  hasDataset: function (id) {
+    return find(datasets, "id", id) !== null;
   }
 });
 
