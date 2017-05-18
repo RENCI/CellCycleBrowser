@@ -10,9 +10,11 @@
         <div class="form-group">
             <label for="profile_sel_names">Select an existing profile</label>
             <select class="form-control" name="profile_sel_name" id="profile_sel_name">
+                {% autoescape on %}
                 {% for fname in profile_data_names %}
-                    <option value={{ fname }}>{{ fname }}</option>
+                    <option value="{{ fname }}">{{ fname }}</option>
                 {% endfor %}
+                {% endautoescape %}
             </select>
             <p class="help-block">Select an existing profile to delete.</p>
         </div>
