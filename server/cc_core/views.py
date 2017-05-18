@@ -159,7 +159,17 @@ def add_profile_to_server(request):
     data = {}
     try:
         data['name'] = request.POST.get('pname')
+        if not data['name']:
+            messages.error(request, "Please input a profile name.")
+            messages.info(request, 'AddProfile')
+            return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
         data['description'] = request.POST.get('pdesc')
+        if not data['description']:
+            messages.error(request, "Please input a profile description.")
+            messages.info(request, 'AddProfile')
+            return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
         cell_data_list = []
         cdfiles = request.FILES.getlist('cell_files')
         cdselnames = request.POST.getlist('cell_sel_names')
@@ -179,19 +189,27 @@ def add_profile_to_server(request):
             idx += 1
 
         cdnames = request.POST.get('cdname')
-        if ';' in cdnames:
-            cdname_list = cdnames.split(';')
+        if cdnames:
+            if ';' in cdnames:
+                cdname_list = cdnames.split(';')
+            else:
+                cdname_list = [cdnames.strip()]
         else:
-            cdname_list = [cdnames.strip()]
+            cdname_list = []
+
         for cdname in cdname_list:
             name_pair = cdname.split(':')
             cell_data_list[filename_to_idx[name_pair[0]]]['name'] = name_pair[1]
 
         cddescs = request.POST.get('cddesc')
-        if ';' in cddescs:
-            cddesc_list = cddescs.split(';')
+        if cddescs:
+            if ';' in cddescs:
+                cddesc_list = cddescs.split(';')
+            else:
+                cddesc_list = [cddescs.strip()]
         else:
-            cddesc_list = [cddescs.strip()]
+            cddesc_list = []
+
         for cddesc in cddesc_list:
             desc_pair = cddesc.split(':')
             cell_data_list[filename_to_idx[desc_pair[0]]]['description'] = desc_pair[1]
@@ -223,25 +241,38 @@ def add_profile_to_server(request):
             idx += 1
 
         mdnames = request.POST.get('mdname')
-        if ';' in mdnames:
-            mdname_list = mdnames.split(';')
+        if mdnames:
+            if ';' in mdnames:
+                mdname_list = mdnames.split(';')
+            else:
+                mdname_list = [mdnames.strip()]
         else:
-            mdname_list = [mdnames.strip()]
+            mdname_list = []
 
         for mdname in mdname_list:
             name_pair = mdname.split(':')
             model_data_list[filename_to_idx[name_pair[0]]]['name'] = name_pair[1]
 
         mddescs = request.POST.get('mddesc')
-        if ';' in mddescs:
-            mddesc_list = mddescs.split(';')
+        if mddescs:
+            if ';' in mddescs:
+                mddesc_list = mddescs.split(';')
+            else:
+                mddesc_list = [mddescs.strip()]
         else:
-            mddesc_list = [mddescs.strip()]
+            mddesc_list = []
+
         for mddesc in mddesc_list:
             desc_pair = mddesc.split(':')
             model_data_list[filename_to_idx[desc_pair[0]]]['description'] = desc_pair[1]
 
         data['models'] = model_data_list
+
+        if not cell_data_list and not model_data_list:
+            messages.error(request, "Please upload or select some data - you cannot leave both "
+                                    "cell data and model data empty in the new profile")
+            messages.info(request, 'AddProfile')
+            return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
         pname_list = data['name'].split()
         profile_file_name = '_'.join(pname_list)

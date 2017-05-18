@@ -13,12 +13,12 @@
       <form class="form-horizontal" role="form" action="/add_profile_to_server/" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
-            <label for="id_pname">Profile Name: </label>
-            <input id="pname" class="form-control" name="pname" placeholder="Profile name" value="" type="text" />
+            <label for="id_pname">Profile Name: *</label>
+            <input id="pname" class="form-control" name="pname" placeholder="Profile name" value="" type="text" required/>
         </div>
         <div class="form-group">
-            <label for="id_pdesc">Profile Description:</label>
-            <input id="pdesc" class="form-control" name="pdesc" placeholder="Profile Description" value="" type="text" />
+            <label for="id_pdesc">Profile Description: *</label>
+            <input id="pdesc" class="form-control" name="pdesc" placeholder="Profile Description" value="" type="text" required/>
         </div>
         <hr>
         <div class="form-group">
