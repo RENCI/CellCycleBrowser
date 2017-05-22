@@ -59,7 +59,7 @@ function DatasetSelect(props) {
     );
   }
 
-  var popoverContentClass = "datasetPopoverContent";
+  var popoverContentClass = "datasetSelectPopoverContent";
 
   return (
     <div style={outerStyle}>
@@ -73,15 +73,18 @@ function DatasetSelect(props) {
         data-container="body"
         data-html="true"
         data-placement="bottom"
-        data-popover-content={"." + popoverContentClass}>
+        data-trigger="manual"
+        onClick={props.onClick}>
         Select <span className="caret"></span>
       </button>
-      <div className={"hidden " + popoverContentClass}>
-        <table className={"table table-hover table-condensed " + props.popoverBodyClass}>
-          <tbody>
-            {props.options.map(option)}
-          </tbody>
-        </table>
+      <div className="hidden">
+        <div className={popoverContentClass}>
+          <table className={"table table-hover table-condensed"}>
+            <tbody>
+              {props.options.map(option)}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
@@ -89,7 +92,7 @@ function DatasetSelect(props) {
 
 DatasetSelect.propTypes = {
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
-  popoverBodyClass: PropTypes.string.isRequired
+  onClick: PropTypes.func.isRequired
 };
 
 module.exports = DatasetSelect;

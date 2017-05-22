@@ -5,6 +5,9 @@ function MultiSelect(props) {
   function option(option, i) {
     // Use data-checked to save checked state and handle problems when embedded
     // in popover
+
+    console.log(i, option.active);
+
     return (
       <li key={i}>
         <a className="checkbox">
@@ -13,7 +16,6 @@ function MultiSelect(props) {
               type="checkbox"
               defaultChecked={option.active}
               data-value={option.value}
-              data-checked={option.active}
               onChange={props.onChange} />
             {option.name}
           </label>

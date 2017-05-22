@@ -251,14 +251,15 @@ function getProfile(profileIndex) {
             name: cellData.name,
             description: cellData.description,
             fileName: cellData.fileName,
-            index: i
+            index: i,
+            active: i <= a.length / 2
           };
         });
 
         ServerActionCreators.receiveDatasetList(datasetList);
 
-        data.datasetList = datasetList.filter(function(d, i, a) {
-          return i <= a.length / 2;
+        data.datasetList = datasetList.filter(function(d) {
+          return d.active;
         });
       }
 ////////////////////////////////////////////////////////////////////////////////

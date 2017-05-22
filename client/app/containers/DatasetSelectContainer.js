@@ -13,35 +13,50 @@ function getStateFromStore() {
 
 var DatasetSelectContainer = React.createClass ({
   getInitialState: function () {
-    // Class for selecting popover body
-    this.popoverBodyClass = "datasetPopoverBody";
+    this.popover = null;
 
-    return getStateFromStore();
+    return {
+      popoverActive: false,
+      datasetList: DatasetStore.getDatasetList()
+    };
   },
   componentDidMount: function () {
     DatasetStore.addChangeListener(this.onDatasetChange);
+  },
+  componentWillUnmount: function () {
+    DatasetStore.removeChangeListener(this.onDatasetChange);
+  },
+  componentDidUpdate: function () {
+    var trigger = $(ReactDOM.findDOMNode(this)).find("[data-toggle='popover']");
+    var content = trigger.next().first();
 
-    // Enable popover
-    $(ReactDOM.findDOMNode(this)).find("[data-toggle='popover']").popover({
-      content: function () {
-        return $($(this).data("popover-content")).html();
+    if (!this.state.popoverActive) {
+      trigger.popover("destroy");
+      this.popover = null;
+    }
+    else {
+      if (!this.popover) {
+        // Show popover
+        trigger.popover({
+           content: content.html()
+        });
+
+        trigger.popover("show");
+
+        // Assuming the popover is appended to the end of the body
+        this.popover = $(".popover-content").last();
       }
-    })
-    .on("shown.bs.popover", function(e) {
-      // Need to set callbacks here, as callbacks are not cloned when creating popover
+
+      // Update the html
+      this.popover.html(content.html());
 
       // Prevent closing of dropdown
-      $("." + this.popoverBodyClass + " ul").on("click", function(e) {
+      this.popover.find("ul").on("click", function(e) {
         e.stopPropagation();
       });
 
       // Checkbox change
-      $("." + this.popoverBodyClass + " :checkbox")
-          .each(function() {
-            // Hack to set checked properly, otherwise features for last dataset
-            // are not behaving as expected when first loaded
-            $(this).prop("defaultChecked", $(this).data("checked"));
-          })
+      this.popover.find(":checkbox")
           .on("change", function(e) {
             var t = e.currentTarget;
             var value = t.dataset.value.split(":");
@@ -65,20 +80,23 @@ var DatasetSelectContainer = React.createClass ({
               console.log("Can't parse checkbox value: " + t.dataset.value);
             }
           });
-    }.bind(this));
-  },
-  componentWillUnmount: function () {
-    DatasetStore.removeChangeListener(this.onDatasetChange);
+    }
   },
   onDatasetChange: function () {
     this.setState(getStateFromStore);
+  },
+  handleClick: function () {
+    //this.popoverActive = !this.popoverActive;
+    this.setState({
+      popoverActive: !this.state.popoverActive
+    });
   },
   render: function () {
     return (
       <div>
         <DatasetSelect
           options={this.state.datasetList}
-          popoverBodyClass={this.popoverBodyClass} />
+          onClick={this.handleClick} />
       </div>
     );
   }
