@@ -9,14 +9,6 @@ var NetworkMap = require("../visualizations/NetworkMap");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var Constants = require("../constants/Constants");
 
-var divStyle = {
-  backgroundColor: "white",
-  borderColor: "#ccc",
-  borderStyle: "solid",
-  borderWidth: 1,
-  borderRadius: 5
-};
-
 function getStateFromSimulationControlStore() {
   var controls = SimulationControlStore.getControls();
 
@@ -72,6 +64,11 @@ function getStateFromPhaseStore() {
 }
 
 var MapVisualizationContainer = React.createClass ({
+  // Don't make propsTypes required, as a warning is given for the first render
+  // if using React.cloneElement, as  in VisualizationContainer
+  propTypes: {
+    width: PropTypes.number
+  },
   getInitialState: function () {
     // Create visualization function
     this.networkMap = NetworkMap()
@@ -88,11 +85,6 @@ var MapVisualizationContainer = React.createClass ({
     SimulationControlStore.addChangeListener(this.onSimulationControlChange);
     PhaseColorStore.addChangeListener(this.onPhaseColorChange);
     PhaseStore.addChangeListener(this.onPhaseChange);
-
-    this.resize();
-
-    // Resize on window resize
-    window.addEventListener("resize", this.onResize);
   },
   componentWillUnmount: function () {
     SimulationControlStore.removeChangeListener(this.onSimulationControlChange);
@@ -100,7 +92,7 @@ var MapVisualizationContainer = React.createClass ({
     PhaseStore.removeChangeListener(this.onPhaseChange);
   },
   componentWillUpdate: function (props, state) {
-    this.drawVisualization(state);
+    this.drawVisualization(props, state);
 
     return false;
   },
@@ -113,31 +105,18 @@ var MapVisualizationContainer = React.createClass ({
   onPhaseChange: function () {
     this.setState(getStateFromPhaseStore());
   },
-  onResize: function () {
-    this.resize();
-  },
-  drawVisualization: function (state) {
+  drawVisualization: function (props, state) {
     if (!state.model) return;
 
     this.networkMap
+        .width(props.width)
+        .height(props.width)
         .phaseColorScale(state.phaseColorScale)
         .selectPhase(state.phase);
 
-    d3.select(this.getNode())
+    d3.select(ReactDOM.findDOMNode(this))
         .datum(state.model)
         .call(this.networkMap);
-  },
-  resize: function () {
-    var width = this.getNode().clientWidth;
-
-    this.networkMap
-        .width(width)
-        .height(width);
-
-    this.drawVisualization(this.state);
-  },
-  getNode: function () {
-    return ReactDOM.findDOMNode(this);
   },
   handleSelectPhase: function (phase) {
     ViewActionCreators.selectPhase(phase);
@@ -146,7 +125,7 @@ var MapVisualizationContainer = React.createClass ({
     networkMap.selectSpecies(species);
   },
   render: function () {
-    return <div style={divStyle}></div>
+    return <div></div>
   }
 });
 
