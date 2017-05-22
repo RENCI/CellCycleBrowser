@@ -46,7 +46,8 @@ function DatasetSelect(props) {
           <MultiSelect
             label="Features: "
             options={features}
-            enabled={option.active} />
+            enabled={option.active}
+            minSelected={1} />
         </td>
         <td style={tdStyle}>
           <a

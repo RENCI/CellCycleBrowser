@@ -2,19 +2,19 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 
 function MultiSelect(props) {
+  var numActive = props.options.reduce(function (p, c) {
+    return p + (c.active ? 1 : 0);
+  }, 0);
+
   function option(option, i) {
-    // Use data-checked to save checked state and handle problems when embedded
-    // in popover
-
-    console.log(i, option.active);
-
     return (
       <li key={i}>
         <a className="checkbox">
-          <label>
+          <label >
             <input
               type="checkbox"
               defaultChecked={option.active}
+              disabled={option.active && numActive <= props.minSelected}
               data-value={option.value}
               onChange={props.onChange} />
             {option.name}
@@ -54,11 +54,13 @@ MultiSelect.propTypes = {
   label: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
   enabled: PropTypes.bool,
+  minSelected: PropTypes.number,
   onChange: PropTypes.func
 };
 
 MultiSelect.defaultProps = {
-  enabled: true
+  enabled: true,
+  minSelected: 0
 };
 
 module.exports = MultiSelect;

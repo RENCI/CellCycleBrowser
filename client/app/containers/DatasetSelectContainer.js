@@ -80,6 +80,15 @@ var DatasetSelectContainer = React.createClass ({
               });
             }
             else if (value.length === 2) {
+              if (!t.checked) {
+                var numChecked = $(this).closest("ul").find(":checked").length;
+
+                if (numChecked < 1) {
+                  t.checked = true;
+                  return;
+                }
+              }
+
               // Feature
               ViewActionCreators.selectFeature({
                 name: value[0],
@@ -93,7 +102,7 @@ var DatasetSelectContainer = React.createClass ({
           });
 
       // This is an ugly hack to get dynamically loaded feature checkboxes to be checked/unchecked correctly
-      // by always rendering twice on an update. 
+      // by always rendering twice on an update.
       // I think it might be an issue with how React is handling defaultChecked, but not sure.
       if (this.state.renderAgain) {
         this.setState({
@@ -106,7 +115,6 @@ var DatasetSelectContainer = React.createClass ({
     this.setState(getStateFromStore);
   },
   handleClick: function () {
-    //this.popoverActive = !this.popoverActive;
     this.setState({
       popoverActive: !this.state.popoverActive
     });
