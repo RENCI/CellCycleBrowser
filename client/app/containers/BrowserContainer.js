@@ -12,17 +12,8 @@ var TimeScaleArea = require("../components/TimeScaleArea");
 var TrackSortContainer = require("../containers/TrackSortContainer");
 var Phases = require("../components/Phases");
 var Species = require("../components/Species");
+var SpeciesDividerContainer = require("../containers/SpeciesDividerContainer");
 var ViewActionCreators = require("../actions/ViewActionCreators");
-
-var speciesDividerStyle = {
-  width: "100%",
-  height: 4,
-  borderRadius: 2,
-  marginTop: 5,
-  marginBottom: 5,
-  backgroundColor: "#31708f",
-  opacity: 0
-};
 
 function getStateFromDataStore() {
   return {
@@ -121,10 +112,6 @@ var BrowserContainer = React.createClass({
 
     e.preventDefault();
   },
-  handleSpeciesDividerMouseEnter: function (e) {
-  },
-  handleSpeciesDividerMouseLeave: function () {
-  },
   handleSpeciesDividerMouseUp: function (e) {
     var index = +e.currentTarget.dataset.index;
 
@@ -145,13 +132,9 @@ var BrowserContainer = React.createClass({
     var trackComponents = tracks.map(function(track, i) {
       return (
         <div key={i}>
-          <div
-            style={speciesDividerStyle}
-            data-index={track.index}
-            onMouseEnter={this.handleSpeciesDividerMouseEnter}
-            onMouseLeave={this.handleSpeciesDividerMouseLeave}
-            onMouseUp={this.handleSpeciesDividerMouseUp}>
-          </div>
+          <SpeciesDividerContainer
+            index={track.index}
+            onMouseUp={this.handleSpeciesDividerMouseUp} />
           <Species
             species={track}
             phases={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}

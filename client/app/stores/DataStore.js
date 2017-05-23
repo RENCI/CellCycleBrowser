@@ -414,6 +414,8 @@ function sortTracks(sortMethod) {
 }
 
 function insertTrack(oldIndex, newIndex) {
+  if (newIndex > oldIndex) newIndex--;
+
   data.tracks.splice(newIndex, 0, data.tracks.splice(oldIndex, 1)[0]);
 
   updateTrackIndeces();
