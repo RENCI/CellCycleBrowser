@@ -52,6 +52,13 @@ module.exports = {
       sortMethod: sortMethod
     });
   },
+  insertTrack: function (oldIndex, newIndex) {
+    AppDispatcher.dispatch({
+      actionType: Constants.INSERT_TRACK,
+      oldIndex: oldIndex,
+      newIndex: newIndex
+    });
+  },
   selectTrajectory: function (trajectory) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_TRAJECTORY,

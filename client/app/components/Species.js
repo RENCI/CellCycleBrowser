@@ -90,11 +90,8 @@ function Species(props) {
       <div
         className="row"
         style={dragStyle}
-        data-source={props.species.source}
-        data-species={props.species.species}
-        data-feature={props.species.feature}
-        onMouseDown={props.onMouseDown}
-        onMouseUp={props.onMouseUp}>
+        data-index={props.species.index}
+        onMouseDown={props.onMouseDown}>
           <div className="col-xs-12">
             <div style={labelStyle}>
               <span style={nameStyle}>{props.species.species}</span>
@@ -147,8 +144,7 @@ Species.propTypes = {
   activePhase: PropTypes.string.isRequired,
   phaseColorScale: PropTypes.func.isRequired,
   phaseOverlayOpacity: PropTypes.number.isRequired,
-  onMouseDown: PropTypes.func.isRequired,
-  onMouseUp: PropTypes.func.isRequired
+  onMouseDown: PropTypes.func.isRequired
 };
 
 module.exports = Species;

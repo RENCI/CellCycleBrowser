@@ -12,6 +12,7 @@ var TimeScaleArea = require("../components/TimeScaleArea");
 var TrackSortContainer = require("../containers/TrackSortContainer");
 var Phases = require("../components/Phases");
 var Species = require("../components/Species");
+var ViewActionCreators = require("../actions/ViewActionCreators");
 
 var speciesDividerStyle = {
   width: "100%",
@@ -62,7 +63,8 @@ function getStateFromPhaseOverlayStore() {
 
 var BrowserContainer = React.createClass({
   getInitialState: function () {
-    this.speciesDrag = null;
+    this.dragSpeciesIndex = null;
+    this.dividerIndex = null;
 
     return {
       data: DataStore.getData(),
@@ -115,32 +117,23 @@ var BrowserContainer = React.createClass({
     this.setState(getStateFromPhaseOverlayStore());
   },
   handleSpeciesMouseDown: function (e) {
-    var d = e.currentTarget.dataset;
-
-    this.speciesDrag = {
-      source: d.source,
-      species: d.species,
-      feature: d.feature
-    };
+    this.dragSpeciesIndex = e.currentTarget.dataset.index;
 
     e.preventDefault();
   },
-  handleSpeciesMouseUp: function () {
-    this.speciesDrag = null;
-  },
   handleSpeciesDividerMouseEnter: function (e) {
-    if (this.speciesDrag) {
-      var d = e.currentTarget.dataset;
+  },
+  handleSpeciesDividerMouseLeave: function () {
+  },
+  handleSpeciesDividerMouseUp: function (e) {
+    var index = e.currentTarget.dataset.index;
 
-      var above = {
-        source: d.source,
-        species: d.species,
-        feature: d.feature
-      };
-
-      console.log(this.speciesDrag);
-      console.log(above);
+    if (this.dragSpeciesIndex !== null &&
+        this.dragSpeciesIndex !== index) {
+      ViewActionCreators.insertTrack(this.dragSpeciesIndex, index);
     }
+
+    this.dragSpeciesIndex = null;
   },
   render: function() {
     var tracks = this.state.data.tracks;
@@ -151,6 +144,13 @@ var BrowserContainer = React.createClass({
     var trackComponents = tracks.map(function(track, i) {
       return (
         <div key={i}>
+          <div
+            style={speciesDividerStyle}
+            data-index={track.index}
+            onMouseEnter={this.handleSpeciesDividerMouseEnter}
+            onMouseLeave={this.handleSpeciesDividerMouseLeave}
+            onMouseUp={this.handleSpeciesDividerMouseUp}>
+          </div>
           <Species
             species={track}
             phases={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}
@@ -160,15 +160,7 @@ var BrowserContainer = React.createClass({
             activePhase={this.state.activePhase}
             phaseColorScale={this.state.phaseColorScale}
             phaseOverlayOpacity={this.state.phaseOverlayOpacity}
-            onMouseDown={this.handleSpeciesMouseDown}
-            onMouseUp={this.handleSpeciesMouseUp} />
-          <div
-            style={speciesDividerStyle}
-            data-source={track.source}
-            data-species={track.species}
-            data-feature={track.feature}
-            onMouseEnter={this.handleSpeciesDividerMouseEnter}>
-          </div>
+            onMouseDown={this.handleSpeciesMouseDown} />
         </div>
       );
     }.bind(this));

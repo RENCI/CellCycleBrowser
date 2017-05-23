@@ -413,6 +413,12 @@ function sortTracks(sortMethod) {
   }
 }
 
+function insertTrack(oldIndex, newIndex) {
+  data.tracks.splice(newIndex, 0, data.tracks.splice(oldIndex, 1)[0]);
+
+  updateTrackIndeces();
+}
+
 function updateTrackIndeces() {
   data.tracks.forEach(function (d, i) {
     d.index = i;
@@ -481,6 +487,11 @@ AppDispatcher.register(function (action) {
 
     case Constants.SORT_TRACKS:
       sortTracks(action.sortMethod);
+      DataStore.emitChange();
+      break;
+
+    case Constants.INSERT_TRACK:
+      insertTrack(action.oldIndex, action.newIndex);
       DataStore.emitChange();
       break;
   }
