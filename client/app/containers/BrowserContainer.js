@@ -117,7 +117,7 @@ var BrowserContainer = React.createClass({
     this.setState(getStateFromPhaseOverlayStore());
   },
   handleSpeciesMouseDown: function (e) {
-    this.dragSpeciesIndex = e.currentTarget.dataset.index;
+    this.dragSpeciesIndex = +e.currentTarget.dataset.index;
 
     e.preventDefault();
   },
@@ -126,10 +126,11 @@ var BrowserContainer = React.createClass({
   handleSpeciesDividerMouseLeave: function () {
   },
   handleSpeciesDividerMouseUp: function (e) {
-    var index = e.currentTarget.dataset.index;
+    var index = +e.currentTarget.dataset.index;
 
     if (this.dragSpeciesIndex !== null &&
-        this.dragSpeciesIndex !== index) {
+        this.dragSpeciesIndex !== index &&
+        (this.dragSpeciesIndex !== index - 1)) {
       ViewActionCreators.insertTrack(this.dragSpeciesIndex, index);
     }
 
