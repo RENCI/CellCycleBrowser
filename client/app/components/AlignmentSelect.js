@@ -21,38 +21,44 @@ function AlignmentSelect(props) {
         <div className="btn-group btn-group-justified" data-toggle="buttons">
           <label
             className={classes("left")}
-            data-value="left"
             data-toggle="tooltip"
             data-container="body"
             data-placement="auto top"
+            data-value="left"
             title="Align left"
             onClick={handleClick}>
               <input type="radio" />
-              <span className="glyphicon glyphicon-align-left" style={iconStyle}>
+              <span
+                className="glyphicon glyphicon-align-left"
+                style={iconStyle}>
               </span>
           </label>
           <label
             className={classes("justify")}
-            data-value="justify"
             data-toggle="tooltip"
             data-container="body"
             data-placement="auto top"
+            data-value="justify"
             title="Stretch data"
             onClick={handleClick}>
               <input type="radio" />
-              <span className="glyphicon glyphicon-align-justify" style={iconStyle}>
+              <span
+                className="glyphicon glyphicon-align-justify"
+                style={iconStyle}>
               </span>
           </label>
           <label
             className={classes("right")}
-            data-value="right"
             data-toggle="tooltip"
             data-container="body"
             data-placement="auto top"
+            data-value="right"
             title="Align right"
             onClick={handleClick}>
               <input type="radio" />
-              <span className="glyphicon glyphicon-align-right" style={iconStyle}>
+              <span
+                className="glyphicon glyphicon-align-right"
+                style={iconStyle}>
               </span>
           </label>
         </div>

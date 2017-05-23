@@ -38,7 +38,7 @@ function TrackSort(props) {
     <div style={outerStyle}>
       <div className="btn-toolbar" style={toolBarStyle}>
         <div className="btn-group" data-toggle="buttons">
-          <button
+          <label
             className="btn btn-default btn-xs"
             data-toggle="tooltip"
             data-container="body"
@@ -50,8 +50,8 @@ function TrackSort(props) {
                 className="glyphicon glyphicon-sort"
                 style={iconStyle}>
               </span>
-          </button>
-          <button
+          </label>
+          <label
             className="btn btn-default btn-xs"
             data-toggle="tooltip"
             data-container="body"
@@ -63,10 +63,10 @@ function TrackSort(props) {
                 className="glyphicon glyphicon-sort"
                 style={iconStyle}>
               </span>
-          </button>
+          </label>
         </div>
         <div className="btn-group" data-toggle="buttons" style={rightStyle}>
-          <button
+          <label
             className="btn btn-default btn-xs"
             data-toggle="tooltip"
             data-container="body"
@@ -78,7 +78,7 @@ function TrackSort(props) {
                 className="glyphicon glyphicon-sort"
                 style={iconStyle}>
               </span>
-          </button>
+          </label>
         </div>
       </div>
     </div>

@@ -7,10 +7,7 @@ var TrackSortContainer = React.createClass ({
     ViewActionCreators.sortTracks(sortMethod);
   },
   render: function () {
-    return (
-      <TrackSort
-        onClick={this.handleButtonClick} />
-    );
+    return <TrackSort onClick={this.handleButtonClick} />;
   }
 });
 
