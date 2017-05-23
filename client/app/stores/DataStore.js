@@ -23,7 +23,7 @@ var data = {
 
 function updateData() {
   // Get data for each track
-  data.tracks = createTracks(datasets, simulationOutput);
+  createTracks(datasets, simulationOutput);
 
   // Compute time extent across all data
   data.timeExtent = computeTimeExtent(data.tracks);
@@ -41,7 +41,46 @@ function updateData() {
   data.phaseAverage = averagePhases(data.phases);
 
   function createTracks() {
-    return datasetTracks().concat(simulationTracks());
+    // Keep track of sort order
+    var indeces = data.tracks.map(function(d) {
+      return {
+        index: d.index,
+        source: d.source,
+        species: d.species,
+        feature: d.feature
+      };
+    });
+
+    // Generate data
+    data.tracks = datasetTracks().concat(simulationTracks());
+
+    // Match sort order
+    data.tracks.forEach(function (d) {
+      for (var i = 0; i < indeces.length; i++) {
+        var d2 = indeces[i];
+
+        // Check source, species, and feature if available
+        if (d.source === d2.source &&
+            d.species === d2.species &&
+            (d.feature && d2.feature ? d.feature === d2.feature : true)) {
+          d.index = d2.index;
+          return;
+        }
+      }
+    });
+
+    // Sort
+    data.tracks.sort(function (a, b) {
+      var ai = a.index;
+      var bi = b.index;
+
+      return ai === undefined && bi === undefined ? 0 :
+             ai === undefined ? 1 :
+             bi === undefined ? -1 :
+             ai - bi;
+    });
+
+    updateTrackIndeces();
 
     function datasetTracks() {
       // Create empty array
@@ -367,9 +406,17 @@ function sortTracks(sortMethod) {
     return ascending(va, vb);
   });
 
+  updateTrackIndeces();
+
   function ascending(a, b) {
     return !a && !b ? 0 : !a ? -1 : !b ? 1 : a < b ? -1 : a > b ? 1 : 0;
   }
+}
+
+function updateTrackIndeces() {
+  data.tracks.forEach(function (d, i) {
+    d.index = i;
+  });
 }
 
 var DataStore = assign({}, EventEmitter.prototype, {

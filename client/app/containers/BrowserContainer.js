@@ -13,6 +13,16 @@ var TrackSortContainer = require("../containers/TrackSortContainer");
 var Phases = require("../components/Phases");
 var Species = require("../components/Species");
 
+var speciesDividerStyle = {
+  width: "100%",
+  height: 4,
+  borderRadius: 2,
+  marginTop: 5,
+  marginBottom: 5,
+  backgroundColor: "#31708f",
+  opacity: 0
+};
+
 function getStateFromDataStore() {
   return {
     data: DataStore.getData()
@@ -52,6 +62,8 @@ function getStateFromPhaseOverlayStore() {
 
 var BrowserContainer = React.createClass({
   getInitialState: function () {
+    this.speciesDrag = null;
+
     return {
       data: DataStore.getData(),
       alignment: AlignmentStore.getAlignment(),
@@ -102,6 +114,34 @@ var BrowserContainer = React.createClass({
   onPhaseOverlayChange: function () {
     this.setState(getStateFromPhaseOverlayStore());
   },
+  handleSpeciesMouseDown: function (e) {
+    var d = e.currentTarget.dataset;
+
+    this.speciesDrag = {
+      source: d.source,
+      species: d.species,
+      feature: d.feature
+    };
+
+    e.preventDefault();
+  },
+  handleSpeciesMouseUp: function () {
+    this.speciesDrag = null;
+  },
+  handleSpeciesDividerMouseEnter: function (e) {
+    if (this.speciesDrag) {
+      var d = e.currentTarget.dataset;
+
+      var above = {
+        source: d.source,
+        species: d.species,
+        feature: d.feature
+      };
+
+      console.log(this.speciesDrag);
+      console.log(above);
+    }
+  },
   render: function() {
     var tracks = this.state.data.tracks;
 
@@ -110,16 +150,26 @@ var BrowserContainer = React.createClass({
     // Create GUI components for each track
     var trackComponents = tracks.map(function(track, i) {
       return (
-        <Species
-          key={i}
-          species={track}
-          phases={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}
-          phaseAverage={this.state.showPhaseOverlay ? this.state.data.phaseAverage: []}
-          timeExtent={this.state.data.timeExtent}
-          activePhases={this.state.showPhaseOverlay ? this.state.activeTrajectory.phases : []}
-          activePhase={this.state.activePhase}
-          phaseColorScale={this.state.phaseColorScale}
-          phaseOverlayOpacity={this.state.phaseOverlayOpacity} />
+        <div key={i}>
+          <Species
+            species={track}
+            phases={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}
+            phaseAverage={this.state.showPhaseOverlay ? this.state.data.phaseAverage: []}
+            timeExtent={this.state.data.timeExtent}
+            activePhases={this.state.showPhaseOverlay ? this.state.activeTrajectory.phases : []}
+            activePhase={this.state.activePhase}
+            phaseColorScale={this.state.phaseColorScale}
+            phaseOverlayOpacity={this.state.phaseOverlayOpacity}
+            onMouseDown={this.handleSpeciesMouseDown}
+            onMouseUp={this.handleSpeciesMouseUp} />
+          <div
+            style={speciesDividerStyle}
+            data-source={track.source}
+            data-species={track.species}
+            data-feature={track.feature}
+            onMouseEnter={this.handleSpeciesDividerMouseEnter}>
+          </div>
+        </div>
       );
     }.bind(this));
 

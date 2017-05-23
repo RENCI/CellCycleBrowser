@@ -11,9 +11,12 @@ var outerStyle = {
   borderWidth: 1,
   borderTopLeftRadius: 5,
   borderTopRightRadius: 5,
-  borderBottomLeftRadius: 5,
-  marginBottom: 10
+  borderBottomLeftRadius: 5
 };
+
+var dragStyle = {
+  cursor: "ns-resize"
+}
 
 var labelStyle = {
   marginTop: 5,
@@ -84,14 +87,21 @@ function Species(props) {
 
   return (
     <div className="text-left" style={outerStyle}>
-      <div className="row">
-        <div className="col-xs-12">
-          <div style={labelStyle}>
-            <span style={nameStyle}>{props.species.species}</span>
-            {featureSpan}
-            <span style={sourceStyle}>{props.species.source}</span>
+      <div
+        className="row"
+        style={dragStyle}
+        data-source={props.species.source}
+        data-species={props.species.species}
+        data-feature={props.species.feature}
+        onMouseDown={props.onMouseDown}
+        onMouseUp={props.onMouseUp}>
+          <div className="col-xs-12">
+            <div style={labelStyle}>
+              <span style={nameStyle}>{props.species.species}</span>
+              {featureSpan}
+              <span style={sourceStyle}>{props.species.source}</span>
+            </div>
           </div>
-        </div>
       </div>
       <div>
         <div className="row" style={rowStyle}>
@@ -136,7 +146,9 @@ Species.propTypes = {
   activePhases: PropTypes.arrayOf(PropTypes.object).isRequired,
   activePhase: PropTypes.string.isRequired,
   phaseColorScale: PropTypes.func.isRequired,
-  phaseOverlayOpacity: PropTypes.number.isRequired
+  phaseOverlayOpacity: PropTypes.number.isRequired,
+  onMouseDown: PropTypes.func.isRequired,
+  onMouseUp: PropTypes.func.isRequired
 };
 
 module.exports = Species;
