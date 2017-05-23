@@ -12,11 +12,11 @@ function MainSection(props) {
   var hasModels = props.profile.models &&
                   props.profile.models.length > 0;
 
-  var hasCellData = props.profile.cellData &&
+  var hasDatasets = props.profile.cellData &&
                     props.profile.cellData.length > 0;
 
   // Render conditionally based on presence of model and cell data
-  if (hasModels && hasCellData) {
+  if (hasModels && hasDatasets) {
     return (
       <div className={divClass}>
         <div className="row">
@@ -28,7 +28,9 @@ function MainSection(props) {
             <BrowserContainer />
           </div>
           <div className="col-sm-3 text-center">
-            <SummaryPlotsArea />
+            <SummaryPlotsArea
+              hasModels={hasModels}
+              hasDatasets={hasDatasets} />
           </div>
         </div>
       </div>
@@ -43,13 +45,15 @@ function MainSection(props) {
             <ControlsContainer />
           </div>
           <div className="col-sm-4 text-center">
-            <SummaryPlotsArea />
+            <SummaryPlotsArea
+              hasModels={hasModels}
+              hasDatasets={hasDatasets} />
           </div>
         </div>
       </div>
     );
   }
-  else if (hasCellData) {
+  else if (hasDatasets) {
     return (
       <div className={divClass}>
         <div className="row">
@@ -57,7 +61,9 @@ function MainSection(props) {
             <BrowserContainer />
           </div>
           <div className="col-sm-4 text-center">
-            <SummaryPlotsArea />
+            <SummaryPlotsArea
+              hasModels={hasModels}
+              hasDatasets={hasDatasets} />
           </div>
         </div>
       </div>

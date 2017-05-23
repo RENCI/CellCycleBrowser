@@ -5,15 +5,7 @@ var ModelStore = require("../stores/ModelStore");
 var d3 = require("d3");
 var Distribution = require("../visualizations/Distribution");
 
-var divStyle = {
-  backgroundColor: "white",
-  borderColor: "#ccc",
-  borderStyle: "solid",
-  borderWidth: 1,
-  borderRadius: 5
-};
-
-function getStateFromModelStore() {
+function getStateFromStore() {
   return {
     cells: createCells(ModelStore.getModel().reactions)
   };
@@ -108,53 +100,42 @@ function createCells(reactions) {
 }
 
 var DistributionContainer = React.createClass ({
+  // Don't make propsTypes required, as a warning is given for the first render
+  // if using React.cloneElement, as  in VisualizationContainer
+  propTypes: {
+    width: PropTypes.number
+  },
   getInitialState: function () {
     // Create visualization function
     this.distribution = Distribution();
 
-    return getStateFromModelStore();
+    return getStateFromStore();
   },
   componentDidMount: function() {
     ModelStore.addChangeListener(this.onModelChange);
-
-    this.resize();
-
-    // Resize on window resize
-    window.addEventListener("resize", this.onResize);
   },
   componentWillUnmount: function () {
     ModelStore.removeChangeListener(this.onModelChange);
   },
   componentWillUpdate: function (props, state) {
-    this.drawVisualization(state);
+    this.drawVisualization(props, state);
 
     return false;
   },
   onModelChange: function () {
-    this.setState(getStateFromModelStore());
+    this.setState(getStateFromStore());
   },
-  onResize: function () {
-    this.resize();
-  },
-  drawVisualization: function (state) {
-    d3.select(this.getNode())
+  drawVisualization: function (props, state) {
+    this.distribution
+        .width(props.width)
+        .height(props.width);
+
+    d3.select(ReactDOM.findDOMNode(this))
         .datum(state.cells)
         .call(this.distribution);
   },
-  resize: function () {
-    var width = this.getNode().clientWidth;
-
-    this.distribution
-        .width(width)
-        .height(width);
-
-    this.drawVisualization(this.state);
-  },
-  getNode: function () {
-    return ReactDOM.findDOMNode(this);
-  },
   render: function () {
-    return <div style={divStyle}></div>
+    return <div></div>
   }
 });
 

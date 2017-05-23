@@ -7,7 +7,6 @@ var PhaseStore = require("../stores/PhaseStore");
 var d3 = require("d3");
 var NetworkMap = require("../visualizations/NetworkMap");
 var ViewActionCreators = require("../actions/ViewActionCreators");
-var Constants = require("../constants/Constants");
 
 function getStateFromSimulationControlStore() {
   var controls = SimulationControlStore.getControls();

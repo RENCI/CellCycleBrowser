@@ -1,6 +1,6 @@
 var React = require("react");
-var SliderContainer = require("../containers/SliderContainer");
 var PropTypes = React.PropTypes;
+var SliderContainer = require("../containers/SliderContainer");
 
 var buttonStyle = {
   width: "100%",

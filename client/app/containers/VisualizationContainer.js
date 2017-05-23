@@ -12,8 +12,8 @@ var divStyle = {
 var VisualizationContainer = React.createClass ({
   getInitialState: function () {
     return {
-      width: 1,
-      height: 1
+      width: 100,
+      height: 100
     };
   },
   componentDidMount: function() {

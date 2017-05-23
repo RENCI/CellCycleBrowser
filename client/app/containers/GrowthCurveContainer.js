@@ -5,68 +5,49 @@ var DataStore = require("../stores/DataStore");
 var d3 = require("d3");
 var GrowthCurve = require("../visualizations/GrowthCurve");
 
-var divStyle = {
-  backgroundColor: "white",
-  borderColor: "#ccc",
-  borderStyle: "solid",
-  borderWidth: 1,
-  borderRadius: 5
-};
-
-function getStateFromDataStore() {
+function getStateFromStore() {
   return {
     data: DataStore.getData()
   };
 }
 
 var GrowthCurveContainer = React.createClass ({
+  // Don't make propsTypes required, as a warning is given for the first render
+  // if using React.cloneElement, as  in VisualizationContainer
+  propTypes: {
+    width: PropTypes.number
+  },
   getInitialState: function () {
     // Create visualization function
     this.growthCurve = GrowthCurve();
 
-    return getStateFromDataStore();
+    return getStateFromStore();
   },
   componentDidMount: function() {
     DataStore.addChangeListener(this.onDataChange);
-
-    this.resize();
-
-    // Resize on window resize
-    window.addEventListener("resize", this.onResize);
   },
   componentWillUnmount: function () {
     DataStore.removeChangeListener(this.onDataChange);
   },
-  componentWillUpdate: function (props, state) {
-    this.drawVisualization(state);
+  componentWillUpdate: function (props, state) {    
+    this.drawVisualization(props, state);
 
     return false;
   },
   onDataChange: function () {
-    this.setState(getStateFromDataStore());
+    this.setState(getStateFromStore());
   },
-  onResize: function () {
-    this.resize();
-  },
-  drawVisualization: function (state) {
-    d3.select(this.getNode())
+  drawVisualization: function (props, state) {
+    this.growthCurve
+        .width(props.width)
+        .height(props.width)
+
+    d3.select(ReactDOM.findDOMNode(this))
         .datum(state.data)
         .call(this.growthCurve);
   },
-  resize: function () {
-    var width = this.getNode().clientWidth;
-
-    this.growthCurve
-        .width(width)
-        .height(width);
-
-    this.drawVisualization(this.state);
-  },
-  getNode: function () {
-    return ReactDOM.findDOMNode(this);
-  },
   render: function () {
-    return <div style={divStyle}></div>
+    return <div></div>
   }
 });
 
