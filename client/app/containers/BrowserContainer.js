@@ -55,7 +55,6 @@ function getStateFromPhaseOverlayStore() {
 var BrowserContainer = React.createClass({
   getInitialState: function () {
     this.dragSpeciesIndex = null;
-    this.dividerIndex = null;
 
     return {
       data: DataStore.getData(),
@@ -107,12 +106,12 @@ var BrowserContainer = React.createClass({
   onPhaseOverlayChange: function () {
     this.setState(getStateFromPhaseOverlayStore());
   },
-  handleSpeciesMouseDown: function (e) {
+  handleSpeciesDragStart: function (e) {
     this.dragSpeciesIndex = +e.currentTarget.dataset.index;
-
-    e.preventDefault();
   },
-  handleSpeciesDividerMouseUp: function (e) {
+  handleSpeciesDividerDrop: function (e) {
+//    e.preventDefault();
+
     var index = +e.currentTarget.dataset.index;
 
     if (this.dragSpeciesIndex !== null &&
@@ -134,7 +133,7 @@ var BrowserContainer = React.createClass({
         <div key={i}>
           <SpeciesDividerContainer
             index={track.index}
-            onMouseUp={this.handleSpeciesDividerMouseUp} />
+            onDrop={this.handleSpeciesDividerDrop} />
           <Species
             species={track}
             phases={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}
@@ -144,7 +143,7 @@ var BrowserContainer = React.createClass({
             activePhase={this.state.activePhase}
             phaseColorScale={this.state.phaseColorScale}
             phaseOverlayOpacity={this.state.phaseOverlayOpacity}
-            onMouseDown={this.handleSpeciesMouseDown} />
+            onDragStart={this.handleSpeciesDragStart} />
         </div>
       );
     }.bind(this));

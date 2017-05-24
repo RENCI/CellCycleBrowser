@@ -4,11 +4,11 @@ var PropTypes = React.PropTypes;
 function SpeciesDivider(props) {
   var style = {
     width: "100%",
-    height: 4,
+    height: 6,
     borderRadius: 2,
-    marginTop: 5,
-    marginBottom: 5,
-    backgroundColor: "#31708f",
+    marginTop: 4,
+    marginBottom: 4,
+    backgroundColor: "#999",
     opacity: props.visible ? 1 : 0
   };
 
@@ -16,9 +16,9 @@ function SpeciesDivider(props) {
     <div
       style={style}
       data-index={props.index}
-      onMouseEnter={props.onMouseEnter}
-      onMouseLeave={props.onMouseLeave}
-      onMouseUp={props.onMouseUp}>
+      onDragOver={props.onDragOver}
+      onDragLeave={props.onDragLeave}
+      onDrop={props.onDrop}>
     </div>
   );
 }
@@ -26,9 +26,9 @@ function SpeciesDivider(props) {
 SpeciesDivider.propTypes = {
   index: PropTypes.number.isRequired,
   visible: PropTypes.bool.isRequired,
-  onMouseEnter: PropTypes.func.isRequired,
-  onMouseLeave: PropTypes.func.isRequired,
-  onMouseUp: PropTypes.func.isRequired
+  onDragOver: PropTypes.func.isRequired,
+  onDragLeave: PropTypes.func.isRequired,
+  onDrop: PropTypes.func.isRequired
 };
 
 module.exports = SpeciesDivider;

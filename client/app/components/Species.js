@@ -90,8 +90,9 @@ function Species(props) {
       <div
         className="row"
         style={dragStyle}
+        draggable="true"
         data-index={props.species.index}
-        onMouseDown={props.onMouseDown}>
+        onDragStart={props.onDragStart}>
           <div className="col-xs-12">
             <div style={labelStyle}>
               <span style={nameStyle}>{props.species.species}</span>
@@ -144,7 +145,7 @@ Species.propTypes = {
   activePhase: PropTypes.string.isRequired,
   phaseColorScale: PropTypes.func.isRequired,
   phaseOverlayOpacity: PropTypes.number.isRequired,
-  onMouseDown: PropTypes.func.isRequired
+  onDragStart: PropTypes.func.isRequired
 };
 
 module.exports = Species;

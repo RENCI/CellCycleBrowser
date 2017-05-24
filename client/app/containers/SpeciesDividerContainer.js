@@ -5,31 +5,41 @@ var SpeciesDivider = require("../components/SpeciesDivider");
 var SpeciesDividerContainer = React.createClass ({
   propTypes: {
     index: PropTypes.number.isRequired,
-    onMouseUp: PropTypes.func.isRequired
+    onDrop: PropTypes.func.isRequired
   },
   getInitialState: function () {
     return {
       visible: false
     };
   },
-  handleMouseEnter: function () {
+  handleDragOver: function (e) {
+    // Enable dragging
+    e.preventDefault();
+
     this.setState({
       visible: true
     });
   },
-  handleMouseLeave: function () {
+  handleDragLeave: function () {
     this.setState({
       visible: false
     });
+  },
+  handleDrop: function (e) {
+    this.setState({
+      visible: false
+    });
+
+    this.props.onDrop(e);
   },
   render: function () {
     return (
       <SpeciesDivider
         index={this.props.index}
         visible={this.state.visible}
-        onMouseEnter={this.handleMouseEnter}
-        onMouseLeave={this.handleMouseLeave}
-        onMouseUp={this.props.onMouseUp} />
+        onDragOver={this.handleDragOver}
+        onDragLeave={this.handleDragLeave}
+        onDrop={this.handleDrop} />
     );
   }
 });

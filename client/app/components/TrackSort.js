@@ -9,8 +9,6 @@ var outerStyle = {
   borderTopLeftRadius: 5,
   borderTopRightRadius: 5,
   borderBottomLeftRadius: 5,
-  marginTop: 0,
-  marginBottom: 10
 };
 
 var toolBarStyle ={
