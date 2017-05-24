@@ -142,6 +142,8 @@ var BrowserContainer = React.createClass({
           colorScale={this.state.phaseColorScale} />
         <TrackSortContainer />
         {trackComponents}
+        <SpeciesDividerContainer
+          index={tracks.length} />
       </div>
     );
   }
