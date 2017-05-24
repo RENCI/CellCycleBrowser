@@ -1,16 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
+var Collapsible = require("../components/Collapsible");
 var SliderContainer = require("../containers/SliderContainer");
-
-var buttonStyle = {
-  width: "100%",
-  marginTop: -1
-};
-
-var collapseStyle = {
-  marginLeft: 10,
-  marginRight: 10
-};
 
 function SimulationParameterSliders(props) {
   var sliders = props.parameters.map(function (parameter, i) {
@@ -33,22 +24,12 @@ function SimulationParameterSliders(props) {
     );
   });
 
-  var collapseId = "modelParameterSliders";
-
   return (
-    <div>
-      <button
-        type="button"
-        className="btn btn-default"
-        style={buttonStyle}
-        data-toggle="collapse"
-        data-target={"#" + collapseId}>
-          Simulation parameters
-      </button>
-      <div className="in" id={collapseId} style={collapseStyle}>
+    <Collapsible
+      id="simulationParameterSliders"
+      label="Simulation parameters">
         {sliders}
-      </div>
-    </div>
+    </Collapsible>
   );
 }
 

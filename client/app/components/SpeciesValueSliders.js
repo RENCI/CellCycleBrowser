@@ -1,16 +1,7 @@
 var React = require("react");
-var SliderContainer = require("../containers/SliderContainer");
 var PropTypes = React.PropTypes;
-
-var buttonStyle = {
-  width: "100%",
-  marginTop: -1
-}
-
-var divStyle = {
-  marginLeft: 10,
-  marginRight: 10
-}
+var Collapsible = require("../components/Collapsible");
+var SliderContainer = require("../containers/SliderContainer");
 
 function SpeciesValueSliders(props) {
   var sliders = props.species.map(function (species, i) {
@@ -34,22 +25,12 @@ function SpeciesValueSliders(props) {
     );
   });
 
-  var collapseId = "speciesValueSliders";
-
   return (
-    <div>
-      <button
-        type="button"
-        className="btn btn-default"
-        style={buttonStyle}
-        data-toggle="collapse"
-        data-target={"#" + collapseId}>
-          Species initial values
-      </button>
-      <div className="in" id={collapseId} style={divStyle}>
+    <Collapsible
+      id="speciesValueSliders"
+      label="Species initial values">
         {sliders}
-      </div>
-    </div>
+    </Collapsible>
   );
 }
 

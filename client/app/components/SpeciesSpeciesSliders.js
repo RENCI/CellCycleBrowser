@@ -1,19 +1,9 @@
 var React = require("react");
+var PropTypes = React.PropTypes;
+var Collapsible = require("../components/Collapsible");
+var SliderContainer = require("../containers/SliderContainer");
 var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
-var SliderContainer = require("../containers/SliderContainer");
-var PropTypes = React.PropTypes;
-
-var buttonStyle = {
-  width: "100%",
-  marginTop: -1
-}
-
-var divStyle = {
-  marginTop: 5,
-  marginLeft: 10,
-  marginRight: 10
-}
 
 function SpeciesSpeciesSliders(props) {
   if (props.species.length <= 1) return null;
@@ -94,27 +84,17 @@ function SpeciesSpeciesSliders(props) {
     };
   });
 
-  var collapseId = "SpeciesSpeciesSliders";
-
   return (
-    <div>
-      <button
-        type="button"
-        className="btn btn-default"
-        style={buttonStyle}
-        data-toggle="collapse"
-        data-target={"#" + collapseId}>
-          Species→species interactions
-      </button>
-      <div className="in" id={collapseId} style={divStyle}>
-        <ul className="nav nav-tabs">
+    <Collapsible
+      id="speciesSpeciesSliders"
+      label="Species→species interactions">
+        <ul className="nav nav-tabs" style={{marginTop: 5}}>
           {tabs.map(function(tab) { return tab.tab; })}
         </ul>
         <div className="tab-content">
           {tabs.map(function(tab) { return tab.content; })}
         </div>
-      </div>
-    </div>
+    </Collapsible>
   );
 }
 
