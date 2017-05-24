@@ -91,6 +91,27 @@ function Species(props) {
     e.dataTransfer.setData(Constants.drag_track_type, props.species.index);
   }
 
+  var trackButtons = props.species.data.map(function (d, i) {
+    var height = trackHeight;
+
+    var style = {
+      width: height,
+      height: height,
+      border: "1px solid #ccc",
+      marginLeft: "auto",
+      marginRight: -16
+    };
+
+    return (
+      <div key={i} style={{width: "100%"}}>
+        <div
+          className="btn-default text-center"
+          style={style}>
+        </div>
+      </div>
+    );
+  });
+
   return (
     <div className="text-left" style={outerStyle}>
       <div
@@ -124,7 +145,10 @@ function Species(props) {
           </div>
         </div>
         <div className="row in" id={collapseId} style={collapseRowStyle}>
-          <div className="col-xs-10 col-xs-offset-2" style={collapseColStyle}>
+          <div className="col-xs-2">
+            {trackButtons}
+          </div>
+          <div className="col-xs-10" style={collapseColStyle}>
             <HeatMapContainer
               data={props.species.data.map(function (d) { return d.values; })}
               dataExtent={props.species.dataExtent}

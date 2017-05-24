@@ -10,25 +10,23 @@ var CollapseButtonContainer = React.createClass ({
   },
   getInitialState: function () {
     return {
-      text: "-"
+      collapse: true
     };
   },
   handleClick: function (e) {
     this.setState({
-      text: this.state.text === "-" ? "+" : "-"
+      collapse: !this.state.collapse
     });
-
-    // XXX: Hack to force render of browser container
-    if (this.state.text === "+") {
-      ViewActionCreators.selectAlignment(AlignmentStore.getAlignment());
-    }
   },
   render: function () {
     return (
       <CollapseButton
-        text={this.state.text}
         targetId={this.props.targetId}
-        onClick={this.handleClick} />
+        onClick={this.handleClick}>
+          {this.state.collapse ?
+            <span className="glyphicon glyphicon-plus"></span> :
+            <span className="glyphicon glyphicon-minus"></span>}
+      </CollapseButton>
     );
   }
 });
