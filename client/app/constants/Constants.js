@@ -29,5 +29,8 @@ module.exports = keyMirror({
   SIMULATION_OUTPUT_NONE: null,
   SIMULATION_OUTPUT_WAITING: null,
   SIMULATION_OUTPUT_INVALID: null,
-  SIMULATION_OUTPUT_VALID: null
+  SIMULATION_OUTPUT_VALID: null,
+
+  // Must be lowercase for drag and drop data types
+  drag_track_type: null
 });

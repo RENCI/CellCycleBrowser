@@ -3,6 +3,7 @@ var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
 var HeatLineContainer = require("../containers/HeatLineContainer");
 var HeatMapContainer = require("../containers/HeatMapContainer");
+var Constants = require("../constants/Constants");
 
 var outerStyle = {
   backgroundColor: "white",
@@ -85,14 +86,18 @@ function Species(props) {
   var featureSpan = props.species.feature ?
       <span style={featureStyle}>{" - " + props.species.feature}</span> : null;
 
+  function onDragStart(e) {
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData(Constants.drag_track_type, props.species.index);
+  }
+
   return (
     <div className="text-left" style={outerStyle}>
       <div
         className="row"
         style={dragStyle}
         draggable="true"
-        data-index={props.species.index}
-        onDragStart={props.onDragStart}>
+        onDragStart={onDragStart}>
           <div className="col-xs-12">
             <div style={labelStyle}>
               <span style={nameStyle}>{props.species.species}</span>
@@ -144,8 +149,7 @@ Species.propTypes = {
   activePhases: PropTypes.arrayOf(PropTypes.object).isRequired,
   activePhase: PropTypes.string.isRequired,
   phaseColorScale: PropTypes.func.isRequired,
-  phaseOverlayOpacity: PropTypes.number.isRequired,
-  onDragStart: PropTypes.func.isRequired
+  phaseOverlayOpacity: PropTypes.number.isRequired
 };
 
 module.exports = Species;

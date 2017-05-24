@@ -13,7 +13,6 @@ var TrackSortContainer = require("../containers/TrackSortContainer");
 var Phases = require("../components/Phases");
 var Species = require("../components/Species");
 var SpeciesDividerContainer = require("../containers/SpeciesDividerContainer");
-var ViewActionCreators = require("../actions/ViewActionCreators");
 
 function getStateFromDataStore() {
   return {
@@ -54,8 +53,6 @@ function getStateFromPhaseOverlayStore() {
 
 var BrowserContainer = React.createClass({
   getInitialState: function () {
-    this.dragSpeciesIndex = null;
-
     return {
       data: DataStore.getData(),
       alignment: AlignmentStore.getAlignment(),
@@ -106,22 +103,6 @@ var BrowserContainer = React.createClass({
   onPhaseOverlayChange: function () {
     this.setState(getStateFromPhaseOverlayStore());
   },
-  handleSpeciesDragStart: function (e) {
-    this.dragSpeciesIndex = +e.currentTarget.dataset.index;
-  },
-  handleSpeciesDividerDrop: function (e) {
-//    e.preventDefault();
-
-    var index = +e.currentTarget.dataset.index;
-
-    if (this.dragSpeciesIndex !== null &&
-        this.dragSpeciesIndex !== index &&
-        (this.dragSpeciesIndex !== index - 1)) {
-      ViewActionCreators.insertTrack(this.dragSpeciesIndex, index);
-    }
-
-    this.dragSpeciesIndex = null;
-  },
   render: function() {
     var tracks = this.state.data.tracks;
 
@@ -132,8 +113,7 @@ var BrowserContainer = React.createClass({
       return (
         <div key={i}>
           <SpeciesDividerContainer
-            index={track.index}
-            onDrop={this.handleSpeciesDividerDrop} />
+            index={track.index} />
           <Species
             species={track}
             phases={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}
@@ -142,8 +122,7 @@ var BrowserContainer = React.createClass({
             activePhases={this.state.showPhaseOverlay ? this.state.activeTrajectory.phases : []}
             activePhase={this.state.activePhase}
             phaseColorScale={this.state.phaseColorScale}
-            phaseOverlayOpacity={this.state.phaseOverlayOpacity}
-            onDragStart={this.handleSpeciesDragStart} />
+            phaseOverlayOpacity={this.state.phaseOverlayOpacity} />
         </div>
       );
     }.bind(this));
