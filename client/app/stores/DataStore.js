@@ -110,6 +110,7 @@ function updateData() {
 
               return {
                 name: cell.name,
+                selected: false,
                 values: values,
                 timeSpan: timeSpan(values)
               };
@@ -160,6 +161,7 @@ function updateData() {
 
             data.push({
               name: "Trajectory " + data.length,
+              selected: false,
               values: values,
               timeSpan: timeSpan(values)
             });
@@ -313,7 +315,11 @@ function updateData() {
         timeStep.value = count > 0 ? value / count : 0;
       });
 
-      return timeSteps;
+      return {
+        name: "Average",
+        selected: false,
+        values: timeSteps
+      };
     }
   }
 
@@ -427,6 +433,10 @@ function updateTrackIndeces() {
   });
 }
 
+function selectTrace(trace, selected) {
+  trace.selected = selected;
+}
+
 var DataStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
     this.emit(CHANGE_EVENT);
@@ -494,6 +504,12 @@ AppDispatcher.register(function (action) {
 
     case Constants.INSERT_TRACK:
       insertTrack(action.oldIndex, action.newIndex);
+      DataStore.emitChange();
+      break;
+
+    case Constants.SELECT_TRACE:
+    console.log(action);
+      selectTrace(action.trace, action.selected);
       DataStore.emitChange();
       break;
   }

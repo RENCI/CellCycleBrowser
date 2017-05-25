@@ -2,7 +2,6 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 
 var buttonStyle = {
-//  width: 35,
   borderColor: "#ccc",
   marginTop: -1,
   marginLeft: -1,

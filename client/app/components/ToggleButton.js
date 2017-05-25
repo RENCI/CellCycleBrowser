@@ -5,22 +5,25 @@ function ToggleButton(props) {
   var style = {
     width: "100%",
     height: "100%",
-    borderRadius: 0
+    borderRadius: 0,
+    border: "1px solid #eee"
   };
 
-  var classes = "btn btn-default" + (props.selected ? " active" : "");
+  var classes = props.selected ? "btn-default active" : "";
 
   return (
-    <div
+    <label
       className={classes}
       style={style}
+      data-value={props.value}
       onClick={props.onClick}>
-    </div>
+    </label>
   );
 }
 
 ToggleButton.propTypes = {
   label: PropTypes.string,
+  value: PropTypes.string,
   selected: PropTypes.bool,
   height: PropTypes.number,
   onClick: PropTypes.func

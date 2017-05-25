@@ -59,6 +59,14 @@ module.exports = {
       newIndex: newIndex
     });
   },
+  selectTrace: function (trace, selected) {
+    console.log(selected);
+    AppDispatcher.dispatch({
+      actionType: Constants.SELECT_TRACE,
+      trace: trace,
+      selected: selected
+    });
+  },
   selectTrajectory: function (trajectory) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_TRAJECTORY,
