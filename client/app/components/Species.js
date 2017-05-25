@@ -1,6 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
+var TrackToggleButtons = require("./TrackToggleButtons");
 var HeatLineContainer = require("../containers/HeatLineContainer");
 var HeatMapContainer = require("../containers/HeatMapContainer");
 var Constants = require("../constants/Constants");
@@ -81,7 +82,7 @@ function Species(props) {
   collapseId = collapseId.replace(/\s/g, "");
 
   var averageHeight = 32;
-  var trackHeight = 20;
+  var trajectoryHeight = 20;
 
   var featureSpan = props.species.feature ?
       <span style={featureStyle}>{" - " + props.species.feature}</span> : null;
@@ -90,27 +91,6 @@ function Species(props) {
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData(Constants.drag_track_type, props.species.index);
   }
-
-  var trackButtons = props.species.data.map(function (d, i) {
-    var height = trackHeight;
-
-    var style = {
-      width: height,
-      height: height,
-      border: "1px solid #ccc",
-      marginLeft: "auto",
-      marginRight: -16
-    };
-
-    return (
-      <div key={i} style={{width: "100%"}}>
-        <div
-          className="btn-default text-center"
-          style={style}>
-        </div>
-      </div>
-    );
-  });
 
   return (
     <div className="text-left" style={outerStyle}>
@@ -146,7 +126,9 @@ function Species(props) {
         </div>
         <div className="row in" id={collapseId} style={collapseRowStyle}>
           <div className="col-xs-2">
-            {trackButtons}
+            <TrackToggleButtons
+              data={props.species.data}
+              height={trajectoryHeight} />
           </div>
           <div className="col-xs-10" style={collapseColStyle}>
             <HeatMapContainer
@@ -157,7 +139,7 @@ function Species(props) {
               activePhase={props.activePhase}
               phaseColorScale={props.phaseColorScale}
               phaseOverlayOpacity={props.phaseOverlayOpacity}
-              height={props.species.data.length * trackHeight} />
+              height={props.species.data.length * trajectoryHeight} />
           </div>
         </div>
       </div>
