@@ -1,7 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
-var TrackToggleButtons = require("./TrackToggleButtons");
+var TraceToggleButtons = require("./TraceToggleButtons");
 var HeatLineContainer = require("../containers/HeatLineContainer");
 var HeatMapContainer = require("../containers/HeatMapContainer");
 var Constants = require("../constants/Constants");
@@ -49,8 +49,7 @@ var rowStyle = {
 };
 
 var buttonColumnStyle = {
-  paddingLeft: 0,
-  paddingRight: 0
+  padding: 0
 };
 
 var visColumnStyle = {
@@ -82,7 +81,7 @@ function Species(props) {
   collapseId = collapseId.replace(/\s/g, "");
 
   var averageHeight = 32;
-  var trajectoryHeight = 20;
+  var traceHeight = 20;
 
   var featureSpan = props.species.feature ?
       <span style={featureStyle}>{" - " + props.species.feature}</span> : null;
@@ -91,6 +90,13 @@ function Species(props) {
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData(Constants.drag_track_type, props.species.index);
   }
+
+/*
+<TraceToggleButtons
+  traces={[props.species.average]}
+  width={traceHeight}
+  height={averageHeight} />
+*/
 
   return (
     <div className="text-left" style={outerStyle}>
@@ -109,12 +115,12 @@ function Species(props) {
       </div>
       <div>
         <div className="row" style={rowStyle}>
-          <div className="col-xs-2 text-left" style={buttonColumnStyle}>
+          <div className="col-xs-2" style={buttonColumnStyle}>
             <CollapseButtonContainer targetId={collapseId} />
           </div>
           <div className="col-xs-10" style={visColumnStyle}>
             <HeatMapContainer
-              data={[props.species.average]}
+              data={[props.species.average.values]}
               dataExtent={props.species.dataExtent}
               phases={[props.activePhases]}
               timeExtent={props.timeExtent}
@@ -125,10 +131,11 @@ function Species(props) {
           </div>
         </div>
         <div className="row in" id={collapseId} style={collapseRowStyle}>
-          <div className="col-xs-2">
-            <TrackToggleButtons
-              data={props.species.data}
-              height={trajectoryHeight} />
+          <div className="col-xs-2" style={buttonColumnStyle}>
+            <TraceToggleButtons
+              traces={props.species.data}
+              width={traceHeight}
+              height={traceHeight} />
           </div>
           <div className="col-xs-10" style={collapseColStyle}>
             <HeatMapContainer
@@ -139,7 +146,7 @@ function Species(props) {
               activePhase={props.activePhase}
               phaseColorScale={props.phaseColorScale}
               phaseOverlayOpacity={props.phaseOverlayOpacity}
-              height={props.species.data.length * trajectoryHeight} />
+              height={props.species.data.length * traceHeight} />
           </div>
         </div>
       </div>
