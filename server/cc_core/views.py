@@ -270,7 +270,7 @@ def add_profile_to_server(request):
 
         if not cell_data_list and not model_data_list:
             messages.error(request, "Please upload or select some data - you cannot leave both "
-                                    "cell data and model data empty in the new profile")
+                                    "dataset and model data empty in the new profile")
             messages.info(request, 'AddProfile')
             return HttpResponseRedirect(request.META['HTTP_REFERER'])
 

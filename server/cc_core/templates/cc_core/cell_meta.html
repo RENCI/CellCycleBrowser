@@ -5,11 +5,11 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <h2>Cell Data Set Information</h2>
+            <h2>Dataset Information</h2>
         </div>
         {% if metadata_dict %}
             <div class="row">
-                <h3>Below is information for the cell data set you selected:</h3>
+                <h3>Below is information for the dataset you selected:</h3>
             </div>
             {% for key, value in metadata_dict.items %}
                 <div class="row">
@@ -21,7 +21,7 @@
             {% endfor %}
         {% else %}
             <div class="row">
-                <h3>The cell data set you selected does not have any metadata.</h3>
+                <h3>The dataset you selected does not have any metadata.</h3>
             </div>
         {% endif %}
     </div>

@@ -54,7 +54,7 @@ def load_cell_data_csv(cell_data):
                     meta_dict[file_base_name][key] = val if len(row) == 2 else ', '.join(row[1:])
 
             if md_begin and not md_end:
-                raise ValidationError('Cell Data is malformed: <begin metadata> tag '
+                raise ValidationError('Dataset is malformed: <begin metadata> tag '
                                       'does not have <end metadata> matching tag')
 
             if meta_dict[file_base_name]:

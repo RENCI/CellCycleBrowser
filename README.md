@@ -8,7 +8,7 @@
 - git clone source code from this repo.
 - Modify config/cc-config.yaml file to change ```CC_PATH``` to point to the root directory of the source tree for CellCycleBrowser.
 - Copy local_settings.py from cellcycledev.renci.org and put it under the cellcycle directory. This local_settings.py holds sensitive information, so should not be exposed to the outside world.
-- Create a directory ```data``` which holds cell csv data, and subdirectories ```config``` and ```model```. Refer to cellcycledev.renci.org and copy config, model input, and cell data to your local development environment.
+- Create a directory ```data``` which holds csv dataset, and subdirectories ```config``` and ```model```. Refer to cellcycledev.renci.org and copy config, model input, and dataset to your local development environment.
 - Modify docker-compose-dev.yml file to replace all occurrences of ```/home/ccbuild/CellCycleBrowser``` with the corresponding path in your local environment.
 - ```cd cc_docker_base``` directory and run ```docker build -t cc_base .``` to build the base image. This only needs to be done once to build the environment unless you want to install more libraries/packages into your development environment.
 - ```cd ..``` to get back to the root directory of the source tree, and run ```./ccctl deploy_dev_nodb``` to build all containers.

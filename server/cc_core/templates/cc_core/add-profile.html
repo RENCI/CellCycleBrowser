@@ -6,9 +6,9 @@
     <div class="row">
       <h2>Create a new profile for cell cycle browser</h2>
       <ul>
-        <li>Select existing or upload new cell data and model data to be included in the new profile.</li>
-        <li>Input name and description for each cell data and model data included in the new profile.</li>
-        <li>You can include multiple cell data and model data in the same profile for comparative visualization.</li>
+        <li>Select existing or upload new dataset and model data to be included in the new profile.</li>
+        <li>Input name and description for each dataset and model data included in the new profile.</li>
+        <li>You can include multiple dataset and model data in the same profile for comparative visualization.</li>
       </ul>
       <form class="form-horizontal" role="form" action="/add_profile_to_server/" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
@@ -22,27 +22,27 @@
         </div>
         <hr>
         <div class="form-group">
-            <label for="cell_sel_files">Upload csv cell data</label>
+            <label for="cell_sel_files">Upload csv datasets</label>
             <input type="file" class="btn-add-access" name="cell_files" id="cell_sel_files" multiple/>
-            <p class="help-block">You can upload multiple csv cell datasets simultaneously.</p>
+            <p class="help-block">You can upload multiple csv datasets simultaneously.</p>
         </div>
         <div class="form-group">
-            <label for="cell_sel_names">Select existing csv cell data</label>
+            <label for="cell_sel_names">Select existing csv datasets</label>
             <select class="form-control" name="cell_sel_names" id="cell_sel_names" multiple>
                 <option value="">----None----</option>
                 {% for fname in cell_data_names %}
                     <option value={{ fname }}>{{ fname }}</option>
                 {% endfor %}
             </select>
-            <p class="help-block">You can select multiple csv cell datasets by holding down the Ctrl or Shift key. Select the first <i>None</i> item if you don't want to select any dataset.</p>
+            <p class="help-block">You can select multiple csv datasets by holding down the Ctrl or Shift key. Select the first <i>None</i> item if you don't want to select any dataset.</p>
         </div>
         <div class="form-group">
-            <label for="id_cdname">Cell Data Display Name:</label>
+            <label for="id_cdname">Dataset Display Name:</label>
             <input id="cdname" class="form-control" name="cdname" placeholder="cell_data_file_name:cell_data_display_name;another_file_name:another_display_name" value="" type="text" />
             <p class="help-block">The input must be in the format of cell_data_file_name:cell_data_display_name separated by semicolon for multiple datasets.</p>
         </div>
         <div class="form-group">
-            <label for="id_cddesc">Cell Data Description:</label>
+            <label for="id_cddesc">Dataset Description:</label>
             <input id="cddesc" class="form-control" name="cddesc" placeholder="cell_data_file_name:cell_data_description;;another_file_name:another_description" value="" type="text" />
             <p class="help-block">The input must be in the format of cell_data_file_name:cell_data_description separated by semicolon for multiple datasets.</p>
         </div>
