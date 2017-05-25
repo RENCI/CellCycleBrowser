@@ -2,11 +2,13 @@ import json
 import os
 import shutil
 import logging
+import csv
 
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.template import loader
 from django.conf import settings
 from django.shortcuts import render
+from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
@@ -172,11 +174,27 @@ def add_profile_to_server(request):
 
         cell_data_list = []
         cdfiles = request.FILES.getlist('cell_files')
+        req_md_elems = []
+        if cdfiles:
+            req_md_elems = utils.get_required_metadata_elements()
+
         cdselnames = request.POST.getlist('cell_sel_names')
         filename_to_idx = {}
         idx = 0
         for cdfile in cdfiles:
             source = cdfile.file.name
+            with open(source, 'r') as fp:
+                csv_data = csv.reader(fp)
+                # validate the dataset metadata to have all required metadata elements before
+                # adding the dataset into the server
+                try:
+                    _, _ = utils.read_metadata_from_csv_data(cdfile.name, csv_data,
+                                                                 req_md_elems)
+                except ValidationError as ex:
+                    messages.error(request, ex.message)
+                    messages.info(request, 'AddProfile')
+                    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
             target = os.path.join(settings.CELL_DATA_PATH, cdfile.name)
             shutil.copy(source, target)
             cell_data_list.append({'fileName':cdfile.name})

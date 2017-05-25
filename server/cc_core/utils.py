@@ -12,6 +12,53 @@ from django.core.exceptions import ValidationError
 
 from .models import CellMetadata
 
+
+def read_metadata_from_csv_data(file_base_name, csv_data, required_md_elems=[]):
+    mdict = {}
+    md_begin = False
+    md_end = False
+    first_data_row = ''
+    for row in csv_data:
+        if not row:
+            # row is empty - filter out empty rows
+            continue
+
+        if not md_begin:
+            if row[0] == '<begin metadata>':
+                md_begin = True
+                continue
+            else:
+                # no metadata is defined for this cell data, no need for further check
+                first_data_row = row
+                break
+
+        if md_end:
+            first_data_row = row
+            break
+
+        if md_begin:
+            if row[0] == '<end metadata>':
+                md_end = True
+                continue
+
+            key = row[0]
+            val = row[1]
+            mdict[key] = val if len(row) == 2 else ', '.join(row[1:])
+
+    if md_begin and not md_end:
+        raise ValidationError('Dataset is malformed: <begin metadata> tag '
+                              'does not have <end metadata> matching tag')
+
+    if required_md_elems:
+        # validate required metadata elements are included in the dataset
+        for req_elem in required_md_elems:
+            if req_elem not in mdict:
+                raise ValidationError('Dataset ' + file_base_name +
+                                      ' does not have required metadata element: ' + req_elem)
+
+    return first_data_row, mdict
+
+
 def load_cell_data_csv(cell_data):
     data_str = ''
     cell_data_filename = os.path.join(settings.CELL_DATA_PATH,
@@ -20,42 +67,12 @@ def load_cell_data_csv(cell_data):
         with open(cell_data_filename, 'r') as fp:
             # do data transpose before serving csv data to client
             file_base_name = os.path.basename(cell_data_filename)
-            meta_dict = {file_base_name: {}}
+
             csv_data = csv.reader(fp)
-            md_begin = False
-            md_end = False
-            first_data_row = ''
 
-            for row in csv_data:
-                if not row:
-                    # row is empty - filter out empty rows
-                    continue
+            first_data_row, mdict = read_metadata_from_csv_data(file_base_name, csv_data)
 
-                if not md_begin:
-                    if row[0] == '<begin metadata>':
-                        md_begin = True
-                        continue
-                    else:
-                        # no metadata is defined for this cell data, no need for further check
-                        first_data_row = row
-                        break
-
-                if md_end:
-                    first_data_row = row
-                    break
-
-                if md_begin:
-                    if row[0] == '<end metadata>':
-                        md_end = True
-                        continue
-
-                    key = row[0]
-                    val = row[1]
-                    meta_dict[file_base_name][key] = val if len(row) == 2 else ', '.join(row[1:])
-
-            if md_begin and not md_end:
-                raise ValidationError('Dataset is malformed: <begin metadata> tag '
-                                      'does not have <end metadata> matching tag')
+            meta_dict = {file_base_name: mdict}
 
             if meta_dict[file_base_name]:
                 # store meta_dict to database so that it is available for other requests
@@ -401,6 +418,16 @@ def get_profile_list():
                 with open(p_filename, 'r') as profile_file:
                     data.append(json.load(profile_file))
 
+    return data
+
+
+def get_required_metadata_elements():
+    dataset_config_name = "data/config/dataset_config.json"
+    data = []
+    with open(dataset_config_name, 'r') as md_config_file:
+        config_data = json.load(md_config_file)
+        if 'required_metadata_elements' in config_data:
+            data = config_data['required_metadata_elements']
     return data
 
 
