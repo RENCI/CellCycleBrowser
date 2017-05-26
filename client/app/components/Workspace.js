@@ -2,7 +2,7 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 var WorkspaceSelectContainer = require("../containers/WorkspaceSelectContainer");
 var WorkspaceDescription = require("../components/WorkspaceDescription");
-var WorkspaceAddDelete = require("../components/WorkspaceAddDelete");
+var WorkspaceCreateDelete = require("../components/WorkspaceCreateDelete");
 
 var outerStyle = {
   marginTop: -1,
@@ -28,7 +28,7 @@ function Workspace(props) {
         <WorkspaceDescription description={description} />
       </div>
       <div className="form-group" style={divStyle}>
-        <WorkspaceAddDelete />
+        <WorkspaceCreateDelete />
       </div>
     </div>
   );

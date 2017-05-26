@@ -1,7 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
-function WorkspaceAddDelete(props) {
+function WorkspaceCreateDelete(props) {
   return (
     <div className="btn-group">
       <a
@@ -10,7 +10,7 @@ function WorkspaceAddDelete(props) {
         data-toggle="tooltip"
         data-container="body"
         data-placement="auto top"
-        title="Add workspace">
+        title="Create workspace">
           <span className="glyphicon glyphicon-plus-sign"></span>
       </a>
       <a
@@ -26,4 +26,4 @@ function WorkspaceAddDelete(props) {
   );
 }
 
-module.exports = WorkspaceAddDelete;
+module.exports = WorkspaceCreateDelete;
