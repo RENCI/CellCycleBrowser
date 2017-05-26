@@ -91,13 +91,6 @@ function Track(props) {
     e.dataTransfer.setData(Constants.drag_track_type, props.species.index);
   }
 
-/*
-<TraceToggleButtons
-  traces={[props.species.average]}
-  width={traceHeight}
-  height={averageHeight} />
-*/
-
   return (
     <div className="text-left" style={outerStyle}>
       <div

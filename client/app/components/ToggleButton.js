@@ -5,11 +5,10 @@ function ToggleButton(props) {
   var style = {
     width: "100%",
     height: "100%",
-    borderRadius: 0,
-    border: "1px solid #eee"
+    borderLeft: "1px solid #ccc"
   };
 
-  var classes = props.selected ? "btn-default active" : "";
+  var classes ="btn-default" + (props.selected ? " active" : "");
 
   return (
     <label

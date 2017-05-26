@@ -24,7 +24,7 @@ function TraceToggleButtons(props) {
   });
 
   return (
-    <div style={{margin: 0}}>
+    <div style={{marginTop: 0}}>
       {buttons}
     </div>
   );
