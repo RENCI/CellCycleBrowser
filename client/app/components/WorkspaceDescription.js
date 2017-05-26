@@ -1,12 +1,12 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
-function ProfileDescription(props) {
+function WorkspaceDescription(props) {
   return <div>{props.description}</div>
 }
 
-ProfileDescription.propTypes = {
+WorkspaceDescription.propTypes = {
   description: PropTypes.string.isRequired
 };
 
-module.exports = ProfileDescription;
+module.exports = WorkspaceDescription;

@@ -4,13 +4,13 @@ var WebAPIUtils = require("../utils/WebAPIUtils");
 var DatasetStore = require("../stores/DatasetStore");
 
 module.exports = {
-  selectProfile: function (profileIndex) {
+  selectWorkspace: function (workspaceIndex) {
     AppDispatcher.dispatch({
-      actionType: Constants.SELECT_PROFILE,
-      profileIndex: profileIndex
+      actionType: Constants.SELECT_WORKSPACE,
+      workspaceIndex: workspaceIndex
     });
 
-    WebAPIUtils.getProfile(profileIndex);
+    WebAPIUtils.getWorkspace(workspaceIndex);
   },
   selectModel: function (modelKey) {
     AppDispatcher.dispatch({

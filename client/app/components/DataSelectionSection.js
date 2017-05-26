@@ -1,6 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
-var Profile = require("../components/Profile");
+var Workspace = require("../components/Workspace");
 var Model = require("../components/Model");
 var DatasetSelectContainer = require("../containers/DatasetSelectContainer");
 
@@ -20,7 +20,7 @@ function DataSelectionSection(props) {
     <div className="container-fluid well" style={containerStyle}>
       <div className="row">
         <div className="col-xs-12">
-          <Profile profile={props.profile} />
+          <Workspace workspace={props.workspace} />
         </div>
       </div>
       <hr style={hrStyle}/>
@@ -37,7 +37,7 @@ function DataSelectionSection(props) {
 }
 
 DataSelectionSection.propTypes = {
-  profile: PropTypes.object.isRequired
+  workspace: PropTypes.object.isRequired
 };
 
 module.exports = DataSelectionSection;

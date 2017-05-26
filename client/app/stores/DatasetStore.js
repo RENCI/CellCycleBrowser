@@ -2,7 +2,7 @@ var AppDispatcher = require("../dispatcher/AppDispatcher");
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
 var Constants = require("../constants/Constants");
-var ProfileStore = require("./ProfileStore");
+var WorkspaceStore = require("./WorkspaceStore");
 
 var CHANGE_EVENT = "change";
 
@@ -79,7 +79,7 @@ DatasetStore.dispatchToken = AppDispatcher.register(function (action) {
       DatasetStore.emitChange();
       break;
 
-    case Constants.RECEIVE_PROFILE:
+    case Constants.RECEIVE_WORKSPACE:
       // Clear datasets
       // XXX: Could look at matching with currently loaded datasets instead
       // of starting from scratch

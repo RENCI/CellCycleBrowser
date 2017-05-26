@@ -3,10 +3,10 @@ var Constants = require("../constants/Constants");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
 module.exports = {
-  receiveProfileList: function (profileList) {
+  receiveWorkspaceList: function (workspaceList) {
     AppDispatcher.dispatch({
-      actionType: Constants.RECEIVE_PROFILE_LIST,
-      profileList: profileList
+      actionType: Constants.RECEIVE_WORKSPACE_LIST,
+      workspaceList: workspaceList
     });
   },
   receiveDatasetList: function (datasetList) {
@@ -15,10 +15,10 @@ module.exports = {
       datasetList: datasetList
     });
   },
-  receiveProfile: function (profile) {
+  receiveWorkspace: function (workspace) {
     AppDispatcher.dispatch({
-      actionType: Constants.RECEIVE_PROFILE,
-      profile: profile
+      actionType: Constants.RECEIVE_WORKSPACE,
+      workspace: workspace
     });
   },
   receiveDataset: function (dataset) {

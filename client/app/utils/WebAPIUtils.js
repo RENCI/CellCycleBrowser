@@ -203,7 +203,7 @@ function pollSimulation(taskId) {
   });
 }
 
-function getProfileList() {
+function getWorkspaceList() {
   setupAjax();
 
   $.ajax({
@@ -211,10 +211,10 @@ function getProfileList() {
     url: "/get_profile_list/",
     success: function (data) {
       // Create an action
-      ServerActionCreators.receiveProfileList(data);
+      ServerActionCreators.receiveWorkspaceList(data);
 
-      // Request first profile
-      getProfile(0);
+      // Request first workspace
+      getWorkspace(0);
     },
     error: function (xhr, textStatus, errorThrown) {
       console.log(textStatus + ": " + errorThrown);
@@ -226,23 +226,23 @@ function getDatasetList() {
   // XXX: Stub
 }
 
-// XXX: Temporary fix for mimicking new profile without embedded cell data
+// XXX: Temporary fix for mimicking new workspace without embedded cell data
 var dataSets = [];
 var datasetList = [];
 
-function getProfile(profileIndex) {
+function getWorkspace(workspaceIndex) {
   setupAjax();
 
   $.ajax({
     type: "POST",
     url: "/get_profile/",
-    data: { index: profileIndex },
+    data: { index: workspaceIndex },
     success: function (data) {
-      // XXX: Temporary fix for giving profile an id
+      // XXX: Temporary fix for giving workspace an id
       data.id = data.name;
 
 ////////////////////////////////////////////////////////////////////////////////
-// XXX: Temporary fix for mimicking new profile without embedded cell data
+// XXX: Temporary fix for mimicking new workspace without embedded cell data
       if (data.cellData) {
         dataSets = data.cellData;
         datasetList = data.cellData.map(function (cellData, i, a) {
@@ -264,7 +264,7 @@ function getProfile(profileIndex) {
       }
 ////////////////////////////////////////////////////////////////////////////////
 
-      ServerActionCreators.receiveProfile(data);
+      ServerActionCreators.receiveWorkspace(data);
 
       // Request datasets
       data.datasetList.forEach(function (dataset) {
@@ -278,7 +278,7 @@ function getProfile(profileIndex) {
 }
 
 function getDataset(id) {
-  // XXX: Temporary fix for mimicking new profile without embedded cell data
+  // XXX: Temporary fix for mimicking new workspace without embedded cell data
   setTimeout(function() {
     // Reformat the data
     var dataset = createDataset(dataSets[id]);
@@ -297,7 +297,7 @@ sendParameter: function(data) {
     data: data,
     success: function (data) {
       console.log(data)
-      //ServerActionCreators.receiveProfile(data);
+      //ServerActionCreators.receiveWorkspace(data);
     },
     error: function (xhr, textStatus, errorThrown) {
       console.log(textStatus + ": " + errorThrown);
@@ -327,9 +327,9 @@ function runSimulation() {
 }
 
 module.exports = {
-  getProfileList: getProfileList,
+  getWorkspaceList: getWorkspaceList,
   getDatasetList: getDatasetList,
   getDataset: getDataset,
-  getProfile: getProfile,
+  getWorkspace: getWorkspace,
   runSimulation: runSimulation
 };

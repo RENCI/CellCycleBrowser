@@ -454,7 +454,7 @@ var DataStore = assign({}, EventEmitter.prototype, {
 
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
-    case Constants.RECEIVE_PROFILE:
+    case Constants.RECEIVE_WORKSPACE:
       AppDispatcher.waitFor([DatasetStore.dispatchToken,
                              SimulationOutputStore.dispatchToken]);
       datasets = DatasetStore.getDatasets();

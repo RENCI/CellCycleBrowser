@@ -5,46 +5,46 @@ var ResizeContainer = require("../containers/ResizeContainer");
 var HeaderSection = require("../components/HeaderSection");
 var DataSelectionSection = require("../components/DataSelectionSection");
 var MainSection = require("../components/MainSection");
-var ProfileStore = require("../stores/ProfileStore");
+var WorkspaceStore = require("../stores/WorkspaceStore");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
 // Retrieve the current state from the store
 function getStateFromStore() {
   return {
-    profile: ProfileStore.getProfile()
+    workspace: WorkspaceStore.getWorkspace()
   };
 }
 
 var AppContainer = React.createClass({
   getInitialState: function () {
     return {
-      profile: null
+      workspace: null
     };
   },
   componentDidMount: function () {
-    ProfileStore.addChangeListener(this.onProfileChange);
+    WorkspaceStore.addChangeListener(this.onWorkspaceChange);
 
     // Bootstrap the application by getting initial data here
-    WebAPIUtils.getProfileList();
+    WebAPIUtils.getWorkspaceList();
     WebAPIUtils.getDatasetList();
   },
   componentWillUnmount: function () {
-    ProfileStore.removeChangeListener(this.onProfileChange);
+    WorkspaceStore.removeChangeListener(this.onWorkspaceChange);
   },
-  onProfileChange: function () {
+  onWorkspaceChange: function () {
     this.setState(getStateFromStore());
   },
   render: function () {
-    var hasProfile = this.state.profile && this.state.profile.name;
+    var hasWorkspace = this.state.workspace && this.state.workspace.name;
 
     return (
       <div>
         <ResizeContainer />
         <HeaderSection />
-        {hasProfile ?
-          <DataSelectionSection profile={this.state.profile} /> : null }
-        {hasProfile ?
-          <MainSection profile={this.state.profile} /> : null}
+        {hasWorkspace ?
+          <DataSelectionSection workspace={this.state.workspace} /> : null }
+        {hasWorkspace ?
+          <MainSection workspace={this.state.workspace} /> : null}
       </div>
     );
   }

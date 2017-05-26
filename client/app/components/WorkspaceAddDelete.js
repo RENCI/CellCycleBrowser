@@ -1,7 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
-function ProfileAddDelete(props) {
+function WorkspaceAddDelete(props) {
   return (
     <div className="btn-group">
       <a
@@ -10,7 +10,7 @@ function ProfileAddDelete(props) {
         data-toggle="tooltip"
         data-container="body"
         data-placement="auto top"
-        title="Add profile">
+        title="Add workspace">
           <span className="glyphicon glyphicon-plus-sign"></span>
       </a>
       <a
@@ -19,11 +19,11 @@ function ProfileAddDelete(props) {
         data-toggle="tooltip"
         data-container="body"
         data-placement="auto top"
-        title="Delete profile">
+        title="Delete workspace">
         <span className="glyphicon glyphicon-minus-sign"></span>
       </a>
     </div>
   );
 }
 
-module.exports = ProfileAddDelete;
+module.exports = WorkspaceAddDelete;

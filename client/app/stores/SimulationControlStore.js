@@ -100,7 +100,7 @@ function createControls(model) {
 
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
-    case Constants.RECEIVE_PROFILE:
+    case Constants.RECEIVE_WORKSPACE:
       AppDispatcher.waitFor([ModelStore.dispatchToken]);
       createControls(ModelStore.getModel());
       SimulationControlStore.emitChange();

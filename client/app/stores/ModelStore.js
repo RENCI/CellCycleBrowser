@@ -2,11 +2,11 @@ var AppDispatcher = require("../dispatcher/AppDispatcher");
 var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
 var Constants = require("../constants/Constants");
-var ProfileStore = require("./ProfileStore");
+var WorkspaceStore = require("./WorkspaceStore");
 
 var CHANGE_EVENT = "change";
 
-// List of available models for the current profile
+// List of available models for the current workspace
 var modelList = [];
 
 // Active model
@@ -35,10 +35,10 @@ var ModelStore = assign({}, EventEmitter.prototype, {
 
 ModelStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
-    case Constants.RECEIVE_PROFILE:
-      AppDispatcher.waitFor([ProfileStore.dispatchToken]);
-      var profile = ProfileStore.getProfile();
-      modelList = profile.models ? profile.models : [];
+    case Constants.RECEIVE_WORKSPACE:
+      AppDispatcher.waitFor([WorkspaceStore.dispatchToken]);
+      var workspace = WorkspaceStore.getWorkspace();
+      modelList = workspace.models ? workspace.models : [];
       model = modelList.length > 0 ? modelList[0] : {};
       ModelStore.emitChange();
       break;

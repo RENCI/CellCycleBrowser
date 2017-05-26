@@ -9,11 +9,11 @@ var divClass = "container-fluid well";
 
 function MainSection(props) {
   // Check for models and cell data
-  var hasModels = props.profile.models &&
-                  props.profile.models.length > 0;
+  var hasModels = props.workspace.models &&
+                  props.workspace.models.length > 0;
 
-  var hasDatasets = props.profile.cellData &&
-                    props.profile.cellData.length > 0;
+  var hasDatasets = props.workspace.cellData &&
+                    props.workspace.cellData.length > 0;
 
   // Render conditionally based on presence of model and cell data
   if (hasModels && hasDatasets) {
@@ -75,7 +75,7 @@ function MainSection(props) {
 }
 
 MainSection.propTypes = {
-  profile: PropTypes.object.isRequired
+  workspace: PropTypes.object.isRequired
 };
 
 module.exports = MainSection;
