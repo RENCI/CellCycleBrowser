@@ -72,7 +72,7 @@ var collapseColStyle = {
   borderLeft: "1px solid #ccc"
 };
 
-function Species(props) {
+function Track(props) {
   // Generate unique id for species
   // XXX: Could pass in array index for this?
   var collapseId = props.species.species + "_" +
@@ -162,7 +162,7 @@ function Species(props) {
   );
 }
 
-Species.propTypes = {
+Track.propTypes = {
   species: PropTypes.object.isRequired,
   phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   phaseAverage: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -173,4 +173,4 @@ Species.propTypes = {
   phaseOverlayOpacity: PropTypes.number.isRequired
 };
 
-module.exports = Species;
+module.exports = Track;

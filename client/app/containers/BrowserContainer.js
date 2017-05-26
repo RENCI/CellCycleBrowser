@@ -11,8 +11,8 @@ var BrowserControls = require("../components/BrowserControls");
 var TimeScaleArea = require("../components/TimeScaleArea");
 var TrackSortContainer = require("../containers/TrackSortContainer");
 var Phases = require("../components/Phases");
-var Species = require("../components/Species");
-var SpeciesDividerContainer = require("../containers/SpeciesDividerContainer");
+var Track = require("../components/Track");
+var TrackDividerContainer = require("../containers/TrackDividerContainer");
 
 function getStateFromDataStore() {
   return {
@@ -112,9 +112,9 @@ var BrowserContainer = React.createClass({
     var trackComponents = tracks.map(function(track, i) {
       return (
         <div key={i}>
-          <SpeciesDividerContainer
+          <TrackDividerContainer
             index={track.index} />
-          <Species
+          <Track
             species={track}
             phases={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}
             phaseAverage={this.state.showPhaseOverlay ? this.state.data.phaseAverage: []}
@@ -142,7 +142,7 @@ var BrowserContainer = React.createClass({
           colorScale={this.state.phaseColorScale} />
         <TrackSortContainer />
         {trackComponents}
-        <SpeciesDividerContainer
+        <TrackDividerContainer
           index={tracks.length} />
       </div>
     );

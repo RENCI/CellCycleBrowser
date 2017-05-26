@@ -1,6 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
-var SpeciesDivider = require("../components/SpeciesDivider");
+var TrackDivider = require("../components/TrackDivider");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var Constants = require("../constants/Constants");
 
@@ -13,11 +13,11 @@ function shouldInsert(speciesIndex, dividerIndex) {
          speciesIndex !== dividerIndex - 1;
 }
 
-function getSpeciesIndex(e) {
+function getTrackIndex(e) {
   return +e.dataTransfer.getData(Constants.drag_track_type);
 }
 
-var SpeciesDividerContainer = React.createClass ({
+var TrackDividerContainer = React.createClass ({
   propTypes: {
     index: PropTypes.number.isRequired
   },
@@ -49,7 +49,7 @@ var SpeciesDividerContainer = React.createClass ({
   },
   handleDrop: function (e) {
     if (this.state.dragValid) {
-      var speciesIndex = getSpeciesIndex(e);
+      var speciesIndex = getTrackIndex(e);
 
       if (shouldInsert(speciesIndex, this.props.index)) {
         ViewActionCreators.insertTrack(speciesIndex, this.props.index);
@@ -62,7 +62,7 @@ var SpeciesDividerContainer = React.createClass ({
   },
   render: function () {
     return (
-      <SpeciesDivider
+      <TrackDivider
         index={this.props.index}
         visible={this.state.dragValid}
         onDragEnter={this.handleDragEnter}
@@ -73,4 +73,4 @@ var SpeciesDividerContainer = React.createClass ({
   }
 });
 
-module.exports = SpeciesDividerContainer;
+module.exports = TrackDividerContainer;
