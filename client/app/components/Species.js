@@ -117,6 +117,12 @@ function Species(props) {
         <div className="row" style={rowStyle}>
           <div className="col-xs-2" style={buttonColumnStyle}>
             <CollapseButtonContainer targetId={collapseId} />
+            <div style={{float:"right"}}>
+              <TraceToggleButtons
+                traces={[props.species.average]}
+                width={traceHeight}
+                height={averageHeight} />
+            </div>
           </div>
           <div className="col-xs-10" style={visColumnStyle}>
             <HeatMapContainer
@@ -132,10 +138,12 @@ function Species(props) {
         </div>
         <div className="row in" id={collapseId} style={collapseRowStyle}>
           <div className="col-xs-2" style={buttonColumnStyle}>
-            <TraceToggleButtons
-              traces={props.species.data}
-              width={traceHeight}
-              height={traceHeight} />
+            <div style={{float:"right"}}>
+              <TraceToggleButtons
+                traces={props.species.data}
+                width={traceHeight}
+                height={traceHeight} />
+            </div>
           </div>
           <div className="col-xs-10" style={collapseColStyle}>
             <HeatMapContainer

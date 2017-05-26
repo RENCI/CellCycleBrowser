@@ -508,7 +508,6 @@ AppDispatcher.register(function (action) {
       break;
 
     case Constants.SELECT_TRACE:
-    console.log(action);
       selectTrace(action.trace, action.selected);
       DataStore.emitChange();
       break;

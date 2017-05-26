@@ -60,7 +60,6 @@ module.exports = {
     });
   },
   selectTrace: function (trace, selected) {
-    console.log(selected);
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_TRACE,
       trace: trace,
