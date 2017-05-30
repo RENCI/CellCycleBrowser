@@ -79,10 +79,11 @@ def load_cell_data_csv(cell_data):
                 if CellMetadata.objects.all().filter(cell_filename=file_base_name).exists():
                     # delete existing records to have updated record created subsequently
                     meta_rec = CellMetadata.objects.get(cell_filename=file_base_name)
-                    meta_rec.delete()
-
-                CellMetadata.objects.create(cell_filename=file_base_name,
-                                            metadata_dict=meta_dict[file_base_name])
+                    meta_rec.metadata_dict = meta_dict[file_base_name]
+                    meta_rec.save()
+                else:
+                    CellMetadata.objects.create(cell_filename=file_base_name,
+                                                metadata_dict=meta_dict[file_base_name])
 
             data_list = [first_data_row] + [row for row in csv_data]
 

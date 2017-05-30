@@ -174,6 +174,7 @@ def add_profile_to_server(request):
 
         cell_data_list = []
         cdfiles = request.FILES.getlist('cell_files')
+
         req_md_elems = []
         if cdfiles:
             req_md_elems = utils.get_required_metadata_elements()
@@ -183,6 +184,17 @@ def add_profile_to_server(request):
         idx = 0
         for cdfile in cdfiles:
             source = cdfile.file.name
+            target = os.path.join(settings.CELL_DATA_PATH, cdfile.name)
+            # check to make sure the uploaded new file names don't have conflict with existing files
+            if os.path.isfile(target):
+                # file with the same file name already exists - raise validation error and ask user
+                # to change file name to avoid file conflict
+                messages.error(request, "The file " + cdfile.name +
+                               " already exists on the server. Please rename this file "
+                               "before uploading to the server to avoid file conflict.")
+                messages.info(request, 'AddProfile')
+                return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
             with open(source, 'r') as fp:
                 csv_data = csv.reader(fp)
                 # validate the dataset metadata to have all required metadata elements before
@@ -195,7 +207,7 @@ def add_profile_to_server(request):
                     messages.info(request, 'AddProfile')
                     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
-            target = os.path.join(settings.CELL_DATA_PATH, cdfile.name)
+
             shutil.copy(source, target)
             cell_data_list.append({'fileName':cdfile.name})
             filename_to_idx[cdfile.name] = idx
@@ -241,6 +253,15 @@ def add_profile_to_server(request):
         for mdfile in mdfiles:
             source = mdfile.file.name
             target = os.path.join(settings.MODEL_INPUT_PATH, mdfile.name)
+            if os.path.isfile(target):
+                # file with the same file name already exists - raise validation error and ask user
+                # to change file name to avoid file conflict
+                messages.error(request, "The file " + mdfile.name +
+                               " already exists on the server. Please rename this file "
+                               "before uploading to the server to avoid file conflict.")
+                messages.info(request, 'AddProfile')
+                return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
             shutil.copy(source, target)
             model_data_list.append({'fileName': mdfile.name})
             filename_to_idx[mdfile.name] = idx
