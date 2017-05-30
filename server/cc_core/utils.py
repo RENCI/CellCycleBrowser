@@ -59,10 +59,9 @@ def read_metadata_from_csv_data(file_base_name, csv_data, required_md_elems=[]):
     return first_data_row, mdict
 
 
-def load_cell_data_csv(cell_data):
+def load_cell_data_csv_content(filename):
     data_str = ''
-    cell_data_filename = os.path.join(settings.CELL_DATA_PATH,
-                                      cell_data['fileName'].encode("utf-8"))
+    cell_data_filename = os.path.join(settings.CELL_DATA_PATH, filename)
     if os.path.isfile(cell_data_filename):
         with open(cell_data_filename, 'r') as fp:
             # do data transpose before serving csv data to client
@@ -93,6 +92,11 @@ def load_cell_data_csv(cell_data):
                 # replace last , with \n
                 data_str = data_str[:-1]
                 data_str += '\n'
+    return file_base_name, data_str
+
+
+def load_cell_data_csv(cell_data):
+    file_base_name, csv_data_str = load_cell_data_csv_content(cell_data['fileName'].encode("utf-8"))
     data = {}
     data['fileName'] = file_base_name
     data['name'] = cell_data['name']
@@ -101,7 +105,7 @@ def load_cell_data_csv(cell_data):
         data['timeUnit'] = cell_data['timeUnit']
     else:
         data['timeUnit'] = 'second'
-    data['csv'] = data_str
+    data['csv'] = csv_data_str
 
     return data
 
@@ -392,18 +396,23 @@ def extract_info_from_model(filename):
         return jsondump
 
 
-def load_model(model):
+def load_model_content(filename):
     modelData = {}
-    modelData['name'] = model['name']
-    modelData['description'] = model['description']
-    modelData['fileName'] = model['fileName']
-
-    data = json.loads(extract_info_from_model(model['fileName']))
+    data = json.loads(extract_info_from_model(filename))
     modelData['species'] = data['species']
     modelData['phases'] = data['phases']
     modelData['speciesPhaseMatrix'] = data['speciesPhaseMatrix']
     modelData['speciesMatrices'] = data['speciesMatrices']
     modelData['reactions'] = data['reactions']
+
+    return modelData
+
+
+def load_model(model):
+    modelData = load_model_content(model['fileName'])
+    modelData['name'] = model['name']
+    modelData['description'] = model['description']
+    modelData['fileName'] = model['fileName']
 
     return modelData
 
@@ -446,6 +455,48 @@ def get_all_cell_and_model_file_names(profiles=None):
                 model_data_names.add(md['fileName'].encode("utf-8"))
 
     return cell_data_names, model_data_names
+
+
+def get_dataset_list(profiles=None):
+    if not profiles:
+        profiles = get_profile_list()
+    ds_list = []
+    fn_list = []
+    for p in profiles:
+        if 'cellData' in p:
+            for cd in p['cellData']:
+                fn = cd['fileName'].encode("utf-8")
+                if fn not in fn_list:
+                    cd_dict = {}
+                    cd_dict['filename'] = fn
+                    cd_dict['id'] = fn
+                    cd_dict['name'] = cd['name'].encode("utf-8")
+                    cd_dict['description'] = cd['description'].encode("utf-8")
+                    ds_list.append(cd_dict)
+                    fn_list.append(fn)
+
+    return ds_list
+
+
+def get_model_list(profiles=None):
+    if not profiles:
+        profiles = get_profile_list()
+    md_list = []
+    fn_list = []
+    for p in profiles:
+        if 'models' in p:
+            for md in p['models']:
+                fn = md['fileName'].encode("utf-8")
+                if fn not in fn_list:
+                    md_dict = {}
+                    md_dict['filename'] = fn
+                    md_dict['id'] = fn
+                    md_dict['name'] = md['name'].encode("utf-8")
+                    md_dict['description'] = md['description'].encode("utf-8")
+                    md_list.append(md_dict)
+                    fn_list.append(fn)
+
+    return md_list
 
 
 def delete_profile(pname):
