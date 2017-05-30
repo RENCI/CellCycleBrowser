@@ -2,7 +2,7 @@ var d3 = require("d3");
 
 module.exports = function() {
       // Size
-  var margin = { top: 10, left: 50, bottom: 40, right: 20 },
+  var margin = { top: 25, left: 50, bottom: 40, right: 20 },
       width = 200,
       height = 200,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -11,7 +11,6 @@ module.exports = function() {
       // Data
       data,
       curves,
-      sources,
 
       // Start with empty selection
       svg = d3.select();
@@ -34,7 +33,7 @@ module.exports = function() {
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
-      g.append("g").attr("class", "title");
+      g.append("text").attr("class", "title");
       g.append("g").attr("class", "axes");
       g.append("g").attr("class", "curves");
       g.append("g").attr("class", "legend");
@@ -53,8 +52,7 @@ module.exports = function() {
         if (d.selected) {
           curves.push({
             name: d.name,
-            source: track.source,
-            trackIndex: track.index,
+            track: track,
             curve: d.values.map(function(d) {
               return [d.start, d.value];
             })
@@ -95,7 +93,7 @@ module.exports = function() {
         .domain(sources);
 
     function curveColor(d) {
-      return colorScale(d.source);
+      return colorScale(d.track.source);
     }
 
     var circleRadius = 3;
@@ -105,15 +103,19 @@ module.exports = function() {
     drawCurves();
     drawLegend();
 
-    function drawTitle() {
-      var title = svg.select(".title").selectAll("text")
-          .data(["Time Series"]);
+    // Update tooltips
+    $(".timeSeries .curves > g").tooltip({
+      container: "body",
+      placement: "auto top",
+      animation: false,
+      html: true
+    });
 
-      title.enter().append("text")
-          .text(function(d) { return d; })
-          .attr("dy", ".8em")
+    function drawTitle() {
+      svg.select(".title")
+          .text("Time Series")
+          .attr("dy", "-.5em")
           .style("text-anchor", "middle")
-        .merge(title)
           .attr("x", innerWidth() / 2);
     }
 
@@ -137,11 +139,11 @@ module.exports = function() {
         .enter().append("text")
           .text("Hours")
           .attr("class", "xLabel")
-          .attr("dy", "-1em")
+          .attr("dy", "2.5em")
           .style("text-anchor", "middle");
 
       gAxes.select(".xLabel")
-          .attr("transform", "translate(" + (innerWidth() / 2) + "," + height + ")");
+          .attr("transform", "translate(" + (innerWidth() / 2) + "," + innerHeight() + ")");
 
       // Y axis
       var yScale = d3.scaleOrdinal()
@@ -178,6 +180,19 @@ module.exports = function() {
       // Enter + update
       var curveEnter = curve.enter().append("g")
           .attr("class", "curve")
+          .attr("data-toggle", "tooltip")
+          .on("mouseover", function(d) {
+            svg.select(".curves").selectAll(".curve").each(function(e) {
+              if (e !== d) {
+                d3.select(this).select("path")
+                    .style("stroke-opacity", 0.1);
+              }
+            });
+          })
+          .on("mouseout", function(d) {
+            svg.select(".curves").selectAll("path")
+                .style("stroke-opacity", null);
+          })
         .merge(curve)
           .each(drawCurve);
 
@@ -185,9 +200,14 @@ module.exports = function() {
       curve.exit().remove();
 
       function drawCurve(d) {
-        var g = d3.select(this);
+        var g = d3.select(this)
+            .attr("data-original-title",
+              d.track.source + ": " +
+              d.track.species + " - " +
+              d.track.feature + "<br>" +
+              d.name);
 
-        var yScale = yScales[d.trackIndex];
+        var yScale = yScales[d.track.index];
 
         var line = d3.line()
             .curve(d3.curveLinear)
@@ -209,7 +229,7 @@ module.exports = function() {
 
     function drawLegend() {
       var x = 35,
-          y = 40,
+          y = 20,
           spacing = 20,
           lineX = -2,
           lineWidth = 20;
@@ -224,7 +244,7 @@ module.exports = function() {
       // Bind curve data
       var legendItems = sources.filter(function(d) {
         return curves.map(function(e) {
-          return e.source;
+          return e.track.source;
         }).indexOf(d) !== -1;
       });
 

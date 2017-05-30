@@ -4,11 +4,10 @@ var PropTypes = React.PropTypes;
 function ToggleButton(props) {
   var style = {
     width: "100%",
-    height: "100%",
-    borderLeft: "1px solid #ccc"
+    height: "100%"
   };
 
-  var classes ="btn-default" + (props.selected ? " active" : "");
+  var classes ="btn btn-default" + (props.selected ? " active" : "");
 
   return (
     <label

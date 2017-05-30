@@ -52,6 +52,11 @@ var buttonColumnStyle = {
   padding: 0
 };
 
+var traceButtonColumnStyle = {
+  padding: 0,
+  marginTop: -1
+};
+
 var visColumnStyle = {
   paddingLeft: 0,
   paddingRight: 0,
@@ -130,7 +135,7 @@ function Track(props) {
           </div>
         </div>
         <div className="row in" id={collapseId} style={collapseRowStyle}>
-          <div className="col-xs-2" style={buttonColumnStyle}>
+          <div className="col-xs-2" style={traceButtonColumnStyle}>
             <div style={{float:"right"}}>
               <TraceToggleButtons
                 traces={props.species.data}

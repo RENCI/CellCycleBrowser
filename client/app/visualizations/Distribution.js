@@ -4,7 +4,7 @@ var d3ScaleChromatic = require("d3-scale-chromatic");
 
 module.exports = function() {
       // Size
-  var margin = { top: 10, left: 50, bottom: 40, right: 20 },
+  var margin = { top: 25, left: 50, bottom: 40, right: 20 },
       width = 200,
       height = 200,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -41,7 +41,7 @@ module.exports = function() {
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
-      g.append("g").attr("class", "title");
+      g.append("text").attr("class", "title");
       g.append("g").attr("class", "axes");
       g.append("g").attr("class", "contours");
       g.append("g").attr("class", "points");
@@ -81,14 +81,10 @@ module.exports = function() {
     }
 
     function drawTitle() {
-      var title = svg.select(".title").selectAll("text")
-          .data(["Phase Distribution"]);
-
-      title.enter().append("text")
-          .text(function(d) { return d; })
-          .attr("dy", ".8em")
+      svg.select(".title")
+          .text("Phase Distribution")
+          .attr("dy", "-.5em")
           .style("text-anchor", "middle")
-        .merge(title)
           .attr("x", innerWidth() / 2);
     }
 
@@ -112,11 +108,11 @@ module.exports = function() {
         .enter().append("text")
           .text("X")
           .attr("class", "xLabel")
-          .attr("dy", "-1em")
+          .attr("dy", "2.5em")
           .style("text-anchor", "middle");
 
       gAxes.select(".xLabel")
-          .attr("transform", "translate(" + (innerWidth() / 2) + "," + height + ")");
+          .attr("transform", "translate(" + (innerWidth() / 2) + "," + innerHeight() + ")");
 
       // Y axis
       var yAxis = d3.axisLeft(yScale);
