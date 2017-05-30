@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Delete Existing Profile{% endblock %}
+{% block title %}Delete Existing Workspace{% endblock %}
 {% block content %}
   <div class="container">
     <div class="row">
-      <h2>Delete an existing profile from cell cycle browser</h2>
+      <h2>Delete an existing workspace from cell cycle browser</h2>
       <form class="form-horizontal" role="form" action="/delete_profile_from_server/" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
-            <label for="profile_sel_names">Select an existing profile</label>
+            <label for="profile_sel_names">Select an existing workspace</label>
             <select class="form-control" name="profile_sel_name" id="profile_sel_name">
                 {% autoescape on %}
                 {% for fname in profile_data_names %}
@@ -16,11 +16,11 @@
                 {% endfor %}
                 {% endautoescape %}
             </select>
-            <p class="help-block">Select an existing profile to delete.</p>
+            <p class="help-block">Select an existing workspace to delete.</p>
         </div>
         <div class="form-group">
           <div class="col-sm-offset-6 col-sm-6">
-            <button type="submit" class="btn btn-primary btn-lg btn-block">Delete Selected Profile</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Delete Selected Workspace</button>
           </div>
           {% if messages %}
             <ul class="messages">
