@@ -317,7 +317,7 @@ function updateData() {
 
       return {
         name: "Average",
-        selected: false,
+        selected: true,
         values: timeSteps
       };
     }

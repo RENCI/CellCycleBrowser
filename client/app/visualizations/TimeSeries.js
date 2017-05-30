@@ -11,6 +11,7 @@ module.exports = function() {
       // Data
       data,
       curves,
+      sources,
 
       // Start with empty selection
       svg = d3.select();
@@ -48,19 +49,12 @@ module.exports = function() {
   function createCurves() {
     curves = [];
     data.tracks.forEach(function(track) {
-      if (track.average.selected) {
-        curves.push({
-          name: track.average.name,
-          curve: track.average.values.map(function(d) {
-            return [d.start, d.value];
-          })
-        });
-      }
-
-      track.data.forEach(function(d) {
+      [track.average].concat(track.data).forEach(function(d) {
         if (d.selected) {
           curves.push({
             name: d.name,
+            source: track.source,
+            trackIndex: track.index,
             curve: d.values.map(function(d) {
               return [d.start, d.value];
             })
@@ -84,22 +78,24 @@ module.exports = function() {
         })])
         .range([0, innerWidth()]);
 
-    var yScale = d3.scaleLinear()
-        .domain([0, d3.max(curves, function(d) {
-          return d3.max(d.curve, function(d) {
-            return d[1];
-          });
-        })])
-        .range([innerHeight(), 0]);
+    var yScales = data.tracks.map(function(d) {
+      return d3.scaleLinear()
+          .domain(d.dataExtent)
+          .range([innerHeight(), 0]);
+    });
 
-    // XXX: Need to decide on a color map
+    // XXX: Need to use global color map
+    var sources = d3.set();
+    data.tracks.forEach(function(d) {
+      sources.add(d.source);
+    });
+    sources = sources.values();
+
     var colorScale = d3.scaleOrdinal(d3.schemeCategory10)
-        .domain(curves.map(function(d) {
-          return d.name;
-        }));
+        .domain(sources);
 
     function curveColor(d) {
-      return colorScale(d.name);
+      return colorScale(d.source);
     }
 
     var circleRadius = 3;
@@ -148,6 +144,10 @@ module.exports = function() {
           .attr("transform", "translate(" + (innerWidth() / 2) + "," + height + ")");
 
       // Y axis
+      var yScale = d3.scaleOrdinal()
+          .domain(["min", "max"])
+          .range([innerHeight(), 0]);
+
       var yAxis = d3.axisLeft(yScale);
 
       gAxes.selectAll(".yAxis")
@@ -171,11 +171,6 @@ module.exports = function() {
     }
 
     function drawCurves() {
-      var line = d3.line()
-          .curve(d3.curveLinear)
-          .x(function(d) { return xScale(d[0]); })
-          .y(function(d) { return yScale(d[1]); });
-
       // Bind curve data
       var curve = svg.select(".curves").selectAll(".curve")
           .data(curves);
@@ -192,7 +187,12 @@ module.exports = function() {
       function drawCurve(d) {
         var g = d3.select(this);
 
-        var color = curveColor(d);
+        var yScale = yScales[d.trackIndex];
+
+        var line = d3.line()
+            .curve(d3.curveLinear)
+            .x(function(d) { return xScale(d[0]); })
+            .y(function(d) { return yScale(d[1]); });
 
         // Curve
         var curve = g.selectAll("path")
@@ -202,7 +202,8 @@ module.exports = function() {
             .style("fill", "none")
           .merge(curve)
             .attr("d", line)
-            .style("stroke", color);
+            .style("stroke", curveColor(d))
+            .style("stroke-width", d.name === "Average" ? 2 : 1);
       }
     }
 
@@ -221,8 +222,14 @@ module.exports = function() {
           .attr("transform", "translate(" + x + "," + y + ")");
 
       // Bind curve data
+      var legendItems = sources.filter(function(d) {
+        return curves.map(function(e) {
+          return e.source;
+        }).indexOf(d) !== -1;
+      });
+
       var curve = svg.select(".legend").selectAll(".item")
-          .data(curves);
+          .data(legendItems);
 
       // Enter
       var curveEnter = curve.enter().append("g")
@@ -235,12 +242,8 @@ module.exports = function() {
 
       curveEnter.append("line")
           .attr("x1", lineX)
-          .attr("x2", lineX - lineWidth);
-
-      curveEnter.append("circle")
-          .attr("cx", lineX - lineWidth / 2)
-          .attr("r", circleRadius)
-          .style("stroke", "none");
+          .attr("x2", lineX - lineWidth)
+          .style("stroke-width", 2);
 
       // Enter + update
       var curveUpdate = curveEnter.merge(curve)
@@ -250,13 +253,12 @@ module.exports = function() {
           });
 
       curveUpdate.select("text")
-          .text(function(d) { return d.name; });
+          .text(function(d) { return d; });
 
       curveUpdate.select("line")
-          .style("stroke", curveColor);
-
-      curveUpdate.select("circle")
-          .style("fill", curveColor);
+          .style("stroke", function(d) {
+            return colorScale(d);
+          });
 
       // Exit
       curve.exit().remove();
