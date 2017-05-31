@@ -5,13 +5,14 @@ var ModelStore = require("../stores/ModelStore");
 var DatasetStore = require("../stores/DatasetStore");
 
 module.exports = {
-  selectWorkspace: function (index) {
+  selectWorkspace: function (id) {
+/*
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_WORKSPACE,
-      index: index
+      id: id
     });
-
-    WebAPIUtils.getWorkspace(workspaceIndex);
+*/
+    WebAPIUtils.getWorkspace(id);
   },
   selectModel: function (id) {
     if (ModelStore.hasModel(id)) {

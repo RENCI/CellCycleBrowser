@@ -205,6 +205,11 @@ function getWorkspaceList() {
     type: "POST",
     url: "/get_profile_list/",
     success: function (data) {
+      // XXX: Create an id based on the array index
+      data.forEach(function (workspace, i) {
+        workspace.id = i.toString;
+      });
+
       // Create an action
       ServerActionCreators.receiveWorkspaceList(data);
 
@@ -249,13 +254,16 @@ function getDatasetList() {
   });
 }
 
-function getWorkspace(workspaceIndex) {
+function getWorkspace(id) {
+  // XXX: Convert to number until we have ids from the server
+  id = +id;
+
   setupAjax();
 
   $.ajax({
     type: "POST",
     url: "/get_profile/",
-    data: { index: workspaceIndex },
+    data: { index: id },
     success: function (data) {
       // Create an action
       ServerActionCreators.receiveWorkspace(data);

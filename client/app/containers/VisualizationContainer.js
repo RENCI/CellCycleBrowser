@@ -20,6 +20,10 @@ var VisualizationContainer = React.createClass ({
     // Resize on window resize
     window.addEventListener("resize", this.onResize);
   },
+  componentWillUnmount: function() {
+    // Resize on window resize
+    window.removeEventListener("resize", this.onResize);
+  },
   getSize: function () {
     var node = ReactDOM.findDOMNode(this);
 
