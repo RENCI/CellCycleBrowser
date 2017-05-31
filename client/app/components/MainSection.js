@@ -8,15 +8,8 @@ var SummaryPlotsArea = require("../components/SummaryPlotsArea");
 var divClass = "container-fluid well";
 
 function MainSection(props) {
-  // Check for models and cell data
-  var hasModels = props.workspace.modelList &&
-                  props.workspace.modelList.length > 0;
-
-  var hasDatasets = props.workspace.datasetList &&
-                    props.workspace.datasetList.length > 0;
-
   // Render conditionally based on presence of model and cell data
-  if (hasModels && hasDatasets) {
+  if (props.hasModel && props.hasDatasets) {
     return (
       <div className={divClass}>
         <div className="row">
@@ -29,14 +22,14 @@ function MainSection(props) {
           </div>
           <div className="col-sm-3 text-center">
             <SummaryPlotsArea
-              hasModels={hasModels}
-              hasDatasets={hasDatasets} />
+              hasModels={props.hasModel}
+              hasDatasets={props.hasDatasets} />
           </div>
         </div>
       </div>
     );
   }
-  else if (hasModels) {
+  else if (props.hasModel) {
     return (
       <div className={divClass}>
         <div className="row">
@@ -46,14 +39,14 @@ function MainSection(props) {
           </div>
           <div className="col-sm-4 text-center">
             <SummaryPlotsArea
-              hasModels={hasModels}
-              hasDatasets={hasDatasets} />
+              hasModels={props.hasModel}
+              hasDatasets={props.hasDatasets} />
           </div>
         </div>
       </div>
     );
   }
-  else if (hasDatasets) {
+  else if (props.hasDatasets) {
     return (
       <div className={divClass}>
         <div className="row">
@@ -62,8 +55,8 @@ function MainSection(props) {
           </div>
           <div className="col-sm-4 text-center">
             <SummaryPlotsArea
-              hasModels={hasModels}
-              hasDatasets={hasDatasets} />
+              hasModels={props.hasModel}
+              hasDatasets={props.hasDatasets} />
           </div>
         </div>
       </div>
@@ -75,7 +68,9 @@ function MainSection(props) {
 }
 
 MainSection.propTypes = {
-  workspace: PropTypes.object.isRequired
+  workspace: PropTypes.object.isRequired,
+  hasModel: PropTypes.bool.isRequired,
+  hasDatasets: PropTypes.bool.isRequired
 };
 
 module.exports = MainSection;
