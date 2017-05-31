@@ -26,10 +26,15 @@ function DatasetSelect(props) {
         };
       }) : [];
 
-    var labelClass = option.active ? null : "text-muted";
+    var labelClass = option.active ? null : "text-muted active";
 
     return (
       <tr key={i} className={labelClass}>
+        <td style={tdStyle}>
+          {option.default ?
+            <span className="glyphicon glyphicon-star"></span> :
+            null}
+        </td>
         <td style={tdStyle}>
           <div className="checkbox">
             <label>

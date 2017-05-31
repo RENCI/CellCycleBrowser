@@ -243,6 +243,7 @@ function getWorkspace(workspaceIndex) {
     success: function (data) {
       // Create an action
       ServerActionCreators.receiveWorkspace(data);
+      
       // Request datasets for this workspace
       data.datasetList.forEach(function (id) {
         getDataset(id);

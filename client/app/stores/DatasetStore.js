@@ -6,11 +6,20 @@ var WorkspaceStore = require("./WorkspaceStore");
 
 var CHANGE_EVENT = "change";
 
+// List of ids for default datasets
+var defaultDatasets = [];
+
 // List of available datasets
 var datasetList = [];
 
 // List of active datasets
 var datasets = [];
+
+function matchDefaults() {
+  datasetList.forEach(function (dataset) {
+    dataset.default = defaultDatasets.indexOf(dataset.id) !== -1;
+  });
+}
 
 function matchDataset(dataset) {
   var ds = find(datasetList, "id", dataset.id);
@@ -91,6 +100,7 @@ DatasetStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_DATASET_LIST:
       datasetList = action.datasetList;
+      matchDefaults();
       datasetList.forEach(function(d) {
         d.active = false;
       });
@@ -98,6 +108,10 @@ DatasetStore.dispatchToken = AppDispatcher.register(function (action) {
       break;
 
     case Constants.RECEIVE_WORKSPACE:
+      // Save default datasets
+      defaultDatasets = action.workspace.datasetList;
+      matchDefaults();
+
       // Clear datasets
       // XXX: Could look at matching with currently loaded datasets instead
       // of starting from scratch
