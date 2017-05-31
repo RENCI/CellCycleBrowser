@@ -20,14 +20,12 @@ module.exports = {
   },
   selectDataset: function (dataset) {
     if (DatasetStore.hasDataset(dataset.id)) {
-      console.log("HAS");
       AppDispatcher.dispatch({
         actionType: Constants.SELECT_DATASET,
         dataset: dataset
       });
     }
-    else {
-      console.log("NOT HAS");
+    else if (dataset.active) {
       WebAPIUtils.getDataset(dataset.id);
     }
   },

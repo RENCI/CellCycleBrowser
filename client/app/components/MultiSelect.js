@@ -29,10 +29,8 @@ function MultiSelect(props) {
     e.stopPropagation();
   }
 
-  var labelClass = props.enabled ? "" : "text-muted";
-
   return (
-    <div className={labelClass}>
+    <div>
       {props.label}
       <div className="btn-group">
         <button

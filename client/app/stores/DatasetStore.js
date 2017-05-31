@@ -9,29 +9,38 @@ var CHANGE_EVENT = "change";
 // List of available datasets
 var datasetList = [];
 
-// List of currently loaded datasets
+// List of active datasets
 var datasets = [];
 
 function matchDataset(dataset) {
-  var index = datasetList.map(function (d) {
-    return d.id;
-  }).indexOf(dataset.id);
+  var ds = find(datasetList, "id", dataset.id);
 
-  if (index !== -1) {
-    var d = datasetList[index];
-    d.active = true;
-    d.features = dataset.features;
-    d.species = dataset.species;
-
-    datasets.push(d);
+  if (ds) {
+    ds.active = true;
+    ds.features = dataset.features;
+    ds.species = dataset.species;
   }
 }
 
-function selectDataset(container, dataset) {
-  var ds = find(container, "id", dataset.id);
+function selectDataset(dataset) {
+  // Find dataset
+  var ds = find(datasetList, "id", dataset.id);
 
   if (ds) {
+    // Activate or deactivate
     ds.active = dataset.active;
+
+    // Add/remove from datasets
+    if (ds.active) {
+      if (!find(datasets, "id", dataset.id)) {
+        datasets.push(ds);
+      }
+    }
+    else {
+      datasets = datasets.filter(function(d) {
+        return d.active;
+      });
+    }
   }
 }
 
@@ -97,14 +106,13 @@ DatasetStore.dispatchToken = AppDispatcher.register(function (action) {
       break;
 
     case Constants.RECEIVE_DATASET:
-      datasets.push(action.dataset);
       matchDataset(action.dataset);
+      selectDataset({id: action.dataset.id, active: true});
       DatasetStore.emitChange();
       break;
 
     case Constants.SELECT_DATASET:
-      selectDataset(datasetList, action.dataset);
-      selectDataset(datasets, action.dataset);
+      selectDataset(action.dataset);
       DatasetStore.emitChange();
       break;
 
