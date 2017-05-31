@@ -53,7 +53,7 @@ function DatasetSelect(props) {
         </td>
         <td style={tdStyle}>
           <a
-            href={'/cell_data_meta/' + option.fileName + '/'}
+            href={'/cell_data_meta/' + option.filename + '/'}
             target="_blank">
             metadata
           </a>
