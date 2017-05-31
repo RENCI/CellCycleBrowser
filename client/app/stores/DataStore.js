@@ -22,6 +22,25 @@ var data = {
 };
 
 function updateData() {
+  // Keep track of selected traces
+  // XXX: Switch to generating ids and using that for matching via a selected store?
+  function trackId(track) {
+    return track.source + ":" + track.species + ":" + track.feature;
+  }
+
+  var selectedTraces = {};
+  data.tracks.forEach(function (track) {
+    var id = trackId(track);
+
+    if (!selectedTraces[id]) {
+      selectedTraces[id] = {};
+    }
+
+    [track.average].concat(track.data).forEach(function (trace) {
+      selectedTraces[id][trace.name] = trace.selected;
+    });
+  });
+
   // Get data for each track
   createTracks(datasets, simulationOutput);
 
@@ -39,6 +58,17 @@ function updateData() {
 
   // Average phases
   data.phaseAverage = averagePhases(data.phases);
+
+  // Apply selected traces
+  data.tracks.forEach(function (track) {
+    var id = trackId(track);
+
+    [track.average].concat(track.data).forEach(function (trace) {
+      if (selectedTraces[id]) {
+        trace.selected = selectedTraces[id][trace.name] === true;
+      }
+    });
+  });
 
   function createTracks() {
     // Keep track of sort order
@@ -93,7 +123,7 @@ function updateData() {
           dataset.features.filter(function(d) {
             return d.active;
           }).forEach(function (feature) {
-            var data = species.cells.map(function (cell) {
+            var cellData = species.cells.map(function (cell) {
               var featureIndex = cell.features.map(function (d) {
                 return d.name;
               }).indexOf(feature.name);
@@ -120,8 +150,8 @@ function updateData() {
               species: species.name,
               feature: feature.name,
               source: dataset.name,
-              data: data,
-              dataExtent: dataExtent(data.map(function (d) { return d.values; }))
+              data: cellData,
+              dataExtent: dataExtent(cellData.map(function (d) { return d.values; }))
             });
           });
         });
@@ -143,7 +173,7 @@ function updateData() {
 
       return speciesNames.map(function (speciesName) {
         // Simulation output for this species
-        var data = [];
+        var simData = [];
 
         simulationOutput.forEach(function (trajectory) {
           var index = trajectory.species.map(function (s) {
@@ -159,7 +189,7 @@ function updateData() {
               };
             })
 
-            data.push({
+            simData.push({
               name: "Trajectory " + data.length,
               selected: false,
               values: values,
@@ -171,8 +201,8 @@ function updateData() {
         return {
           species: speciesName,
           source: "Simulation",
-          data: data,
-          dataExtent: dataExtent(data.map(function (d) { return d.values; }))
+          data: simData,
+          dataExtent: dataExtent(simData.map(function (d) { return d.values; }))
         };
       });
     }
