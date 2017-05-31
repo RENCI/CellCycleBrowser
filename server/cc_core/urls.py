@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^$', views.index, name='index'),
     url(r'^add_profile/login/$', auth_views.login, {'template_name': 'cc_core/login.html'},
         name='login'),
-url(r'^delete_profile/login/$', auth_views.login, {'template_name': 'cc_core/login.html'},
+    url(r'^delete_profile/login/$', auth_views.login, {'template_name': 'cc_core/login.html'},
         name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
     url(r'^data/config/(?P<filename>[A-z0-9_.]+)$', views.serve_config_data,
@@ -32,4 +32,8 @@ url(r'^delete_profile/login/$', auth_views.login, {'template_name': 'cc_core/log
     url(r'^create_sbml_model/$', views.create_sbml_model, name='create_sbml_model'),
     url(r'^delete_sbml_model/(?P<filename>[A-z0-9_.]+)$', views.delete_sbml_model, name='delete_sbml_model'),
     url(r'^terminate_model_run/$', views.terminate_model_run, name="terminate_model_run"),
+    url(r'^get_dataset_list/$', views.get_dataset_list, name="get_dataset_list"),
+    url(r'^get_model_list/$', views.get_dataset_list, name="get_model_list"),
+    url(r'^get_dataset/(?P<id>[A-z0-9_.]+)$', views.get_dataset, name="get_dataset"),
+    url(r'^get_model/(?P<id>[A-z0-9_.]+)$', views.get_model, name="get_model"),
 ]

@@ -72,10 +72,7 @@ def get_profile_list(request):
     """
     profile_list = utils.get_profile_list()
 
-    return HttpResponse(
-        json.dumps(profile_list),
-        content_type='application/json'
-    )
+    return HttpResponse(json.dumps(profile_list), content_type='application/json')
 
 
 def get_profile(request):
@@ -92,10 +89,7 @@ def get_profile(request):
     if 'cellData' in profile:
         data['cellData'] = [utils.load_cell_data_csv(d) for d in profile['cellData']]
 
-    return HttpResponse(
-        json.dumps(data),
-        content_type='application/json'
-    )
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 @login_required()
@@ -343,6 +337,28 @@ def add_profile_to_server(request):
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
+def get_dataset_list(request):
+    ds_list = utils.get_dataset_list()
+    return HttpResponse(json.dumps(ds_list), content_type='application/json')
+
+
+def get_dataset(request, id):
+    filename = id
+    csv_str = utils.load_cell_data_csv_content(filename)
+    return JsonResponse({'csv': csv_str})
+
+
+def get_model_list(request):
+    md_list = utils.get_model_list()
+    return HttpResponse(json.dumps(md_list), content_type='application/json')
+
+
+def get_model(request, id):
+    filename = id
+
+    return JsonResponse(utils.load_model_content(filename))
+
+
 def create_sbml_model(request):
     # request must be a JSON request
     num_g1 = request.POST.get('num_G1', None)
@@ -363,24 +379,15 @@ def create_sbml_model(request):
                                             os.path.join(settings.MODEL_INPUT_PATH, sbml_fname))
         except Exception as ex:
             response_data["error"] = ex.message + ' for creating SBML model'
-            return HttpResponse(
-                json.dumps(response_data),
-                content_type='application/json'
-            )
+            return HttpResponse(json.dumps(response_data), content_type='application/json')
 
     else:
         response_data["error"] = 'Invalid input parameters for creating SBML model'
-        return HttpResponse(
-            json.dumps(response_data),
-            content_type='application/json'
-        )
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
 
     response_data["new_model_filename"] = sbml_fname
 
-    return HttpResponse(
-        json.dumps(response_data),
-        content_type='application/json'
-    )
+    return HttpResponse(json.dumps(response_data), content_type='application/json')
 
 
 def delete_sbml_model(request, filename):
@@ -391,23 +398,14 @@ def delete_sbml_model(request, filename):
             # delete this model file
             os.remove(full_fname)
             response_data["new_model_filename"] = filename
-            return HttpResponse(
-                json.dumps(response_data),
-                content_type='application/json'
-            )
+            return HttpResponse(json.dumps(response_data), content_type='application/json')
         else:
             response_data["error"] = 'The SBML model data file does not exist'
-            return HttpResponse(
-                json.dumps(response_data),
-                content_type='application/json'
-            )
+            return HttpResponse(json.dumps(response_data), content_type='application/json')
 
     except Exception as ex:
         response_data["error"] = 'Invalid SBML model data file name'
-        return HttpResponse(
-            json.dumps(response_data),
-            content_type='application/json'
-        )
+        return HttpResponse(json.dumps(response_data), content_type='application/json')
 
 
 def send_parameter(request):
@@ -415,10 +413,7 @@ def send_parameter(request):
     data['species'] = request.POST['species']
     data['value'] = request.POST['value']
 
-    return HttpResponse(
-        json.dumps(data),
-        content_type='application/json'
-    )
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def run_model(request, filename=''):
@@ -477,7 +472,7 @@ def run_model(request, filename=''):
             'task_id': '',
         }
 
-    return HttpResponse(json.dumps(context), content_type="application/json")
+    return HttpResponse(json.dumps(context), content_type='application/json')
 
 
 def get_model_result(request, filename):

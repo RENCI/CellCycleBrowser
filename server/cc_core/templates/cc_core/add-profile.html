@@ -1,24 +1,24 @@
 {% extends 'base.html' %}
 
-{% block title %}Add New Profile{% endblock %}
+{% block title %}Create New Workspace{% endblock %}
 {% block content %}
   <div class="container">
     <div class="row">
-      <h2>Create a new profile for cell cycle browser</h2>
+      <h2>Create a new workspace for cell cycle browser</h2>
       <ul>
-        <li>Select existing or upload new dataset and model data to be included in the new profile.</li>
-        <li>Input name and description for each dataset and model data included in the new profile.</li>
-        <li>You can include multiple dataset and model data in the same profile for comparative visualization.</li>
+        <li>Select existing or upload new dataset and model data to be included in the new workspace.</li>
+        <li>Input name and description for each dataset and model data included in the new workspace.</li>
+        <li>You can include multiple dataset and model data in the same workspace for comparative visualization.</li>
       </ul>
       <form class="form-horizontal" role="form" action="/add_profile_to_server/" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group">
-            <label for="id_pname">Profile Name: *</label>
-            <input id="pname" class="form-control" name="pname" placeholder="Profile name" value="" type="text" required/>
+            <label for="id_pname">Workspace Name: *</label>
+            <input id="pname" class="form-control" name="pname" placeholder="Workspace name" value="" type="text" required/>
         </div>
         <div class="form-group">
-            <label for="id_pdesc">Profile Description: *</label>
-            <input id="pdesc" class="form-control" name="pdesc" placeholder="Profile Description" value="" type="text" required/>
+            <label for="id_pdesc">Workspace Description: *</label>
+            <input id="pdesc" class="form-control" name="pdesc" placeholder="Workspace Description" value="" type="text" required/>
         </div>
         <hr>
         <div class="form-group">
@@ -55,7 +55,7 @@
             <p class="help-block">You can create your own SBML sequential model data where each subphase follows over each other.</p>
             <input type="hidden" id="new_sbml_model_file_name" name="new_sbml_model_file_name" value="">
             <a id="delete-sbml-model" type="button" class="btn btn-default hidden-form" data-toggle="modal" data-target="#delete-sbml-model-dialog">Delete SBML model data you just created</a>
-            <p id="delete-sbml-model-help-block" class="help-block hidden-form">You can delete the just created SBML model data if you don't want it to be included in the profile.</p>
+            <p id="delete-sbml-model-help-block" class="help-block hidden-form">You can delete the just created SBML model data if you don't want it to be included in the workspace.</p>
             <h2 id="create-or-delete-sbml-msg"></h2>
         </div>
         <hr>
@@ -81,7 +81,7 @@
         </div>
         <div class="form-group">
           <div class="col-sm-offset-6 col-sm-6">
-            <button type="submit" class="btn btn-primary btn-lg btn-block">Add New Profile</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Create New Workspace</button>
           </div>
           {% if messages %}
             <ul class="messages">
