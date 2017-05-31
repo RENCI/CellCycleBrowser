@@ -33,7 +33,7 @@ urlpatterns = [
     url(r'^delete_sbml_model/(?P<filename>[A-z0-9_.]+)$', views.delete_sbml_model, name='delete_sbml_model'),
     url(r'^terminate_model_run/$', views.terminate_model_run, name="terminate_model_run"),
     url(r'^get_dataset_list/$', views.get_dataset_list, name="get_dataset_list"),
-    url(r'^get_model_list/$', views.get_dataset_list, name="get_model_list"),
+    url(r'^get_model_list/$', views.get_model_list, name="get_model_list"),
     url(r'^get_dataset/(?P<id>[A-z0-9_.]+)$', views.get_dataset, name="get_dataset"),
     url(r'^get_model/(?P<id>[A-z0-9_.]+)$', views.get_model, name="get_model"),
 ]
