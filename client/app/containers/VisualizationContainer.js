@@ -16,11 +16,13 @@ var VisualizationContainer = React.createClass ({
       height: 100
     };
   },
-  componentDidMount: function() {
+  componentDidMount: function () {
     // Resize on window resize
     window.addEventListener("resize", this.onResize);
+
+    this.onResize();
   },
-  componentWillUnmount: function() {
+  componentWillUnmount: function () {
     // Resize on window resize
     window.removeEventListener("resize", this.onResize);
   },
