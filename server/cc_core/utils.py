@@ -468,7 +468,7 @@ def get_dataset_list(profiles=None):
                 fn = cd['fileName'].encode("utf-8")
                 if fn not in fn_list:
                     cd_dict = {}
-                    cd_dict['filename'] = fn
+                    cd_dict['fileName'] = fn
                     cd_dict['id'] = fn
                     cd_dict['name'] = cd['name'].encode("utf-8")
                     cd_dict['description'] = cd['description'].encode("utf-8")
@@ -489,7 +489,7 @@ def get_model_list(profiles=None):
                 fn = md['fileName'].encode("utf-8")
                 if fn not in fn_list:
                     md_dict = {}
-                    md_dict['filename'] = fn
+                    md_dict['fileName'] = fn
                     md_dict['id'] = fn
                     md_dict['name'] = md['name'].encode("utf-8")
                     md_dict['description'] = md['description'].encode("utf-8")
