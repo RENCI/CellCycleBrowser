@@ -106,6 +106,7 @@ AppDispatcher.register(function (action) {
       SimulationControlStore.emitChange();
       break;
 
+    case Constants.RECEIVE_MODEL:
     case Constants.SELECT_MODEL:
       AppDispatcher.waitFor([ModelStore.dispatchToken]);
       createControls(ModelStore.getModel());

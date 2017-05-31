@@ -217,6 +217,22 @@ function getWorkspaceList() {
   });
 }
 
+function getModelList() {
+  setupAjax();
+
+  $.ajax({
+    type: "POST",
+    url: "/get_model_list/",
+    success: function (data) {
+      // Create an action
+      ServerActionCreators.receiveModelList(data);
+    },
+    error: function (xhr, textStatus, errorThrown) {
+      console.log(textStatus + ": " + errorThrown);
+    }
+  });
+}
+
 function getDatasetList() {
   setupAjax();
 
@@ -243,10 +259,34 @@ function getWorkspace(workspaceIndex) {
     success: function (data) {
       // Create an action
       ServerActionCreators.receiveWorkspace(data);
-      
+
+      // Request first model for this workspace
+      if (data.modelList.length > 0) {
+        getModel(data.modelList[0]);
+      }
+
       // Request datasets for this workspace
       data.datasetList.forEach(function (id) {
         getDataset(id);
+      });
+    },
+    error: function (xhr, textStatus, errorThrown) {
+      console.log(textStatus + ": " + errorThrown);
+    }
+  });
+}
+
+function getModel(id) {
+  setupAjax();
+
+  $.ajax({
+    type: "POST",
+    url: "/get_model/" + id,
+    success: function (data) {
+      // Create an action
+      ServerActionCreators.receiveModel({
+        id: id,
+        data: data
       });
     },
     error: function (xhr, textStatus, errorThrown) {
@@ -311,7 +351,9 @@ function runSimulation() {
 
 module.exports = {
   getWorkspaceList: getWorkspaceList,
+  getModelList: getModelList,
   getDatasetList: getDatasetList,
+  getModel: getModel,
   getDataset: getDataset,
   getWorkspace: getWorkspace,
   runSimulation: runSimulation

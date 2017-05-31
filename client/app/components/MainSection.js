@@ -9,8 +9,8 @@ var divClass = "container-fluid well";
 
 function MainSection(props) {
   // Check for models and cell data
-  var hasModels = props.workspace.models &&
-                  props.workspace.models.length > 0;
+  var hasModels = props.workspace.modelList &&
+                  props.workspace.modelList.length > 0;
 
   var hasDatasets = props.workspace.datasetList &&
                     props.workspace.datasetList.length > 0;

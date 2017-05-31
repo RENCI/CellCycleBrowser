@@ -9,6 +9,12 @@ module.exports = {
       workspaceList: workspaceList
     });
   },
+  receiveModelList: function (modelList) {
+    AppDispatcher.dispatch({
+      actionType: Constants.RECEIVE_MODEL_LIST,
+      modelList: modelList
+    });
+  },
   receiveDatasetList: function (datasetList) {
     AppDispatcher.dispatch({
       actionType: Constants.RECEIVE_DATASET_LIST,
@@ -19,6 +25,12 @@ module.exports = {
     AppDispatcher.dispatch({
       actionType: Constants.RECEIVE_WORKSPACE,
       workspace: workspace
+    });
+  },
+  receiveModel: function (model) {
+    AppDispatcher.dispatch({
+      actionType: Constants.RECEIVE_MODEL,
+      model: model
     });
   },
   receiveDataset: function (dataset) {

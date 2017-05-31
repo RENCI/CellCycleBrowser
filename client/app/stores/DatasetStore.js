@@ -3,6 +3,7 @@ var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
 var Constants = require("../constants/Constants");
 var WorkspaceStore = require("./WorkspaceStore");
+var DataUtils = require("../utils/DataUtils");
 
 var CHANGE_EVENT = "change";
 
@@ -22,7 +23,7 @@ function matchDefaults() {
 }
 
 function matchDataset(dataset) {
-  var ds = find(datasetList, "id", dataset.id);
+  var ds = DataUtils.find(datasetList, "id", dataset.id);
 
   if (ds) {
     ds.active = true;
@@ -33,7 +34,7 @@ function matchDataset(dataset) {
 
 function selectDataset(dataset) {
   // Find dataset
-  var ds = find(datasetList, "id", dataset.id);
+  var ds = DataUtils.find(datasetList, "id", dataset.id);
 
   if (ds) {
     // Activate or deactivate
@@ -41,7 +42,7 @@ function selectDataset(dataset) {
 
     // Add/remove from datasets
     if (ds.active) {
-      if (!find(datasets, "id", dataset.id)) {
+      if (!DataUtils.find(datasets, "id", dataset.id)) {
         datasets.push(ds);
       }
     }
@@ -54,23 +55,15 @@ function selectDataset(dataset) {
 }
 
 function selectFeature(container, feature) {
-  var ds = find(container, "id", feature.datasetId);
+  var ds = DataUtils.find(container, "id", feature.datasetId);
 
   if (ds) {
-    var f = find(ds.features, "name", feature.name);
+    var f = DataUtils.find(ds.features, "name", feature.name);
 
     if (f) {
       f.active = feature.active;
     }
   }
-}
-
-function find(array, key, value) {
-  for (var i = 0; i < array.length; i++) {
-    if (array[i][key] === value) return array[i];
-  }
-
-  return null;
 }
 
 var DatasetStore = assign({}, EventEmitter.prototype, {
@@ -90,7 +83,7 @@ var DatasetStore = assign({}, EventEmitter.prototype, {
     return datasets;
   },
   hasDataset: function (id) {
-    var dataset = find(datasetList, "id", id);
+    var dataset = DataUtils.find(datasetList, "id", id);
 
     return dataset && dataset.species;
   }

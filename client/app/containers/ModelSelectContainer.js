@@ -5,16 +5,19 @@ var ViewActionCreators = require("../actions/ViewActionCreators");
 
 // Retrieve the current state from the store
 function getStateFromStore() {
+  var model = ModelStore.getModel();
+  var id = model.id ? model.id : "";
+
   return {
     modelList: ModelStore.getModelList(),
-    modelValue: ModelStore.getModelIndex().toString()
+    modelId: id
   };
 }
 
 // Use index for value to ensure unique values
-function modelOption(model, i) {
+function modelOption(model) {
   return {
-    value: i.toString(),
+    value: model.id,
     name: model.name,
     description: model.description
   };
@@ -33,15 +36,15 @@ var ModelSelectContainer = React.createClass ({
   onModelChange: function () {
     this.setState(getStateFromStore());
   },
-  handleChangeModel: function (value) {
-    ViewActionCreators.selectModel(+value);
+  handleChangeModel: function (id) {
+    ViewActionCreators.selectModel(id);
   },
   render: function () {
     return (
       <ItemSelect
         label="Model: "
         options={this.state.modelList.map(modelOption)}
-        activeValue={this.state.modelValue}
+        activeValue={this.state.modelId}
         onChange={this.handleChangeModel} />
     );
   }

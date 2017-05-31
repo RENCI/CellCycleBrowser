@@ -26,6 +26,7 @@ var AppContainer = React.createClass({
 
     // Bootstrap the application by getting initial data here
     WebAPIUtils.getWorkspaceList();
+    WebAPIUtils.getModelList();
     WebAPIUtils.getDatasetList();
   },
   componentWillUnmount: function () {

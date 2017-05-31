@@ -1,22 +1,28 @@
 var AppDispatcher = require("../dispatcher/AppDispatcher");
 var Constants = require("../constants/Constants");
 var WebAPIUtils = require("../utils/WebAPIUtils");
+var ModelStore = require("../stores/ModelStore");
 var DatasetStore = require("../stores/DatasetStore");
 
 module.exports = {
-  selectWorkspace: function (workspaceIndex) {
+  selectWorkspace: function (index) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_WORKSPACE,
-      workspaceIndex: workspaceIndex
+      index: index
     });
 
     WebAPIUtils.getWorkspace(workspaceIndex);
   },
-  selectModel: function (modelKey) {
-    AppDispatcher.dispatch({
-      actionType: Constants.SELECT_MODEL,
-      modelKey: modelKey
-    });
+  selectModel: function (id) {
+    if (ModelStore.hasModel(id)) {
+      AppDispatcher.dispatch({
+        actionType: Constants.SELECT_MODEL,
+        id: id
+      });
+    }
+    else {
+      WebAPIUtils.getModel(id);
+    }
   },
   selectDataset: function (dataset) {
     if (DatasetStore.hasDataset(dataset.id)) {
