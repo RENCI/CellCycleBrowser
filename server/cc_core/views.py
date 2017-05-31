@@ -343,7 +343,7 @@ def get_dataset_list(request):
 
 def get_dataset(request, id):
     filename = id
-    csv_str = utils.load_cell_data_csv_content(filename)
+    _, csv_str = utils.load_cell_data_csv_content(filename)
     return JsonResponse({'csv': csv_str})
 
 
