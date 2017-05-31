@@ -26,11 +26,13 @@ function DatasetSelect(props) {
         };
       }) : [];
 
+    var labelClass = option.active ? "" : "text-muted";
+
     return (
       <tr key={i}>
         <td style={tdStyle}>
           <div className="checkbox">
-            <label>
+            <label className={labelClass}>
               <input
                 type="checkbox"
                 defaultChecked={option.active}

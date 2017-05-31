@@ -36,16 +36,11 @@ function setupAjax() {
   });
 }
 
-function createDataset(dataset) {
+function createDataset(id, dataset) {
   // Set metadata
-  var ds = {};
-  ds.name = dataset.name;
-  ds.fileName = dataset.fileName;
-  ds.description = dataset.description;
-  ds.timeUnit = dataset.timeUnit;
-  ds.active = true;
-  // XXX: Temporary fix until receiving ids from server
-  ds.id = ds.name;
+  var ds = {
+    id: id
+  };
 
   // Parse the csv data
   var data = d3.csvParse(dataset.csv);
@@ -223,12 +218,20 @@ function getWorkspaceList() {
 }
 
 function getDatasetList() {
-  // XXX: Stub
-}
+  setupAjax();
 
-// XXX: Temporary fix for mimicking new workspace without embedded cell data
-var dataSets = [];
-var datasetList = [];
+  $.ajax({
+    type: "POST",
+    url: "/get_dataset_list/",
+    success: function (data) {
+      // Create an action
+      ServerActionCreators.receiveDatasetList(data);
+    },
+    error: function (xhr, textStatus, errorThrown) {
+      console.log(textStatus + ": " + errorThrown);
+    }
+  });
+}
 
 function getWorkspace(workspaceIndex) {
   setupAjax();
@@ -238,37 +241,11 @@ function getWorkspace(workspaceIndex) {
     url: "/get_profile/",
     data: { index: workspaceIndex },
     success: function (data) {
-      // XXX: Temporary fix for giving workspace an id
-      data.id = data.name;
-
-////////////////////////////////////////////////////////////////////////////////
-// XXX: Temporary fix for mimicking new workspace without embedded cell data
-      if (data.cellData) {
-        dataSets = data.cellData;
-        datasetList = data.cellData.map(function (cellData, i, a) {
-          return {
-            id: cellData.name,
-            name: cellData.name,
-            description: cellData.description,
-            fileName: cellData.fileName,
-            index: i,
-            active: i <= a.length / 2
-          };
-        });
-
-        ServerActionCreators.receiveDatasetList(datasetList);
-
-        data.datasetList = datasetList.filter(function(d) {
-          return d.active;
-        });
-      }
-////////////////////////////////////////////////////////////////////////////////
-
+      // Create an action
       ServerActionCreators.receiveWorkspace(data);
-
-      // Request datasets
-      data.datasetList.forEach(function (dataset) {
-        getDataset(dataset.index);
+      // Request datasets for this workspace
+      data.datasetList.forEach(function (id) {
+        getDataset(id);
       });
     },
     error: function (xhr, textStatus, errorThrown) {
@@ -278,14 +255,19 @@ function getWorkspace(workspaceIndex) {
 }
 
 function getDataset(id) {
-  // XXX: Temporary fix for mimicking new workspace without embedded cell data
-  setTimeout(function() {
-    // Reformat the data
-    var dataset = createDataset(dataSets[id]);
+  setupAjax();
 
-    // Create an action
-    ServerActionCreators.receiveDataset(dataset);
-  }, 1000);
+  $.ajax({
+    type: "POST",
+    url: "/get_dataset/" + id,
+    success: function (data) {
+      // Reformat the data and create an action
+      ServerActionCreators.receiveDataset(createDataset(id, data));
+    },
+    error: function (xhr, textStatus, errorThrown) {
+      console.log(textStatus + ": " + errorThrown);
+    }
+  });
 }
 /*
 sendParameter: function(data) {

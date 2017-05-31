@@ -12,8 +12,8 @@ function MainSection(props) {
   var hasModels = props.workspace.models &&
                   props.workspace.models.length > 0;
 
-  var hasDatasets = props.workspace.cellData &&
-                    props.workspace.cellData.length > 0;
+  var hasDatasets = props.workspace.datasetList &&
+                    props.workspace.datasetList.length > 0;
 
   // Render conditionally based on presence of model and cell data
   if (hasModels && hasDatasets) {

@@ -20,18 +20,15 @@ module.exports = {
   },
   selectDataset: function (dataset) {
     if (DatasetStore.hasDataset(dataset.id)) {
+      console.log("HAS");
       AppDispatcher.dispatch({
         actionType: Constants.SELECT_DATASET,
         dataset: dataset
       });
     }
     else {
-      // XXX: Temporary fix
-      var list = DatasetStore.getDatasetList();
-
-      WebAPIUtils.getDataset(list.map(function(d) {
-        return d.id;
-      }).indexOf(dataset.id));
+      console.log("NOT HAS");
+      WebAPIUtils.getDataset(dataset.id);
     }
   },
   selectFeature: function (feature) {

@@ -18,8 +18,12 @@ function matchDataset(dataset) {
   }).indexOf(dataset.id);
 
   if (index !== -1) {
-    datasetList[index].active = dataset.active;
-    datasetList[index].features = dataset.features;
+    var d = datasetList[index];
+    d.active = true;
+    d.features = dataset.features;
+    d.species = dataset.species;
+
+    datasets.push(d);
   }
 }
 
@@ -68,7 +72,9 @@ var DatasetStore = assign({}, EventEmitter.prototype, {
     return datasets;
   },
   hasDataset: function (id) {
-    return find(datasets, "id", id) !== null;
+    var dataset = find(datasetList, "id", id);
+
+    return dataset && dataset.species;
   }
 });
 
@@ -76,6 +82,9 @@ DatasetStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_DATASET_LIST:
       datasetList = action.datasetList;
+      datasetList.forEach(function(d) {
+        d.active = false;
+      });
       DatasetStore.emitChange();
       break;
 
