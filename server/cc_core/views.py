@@ -74,7 +74,6 @@ def get_profile_list(request):
 
     return HttpResponse(json.dumps(profile_list), content_type='application/json')
 
-
 def get_profile(request):
     index = int(request.POST['index'])
     profile = utils.get_profile_list()[index]
@@ -87,7 +86,7 @@ def get_profile(request):
         data['models'] = [utils.load_model(m) for m in profile['models']]
 
     if 'cellData' in profile:
-        data['cellData'] = [utils.load_cell_data_csv(d) for d in profile['cellData']]
+        data['datasetList'] = [d['fileName'] for d in profile['cellData']]
 
     return HttpResponse(json.dumps(data), content_type='application/json')
 
