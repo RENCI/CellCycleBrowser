@@ -19,6 +19,7 @@ var datasets = [];
 function matchDefaults() {
   datasetList.forEach(function (dataset) {
     dataset.default = defaultDatasets.indexOf(dataset.id) !== -1;
+    dataset.active = dataset.default;
   });
 }
 
@@ -94,9 +95,6 @@ DatasetStore.dispatchToken = AppDispatcher.register(function (action) {
     case Constants.RECEIVE_DATASET_LIST:
       datasetList = action.datasetList;
       matchDefaults();
-      datasetList.forEach(function(d) {
-        d.active = false;
-      });
       DatasetStore.emitChange();
       break;
 
