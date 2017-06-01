@@ -268,8 +268,6 @@ function getWorkspace(id) {
       // Create an action
       ServerActionCreators.receiveWorkspace(data);
 
-      console.log(data);
-
       // Request first model for this workspace
       if (data.modelList && data.modelList.length > 0) {
         getModel(data.modelList[0]);
