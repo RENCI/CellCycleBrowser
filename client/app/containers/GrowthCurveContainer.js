@@ -15,8 +15,6 @@ function hasData(data) {
   return data.tracks.length > 0;
 }
 
-var defaultLabel = "Loading";
-
 var GrowthCurveContainer = React.createClass ({
   // Don't make propsTypes required, as a warning is given for the first render
   // if using React.cloneElement, as  in VisualizationContainer
@@ -27,12 +25,9 @@ var GrowthCurveContainer = React.createClass ({
     // Create visualization function
     this.growthCurve = GrowthCurve();
 
-    return {
-      data: DataStore.getData(),
-      label: defaultLabel
-    };
+    return getStateFromStore();
   },
-  componentDidMount: function() {
+  componentDidMount: function () {
     DataStore.addChangeListener(this.onDataChange);
   },
   componentWillUnmount: function () {
@@ -47,30 +42,6 @@ var GrowthCurveContainer = React.createClass ({
   },
   onDataChange: function () {
     this.setState(getStateFromStore());
-
-    if (!hasData(DataStore.getData())) {
-      // Create timer for label
-      var count = 0;
-      (function timer() {
-        if (count > 0 && hasData(this.state.data)) {
-          // Reset label to default
-          this.setState({
-            label: defaultLabel
-          });
-
-          return;
-        }
-
-        // Modify label
-        this.setState({
-          label: defaultLabel + ".".repeat(count % 4)
-        });
-
-        count++;
-
-        setTimeout(timer.bind(this), 500);
-      }.bind(this))();
-    }
   },
   drawVisualization: function (props, state) {
     this.growthCurve
@@ -82,15 +53,7 @@ var GrowthCurveContainer = React.createClass ({
         .call(this.growthCurve);
   },
   render: function () {
-    return (
-      <div>
-        {!hasData(this.state.data) ?
-          <h3 style={{marginBottom: 20}}>
-            {this.state.label}
-          </h3>
-          : null}
-      </div>
-    );
+    return <div></div>
   }
 });
 
