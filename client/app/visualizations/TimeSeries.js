@@ -224,8 +224,8 @@ module.exports = function() {
         var g = d3.select(this)
             .attr("data-original-title",
               d.track.source + ": " +
-              d.track.species + " - " +
-              (d.track.feature ? d.track.feature : "") + "<br>" +
+              d.track.species + 
+              (d.track.feature ? " - " + d.track.feature : "") + "<br>" +
               d.name);
 
         var yScale = yScales[d.track.index];

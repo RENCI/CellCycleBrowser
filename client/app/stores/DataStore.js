@@ -163,8 +163,8 @@ function updateData() {
     function simulationTracks() {
       // Get all species names in simulation output
       var speciesNames = [];
-      simulationOutput.forEach(function (trajectory) {
-        trajectory.species.forEach(function (species) {
+      simulationOutput.forEach(function (trace) {
+        trace.species.forEach(function (species) {
           if (speciesNames.indexOf(species.name) === -1) {
             speciesNames.push(species.name);
           }
@@ -175,22 +175,22 @@ function updateData() {
         // Simulation output for this species
         var simData = [];
 
-        simulationOutput.forEach(function (trajectory) {
-          var index = trajectory.species.map(function (s) {
+        simulationOutput.forEach(function (trace) {
+          var index = trace.species.map(function (s) {
             return s.name;
           }).indexOf(speciesName);
 
           if (index >= 0) {
-            var values = trajectory.timeSteps.map(function (d, j, a) {
+            var values = trace.timeSteps.map(function (d, j, a) {
               return {
-                value: trajectory.species[index].values[j],
+                value: trace.species[index].values[j],
                 start: d,
                 stop: j < a.length - 1 ? a[j + 1] : d + (d - a[j - 1])
               };
-            })
+            });
 
             simData.push({
-              name: "Trajectory " + data.length,
+              name: "Trace " + simData.length + 1,
               selected: false,
               values: values,
               timeSpan: timeSpan(values)
@@ -354,8 +354,8 @@ function updateData() {
   }
 
   function mapPhases(simulationOutput, timeExtent, alignment) {
-    return simulationOutput.map(function(trajectory) {
-      var timeSteps = trajectory.timeSteps;
+    return simulationOutput.map(function(trace) {
+      var timeSteps = trace.timeSteps;
 
       // XXX: Return a closure to save state
       function align(x) {
@@ -380,7 +380,7 @@ function updateData() {
         }
       }
 
-      return trajectory.phases.map(function(phase) {
+      return trace.phases.map(function(phase) {
         return {
           name: phase.name,
           start: align(timeSteps[phase.start]),
@@ -404,8 +404,8 @@ function updateData() {
   function averagePhases(phases) {
     var average = [];
 
-    phases.forEach(function (trajectory, i) {
-      trajectory.forEach(function (phase, j) {
+    phases.forEach(function (trace, i) {
+      trace.forEach(function (phase, j) {
         if (i === 0) {
           average.push({
             name: phase.name,
