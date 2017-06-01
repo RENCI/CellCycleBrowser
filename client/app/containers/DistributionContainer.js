@@ -111,7 +111,7 @@ var DistributionContainer = React.createClass ({
 
     return getStateFromStore();
   },
-  componentDidMount: function() {
+  componentDidMount: function () {
     ModelStore.addChangeListener(this.onModelChange);
   },
   componentWillUnmount: function () {
