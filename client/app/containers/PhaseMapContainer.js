@@ -32,6 +32,9 @@ var PhaseMapContainer = React.createClass({
     // Resize on window resize
     window.addEventListener("resize", this.onResize);
   },
+  componentWillUnmount: function () {
+    window.removeEventListener("resize", this.onResize);
+  },
   componentWillUpdate: function (props, state) {
     this.drawVisualization(props, state);
 
