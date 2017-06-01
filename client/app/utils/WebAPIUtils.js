@@ -268,15 +268,19 @@ function getWorkspace(id) {
       // Create an action
       ServerActionCreators.receiveWorkspace(data);
 
+      console.log(data);
+
       // Request first model for this workspace
-      if (data.modelList.length > 0) {
+      if (data.modelList && data.modelList.length > 0) {
         getModel(data.modelList[0]);
       }
 
       // Request datasets for this workspace
-      data.datasetList.forEach(function (id) {
-        getDataset(id);
-      });
+      if (data.datasetList) {
+        data.datasetList.forEach(function (id) {
+          getDataset(id);
+        });
+      }
     },
     error: function (xhr, textStatus, errorThrown) {
       console.log(textStatus + ": " + errorThrown);
