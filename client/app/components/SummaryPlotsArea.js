@@ -21,7 +21,7 @@ function SummaryPlotsArea(props) {
           </div>
         </div>
         : null}
-      {props.hasModels ?
+      {props.hasModel ?
         <DistributionArea />
         : null}
     </div>
@@ -29,7 +29,7 @@ function SummaryPlotsArea(props) {
 }
 
 SummaryPlotsArea.propsTypes = {
-  hasModels: PropTypes.bool.isRequired,
+  hasModel: PropTypes.bool.isRequired,
   hasDatasets: PropTypes.bool.isRequired
 };
 

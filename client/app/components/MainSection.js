@@ -22,7 +22,7 @@ function MainSection(props) {
           </div>
           <div className="col-sm-3 text-center">
             <SummaryPlotsArea
-              hasModels={props.hasModel}
+              hasModel={props.hasModel}
               hasDatasets={props.hasDatasets} />
           </div>
         </div>
@@ -39,7 +39,7 @@ function MainSection(props) {
           </div>
           <div className="col-sm-4 text-center">
             <SummaryPlotsArea
-              hasModels={props.hasModel}
+              hasModel={props.hasModel}
               hasDatasets={props.hasDatasets} />
           </div>
         </div>
@@ -55,7 +55,7 @@ function MainSection(props) {
           </div>
           <div className="col-sm-4 text-center">
             <SummaryPlotsArea
-              hasModels={props.hasModel}
+              hasModel={props.hasModel}
               hasDatasets={props.hasDatasets} />
           </div>
         </div>

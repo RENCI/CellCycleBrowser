@@ -14,7 +14,7 @@ function getStateFromStore() {
 }
 
 function createCells(reactions) {
-  if (!reactions) return [];
+  if (!reactions || reactions.length === 0) return [];
 
   // Number of cells
   var n = 5000;
