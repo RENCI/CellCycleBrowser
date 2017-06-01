@@ -74,7 +74,7 @@ module.exports = function() {
 
   function draw() {
     // Compute margin for title and legend
-    margin.top = titleHeight + legendItemHeight * (curves.length);
+    margin.top = titleHeight + legendItemHeight * (data.tracks.length);
 
     // Compute height
     var height = innerHeight() + margin.top + margin.bottom;
@@ -261,9 +261,19 @@ module.exports = function() {
       var legend = svg.select(".legend")
           .attr("transform", "translate(" + x + "," + y + ")");
 
-      // Bind curve data
+      // Bind one curve for each track
+      var items = curves.reduce(function(p, c) {
+        if (p.map(function(d) {
+          return d.track;
+        }).indexOf(c.track) === -1) {
+          p.push(c);
+        }
+
+        return p;
+      }, []);
+
       var curve = svg.select(".legend").selectAll(".item")
-          .data(curves);
+          .data(items);
 
       // Enter
       var curveEnter = curve.enter().append("g")
