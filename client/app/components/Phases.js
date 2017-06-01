@@ -32,36 +32,30 @@ var sourceStyle = {
 };
 
 var rowStyle = {
-  marginLeft: -1,
-  marginRight: -1,
+  margin: 0,
   border: "1px solid #ccc",
   borderTopLeftRadius: 5,
-  borderBottomLeftRadius: 5,
-  marginBottom: -1
+  borderBottomLeftRadius: 5
 };
 
 var buttonColumnStyle = {
-  paddingLeft: 0,
-  paddingRight: 0
+  padding: 0
 };
 
 var visColumnStyle = {
-  paddingLeft: 0,
-  paddingRight: 0,
+  padding: 0,
   borderLeft: "1px solid #ccc"
 };
 
 var collapseRowStyle = {
-  marginTop: 1,
-  marginLeft: -1,
-  marginRight: -1,
-  borderLeft: "1px solid #ccc",
+  // Make up for border in rowStyle
+  marginLeft: 1,
+  marginRight: 0,
   borderRight: "1px solid #ccc"
 };
 
-var collapseColStyle = {
-  paddingLeft: 0,
-  paddingRight: 0,
+var collapseColumnStyle = {
+  padding: 0,
   borderLeft: "1px solid #ccc"
 };
 
@@ -102,7 +96,7 @@ function Phases(props) {
           </div>
         </div>
         <div className="row in" id={collapseId} style={collapseRowStyle}>
-          <div className="col-xs-10 col-xs-offset-2" style={collapseColStyle}>
+          <div className="col-xs-10 col-xs-offset-2" style={collapseColumnStyle}>
             <PhaseMapContainer
               data={props.phases}
               timeExtent={props.timeExtent}

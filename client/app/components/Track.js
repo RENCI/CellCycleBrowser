@@ -6,16 +6,6 @@ var HeatLineContainer = require("../containers/HeatLineContainer");
 var HeatMapContainer = require("../containers/HeatMapContainer");
 var Constants = require("../constants/Constants");
 
-var outerStyle = {
-  backgroundColor: "white",
-  borderColor: "#ccc",
-  borderStyle: "solid",
-  borderWidth: 1,
-  borderTopLeftRadius: 5,
-  borderTopRightRadius: 5,
-  borderBottomLeftRadius: 5
-};
-
 var dragStyle = {
   cursor: "ns-resize"
 }
@@ -40,12 +30,10 @@ var sourceStyle = {
 };
 
 var rowStyle = {
-  marginLeft: -1,
-  marginRight: -1,
+  margin: 0,
   border: "1px solid #ccc",
   borderTopLeftRadius: 5,
-  borderBottomLeftRadius: 5,
-  marginBottom: -1
+  borderBottomLeftRadius: 5
 };
 
 var buttonColumnStyle = {
@@ -58,43 +46,50 @@ var traceButtonColumnStyle = {
 };
 
 var visColumnStyle = {
-  paddingLeft: 0,
-  paddingRight: 0,
+  padding: 0,
   borderLeft: "1px solid #ccc"
 };
 
 var collapseRowStyle = {
-  marginTop: 1,
-  marginLeft: -1,
-  marginRight: -1,
-  borderLeft: "1px solid #ccc",
+  // Make up for border in rowStyle
+  marginLeft: 1,
+  marginRight: 0,
   borderRight: "1px solid #ccc"
 };
 
-var collapseColStyle = {
-  paddingLeft: 0,
-  paddingRight: 0,
+var collapseColumnStyle = {
+  padding: 0,
   borderLeft: "1px solid #ccc"
 };
 
 function Track(props) {
   // Generate unique id for species
   // XXX: Could pass in array index for this?
-  var collapseId = props.species.species + "_" +
-                   props.species.feature + "_" +
-                   props.species.source + "_Collapse";
+  var collapseId = props.track.species + "_" +
+                   props.track.feature + "_" +
+                   props.track.source + "_Collapse";
   collapseId = collapseId.replace(/\s/g, "");
 
   var averageHeight = 32;
   var traceHeight = 20;
 
-  var featureSpan = props.species.feature ?
-      <span style={featureStyle}>{" - " + props.species.feature}</span> : null;
+  var featureSpan = props.track.feature ?
+      <span style={featureStyle}>{" - " + props.track.feature}</span> : null;
 
   function onDragStart(e) {
     e.dataTransfer.effectAllowed = "move";
-    e.dataTransfer.setData(Constants.drag_track_type, props.species.index);
+    e.dataTransfer.setData(Constants.drag_track_type, props.track.index);
   }
+
+  var outerStyle = {
+    backgroundColor: "white",
+    borderColor: props.trackColorScale(props.track.source),
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    borderBottomLeftRadius: 5
+  };
 
   return (
     <div className="text-left" style={outerStyle}>
@@ -105,9 +100,9 @@ function Track(props) {
         onDragStart={onDragStart}>
           <div className="col-xs-12">
             <div style={labelStyle}>
-              <span style={nameStyle}>{props.species.species}</span>
+              <span style={nameStyle}>{props.track.species}</span>
               {featureSpan}
-              <span style={sourceStyle}>{props.species.source}</span>
+              <span style={sourceStyle}>{props.track.source}</span>
             </div>
           </div>
       </div>
@@ -117,15 +112,15 @@ function Track(props) {
             <CollapseButtonContainer targetId={collapseId} />
             <div style={{float:"right"}}>
               <TraceToggleButtons
-                traces={[props.species.average]}
+                traces={[props.track.average]}
                 width={traceHeight}
                 height={averageHeight} />
             </div>
           </div>
           <div className="col-xs-10" style={visColumnStyle}>
             <HeatMapContainer
-              data={[props.species.average.values]}
-              dataExtent={props.species.dataExtent}
+              data={[props.track.average.values]}
+              dataExtent={props.track.dataExtent}
               phases={[props.activePhases]}
               timeExtent={props.timeExtent}
               activePhase={props.activePhase}
@@ -138,21 +133,21 @@ function Track(props) {
           <div className="col-xs-2" style={traceButtonColumnStyle}>
             <div style={{float:"right"}}>
               <TraceToggleButtons
-                traces={props.species.data}
+                traces={props.track.data}
                 width={traceHeight}
                 height={traceHeight} />
             </div>
           </div>
-          <div className="col-xs-10" style={collapseColStyle}>
+          <div className="col-xs-10" style={collapseColumnStyle}>
             <HeatMapContainer
-              data={props.species.data.map(function (d) { return d.values; })}
-              dataExtent={props.species.dataExtent}
-              phases={props.species.data.map(function () { return props.activePhases; })}
+              data={props.track.data.map(function (d) { return d.values; })}
+              dataExtent={props.track.dataExtent}
+              phases={props.track.data.map(function () { return props.activePhases; })}
               timeExtent={props.timeExtent}
               activePhase={props.activePhase}
               phaseColorScale={props.phaseColorScale}
               phaseOverlayOpacity={props.phaseOverlayOpacity}
-              height={props.species.data.length * traceHeight} />
+              height={props.track.data.length * traceHeight} />
           </div>
         </div>
       </div>
@@ -161,14 +156,15 @@ function Track(props) {
 }
 
 Track.propTypes = {
-  species: PropTypes.object.isRequired,
+  track: PropTypes.object.isRequired,
   phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   phaseAverage: PropTypes.arrayOf(PropTypes.object).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   activePhases: PropTypes.arrayOf(PropTypes.object).isRequired,
   activePhase: PropTypes.string.isRequired,
   phaseColorScale: PropTypes.func.isRequired,
-  phaseOverlayOpacity: PropTypes.number.isRequired
+  phaseOverlayOpacity: PropTypes.number.isRequired,
+  trackColorScale: PropTypes.func.isRequired
 };
 
 module.exports = Track;

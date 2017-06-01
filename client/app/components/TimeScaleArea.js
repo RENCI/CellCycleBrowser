@@ -16,7 +16,7 @@ var outerStyle = {
 };
 
 var alignmentStyle = {
-  marginLeft: -6,
+  marginLeft: -5,
   marginBottom: -1
 };
 
@@ -28,13 +28,11 @@ var labelStyle = {
 };
 
 var rowStyle = {
-  marginLeft: -1,
-  marginRight: -1
+  margin: 0
 };
 
 var timeLineStyle = {
-  paddingLeft: 0,
-  paddingRight: 0,
+  padding: 0,
   borderLeft: "1px solid #ccc"
 };
 

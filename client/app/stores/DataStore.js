@@ -47,11 +47,11 @@ function updateData() {
   // Compute time extent across all data
   data.timeExtent = computeTimeExtent(data.tracks);
 
+  // Average data
+  averageData(data.tracks, data.timeExtent, alignment);
+
   // Align data
   alignData(data.tracks, data.timeExtent, alignment);
-
-  // Average data
-  averageData(data.tracks);
 
   // Map phase time steps to actual time
   data.phases = mapPhases(simulationOutput, data.timeExtent, alignment);
@@ -243,6 +243,8 @@ function updateData() {
 
   function alignData(species, timeExtent, alignment) {
     species.forEach(function (species) {
+      align(species.average.values);
+
       species.data.map(function (d) {
         return d.values;
       }).forEach(align);
@@ -284,7 +286,7 @@ function updateData() {
     }
   }
 
-  function averageData(species) {
+  function averageData(species, timeExtent, alignment) {
     species.forEach( function(species) {
       species.average = average(species.data.map(function (d) { return d.values; }));
     });
@@ -299,14 +301,33 @@ function updateData() {
         return p + (c.stop - c.start);
       }, 0) / allTimeSteps.length;
 
-      // Generate time steps
-      var start = Math.min.apply(null, timeSeries.map( function(d) {
-        return d[0].start;
-      }));
+      // Get the average time span
+      var timeSpan = timeSeries.reduce(function(p, c) {
+        return p + (c[c.length - 1].stop - c[0].start);
+      }, 0) / timeSeries.length;
 
-      var stop = Math.max.apply(null, timeSeries.map( function(d) {
-        return d[d.length - 1].stop;
-      }));
+      // Generate time steps
+      var start = 0;
+      var stop = 0;
+
+      if (alignment === "left") {
+        start = Math.min.apply(null, timeSeries.map(function (d) {
+          return d[0].start;
+        }));
+
+        stop = start + timeSpan;
+      }
+      else if (alignment === "right") {
+        stop = Math.max.apply(null, timeSeries.map(function (d) {
+          return d[d.length - 1].stop;
+        }));
+
+        start = stop - timeSpan;
+      }
+      else if (alignment === "justify") {
+        start = timeSeries[0][0].start;
+        stop = timeSeries[0][timeSeries[0].length - 1].stop;
+      }
 
       var timeSteps = [];
       var n = (stop - start) / delta;
@@ -319,6 +340,27 @@ function updateData() {
         });
       }
 
+      // Justify data
+      var justified = timeSeries.map(function (timeSeries) {
+        // Domain and range
+        var d0 = timeSeries[0].start;
+        var dw = timeSeries[timeSeries.length - 1].stop - d0;
+        var r0 = start;
+        var rw = stop;
+
+        function justify(x) {
+          return r0 + (x - d0) / dw * rw;
+        }
+
+        return timeSeries.map(function(d) {
+          return {
+            value: d.value,
+            start: justify(d.start),
+            stop: justify(d.stop)
+          };
+        });
+      });
+
       // Keep track of time step per array
       var t = timeSeries.map(function () {
         return 0;
@@ -328,7 +370,7 @@ function updateData() {
         var value = 0;
         var count = 0;
 
-        timeSeries.forEach(function (d, i) {
+        justified.forEach(function (d, i) {
           // Find overlapping time steps
           for (var j = t[i]; j < d.length; j++) {
             if (d[j].stop >= timeStep.start && d[j].start < timeStep.stop) {

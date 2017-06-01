@@ -13,6 +13,7 @@ var TrackSortContainer = require("../containers/TrackSortContainer");
 var Phases = require("../components/Phases");
 var Track = require("../components/Track");
 var TrackDividerContainer = require("../containers/TrackDividerContainer");
+var d3 = require("d3");
 
 function getStateFromDataStore() {
   return {
@@ -108,6 +109,8 @@ var BrowserContainer = React.createClass({
 
     if (tracks.length < 1) return null;
 
+    var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
     // Create GUI components for each track
     var trackComponents = tracks.map(function(track, i) {
       return (
@@ -115,14 +118,15 @@ var BrowserContainer = React.createClass({
           <TrackDividerContainer
             index={track.index} />
           <Track
-            species={track}
+            track={track}
             phases={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}
             phaseAverage={this.state.showPhaseOverlay ? this.state.data.phaseAverage: []}
             timeExtent={this.state.data.timeExtent}
             activePhases={this.state.showPhaseOverlay ? this.state.activeTrajectory.phases : []}
             activePhase={this.state.activePhase}
             phaseColorScale={this.state.phaseColorScale}
-            phaseOverlayOpacity={this.state.phaseOverlayOpacity} />
+            phaseOverlayOpacity={this.state.phaseOverlayOpacity}
+            trackColorScale={colorScale} />
         </div>
       );
     }.bind(this));
