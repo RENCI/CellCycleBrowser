@@ -53,8 +53,6 @@ module.exports = function() {
         .key(function(d) { return d.source; })
         .entries(data.tracks);
 
-    console.log(nest);
-
     nest.forEach(function(source) {
       source.values.forEach(function(track, i, a) {
         [track.average].concat(track.data).forEach(function(trace) {
