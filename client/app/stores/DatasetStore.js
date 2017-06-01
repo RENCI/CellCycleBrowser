@@ -102,7 +102,8 @@ DatasetStore.dispatchToken = AppDispatcher.register(function (action) {
 
     case Constants.RECEIVE_WORKSPACE:
       // Save default datasets
-      defaultDatasets = action.workspace.datasetList;
+      defaultDatasets = action.workspace.datasetList ?
+                        action.workspace.datasetList : [];
       matchDefaults();
 
       // Clear datasets

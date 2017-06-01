@@ -71,7 +71,8 @@ ModelStore.dispatchToken = AppDispatcher.register(function (action) {
 
     case Constants.RECEIVE_WORKSPACE:
       // Save default models
-      defaultModels = action.workspace.modelList;
+      defaultModels = action.workspace.modelList ?
+                      action.workspace.modelList : [];
       matchDefaults();
 
       // Clear model
