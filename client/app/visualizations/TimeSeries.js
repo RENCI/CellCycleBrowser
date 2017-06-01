@@ -47,17 +47,28 @@ module.exports = function() {
 
   function createCurves() {
     curves = [];
-    data.tracks.forEach(function(track) {
-      [track.average].concat(track.data).forEach(function(d) {
-        if (d.selected) {
-          curves.push({
-            name: d.name,
-            track: track,
-            curve: d.values.map(function(d) {
-              return [d.start, d.value];
-            })
-          });
-        }
+
+    // Use a nest to group by source
+    var nest = d3.nest()
+        .key(function(d) { return d.source; })
+        .entries(data.tracks);
+
+    console.log(nest);
+
+    nest.forEach(function(source) {
+      source.values.forEach(function(track, i, a) {
+        [track.average].concat(track.data).forEach(function(trace) {
+          if (trace.selected) {
+            curves.push({
+              name: trace.name,
+              track: track,
+              fraction: a.length === 1 ? 0 : i / (a.length - 1),
+              curve: trace.values.map(function(d) {
+                return [d.start, d.value];
+              })
+            });
+          }
+        });
       });
     });
   }
@@ -93,7 +104,10 @@ module.exports = function() {
         .domain(sources);
 
     function curveColor(d) {
-      return colorScale(d.track.source);
+      // Use hsl for adjusting colors
+      var color = d3.hsl(colorScale(d.track.source));
+
+      return color.brighter(d.fraction);
     }
 
     var circleRadius = 3;
@@ -204,7 +218,7 @@ module.exports = function() {
             .attr("data-original-title",
               d.track.source + ": " +
               d.track.species + " - " +
-              d.track.feature + "<br>" +
+              (d.track.feature ? d.track.feature : "") + "<br>" +
               d.name);
 
         var yScale = yScales[d.track.index];
@@ -242,14 +256,8 @@ module.exports = function() {
           .attr("transform", "translate(" + x + "," + y + ")");
 
       // Bind curve data
-      var legendItems = sources.filter(function(d) {
-        return curves.map(function(e) {
-          return e.track.source;
-        }).indexOf(d) !== -1;
-      });
-
       var curve = svg.select(".legend").selectAll(".item")
-          .data(legendItems);
+          .data(curves);
 
       // Enter
       var curveEnter = curve.enter().append("g")
@@ -273,12 +281,14 @@ module.exports = function() {
           });
 
       curveUpdate.select("text")
-          .text(function(d) { return d; });
+          .text(function(d) {
+            return d.track.source + ": " +
+                   d.track.species +
+                   (d.track.feature ? " - " + d.track.feature : "");
+          });
 
       curveUpdate.select("line")
-          .style("stroke", function(d) {
-            return colorScale(d);
-          });
+          .style("stroke", curveColor);
 
       // Exit
       curve.exit().remove();
