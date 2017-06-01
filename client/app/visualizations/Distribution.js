@@ -4,11 +4,12 @@ var d3ScaleChromatic = require("d3-scale-chromatic");
 
 module.exports = function() {
       // Size
-  var margin = { top: 25, left: 50, bottom: 40, right: 20 },
+  var titleHeight = 40,
+      margin = { top: titleHeight, left: 50, bottom: 40, right: 20 },
       width = 200,
       height = 200,
       innerWidth = function() { return width - margin.left - margin.right; },
-      innerHeight = function() { return height - margin.top - margin.bottom; },
+      innerHeight = function() { return innerWidth(); },
 
       // Data
       data = [],
@@ -37,11 +38,12 @@ module.exports = function() {
             d3.event.preventDefault();
           });
 
+      svgEnter.append("text").attr("class", "title");
+
       var g = svgEnter.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
-      g.append("text").attr("class", "title");
       g.append("g").attr("class", "axes");
       g.append("g").attr("class", "contours");
       g.append("g").attr("class", "points");
@@ -53,6 +55,8 @@ module.exports = function() {
   }
 
   function draw() {
+    var height = innerHeight() + margin.top + margin.bottom;
+
     // Update svg size
     svg .attr("width", width)
         .attr("height", height);
@@ -83,9 +87,9 @@ module.exports = function() {
     function drawTitle() {
       svg.select(".title")
           .text("Phase Distribution")
-          .attr("dy", "-.5em")
+          .attr("dy", "1.5em")
           .style("text-anchor", "middle")
-          .attr("x", innerWidth() / 2);
+          .attr("x", width / 2);
     }
 
     function drawAxes() {
@@ -194,12 +198,6 @@ module.exports = function() {
   distribution.width = function(_) {
     if (!arguments.length) return width;
     width = _;
-    return distribution;
-  };
-
-  distribution.height = function(_) {
-    if (!arguments.length) return height;
-    height = _;
     return distribution;
   };
 

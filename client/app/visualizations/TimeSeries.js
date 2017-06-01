@@ -2,11 +2,12 @@ var d3 = require("d3");
 
 module.exports = function() {
       // Size
-  var margin = { top: 25, left: 50, bottom: 40, right: 20 },
+  var titleHeight = 40,
+      legendItemHeight = 20,
+      margin = { top: titleHeight, left: 50, bottom: 40, right: 20 },
       width = 200,
-      height = 200,
       innerWidth = function() { return width - margin.left - margin.right; },
-      innerHeight = function() { return height - margin.top - margin.bottom; },
+      innerHeight = function() { return innerWidth(); },
 
       // Data
       data,
@@ -29,14 +30,14 @@ module.exports = function() {
             d3.event.preventDefault();
           });
 
-      var g = svgEnter.append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+      svgEnter.append("text").attr("class", "title");
+      svgEnter.append("g").attr("class", "legend");
+
+      var g = svgEnter.append("g").attr("class", "chart");
 
       // Groups for layout
-      g.append("text").attr("class", "title");
       g.append("g").attr("class", "axes");
       g.append("g").attr("class", "curves");
-      g.append("g").attr("class", "legend");
 
       svg = svgEnter.merge(svg);
 
@@ -72,9 +73,17 @@ module.exports = function() {
   }
 
   function draw() {
+    // Compute margin for title and legend
+    margin.top = titleHeight + legendItemHeight * (curves.length);
+
+    // Compute height
+    var height = innerHeight() + margin.top + margin.bottom;
+
     // Update svg size
     svg .attr("width", width)
-        .attr("height", height);
+        .attr("height", height)
+      .select(".chart")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // Update scales
     var xScale = d3.scaleLinear()
@@ -126,9 +135,9 @@ module.exports = function() {
     function drawTitle() {
       svg.select(".title")
           .text("Time Series")
-          .attr("dy", "-.5em")
+          .attr("dy", "1.5em")
           .style("text-anchor", "middle")
-          .attr("x", innerWidth() / 2);
+          .attr("x", width / 2);
     }
 
     function drawAxes() {
@@ -240,15 +249,14 @@ module.exports = function() {
     }
 
     function drawLegend() {
-      var x = 35,
-          y = 20,
-          spacing = 20,
-          lineX = -2,
-          lineWidth = 20;
+      var lineX = -2,
+          lineWidth = 20,
+          x = margin.left + lineWidth / 2,
+          y = titleHeight;
 
       var itemScale = d3.scaleLinear()
           .domain([0, curves.length - 1])
-          .range([0, (curves.length - 1) * spacing]);
+          .range([0, (curves.length - 1) * legendItemHeight]);
 
       var legend = svg.select(".legend")
           .attr("transform", "translate(" + x + "," + y + ")");
@@ -263,7 +271,7 @@ module.exports = function() {
 
       curveEnter.append("text")
           .attr("dy", ".35em")
-          .style("font-size", "small")
+          .style("font-size", "smaller")
           .style("text-anchor", "start");
 
       curveEnter.append("line")
@@ -296,12 +304,6 @@ module.exports = function() {
   timeSeries.width = function(_) {
     if (!arguments.length) return width;
     width = _;
-    return timeSeries;
-  };
-
-  timeSeries.height = function(_) {
-    if (!arguments.length) return height;
-    height = _;
     return timeSeries;
   };
 

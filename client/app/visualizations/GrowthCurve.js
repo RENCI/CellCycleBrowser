@@ -2,11 +2,11 @@ var d3 = require("d3");
 
 module.exports = function() {
       // Size
-  var margin = { top: 25, left: 50, bottom: 40, right: 20 },
+  var titleHeight = 40,
+      margin = { top: titleHeight, left: 50, bottom: 40, right: 20 },
       width = 200,
-      height = 200,
       innerWidth = function() { return width - margin.left - margin.right; },
-      innerHeight = function() { return height - margin.top - margin.bottom; },
+      innerHeight = function() { return innerWidth(); },
 
       // Data
       data,
@@ -30,11 +30,12 @@ module.exports = function() {
             d3.event.preventDefault();
           });
 
+      svgEnter.append("text").attr("class", "title");
+
       var g = svgEnter.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
-      g.append("text").attr("class", "title");
       g.append("g").attr("class", "axes");
       g.append("g").attr("class", "curves");
       g.append("g").attr("class", "legend");
@@ -88,7 +89,7 @@ module.exports = function() {
   }
 
   function draw() {
-    if (curves.length === 0) return;
+    var height = innerHeight() + margin.top + margin.bottom;
 
     // Update svg size
     svg .attr("width", width)
@@ -127,9 +128,9 @@ module.exports = function() {
     function drawTitle() {
       svg.select(".title")
           .text("Growth Curves")
-          .attr("dy", "-.5em")
+          .attr("dy", "1.5em")
           .style("text-anchor", "middle")
-          .attr("x", innerWidth() / 2);
+          .attr("x", width / 2);
     }
 
     function drawAxes() {
@@ -232,7 +233,7 @@ module.exports = function() {
 
     function drawLegend() {
       var x = 35,
-          y = 20,
+          y = 0,
           spacing = 20,
           lineX = -2,
           lineWidth = 20;
@@ -254,7 +255,7 @@ module.exports = function() {
 
       curveEnter.append("text")
           .attr("dy", ".35em")
-          .style("font-size", "small")
+          .style("font-size", "smaller")
           .style("text-anchor", "start");
 
       curveEnter.append("line")
@@ -290,12 +291,6 @@ module.exports = function() {
   growthCurve.width = function(_) {
     if (!arguments.length) return width;
     width = _;
-    return growthCurve;
-  };
-
-  growthCurve.height = function(_) {
-    if (!arguments.length) return height;
-    height = _;
     return growthCurve;
   };
 

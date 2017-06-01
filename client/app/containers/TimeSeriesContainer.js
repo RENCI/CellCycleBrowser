@@ -47,8 +47,7 @@ var TimeSeriesContainer = React.createClass ({
   },
   drawVisualization: function (props, state) {
     this.timeSeries
-        .width(props.width)
-        .height(props.width)
+        .width(props.width);
 
     d3.select(ReactDOM.findDOMNode(this))
         .datum(state.data)
