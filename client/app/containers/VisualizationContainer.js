@@ -26,6 +26,9 @@ var VisualizationContainer = React.createClass ({
     // Resize on window resize
     window.removeEventListener("resize", this.onResize);
   },
+  componentWillReceiveProps: function () {
+    this.onResize();
+  },
   getSize: function () {
     var node = ReactDOM.findDOMNode(this);
 
@@ -36,9 +39,6 @@ var VisualizationContainer = React.createClass ({
   },
   onResize: function () {
     this.setState(this.getSize());
-  },
-  renderChildren: function () {
-    return React.Children.map()
   },
   render: function () {
     var props = {
