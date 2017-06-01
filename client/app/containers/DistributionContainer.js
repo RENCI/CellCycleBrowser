@@ -5,6 +5,8 @@ var ModelStore = require("../stores/ModelStore");
 var d3 = require("d3");
 var Distribution = require("../visualizations/Distribution");
 
+var refName = "ref";
+
 function getStateFromStore() {
   return {
     cells: createCells(ModelStore.getModel().reactions)
@@ -123,7 +125,11 @@ var DistributionContainer = React.createClass ({
     return false;
   },
   onModelChange: function () {
-    this.setState(getStateFromStore());
+    // Use a ref to see if we are still mounted, as the model change listener
+    // can still be fired after unmounting due to an asynchronous ajax request
+    if (this.refs[refName]) {
+      this.setState(getStateFromStore());
+    }
   },
   drawVisualization: function (props, state) {
     this.distribution
@@ -135,7 +141,7 @@ var DistributionContainer = React.createClass ({
         .call(this.distribution);
   },
   render: function () {
-    return <div></div>
+    return <div ref={refName}></div>
   }
 });
 
