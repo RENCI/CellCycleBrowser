@@ -73,8 +73,19 @@ module.exports = function() {
   }
 
   function draw() {
+    // Get the active tracks
+    var activeTracks = curves.reduce(function(p, c) {
+      if (p.map(function(d) {
+        return d.track;
+      }).indexOf(c.track) === -1) {
+        p.push(c);
+      }
+
+      return p;
+    }, []);
+
     // Compute margin for title and legend
-    margin.top = titleHeight + legendItemHeight * (data.tracks.length);
+    margin.top = titleHeight + legendItemHeight * (activeTracks.length);
 
     // Compute height
     var height = innerHeight() + margin.top + margin.bottom;
@@ -224,7 +235,7 @@ module.exports = function() {
         var g = d3.select(this)
             .attr("data-original-title",
               d.track.source + ": " +
-              d.track.species + 
+              d.track.species +
               (d.track.feature ? " - " + d.track.feature : "") + "<br>" +
               d.name);
 
@@ -262,18 +273,8 @@ module.exports = function() {
           .attr("transform", "translate(" + x + "," + y + ")");
 
       // Bind one curve for each track
-      var items = curves.reduce(function(p, c) {
-        if (p.map(function(d) {
-          return d.track;
-        }).indexOf(c.track) === -1) {
-          p.push(c);
-        }
-
-        return p;
-      }, []);
-
       var curve = svg.select(".legend").selectAll(".item")
-          .data(items);
+          .data(activeTracks);
 
       // Enter
       var curveEnter = curve.enter().append("g")
