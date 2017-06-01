@@ -32,8 +32,8 @@ function getStateFromPhaseStore() {
 var ControlsContainer = React.createClass ({
   getInitialState: function () {
     return {
-      controls: null,
-      activePhase: getStateFromPhaseStore().activePhase
+      controls: SimulationControlStore.getControls(),
+      activePhase: PhaseStore.getPhase()
     };
   },
   componentDidMount: function () {

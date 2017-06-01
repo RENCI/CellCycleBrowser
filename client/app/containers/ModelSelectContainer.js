@@ -41,10 +41,17 @@ var ModelSelectContainer = React.createClass ({
     ViewActionCreators.selectModel(id);
   },
   render: function () {
+    // Add a None option
+    var options = [{
+      value: "",
+      name: "None",
+      starred: false
+    }].concat(this.state.modelList.map(modelOption));
+
     return (
       <ItemSelect
         label="Model: "
-        options={this.state.modelList.map(modelOption)}
+        options={options}
         activeValue={this.state.modelId}
         onChange={this.handleChangeModel} />
     );

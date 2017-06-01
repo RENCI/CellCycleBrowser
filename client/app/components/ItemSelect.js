@@ -21,7 +21,7 @@ function ItemSelect(props) {
           onClick={handleClick}>
             {option.starred === undefined ? null :
               <span className="glyphicon glyphicon-star" style={starStyle}></span>}
-            {option.name + (description ? ": " : null)} {description}
+            {option.name + (description ? ": " : "")} {description}
         </a>
       </li>
     );

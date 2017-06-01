@@ -6,23 +6,18 @@ var DatasetStore = require("../stores/DatasetStore");
 
 module.exports = {
   selectWorkspace: function (id) {
-/*
-    AppDispatcher.dispatch({
-      actionType: Constants.SELECT_WORKSPACE,
-      id: id
-    });
-*/
     WebAPIUtils.getWorkspace(id);
   },
   selectModel: function (id) {
-    if (ModelStore.hasModel(id)) {
+    if (!ModelStore.hasModel(id) && ModelStore.validModel(id)) {
+      // Model is valid, but need to get it from the server
+      WebAPIUtils.getModel(id);
+    }
+    else {
       AppDispatcher.dispatch({
         actionType: Constants.SELECT_MODEL,
         id: id
       });
-    }
-    else {
-      WebAPIUtils.getModel(id);
     }
   },
   selectDataset: function (dataset) {

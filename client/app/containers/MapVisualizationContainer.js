@@ -8,9 +8,7 @@ var d3 = require("d3");
 var NetworkMap = require("../visualizations/NetworkMap");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
-function getStateFromSimulationControlStore() {
-  var controls = SimulationControlStore.getControls();
-
+function createModel(controls) {
   // Convert controls to model
   // XXX: Use consistent represention for both?
   var model = {};
@@ -45,9 +43,13 @@ function getStateFromSimulationControlStore() {
     });
   });
 
+  return model;
+}
+
+function getStateFromSimulationControlStore() {
   return {
-    model: model
-  };
+    model: createModel(SimulationControlStore.getControls())
+  }
 }
 
 function getStateFromPhaseColorStore() {
@@ -75,7 +77,7 @@ var MapVisualizationContainer = React.createClass ({
         .on("selectSpecies", this.handleSelectSpecies);
 
     return {
-      model: null,
+      model: createModel(SimulationControlStore.getControls()),
       phase: PhaseStore.getPhase(),
       phaseColorScale: PhaseColorStore.getColorScale()
     };

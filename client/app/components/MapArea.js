@@ -3,7 +3,7 @@ var MapControls = require("../components/MapControls");
 var VisualizationContainer = require("../containers/VisualizationContainer");
 var MapVisualizationContainer = require("../containers/MapVisualizationContainer");
 
-function MapArea(props) {
+function MapArea() {
   return (
     <div>
       <MapControls />

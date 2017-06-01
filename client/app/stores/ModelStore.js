@@ -36,6 +36,8 @@ function matchModel(model) {
 
 function selectModel(id) {
   model = DataUtils.find(modelList, "id", id);
+
+  if (!model) model = {};
 }
 
 var ModelStore = assign({}, EventEmitter.prototype, {
@@ -53,6 +55,9 @@ var ModelStore = assign({}, EventEmitter.prototype, {
   },
   getModel: function () {
     return model;
+  },
+  validModel: function (id) {
+    return DataUtils.find(modelList, "id", id) !== null;
   },
   hasModel: function (id) {
     var model = DataUtils.find(modelList, "id", id);
