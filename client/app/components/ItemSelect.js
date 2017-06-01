@@ -3,6 +3,11 @@ var PropTypes = React.PropTypes;
 
 function ItemSelect(props) {
   function option(option, i) {
+    var starStyle = {
+      marginRight: 5,
+      visibility: option.starred ? null : "hidden"
+    };
+
     var description = option.description ?
       <span className="small text-muted">{option.description}</span> :
       null;
@@ -14,6 +19,8 @@ function ItemSelect(props) {
           data-name={option.name}
           data-value={option.value}
           onClick={handleClick}>
+            {option.starred === undefined ? null :
+              <span className="glyphicon glyphicon-star" style={starStyle}></span>}
             {option.name + (description ? ": " : null)} {description}
         </a>
       </li>

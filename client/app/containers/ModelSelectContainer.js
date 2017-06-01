@@ -19,7 +19,8 @@ function modelOption(model) {
   return {
     value: model.id,
     name: model.name,
-    description: model.description
+    description: model.description,
+    starred: model.default
   };
 }
 
