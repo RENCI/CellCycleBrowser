@@ -98,11 +98,17 @@ module.exports = function() {
 
     // Update scales
     var xScale = d3.scaleLinear()
-        .domain([0, d3.max(curves, function(d) {
-          return d3.max(d.curve, function(d) {
-            return d[0];
-          });
-        })])
+        .domain([
+          d3.min(d3.merge(data.tracks.map(function(d) {
+            return d.data.map(function(d) {
+              return d.values[0].start;
+            });
+          }))),
+          d3.max(d3.merge(data.tracks.map(function(d) {
+            return d.data.map(function(d) {
+              return d.values[d.values.length - 1].start;
+            });
+          })))])
         .range([0, innerWidth()]);
 
     var yScales = data.tracks.map(function(d) {
