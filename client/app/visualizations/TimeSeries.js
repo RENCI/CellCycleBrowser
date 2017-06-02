@@ -39,6 +39,7 @@ module.exports = function() {
       // Groups for layout
       g.append("g").attr("class", "axes");
       g.append("g").attr("class", "curves");
+      g.append("g").attr("class", "averageCurves");
 
       svg = svgEnter.merge(svg);
 
@@ -51,7 +52,7 @@ module.exports = function() {
     curves = [];
 
     data.tracks.forEach(function(track) {
-      [track.average].concat(track.traces).forEach(function(trace) {
+      track.traces.concat([track.average]).forEach(function(trace) {
         if (trace.selected) {
           curves.push({
             name: trace.name,
@@ -111,7 +112,14 @@ module.exports = function() {
 
     drawTitle();
     drawAxes();
-    drawCurves();
+    drawCurves(svg.select(".curves"),
+               curves.filter(function(d) {
+                 return d.name !== "Average";
+               }));
+    drawCurves(svg.select(".averageCurves"),
+               curves.filter(function(d) {
+                 return d.name === "Average";
+               }));
     drawLegend();
 
     // Update tooltips
@@ -198,17 +206,17 @@ module.exports = function() {
           .attr("transform", "translate(0," + (innerHeight() / 2) + ")rotate(-90)")
     }
 
-    function drawCurves() {
+    function drawCurves(selection, data) {
       // Bind curve data
-      var curve = svg.select(".curves").selectAll(".curve")
-          .data(curves);
+      var curve = selection.selectAll(".curve")
+          .data(data);
 
       // Enter + update
       var curveEnter = curve.enter().append("g")
           .attr("class", "curve")
           .attr("data-toggle", "tooltip")
           .on("mouseover", function(d) {
-            svg.select(".curves").selectAll(".curve").each(function(e) {
+            svg.selectAll(".curve").each(function(e) {
               if (e !== d) {
                 d3.select(this).select("path")
                     .style("stroke-opacity", 0.1);
@@ -216,7 +224,7 @@ module.exports = function() {
             });
           })
           .on("mouseout", function(d) {
-            svg.select(".curves").selectAll("path")
+            svg.selectAll(".curve").selectAll("path")
                 .style("stroke-opacity", null);
           })
         .merge(curve)
@@ -240,11 +248,26 @@ module.exports = function() {
             .x(function(d) { return xScale(d[0]); })
             .y(function(d) { return yScale(d[1]); });
 
+        // Curve background
+        if (d.name === "Average") {
+          var curve = g.selectAll(".background")
+              .data([d.curve]);
+
+          curve.enter().append("path")
+              .attr("class", "background")
+              .style("fill", "none")
+            .merge(curve)
+              .attr("d", line)
+              .style("stroke", "white")
+              .style("stroke-width", 4);
+        }
+
         // Curve
-        var curve = g.selectAll("path")
+        var curve = g.selectAll(".foreground")
             .data([d.curve]);
 
         curve.enter().append("path")
+            .attr("class", "foreground")
             .style("fill", "none")
           .merge(curve)
             .attr("d", line)
