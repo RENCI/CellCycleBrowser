@@ -23,12 +23,16 @@ var alignmentStyle = {
 var labelStyle = {
   marginTop: 5,
   marginBottom: 5,
-  marginLeft: 5,
+  marginLeft: 10,
   fontWeight: "bold"
 };
 
 var rowStyle = {
   margin: 0
+};
+
+var columnStyle = {
+  paddingLeft: 0
 };
 
 var timeLineStyle = {
@@ -46,7 +50,7 @@ function TimeScale(props) {
       </div>
       <div className="text-left" style={outerStyle}>
         <div className="row" style={rowStyle}>
-          <div className="col-xs-2">
+          <div className="col-xs-2" style={columnStyle}>
             <div style={labelStyle}>
               Time {unit}
             </div>
