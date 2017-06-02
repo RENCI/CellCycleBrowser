@@ -142,7 +142,7 @@ function updateData() {
                 name: cell.name,
                 selected: false,
                 values: values,
-                timeSpan: timeSpan(values)
+                timeSpan: computeTimeSpan(values)
               };
             });
 
@@ -151,7 +151,7 @@ function updateData() {
               feature: feature.name,
               source: dataset.name,
               data: cellData,
-              dataExtent: dataExtent(cellData.map(function (d) { return d.values; }))
+              dataExtent: computeDataExtent(cellData)
             });
           });
         });
@@ -202,35 +202,39 @@ function updateData() {
           species: speciesName,
           source: "Simulation",
           data: simData,
-          dataExtent: dataExtent(simData.map(function (d) { return d.values; }))
+          dataExtent: computeDataExtent(simData)
         };
       });
     }
   }
 
-  function dataExtent(timeSeries) {
-    if (timeSeries.length === 0) return [];
+  function computeDataExtent(traces) {
+    if (traces.length === 0) return [0, 0];
 
-    var min = Math.min.apply(null, timeSeries.map(function (d) {
+    var values = traces.map(function (trace) {
+      return trace.values;
+    });
+
+    var min = Math.min.apply(null, values.map(function (d) {
       return Math.min.apply(null, d.map(function (d) { return d.value; }));
     }));
 
-    var max = Math.max.apply(null, timeSeries.map(function (d) {
+    var max = Math.max.apply(null, values.map(function (d) {
       return Math.max.apply(null, d.map(function (d) { return d.value; }));
     }));
 
     return [min, max];
   }
 
-  function timeSpan(values) {
+  function computeTimeSpan(values) {
     return values[values.length -1].stop - values[0].start;
   }
 
-  function computeTimeExtent(species) {
+  function computeTimeExtent(tracks) {
     var timeExtent = [];
 
-    species.forEach(function(species) {
-      species.data.forEach(function(d) {
+    tracks.forEach(function (track) {
+      track.data.forEach(function (d) {
         var first = d.values[0];
         var last = d.values[d.values.length - 1];
 
@@ -303,7 +307,7 @@ function updateData() {
 
       // Get the average time span
       var timeSpan = timeSeries.reduce(function(p, c) {
-        return p + (c[c.length - 1].stop - c[0].start);
+        return p + computeTimeSpan(c);
       }, 0) / timeSeries.length;
 
       // Generate time steps
@@ -371,7 +375,8 @@ function updateData() {
       return {
         name: "Average",
         selected: true,
-        values: timeSteps
+        values: timeSteps,
+        timeSpan: timeSpan
       };
     }
   }

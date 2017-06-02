@@ -48,26 +48,18 @@ module.exports = function() {
   }
 
   function createCurves() {
-    // Get all sources (simulation or cell data)
-    var sources = d3.set();
-    data.tracks.forEach(function(d) {
-      sources.add(d.source);
-    });
+    // Group tracks by source and create curves
+    curves = d3.nest()
+        .key(function(d) { return d.source; })
+        .entries(data.tracks).map(function(d) {
+          // Use first track for each source for time span
+          var track = d.values[0];
 
-    // Add a curve for each source
-    curves = sources.values().map(function(source) {
-      // Use first track for each source for time span
-      var tracks = data.tracks.filter(function(d) {
-        return d.source === source;
-      })[0];
-
-      return {
-        name: source,
-        timeSpan: d3.mean(tracks.data, function(d) {
-          return d.timeSpan / 24;
-        })
-      };
-    });
+          return {
+            name: track.source,
+            timeSpan: track.average.timeSpan / 24
+          };
+        });
 
     // Compute curves
     curves.forEach(function(curve) {
