@@ -123,8 +123,6 @@ function updateData() {
 
     updateTrackIndeces(tracks);
 
-    setTrackColors(tracks);
-
     return tracks;
 
     function datasetTracks(datasets) {
@@ -219,23 +217,6 @@ function updateData() {
           traces: traces,
           dataExtent: computeDataExtent(traces)
         };
-      });
-    }
-
-    function setTrackColors(tracks) {
-      var sources = tracks.reduce(function (p, c) {
-        if (p.indexOf(c.source) === -1) {
-          p.push(c.source);
-        }
-
-        return p;
-      }, []);
-
-      var colorScale = d3.scaleOrdinal(d3.schemeCategory10)
-          .domain(sources);
-
-      tracks.forEach(function (track) {
-        track.sourceColor = colorScale(track.source);
       });
     }
   }
@@ -523,6 +504,26 @@ function updateTrackIndeces(tracks) {
   tracks.forEach(function (d, i) {
     d.index = i;
   });
+
+  // Update colors
+  setTrackColors(tracks);
+}
+
+function setTrackColors(tracks) {
+  var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+  // Use a nest to group by source
+  d3.nest()
+      .key(function (track) { return track.source; })
+      .entries(tracks).forEach(function (source) {
+        source.values.forEach( function(track, i, a) {
+          // Use array index to change color shade for track
+          var fraction = a.length === 1 ? 0 : i / (a.length - 1);
+
+          track.sourceColor = colorScale(track.source);
+          track.color = d3.hsl(track.sourceColor).brighter(fraction);
+        });
+      });
 }
 
 function selectTrace(trace, selected) {

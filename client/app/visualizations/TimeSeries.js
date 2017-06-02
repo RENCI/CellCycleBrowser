@@ -50,25 +50,19 @@ module.exports = function() {
   function createCurves() {
     curves = [];
 
-    // Use a nest to group by source
-    d3.nest()
-        .key(function(d) { return d.source; })
-        .entries(data.tracks).forEach(function(source) {
-          source.values.forEach(function(track, i, a) {
-            [track.average].concat(track.traces).forEach(function(trace) {
-              if (trace.selected) {
-                curves.push({
-                  name: trace.name,
-                  track: track,
-                  fraction: a.length === 1 ? 0 : i / (a.length - 1),
-                  curve: trace.values.map(function(d) {
-                    return [d.start, d.value];
-                  })
-                });
-              }
-            });
-          })
-        });
+    data.tracks.forEach(function(track) {
+      [track.average].concat(track.traces).forEach(function(trace) {
+        if (trace.selected) {
+          curves.push({
+            name: trace.name,
+            track: track,
+            curve: trace.values.map(function(d) {
+              return [d.start, d.value];
+            })
+          });
+        }
+      });
+    });
   }
 
   function draw() {
@@ -110,10 +104,7 @@ module.exports = function() {
     });
 
     function curveColor(d) {
-      // Use hsl for adjusting colors
-      var color = d3.hsl(d.track.sourceColor);
-
-      return color.brighter(d.fraction);
+      return d.track.color;
     }
 
     var circleRadius = 3;

@@ -6,6 +6,17 @@ var HeatLineContainer = require("../containers/HeatLineContainer");
 var HeatMapContainer = require("../containers/HeatMapContainer");
 var Constants = require("../constants/Constants");
 
+
+var outerStyle = {
+  backgroundColor: "white",
+  borderColor: "#ccc",
+  borderStyle: "solid",
+  borderWidth: 1,
+  borderTopLeftRadius: 5,
+  borderTopRightRadius: 5,
+  borderBottomLeftRadius: 5
+};
+
 var dragStyle = {
   cursor: "ns-resize"
 }
@@ -25,8 +36,13 @@ var featureStyle = {
 };
 
 var sourceStyle = {
-  marginRight: 10,
   float: "right"
+};
+
+var colorStyle = {
+  padding: 4,
+  height: 32,
+  width: "100%"
 };
 
 var rowStyle = {
@@ -76,20 +92,34 @@ function Track(props) {
   var featureSpan = props.track.feature ?
       <span style={featureStyle}>{" - " + props.track.feature}</span> : null;
 
+  var traceSelected = props.track.average.selected ||
+                      props.track.traces.reduce(function (p, c) {
+                        return p || c.selected;
+                      }, false);
+
+  var m = colorStyle.padding;
+  var h = (colorStyle.height - colorStyle.padding * 2 - m) / 2;
+
+  var sourceColorStyle = {
+    backgroundColor: props.track.sourceColor,
+    width: "100%",
+    height: h,
+    borderRadius: h / 4,
+    marginBottom: m
+  };
+
+  var trackColorStyle = {
+    backgroundColor: props.track.color,
+    width: "100%",
+    height: h,
+    borderRadius: h / 4,
+    visibility: traceSelected ? "visible" : "hidden"
+  };
+
   function onDragStart(e) {
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData(Constants.drag_track_type, props.track.index);
   }
-
-  var outerStyle = {
-    backgroundColor: "white",
-    borderColor: props.track.sourceColor,
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
-    borderBottomLeftRadius: 5
-  };
 
   return (
     <div className="text-left" style={outerStyle}>
@@ -98,11 +128,17 @@ function Track(props) {
         style={dragStyle}
         draggable="true"
         onDragStart={onDragStart}>
-          <div className="col-xs-12">
+          <div className="col-xs-11">
             <div style={labelStyle}>
               <span style={nameStyle}>{props.track.species}</span>
               {featureSpan}
               <span style={sourceStyle}>{props.track.source}</span>
+            </div>
+          </div>
+          <div className ="col-xs-1">
+            <div style={colorStyle}>
+              <div style={sourceColorStyle}></div>
+              <div style={trackColorStyle}></div>
             </div>
           </div>
       </div>
