@@ -23,32 +23,16 @@ var data = {
 
 function updateData() {
   // Keep track of selected traces
-  // XXX: Switch to generating ids and using that for matching via a selected store?
-  function trackId(track) {
-    return track.source + ":" + track.species + ":" + track.feature;
-  }
+  var selectedTraces = saveSelectedTraces(data.tracks);
 
-  var selectedTraces = {};
-  data.tracks.forEach(function (track) {
-    var id = trackId(track);
-
-    if (!selectedTraces[id]) {
-      selectedTraces[id] = {};
-    }
-
-    [track.average].concat(track.data).forEach(function (trace) {
-      selectedTraces[id][trace.name] = trace.selected;
-    });
-  });
-
-  // Get data for each track
-  createTracks(datasets, simulationOutput);
+  // Create tracks
+  data.tracks = createTracks(data.tracks, datasets, simulationOutput);
 
   // Compute time extent across all data
   data.timeExtent = computeTimeExtent(data.tracks);
 
-  // Average data
-  averageData(data.tracks, data.timeExtent, alignment);
+  // Average traces
+  averageTraces(data.tracks, data.timeExtent, alignment);
 
   // Align data
   alignData(data.tracks, data.timeExtent, alignment);
@@ -56,23 +40,49 @@ function updateData() {
   // Map phase time steps to actual time
   data.phases = mapPhases(simulationOutput, data.timeExtent, alignment);
 
-  // Average phases
   data.phaseAverage = averagePhases(data.phases);
 
   // Apply selected traces
-  data.tracks.forEach(function (track) {
-    var id = trackId(track);
+  applySelectedTraces(data.tracks, selectedTraces);
 
-    [track.average].concat(track.data).forEach(function (trace) {
-      if (selectedTraces[id]) {
-        trace.selected = selectedTraces[id][trace.name] === true;
+  // XXX: Switch to generating ids and using that for matching via a selected store?
+  function trackId(track) {
+    return track.source + ":" + track.species + ":" + track.feature;
+  }
+
+  function saveSelectedTraces(tracks) {
+    var selectedTraces = {};
+
+    tracks.forEach(function (track) {
+      var id = trackId(track);
+
+      if (!selectedTraces[id]) {
+        selectedTraces[id] = {};
       }
-    });
-  });
 
-  function createTracks() {
+      [track.average].concat(track.traces).forEach(function (trace) {
+        selectedTraces[id][trace.name] = trace.selected;
+      });
+    });
+
+    return selectedTraces;
+  }
+
+  function applySelectedTraces(tracks, selectedTraces) {
+    tracks.forEach(function (track) {
+      var id = trackId(track);
+
+      [track.average].concat(track.traces).forEach(function (trace) {
+        if (selectedTraces[id]) {
+          trace.selected = selectedTraces[id][trace.name] === true;
+        }
+      });
+    });
+  }
+
+  function createTracks(tracks, datasets, simulationOutput) {
     // Keep track of sort order
-    var indeces = data.tracks.map(function(d) {
+    var indeces = tracks.map(function(d) {
       return {
         index: d.index,
         source: d.source,
@@ -82,10 +92,10 @@ function updateData() {
     });
 
     // Generate data
-    data.tracks = datasetTracks().concat(simulationTracks());
+    tracks = datasetTracks(datasets).concat(simulationTracks(simulationOutput));
 
     // Match sort order
-    data.tracks.forEach(function (d) {
+    tracks.forEach(function (d) {
       for (var i = 0; i < indeces.length; i++) {
         var d2 = indeces[i];
 
@@ -100,7 +110,7 @@ function updateData() {
     });
 
     // Sort
-    data.tracks.sort(function (a, b) {
+    tracks.sort(function (a, b) {
       var ai = a.index;
       var bi = b.index;
 
@@ -110,9 +120,11 @@ function updateData() {
              ai - bi;
     });
 
-    updateTrackIndeces();
+    updateTrackIndeces(tracks);
 
-    function datasetTracks() {
+    return tracks;
+
+    function datasetTracks(datasets) {
       // Create empty array
       var tracks = [];
 
@@ -123,7 +135,7 @@ function updateData() {
           dataset.features.filter(function(d) {
             return d.active;
           }).forEach(function (feature) {
-            var cellData = species.cells.map(function (cell) {
+            var traces = species.cells.map(function (cell) {
               var featureIndex = cell.features.map(function (d) {
                 return d.name;
               }).indexOf(feature.name);
@@ -150,8 +162,8 @@ function updateData() {
               species: species.name,
               feature: feature.name,
               source: dataset.name,
-              data: cellData,
-              dataExtent: computeDataExtent(cellData)
+              traces: traces,
+              dataExtent: computeDataExtent(traces)
             });
           });
         });
@@ -160,7 +172,7 @@ function updateData() {
       return tracks;
     }
 
-    function simulationTracks() {
+    function simulationTracks(simulationOutput) {
       // Get all species names in simulation output
       var speciesNames = [];
       simulationOutput.forEach(function (trace) {
@@ -173,7 +185,7 @@ function updateData() {
 
       return speciesNames.map(function (speciesName) {
         // Simulation output for this species
-        var simData = [];
+        var traces = [];
 
         simulationOutput.forEach(function (trace) {
           var index = trace.species.map(function (s) {
@@ -189,11 +201,11 @@ function updateData() {
               };
             });
 
-            simData.push({
-              name: "Trace " + simData.length + 1,
+            traces.push({
+              name: "Trace " + traces.length + 1,
               selected: false,
               values: values,
-              timeSpan: timeSpan(values)
+              timeSpan: computeTimeSpan(values)
             });
           }
         });
@@ -201,8 +213,8 @@ function updateData() {
         return {
           species: speciesName,
           source: "Simulation",
-          data: simData,
-          dataExtent: computeDataExtent(simData)
+          traces: traces,
+          dataExtent: computeDataExtent(traces)
         };
       });
     }
@@ -234,9 +246,9 @@ function updateData() {
     var timeExtent = [];
 
     tracks.forEach(function (track) {
-      track.data.forEach(function (d) {
-        var first = d.values[0];
-        var last = d.values[d.values.length - 1];
+      track.traces.forEach(function (trace) {
+        var first = trace.values[0];
+        var last = trace.values[trace.values.length - 1];
 
         timeExtent.push(first.start, last.stop);
       });
@@ -249,7 +261,7 @@ function updateData() {
     species.forEach(function (species) {
       align(species.average.values);
 
-      species.data.map(function (d) {
+      species.traces.map(function (d) {
         return d.values;
       }).forEach(align);
     });
@@ -290,25 +302,27 @@ function updateData() {
     }
   }
 
-  function averageData(species, timeExtent, alignment) {
-    species.forEach( function(species) {
-      species.average = average(species.data.map(function (d) { return d.values; }));
+  function averageTraces(tracks, timeExtent, alignment) {
+    tracks.forEach(function (track) {
+      track.average = average(track.traces.map(function (trace) {
+        return trace.values;
+      }));
     });
 
-    function average(timeSeries) {
-      if (timeSeries.length === 0) return [];
+    function average(timeSeriesList) {
+      if (timeSeriesList.length === 0) return [];
 
       // Get the average time step
-      var allTimeSteps = [].concat.apply([], timeSeries);
+      var allTimeSteps = [].concat.apply([], timeSeriesList);
 
       var delta = allTimeSteps.reduce(function (p, c) {
         return p + (c.stop - c.start);
       }, 0) / allTimeSteps.length;
 
       // Get the average time span
-      var timeSpan = timeSeries.reduce(function(p, c) {
+      var timeSpan = timeSeriesList.reduce(function(p, c) {
         return p + computeTimeSpan(c);
-      }, 0) / timeSeries.length;
+      }, 0) / timeSeriesList.length;
 
       // Generate time steps
       var start = 0;
@@ -326,7 +340,7 @@ function updateData() {
       }
 
       // Justify data
-      var justified = timeSeries.map(function (timeSeries) {
+      var justified = timeSeriesList.map(function (timeSeries) {
         // Domain and range
         var d0 = timeSeries[0].start;
         var dw = timeSeries[timeSeries.length - 1].stop - d0;
@@ -347,7 +361,7 @@ function updateData() {
       });
 
       // Keep track of time step per array
-      var t = timeSeries.map(function () {
+      var t = timeSeriesList.map(function () {
         return 0;
       });
 
@@ -470,7 +484,7 @@ function sortTracks(sortMethod) {
     return ascending(va, vb);
   });
 
-  updateTrackIndeces();
+  updateTrackIndeces(data.tracks);
 
   function ascending(a, b) {
     return !a && !b ? 0 : !a ? -1 : !b ? 1 : a < b ? -1 : a > b ? 1 : 0;
@@ -482,11 +496,11 @@ function insertTrack(oldIndex, newIndex) {
 
   data.tracks.splice(newIndex, 0, data.tracks.splice(oldIndex, 1)[0]);
 
-  updateTrackIndeces();
+  updateTrackIndeces(data.tracks);
 }
 
-function updateTrackIndeces() {
-  data.tracks.forEach(function (d, i) {
+function updateTrackIndeces(tracks) {
+  tracks.forEach(function (d, i) {
     d.index = i;
   });
 }

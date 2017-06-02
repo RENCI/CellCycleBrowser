@@ -51,26 +51,24 @@ module.exports = function() {
     curves = [];
 
     // Use a nest to group by source
-    var nest = d3.nest()
+    d3.nest()
         .key(function(d) { return d.source; })
-        .entries(data.tracks);
-
-    nest.forEach(function(source) {
-      source.values.forEach(function(track, i, a) {
-        [track.average].concat(track.data).forEach(function(trace) {
-          if (trace.selected) {
-            curves.push({
-              name: trace.name,
-              track: track,
-              fraction: a.length === 1 ? 0 : i / (a.length - 1),
-              curve: trace.values.map(function(d) {
-                return [d.start, d.value];
-              })
+        .entries(data.tracks).forEach(function(source) {
+          source.values.forEach(function(track, i, a) {
+            [track.average].concat(track.traces).forEach(function(trace) {
+              if (trace.selected) {
+                curves.push({
+                  name: trace.name,
+                  track: track,
+                  fraction: a.length === 1 ? 0 : i / (a.length - 1),
+                  curve: trace.values.map(function(d) {
+                    return [d.start, d.value];
+                  })
+                });
+              }
             });
-          }
+          })
         });
-      });
-    });
   }
 
   function draw() {

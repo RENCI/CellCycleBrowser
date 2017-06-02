@@ -133,21 +133,21 @@ function Track(props) {
           <div className="col-xs-2" style={traceButtonColumnStyle}>
             <div style={{float:"right"}}>
               <TraceToggleButtons
-                traces={props.track.data}
+                traces={props.track.traces}
                 width={traceHeight}
                 height={traceHeight} />
             </div>
           </div>
           <div className="col-xs-10" style={collapseColumnStyle}>
             <HeatMapContainer
-              data={props.track.data.map(function (d) { return d.values; })}
+              data={props.track.traces.map(function (d) { return d.values; })}
               dataExtent={props.track.dataExtent}
-              phases={props.track.data.map(function () { return props.activePhases; })}
+              phases={props.track.traces.map(function () { return props.activePhases; })}
               timeExtent={props.timeExtent}
               activePhase={props.activePhase}
               phaseColorScale={props.phaseColorScale}
               phaseOverlayOpacity={props.phaseOverlayOpacity}
-              height={props.track.data.length * traceHeight} />
+              height={props.track.traces.length * traceHeight} />
           </div>
         </div>
       </div>
