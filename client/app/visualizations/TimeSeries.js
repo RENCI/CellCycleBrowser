@@ -109,19 +109,9 @@ module.exports = function() {
           .range([innerHeight(), 0]);
     });
 
-    // XXX: Need to use global color map
-    var sources = d3.set();
-    data.tracks.forEach(function(d) {
-      sources.add(d.source);
-    });
-    sources = sources.values();
-
-    var colorScale = d3.scaleOrdinal(d3.schemeCategory10)
-        .domain(sources);
-
     function curveColor(d) {
       // Use hsl for adjusting colors
-      var color = d3.hsl(colorScale(d.track.source));
+      var color = d3.hsl(d.track.sourceColor);
 
       return color.brighter(d.fraction);
     }

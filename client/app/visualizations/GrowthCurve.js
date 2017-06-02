@@ -57,6 +57,7 @@ module.exports = function() {
 
           return {
             name: track.source,
+            color: track.sourceColor,
             timeSpan: track.average.timeSpan / 24
           };
         });
@@ -70,13 +71,6 @@ module.exports = function() {
       function y(d) {
         return Math.pow(2, (d / curve.timeSpan));
       }
-    });
-
-    // Sort
-    curves = curves.sort(function(a, b) {
-      if (a.name === "Simulation") return 1;
-      else if (b.name === "Simulation") return -1;
-      return 0;
     });
   }
 
@@ -99,16 +93,6 @@ module.exports = function() {
           });
         })])
         .range([innerHeight(), 0]);
-
-    // XXX: Need to decide on a color map
-    var colorScale = d3.scaleOrdinal(d3.schemeCategory10)
-        .domain(curves.map(function(d) {
-          return d.name;
-        }));
-
-    function curveColor(d) {
-      return colorScale(d.name);
-    }
 
     var circleRadius = 3;
 
@@ -197,8 +181,6 @@ module.exports = function() {
       function drawCurve(d) {
         var g = d3.select(this);
 
-        var color = curveColor(d);
-
         // Curve
         var curve = g.selectAll("path")
             .data([d.curve]);
@@ -207,7 +189,7 @@ module.exports = function() {
             .style("fill", "none")
           .merge(curve)
             .attr("d", line)
-            .style("stroke", color);
+            .style("stroke", d.color);
 
         // Points
         var point = g.selectAll("circle")
@@ -219,7 +201,7 @@ module.exports = function() {
           .merge(point)
             .attr("cx", function(d) { return xScale(d[0]); })
             .attr("cy", function(d) { return yScale(d[1]); })
-            .style("fill", color);
+            .style("fill", d.color);
       }
     }
 
@@ -270,10 +252,10 @@ module.exports = function() {
           .text(function(d) { return d.name; });
 
       curveUpdate.select("line")
-          .style("stroke", curveColor);
+          .style("stroke", function(d) { return d.color; });
 
       curveUpdate.select("circle")
-          .style("fill", curveColor);
+          .style("fill", function(d) { return d.color; });
 
       // Exit
       curve.exit().remove();

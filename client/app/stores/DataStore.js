@@ -5,6 +5,7 @@ var Constants = require("../constants/Constants");
 var DatasetStore = require("./DatasetStore");
 var SimulationOutputStore = require("./SimulationOutputStore");
 var AlignmentStore = require("./AlignmentStore");
+var d3 = require("d3");
 
 var CHANGE_EVENT = "change";
 
@@ -122,6 +123,8 @@ function updateData() {
 
     updateTrackIndeces(tracks);
 
+    setTrackColors(tracks);
+
     return tracks;
 
     function datasetTracks(datasets) {
@@ -216,6 +219,23 @@ function updateData() {
           traces: traces,
           dataExtent: computeDataExtent(traces)
         };
+      });
+    }
+
+    function setTrackColors(tracks) {
+      var sources = tracks.reduce(function (p, c) {
+        if (p.indexOf(c.source) === -1) {
+          p.push(c.source);
+        }
+
+        return p;
+      }, []);
+
+      var colorScale = d3.scaleOrdinal(d3.schemeCategory10)
+          .domain(sources);
+
+      tracks.forEach(function (track) {
+        track.sourceColor = colorScale(track.source);
       });
     }
   }

@@ -83,7 +83,7 @@ function Track(props) {
 
   var outerStyle = {
     backgroundColor: "white",
-    borderColor: props.trackColorScale(props.track.source),
+    borderColor: props.track.sourceColor,
     borderStyle: "solid",
     borderWidth: 1,
     borderTopLeftRadius: 5,
@@ -163,8 +163,7 @@ Track.propTypes = {
   activePhases: PropTypes.arrayOf(PropTypes.object).isRequired,
   activePhase: PropTypes.string.isRequired,
   phaseColorScale: PropTypes.func.isRequired,
-  phaseOverlayOpacity: PropTypes.number.isRequired,
-  trackColorScale: PropTypes.func.isRequired
+  phaseOverlayOpacity: PropTypes.number.isRequired
 };
 
 module.exports = Track;

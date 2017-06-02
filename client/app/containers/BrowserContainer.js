@@ -109,8 +109,6 @@ var BrowserContainer = React.createClass({
 
     if (tracks.length < 1) return null;
 
-    var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-
     // Create GUI components for each track
     var trackComponents = tracks.map(function(track, i) {
       return (
@@ -125,8 +123,7 @@ var BrowserContainer = React.createClass({
             activePhases={this.state.showPhaseOverlay ? this.state.activeTrajectory.phases : []}
             activePhase={this.state.activePhase}
             phaseColorScale={this.state.phaseColorScale}
-            phaseOverlayOpacity={this.state.phaseOverlayOpacity}
-            trackColorScale={colorScale} />
+            phaseOverlayOpacity={this.state.phaseOverlayOpacity} />
         </div>
       );
     }.bind(this));
