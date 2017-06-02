@@ -2,20 +2,25 @@ var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
 var DataStore = require("../stores/DataStore");
+var AlignmentStore = require("../stores/AlignmentStore");
 var d3 = require("d3");
 var TimeSeries = require("../visualizations/TimeSeries");
 
-function getStateFromStore() {
+function getStateFromDataStore() {
   return {
     data: DataStore.getData()
+  };
+}
+
+function getStateFromAlignmentStore() {
+  return {
+    alignment: AlignmentStore.getAlignment()
   };
 }
 
 function hasData(data) {
   return data.tracks.length > 0;
 }
-
-var defaultLabel = "Loading";
 
 var TimeSeriesContainer = React.createClass ({
   // Don't make propsTypes required, as a warning is given for the first render
@@ -27,13 +32,18 @@ var TimeSeriesContainer = React.createClass ({
     // Create visualization function
     this.timeSeries = TimeSeries();
 
-    return getStateFromStore();
+    return {
+      data: DataStore.getData(),
+      alignment: AlignmentStore.getAlignment()
+    };
   },
   componentDidMount: function() {
     DataStore.addChangeListener(this.onDataChange);
+    AlignmentStore.addChangeListener(this.onAlignmentChange);
   },
   componentWillUnmount: function () {
     DataStore.removeChangeListener(this.onDataChange);
+    AlignmentStore.removeChangeListener(this.onAlignmentChange);
   },
   componentWillUpdate: function (props, state) {
     if (hasData(state.data)) {
@@ -43,11 +53,15 @@ var TimeSeriesContainer = React.createClass ({
     return false;
   },
   onDataChange: function () {
-    this.setState(getStateFromStore());
+    this.setState(getStateFromDataStore());
+  },
+  onAlignmentChange: function () {
+    this.setState(getStateFromAlignmentStore());
   },
   drawVisualization: function (props, state) {
     this.timeSeries
-        .width(props.width);
+        .width(props.width)
+        .alignment(state.alignment);
 
     d3.select(ReactDOM.findDOMNode(this))
         .datum(state.data)

@@ -12,6 +12,7 @@ module.exports = function() {
       // Data
       data,
       curves,
+      alignment = "left",
 
       // Start with empty selection
       svg = d3.select();
@@ -154,7 +155,22 @@ module.exports = function() {
       var gAxes = svg.select(".axes");
 
       // X axis
-      var xAxis = d3.axisBottom(xScale);
+      var xAxisScale = d3.scaleLinear()
+          .range([0, innerWidth()]);
+
+      // Set scale domain for axis based on alignment
+      if (alignment === "left") {
+        xAxisScale.domain(xScale.domain());
+      }
+      else if (alignment === "justify") {
+        xAxisScale.domain([0, 100]);
+      }
+      else if (alignment === "right") {
+        var d = xScale.domain();
+        xAxisScale.domain([-(d[1] - d[0]), 0]);
+      }
+
+      var xAxis = d3.axisBottom(xAxisScale);
 
       gAxes.selectAll(".xAxis")
           .data([0])
@@ -168,12 +184,12 @@ module.exports = function() {
       gAxes.selectAll(".xLabel")
           .data([0])
         .enter().append("text")
-          .text("Hours")
           .attr("class", "xLabel")
           .attr("dy", "2.5em")
           .style("text-anchor", "middle");
 
       gAxes.select(".xLabel")
+          .text(alignment === "justify" ? "Time (%)" : "Time (h)")
           .attr("transform", "translate(" + (innerWidth() / 2) + "," + innerHeight() + ")");
 
       // Y axis
@@ -314,6 +330,12 @@ module.exports = function() {
   timeSeries.width = function(_) {
     if (!arguments.length) return width;
     width = _;
+    return timeSeries;
+  };
+
+  timeSeries.alignment = function(_) {
+    if (!arguments.length) return alignment;
+    alignment = _;
     return timeSeries;
   };
 
