@@ -143,7 +143,7 @@ module.exports = function() {
 
     function drawPoints() {
       // Create color scale from density contours
-      var colorScale = d3.scaleSequential(d3ScaleChromatic.interpolateYlOrRd)
+      var colorScale = d3.scaleSequential(d3ScaleChromatic.interpolateYlOrBr)
           .domain(d3.extent(contours, function(d) { return d.value; }));
 
       // Bind cell data
