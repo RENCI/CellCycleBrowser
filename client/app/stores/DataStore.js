@@ -308,26 +308,7 @@ function updateData() {
 
       // Generate time steps
       var start = 0;
-      var stop = 0;
-
-      if (alignment === "left") {
-        start = Math.min.apply(null, timeSeries.map(function (d) {
-          return d[0].start;
-        }));
-
-        stop = start + timeSpan;
-      }
-      else if (alignment === "right") {
-        stop = Math.max.apply(null, timeSeries.map(function (d) {
-          return d[d.length - 1].stop;
-        }));
-
-        start = stop - timeSpan;
-      }
-      else if (alignment === "justify") {
-        start = timeSeries[0][0].start;
-        stop = timeSeries[0][timeSeries[0].length - 1].stop;
-      }
+      var stop = timeSpan;
 
       var timeSteps = [];
       var n = (stop - start) / delta;

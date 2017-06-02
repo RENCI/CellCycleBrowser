@@ -99,16 +99,9 @@ module.exports = function() {
     // Update scales
     var xScale = d3.scaleLinear()
         .domain([
-          d3.min(d3.merge(data.tracks.map(function(d) {
-            return d.data.map(function(d) {
-              return d.values[0].start;
-            });
-          }))),
-          d3.max(d3.merge(data.tracks.map(function(d) {
-            return d.data.map(function(d) {
-              return d.values[d.values.length - 1].start;
-            });
-          })))])
+          d3.min(curves, function(d) { return d.curve[0][0]; }),
+          d3.max(curves, function(d) { return d.curve[d.curve.length - 1][0]; })
+        ])
         .range([0, innerWidth()]);
 
     var yScales = data.tracks.map(function(d) {
