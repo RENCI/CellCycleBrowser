@@ -105,7 +105,8 @@ function Track(props) {
     width: "100%",
     height: h,
     borderRadius: h / 4,
-    marginBottom: m
+    marginBottom: m,
+    cursor: "default"
   };
 
   var trackColorStyle = {
@@ -113,7 +114,8 @@ function Track(props) {
     width: "100%",
     height: h,
     borderRadius: h / 4,
-    visibility: traceSelected ? "visible" : "hidden"
+    visibility: traceSelected ? "visible" : "hidden",
+    cursor: "default"
   };
 
   function onDragStart(e) {
@@ -152,8 +154,20 @@ function Track(props) {
           </div>
           <div className ="col-xs-1">
             <div style={colorStyle}>
-              <div style={sourceColorStyle}></div>
-              <div style={trackColorStyle}></div>
+              <div
+                style={sourceColorStyle}
+                data-toggle="tooltip"
+                data-container="body"
+                data-placement="auto top"
+                title="Source color">
+              </div>
+              <div
+                style={trackColorStyle}
+                data-toggle="tooltip"
+                data-container="body"
+                data-placement="auto top"
+                title="Track color">
+              </div>
             </div>
           </div>
       </div>
