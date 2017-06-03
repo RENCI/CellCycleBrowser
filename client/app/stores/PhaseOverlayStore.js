@@ -6,7 +6,7 @@ var Constants = require("../constants/Constants");
 var CHANGE_EVENT = "change";
 
 // Show phase overlay or not
-var show = false;
+var show = true;
 
 // Phase overlay opacity
 var opacity = 1;

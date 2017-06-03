@@ -121,6 +121,21 @@ function Track(props) {
     e.dataTransfer.setData(Constants.drag_track_type, props.track.index);
   }
 
+  var phases;
+  var averagePhases;
+
+  if (props.track.source === "Simulation") {
+    phases = props.phases;
+    averagePhases = [props.phaseAverage];
+  }
+  else {
+    phases = props.track.traces.map(function () {
+      return props.activePhases;
+    });
+
+    averagePhases = [props.activePhases];
+  }
+
   return (
     <div className="text-left" style={outerStyle}>
       <div
@@ -157,7 +172,7 @@ function Track(props) {
             <HeatMapContainer
               data={[props.track.average.values]}
               dataExtent={props.track.dataExtent}
-              phases={[props.activePhases]}
+              phases={averagePhases}
               timeExtent={props.timeExtent}
               activePhase={props.activePhase}
               phaseColorScale={props.phaseColorScale}
@@ -178,7 +193,7 @@ function Track(props) {
             <HeatMapContainer
               data={props.track.traces.map(function (d) { return d.values; })}
               dataExtent={props.track.dataExtent}
-              phases={props.track.traces.map(function () { return props.activePhases; })}
+              phases={phases}
               timeExtent={props.timeExtent}
               activePhase={props.activePhase}
               phaseColorScale={props.phaseColorScale}

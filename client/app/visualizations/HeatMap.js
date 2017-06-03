@@ -61,6 +61,7 @@ module.exports = function () {
       g.append("g").attr("class", "borders");
       g.append("g").attr("class", "rows");
       g.append("g").attr("class", "phaseRows");
+      g.append("g").attr("class", "phaseLines");
 
       g.append("rect")
           .attr("class", "highlight")
@@ -102,7 +103,8 @@ module.exports = function () {
     // Draw the visualization
     drawBorders();
     drawHeatMap();
-    drawPhases();
+    drawPhaseLines();
+//    drawPhases();
 
     // Update toltips
     $(".heatMap .cell").tooltip({
@@ -210,6 +212,122 @@ module.exports = function () {
 
         function color(d) {
           return colorScale(d.value);
+        }
+      }
+    }
+
+    function drawPhaseLines() {
+      // Create an array per phase
+      var phaseData = [];
+      phases.forEach(function(row) {
+        row.forEach(function(phase) {
+          if (phaseData.indexOf(phase.name) === -1) {
+            phaseData.push(phase.name);
+          }
+        });
+      });
+
+      phaseData = phaseData.map(function(d) {
+        return {
+          name: d,
+          values: []
+        };
+      });
+
+      // Fill in data per phase
+      phaseData.forEach(function(d) {
+        phases.forEach(function(row, i) {
+          row.forEach(function(phase, j) {
+            if (phase.name === d.name) {
+              d.values.push({
+                rowIndex: i,
+                start: phase.start,
+                stop: phase.stop
+              });
+            }
+          });
+        });
+      });
+
+      var lineShape = d3.line();
+          //.curve(d3.curveCardinal.tension(0.9));
+          //.curve(d3.curveCatmullRom.alpha(0.5));
+          //.curve(d3.curveMonotoneY);
+
+      // Bind phase data
+      var phase = svg.select(".phaseLines").selectAll(".phase")
+          .data(phaseData);
+
+      phase.enter().append("g")
+          .attr("class", "phase")
+        .merge(phase)
+          .each(drawPhase);
+
+      phase.exit().remove();
+
+      function drawPhase(phase) {
+        var lineWidth = 2;
+
+        // Generate two lines per phase
+        function lineData(xKey) {
+          return d3.merge(phase.values.map(function(d) {
+            var xShift = xKey === "start" ? lineWidth / 2 : -lineWidth / 2;
+
+            var x = xScale(d[xKey]) + xShift,
+                y = yScale(d.rowIndex);
+
+            return [[x, y], [x, y + yScale.bandwidth()]];
+          }));
+        }
+
+        var startLine = lineData("start");
+        var stopLine = lineData("stop");
+
+        startLine.forEach(function(d, i, a) {
+          if (i % 2 === 0 && i > 0) {
+            var p = a[i - 1];
+
+            if (d[0] < p[0]) {
+              d[1] += lineWidth / 2;
+              p[1] += lineWidth / 2;
+            }
+            else if (d[0] > p[0]) {
+              d[1] -= lineWidth / 2;
+              p[1] -= lineWidth / 2;
+            }
+          }
+        });
+
+        stopLine.forEach(function(d, i, a) {
+          if (i % 2 === 0 && i > 0) {
+            var p = a[i - 1];
+
+            if (d[0] < p[0]) {
+              d[1] -= lineWidth / 2;
+              p[1] -= lineWidth / 2;
+            }
+            else if (d[0] > p[0]) {
+              d[1] += lineWidth / 2;
+              p[1] += lineWidth / 2;
+            }
+          }
+        });
+
+        // Bind line data
+        var line = d3.select(this).selectAll(".line")
+            .data([startLine, stopLine]);
+
+        // Enter + update
+        line.enter().append("path")
+            .attr("class", "line")
+            .style("fill", "none")
+          .merge(line)
+            .attr("d", lineShape)
+            .style("stroke", phaseColor(phase))
+            .style("stroke-width", lineWidth);
+
+        function phaseColor(d) {
+          return phaseColorScale(d.name);
         }
       }
     }
