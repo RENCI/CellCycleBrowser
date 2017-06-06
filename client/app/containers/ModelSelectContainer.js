@@ -14,7 +14,6 @@ function getStateFromStore() {
   };
 }
 
-// Use index for value to ensure unique values
 function modelOption(model) {
   return {
     value: model.id,

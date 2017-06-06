@@ -37,6 +37,12 @@ module.exports = {
       feature: feature
     });
   },
+  selectSummaryPlot: function (plot) {
+    AppDispatcher.dispatch({
+      actionType: Constants.SELECT_SUMMARY_PLOT,
+      plot: plot
+    });
+  },
   selectAlignment: function (alignment) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_ALIGNMENT,

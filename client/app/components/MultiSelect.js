@@ -10,7 +10,7 @@ function MultiSelect(props) {
     return (
       <li key={i}>
         <a className="checkbox">
-          <label >
+          <label>
             <input
               type="checkbox"
               defaultChecked={option.active}
@@ -29,9 +29,13 @@ function MultiSelect(props) {
     e.stopPropagation();
   }
 
+  var label = props.labelStrong ?
+              <strong>{props.label}</strong> :
+              props.label;
+
   return (
     <div>
-      {props.label}
+      {label}
       <div className="btn-group">
         <button
           type="button"
@@ -52,6 +56,7 @@ function MultiSelect(props) {
 
 MultiSelect.propTypes = {
   label: PropTypes.string.isRequired,
+  labelStrong: PropTypes.bool,
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
   enabled: PropTypes.bool,
   minSelected: PropTypes.number,
@@ -59,6 +64,7 @@ MultiSelect.propTypes = {
 };
 
 MultiSelect.defaultProps = {
+  labelStrong: true,
   enabled: true,
   minSelected: 0
 };
