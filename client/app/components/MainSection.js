@@ -9,7 +9,7 @@ var divClass = "container-fluid well";
 
 function MainSection(props) {
   // Render conditionally based on presence of model and cell data
-  if (props.hasModel && props.hasDatasets) {
+  if (props.hasModel && props.hasTracks) {
     return (
       <div className={divClass}>
         <div className="row">
@@ -42,7 +42,7 @@ function MainSection(props) {
       </div>
     );
   }
-  else if (props.hasDatasets) {
+  else if (props.hasTracks) {
     return (
       <div className={divClass}>
         <div className="row">
@@ -64,7 +64,7 @@ function MainSection(props) {
 MainSection.propTypes = {
   workspace: PropTypes.object.isRequired,
   hasModel: PropTypes.bool.isRequired,
-  hasDatasets: PropTypes.bool.isRequired
+  hasTracks: PropTypes.bool.isRequired
 };
 
 module.exports = MainSection;

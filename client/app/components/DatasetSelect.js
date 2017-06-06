@@ -22,7 +22,7 @@ function DatasetSelect(props) {
         return {
           name: feature.name,
           value: feature.name + ":" + option.id,
-          active: feature.active
+          selected: feature.active
         };
       }) : [];
 

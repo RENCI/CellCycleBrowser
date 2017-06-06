@@ -7,6 +7,8 @@ var DataUtils = require("../utils/DataUtils");
 var TimeSeriesArea = require("../components/TimeSeriesArea");
 var GrowthCurveArea = require("../components/GrowthCurveArea");
 var DistributionArea = require("../components/DistributionArea");
+var ModelStore = require("./ModelStore");
+var DataStore = require("./DataStore");
 
 var CHANGE_EVENT = "change";
 
@@ -15,24 +17,48 @@ var plots = [
   {
     name: "Time Series",
     component: <TimeSeriesArea />,
-    selected: true
+    selected: true,
+    hasInput: function () {
+      return hasTracks();
+    }
   },
   {
     name: "Growth Curve",
     component: <GrowthCurveArea />,
-    selected: true
+    selected: true,
+    hasInput: function () {
+      return hasTracks();
+    }
   },
   {
     name: "Distribution",
     component: <DistributionArea />,
-    selected: true
+    selected: true,
+    hasInput: function () {
+      return hasModel();
+    }
   }
 ];
+
+// State of input data
+function hasModel() {
+  return ModelStore.getModel().name !== undefined;
+}
+
+function hasTracks() {
+  return DataStore.getData().tracks.length > 0;
+}
 
 function selectPlot(plot) {
   var p = DataUtils.find(plots, "name", plot.name);
 
   p.selected = plot.selected;
+}
+
+function checkAvailability() {
+  plots.forEach(function (plot) {
+    plot.available = plot.hasInput();
+  });
 }
 
 var SummaryPlotStore = assign({}, EventEmitter.prototype, {
@@ -50,15 +76,38 @@ var SummaryPlotStore = assign({}, EventEmitter.prototype, {
   },
   getActivePlots: function () {
     return plots.filter(function (plot) {
-      return plot.selected;
+      return plot.selected && plot.available;
     });
   }
 });
 
-SummaryPlotStore.dispatchToken = AppDispatcher.register(function (action) {
+AppDispatcher.register(function (action) {
   switch (action.actionType) {
+    case Constants.RECEIVE_WORKSPACE:
+      AppDispatcher.waitFor([ModelStore.dispatchToken,
+                             DataStore.dispatchToken]);
+      checkAvailability();
+      SummaryPlotStore.emitChange();
+      break;
+
+    case Constants.RECEIVE_MODEL:
+    case Constants.SELECT_MODEL:
+      AppDispatcher.waitFor([ModelStore.dispatchToken]);
+      checkAvailability();
+      SummaryPlotStore.emitChange();
+      break;
+
+    case Constants.RECEIVE_DATASET:
+    case Constants.SELECT_DATASET:
+    case Constants.RECEIVE_SIMULATION_OUTPUT:
+      AppDispatcher.waitFor([DataStore.dispatchToken]);
+      checkAvailability();
+      SummaryPlotStore.emitChange();
+      break;
+
     case Constants.SELECT_SUMMARY_PLOT:
       selectPlot(action.plot);
+      checkAvailability();
       SummaryPlotStore.emitChange();
       break;
   }

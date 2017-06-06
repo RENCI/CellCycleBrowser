@@ -7,19 +7,24 @@ function handleClick(e) {
 }
 
 function MultiSelect(props) {
-  var numActive = props.options.reduce(function (p, c) {
-    return p + (c.active ? 1 : 0);
+  var numSelected = props.options.reduce(function (p, c) {
+    return p + (c.selected ? 1 : 0);
   }, 0);
 
   function option(option, i) {
+    var active = option.active === undefined || option.active;
+    var checked = active && option.selected ? true : null;
+    var disabled = !active ||
+                   (option.selected && numSelected <= props.minSelected);
+
     return (
       <li key={i}>
         <a className="checkbox">
           <label>
             <input
               type="checkbox"
-              defaultChecked={option.active}
-              disabled={option.active && numActive <= props.minSelected}
+              defaultChecked={checked}
+              disabled={disabled}
               data-value={option.value}
               onChange={props.onChange} />
             {option.name}

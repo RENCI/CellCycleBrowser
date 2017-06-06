@@ -7,7 +7,7 @@ var DataSelectionSection = require("../components/DataSelectionSection");
 var MainSection = require("../components/MainSection");
 var WorkspaceStore = require("../stores/WorkspaceStore");
 var ModelStore = require("../stores/ModelStore");
-var DatasetStore = require("../stores/DatasetStore");
+var DataStore = require("../stores/DataStore");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
 // Retrieve the current state from stores
@@ -23,9 +23,9 @@ function getStateFromModelStore() {
   };
 }
 
-function getStateFromDatasetStore() {
+function getStateFromDataStore() {
   return {
-    datasets: DatasetStore.getDatasets()
+    data: DataStore.getData()
   };
 }
 
@@ -34,13 +34,13 @@ var AppContainer = React.createClass({
     return {
       workspace: WorkspaceStore.getWorkspace(),
       model: ModelStore.getModel(),
-      datasets: DatasetStore.getDatasets()
+      data: DataStore.getData()
     };
   },
   componentDidMount: function () {
     WorkspaceStore.addChangeListener(this.onWorkspaceChange);
     ModelStore.addChangeListener(this.onModelChange);
-    DatasetStore.addChangeListener(this.onDatasetChange);
+    DataStore.addChangeListener(this.onDataChange);
 
     // Bootstrap the application by getting initial data here
     WebAPIUtils.getWorkspaceList();
@@ -50,7 +50,7 @@ var AppContainer = React.createClass({
   componentWillUnmount: function () {
     WorkspaceStore.removeChangeListener(this.onWorkspaceChange);
     ModelStore.removeChangeListener(this.onModelChange);
-    DatasetStore.removeChangeListener(this.onDatasetChange);
+    DataStore.removeChangeListener(this.onDataChange);
   },
   onWorkspaceChange: function () {
     this.setState(getStateFromWorkspaceStore());
@@ -58,13 +58,13 @@ var AppContainer = React.createClass({
   onModelChange: function () {
     this.setState(getStateFromModelStore());
   },
-  onDatasetChange: function () {
-    this.setState(getStateFromDatasetStore());
+  onDataChange: function () {
+    this.setState(getStateFromDataStore());
   },
   render: function () {
     var hasWorkspace = this.state.workspace.name !== undefined;
     var hasModel = this.state.model.name !== undefined;
-    var hasDatasets = this.state.datasets.length > 0;
+    var hasTracks = this.state.data.tracks.length > 0;
 
     return (
       <div>
@@ -78,7 +78,7 @@ var AppContainer = React.createClass({
           <MainSection
             workspace={this.state.workspace}
             hasModel={hasModel}
-            hasDatasets={hasDatasets} />
+            hasTracks={hasTracks} />
           : null}
       </div>
     );

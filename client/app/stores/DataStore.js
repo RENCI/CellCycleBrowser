@@ -545,7 +545,7 @@ var DataStore = assign({}, EventEmitter.prototype, {
   }
 });
 
-AppDispatcher.register(function (action) {
+DataStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_WORKSPACE:
       AppDispatcher.waitFor([DatasetStore.dispatchToken,

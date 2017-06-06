@@ -14,7 +14,8 @@ function option(plot) {
   return {
     value: plot.name,
     name: plot.name,
-    active: plot.selected
+    selected: plot.selected,
+    active: plot.available
   };
 }
 
