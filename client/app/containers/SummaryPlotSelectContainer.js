@@ -46,6 +46,7 @@ var SummaryPlotSelectContainer = React.createClass ({
     return (
       <MultiSelect
         label="Summary Plots: "
+        rightAlign={true}
         options={this.state.summaryPlots.map(option)}
         enabled={option.active}
         onChange={this.handleChangeSummaryPlot} />

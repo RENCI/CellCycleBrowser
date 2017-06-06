@@ -1,6 +1,11 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
+function handleClick(e) {
+  // Prevent closing of dropdown
+  e.stopPropagation();
+}
+
 function MultiSelect(props) {
   var numActive = props.options.reduce(function (p, c) {
     return p + (c.active ? 1 : 0);
@@ -24,14 +29,15 @@ function MultiSelect(props) {
     );
   }
 
-  function handleClick(e) {
-    // Prevent closing of dropdown
-    e.stopPropagation();
-  }
-
+  // Label
   var label = props.labelStrong ?
               <strong>{props.label}</strong> :
               props.label;
+
+  // Right align
+  var dropDownClasses = "dropdown-menu dropdown-menu-form";
+
+  if (props.rightAlign) dropDownClasses += " dropdown-menu-right";
 
   return (
     <div>
@@ -45,7 +51,7 @@ function MultiSelect(props) {
             Select <span className="caret"></span>
         </button>
         <ul
-          className="dropdown-menu dropdown-menu-form"
+          className={dropDownClasses}
           onClick={handleClick}>
             {props.options.map(option)}
         </ul>
@@ -57,6 +63,7 @@ function MultiSelect(props) {
 MultiSelect.propTypes = {
   label: PropTypes.string.isRequired,
   labelStrong: PropTypes.bool,
+  rightAlign: PropTypes.bool,
   options: PropTypes.arrayOf(PropTypes.object).isRequired,
   enabled: PropTypes.bool,
   minSelected: PropTypes.number,
@@ -65,6 +72,7 @@ MultiSelect.propTypes = {
 
 MultiSelect.defaultProps = {
   labelStrong: true,
+  rightAlign: false,
   enabled: true,
   minSelected: 0
 };
