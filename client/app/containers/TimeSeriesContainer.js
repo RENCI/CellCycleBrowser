@@ -6,6 +6,8 @@ var AlignmentStore = require("../stores/AlignmentStore");
 var d3 = require("d3");
 var TimeSeries = require("../visualizations/TimeSeries");
 
+var refName = "ref";
+
 function getStateFromDataStore() {
   return {
     data: DataStore.getData()
@@ -53,7 +55,12 @@ var TimeSeriesContainer = React.createClass ({
     return false;
   },
   onDataChange: function () {
-    this.setState(getStateFromDataStore());
+    // XXX: I think this is necessary because we are getting state from a store
+    // here that is already being retrieved in a parent component. Try passing
+    // down that state instead?
+    if (this.refs[refName]) {
+      this.setState(getStateFromDataStore());
+    }
   },
   onAlignmentChange: function () {
     this.setState(getStateFromAlignmentStore());
@@ -68,7 +75,7 @@ var TimeSeriesContainer = React.createClass ({
         .call(this.timeSeries);
   },
   render: function () {
-    return <div></div>
+    return <div ref={refName}></div>
   }
 });
 

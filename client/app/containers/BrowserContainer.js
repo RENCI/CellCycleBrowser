@@ -15,6 +15,8 @@ var Track = require("../components/Track");
 var TrackDividerContainer = require("../containers/TrackDividerContainer");
 var d3 = require("d3");
 
+var refName = "ref";
+
 function getStateFromDataStore() {
   return {
     data: DataStore.getData()
@@ -87,7 +89,12 @@ var BrowserContainer = React.createClass({
     $("[data-toggle='tooltip']").tooltip();
   },
   onDataChange: function () {
-    this.setState(getStateFromDataStore());
+    // XXX: I think this is necessary because we are getting state from a store
+    // here that is already being retrieved in a parent component. Try passing
+    // down that state instead?
+    if (this.refs[refName]) {
+      this.setState(getStateFromDataStore());
+    }
   },
   onAlignmentChange: function () {
     this.setState(getStateFromAlignmentStore());
@@ -129,7 +136,7 @@ var BrowserContainer = React.createClass({
     }.bind(this));
 
     return (
-      <div>
+      <div ref={refName}>
         <BrowserControls />
         <TimeScaleArea
           timeExtent={this.state.data.timeExtent}
