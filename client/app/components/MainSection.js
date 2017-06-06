@@ -3,7 +3,7 @@ var PropTypes = React.PropTypes;
 var MapArea = require("../components/MapArea");
 var BrowserContainer = require("../containers/BrowserContainer");
 var ControlsContainer = require("../containers/ControlsContainer");
-var SummaryPlotsArea = require("../components/SummaryPlotsArea");
+var SummaryPlotsContainer = require("../containers/SummaryPlotsContainer");
 
 var divClass = "container-fluid well";
 
@@ -21,9 +21,7 @@ function MainSection(props) {
             <BrowserContainer />
           </div>
           <div className="col-sm-3 text-center">
-            <SummaryPlotsArea
-              hasModel={props.hasModel}
-              hasDatasets={props.hasDatasets} />
+            <SummaryPlotsContainer />
           </div>
         </div>
       </div>
@@ -38,9 +36,7 @@ function MainSection(props) {
             <ControlsContainer />
           </div>
           <div className="col-sm-4 text-center">
-            <SummaryPlotsArea
-              hasModel={props.hasModel}
-              hasDatasets={props.hasDatasets} />
+            <SummaryPlotsContainer />
           </div>
         </div>
       </div>
@@ -54,9 +50,7 @@ function MainSection(props) {
             <BrowserContainer />
           </div>
           <div className="col-sm-4 text-center">
-            <SummaryPlotsArea
-              hasModel={props.hasModel}
-              hasDatasets={props.hasDatasets} />
+            <SummaryPlotsContainer />
           </div>
         </div>
       </div>

@@ -6,21 +6,16 @@ var ViewActionCreators = require("../actions/ViewActionCreators");
 // Retrieve the current state from the store
 function getStateFromStore() {
   return {
-    summaryPlots: SummaryPlotStore.getSummaryPlots(),
+    summaryPlots: SummaryPlotStore.getAllPlots(),
   };
 }
 
 function option(plot) {
   return {
-    value: plot.value,
+    value: plot.name,
     name: plot.name,
     active: plot.selected
   };
-}
-
-function handleClick(e) {
-  console.log(e.currentTarget.dataset.value);
-  //props.onChange(e.currentTarget.dataset.value);
 }
 
 var SummaryPlotSelectContainer = React.createClass ({
@@ -38,7 +33,7 @@ var SummaryPlotSelectContainer = React.createClass ({
   },
   handleChangeSummaryPlot: function (e) {
     ViewActionCreators.selectSummaryPlot({
-      value: e.currentTarget.dataset.value,
+      name: e.currentTarget.dataset.value,
       selected: e.currentTarget.checked
     });
   },
