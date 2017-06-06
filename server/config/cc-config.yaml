@@ -1,5 +1,5 @@
 ### Hostname ###
-FQDN_OR_IP: cellcycle.renci.org
+FQDN_OR_IP: localhost
 
 ### Application configuration ###
 CC_PATH: /home/ccbuild/CellCycleBrowser/server
