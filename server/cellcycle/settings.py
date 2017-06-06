@@ -265,3 +265,7 @@ LOGGING = {
         },
     }
 }
+
+# info django that a reverse proxy sever (nginx) is handling ssl/https for it
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+

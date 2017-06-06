@@ -58,6 +58,8 @@ nginx:
   image: nginx:1.9
   volumes_from:
     - cellcycle
+  volumes:
+    - "/opt/cc-certs:/cc-certs"
   ports:
     - "80:80"
     - "443:443"

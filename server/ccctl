@@ -95,6 +95,12 @@ preflight_cc() {
     echo $CC_PATH
     sed -i 's!HOST_USER_UID!'${HOST_USER_UID}'!g' ${CC_PATH}/Dockerfile
     sed -i 's!HOST_USER_GID!'${HOST_USER_UID}'!g' ${CC_PATH}/Dockerfile
+    yes | cp -rf ${NGINX_DIR}/${NGINX_CONF_FILE} ${NGINX_DIR}/nginx.conf
+    sed -i 's/FQDN_OR_IP/'${FQDN_OR_IP}'/g' ${NGINX_DIR}/nginx.conf;
+    if [[ $USE_SSL = 'true' ]]; then
+        sed -i 's/SSL_CERT_FILE/'${SSL_CERT_FILE}'/g' ${NGINX_DIR}/nginx.conf
+        sed -i 's/SSL_KEY_FILE/'${SSL_KEY_FILE}'/g' ${NGINX_DIR}/nginx.conf;
+    fi
     if [[ $USE_NGINX = 'true' ]]; then
         echo "*** INFO: Using Nginx ***"
         # enable SSH server for debugging purposes

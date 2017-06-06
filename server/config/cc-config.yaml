@@ -1,5 +1,5 @@
 ### Hostname ###
-FQDN_OR_IP: localhost
+FQDN_OR_IP: cellcycle.renci.org
 
 ### Application configuration ###
 CC_PATH: /home/ccbuild/CellCycleBrowser/server
@@ -7,9 +7,16 @@ CC_DATABASE: cellcycle_db.sql
 CC_MEDIA_FILES: media.cc-testing.tar.gz
 HOST_USER_UID: 1000
 HOST_USER_GID: 1000
+HOST_SSL_DIR: /opt/cc-certs
 ### Nginx configuration ###
 USE_NGINX: false
+USE_SSL: false
 NGINX_DIR: nginx
 NGINX_CONF_FILE: cc-nginx.conf
+
+### SSL Configuration Variables ###
+SSL_CERT_DIR: /home/ccbuild/CellCycleBrowser/server/nginx/cert-files
+SSL_CERT_FILE: 
+SSL_KEY_FILE: 
 
 ### REQUIRES BLANK LINE AFTER LAST VARIABLE DEFINITION ###
