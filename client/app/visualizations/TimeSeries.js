@@ -125,7 +125,7 @@ module.exports = function() {
     // Update tooltips
     $(".timeSeries .curve").tooltip({
       container: "body",
-      placement: "auto top",
+      placement: "auto left",
       animation: false,
       html: true
     });
