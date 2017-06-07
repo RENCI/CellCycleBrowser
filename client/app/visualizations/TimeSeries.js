@@ -115,11 +115,11 @@ module.exports = function() {
     drawCurves(svg.select(".curves"),
                curves.filter(function(d) {
                  return d.name !== "Average";
-               }));
+               }).reverse());
     drawCurves(svg.select(".averageCurves"),
                curves.filter(function(d) {
                  return d.name === "Average";
-               }));
+               }).reverse());
     drawLegend();
 
     // Update tooltips
