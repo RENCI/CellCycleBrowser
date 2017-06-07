@@ -41,7 +41,7 @@ var SummaryPlotSelectContainer = React.createClass ({
   render: function () {
     return (
       <MultiSelect
-        label="Summary Plots: "
+        label="Analysis Plots: "
         rightAlign={true}
         options={this.state.summaryPlots.map(option)}
         enabled={option.active}
