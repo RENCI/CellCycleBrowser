@@ -28,7 +28,7 @@ function SpeciesValueSliders(props) {
   return (
     <Collapsible
       id="speciesValueSliders"
-      label="Species initial values">
+      label="Expression levels">
         {sliders}
     </Collapsible>
   );

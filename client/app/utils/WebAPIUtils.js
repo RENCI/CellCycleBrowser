@@ -102,7 +102,7 @@ function simulationParameters() {
 
   var trajectories = controls.parameters[controls.parameters.map(function (parameter) {
     return parameter.name;
-  }).indexOf("numTrajectories")].value;
+  }).indexOf("numCells")].value;
 
   var species = controls.species.map(function (species) {
     return {

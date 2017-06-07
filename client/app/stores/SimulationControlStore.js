@@ -11,8 +11,8 @@ var controls = {
   // Hard-coding parameters for now
   parameters: [
     {
-      name: "numTrajectories",
-      label: "Number of trajectories",
+      name: "numCells",
+      label: "Number of cells",
       min: 1,
       max: 20,
       value: 4
