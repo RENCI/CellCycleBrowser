@@ -1,7 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var Workspace = require("../components/Workspace");
-var Model = require("../components/Model");
+var ModelSelectContainer = require("../containers/ModelSelectContainer");
 var DatasetSelectContainer = require("../containers/DatasetSelectContainer");
 var SummaryPlotSelectContainer = require("../containers/SummaryPlotSelectContainer");
 
@@ -16,6 +16,11 @@ var hrStyle = {
   marginBottom: 0
 };
 
+var selectStyle = {
+  marginTop: -1,
+  marginBottom: -1
+};
+
 function DataSelectionSection(props) {
   return (
     <div className="container-fluid well" style={containerStyle}>
@@ -26,13 +31,13 @@ function DataSelectionSection(props) {
       </div>
       <hr style={hrStyle}/>
       <div className="row">
-        <div className="col-xs-3 text-center">
-          <Model />
+        <div className="col-xs-3 text-center" style={selectStyle}>
+          <ModelSelectContainer />
         </div>
-        <div className="col-xs-6 text-center">
+        <div className="col-xs-6 text-center" style={selectStyle}>
           <DatasetSelectContainer />
         </div>
-        <div className="col-xs-3 text-center">
+        <div className="col-xs-3 text-center" style={selectStyle}>
           <SummaryPlotSelectContainer />
         </div>
       </div>

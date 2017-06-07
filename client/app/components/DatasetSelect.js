@@ -2,11 +2,6 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 var MultiSelect = require("./MultiSelect");
 
-var outerStyle = {
-  marginTop: -1,
-  marginBottom: -1
-};
-
 var tdStyle = {
   verticalAlign: "middle"
 };
@@ -71,7 +66,7 @@ function DatasetSelect(props) {
   var popoverContentClass = "datasetSelectPopoverContent";
 
   return (
-    <div style={outerStyle}>
+    <div>
       <strong>
         {"Datasets: "}
       </strong>

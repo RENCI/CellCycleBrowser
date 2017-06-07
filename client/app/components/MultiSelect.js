@@ -13,17 +13,17 @@ function MultiSelect(props) {
 
   function option(option, i) {
     var active = option.active === undefined || option.active;
-    var checked = active && option.selected ? true : null;
     var disabled = !active ||
                    (option.selected && numSelected <= props.minSelected);
+    var labelClass = active && option.selected ? null : "text-muted";
 
     return (
       <li key={i}>
         <a className="checkbox">
-          <label>
+          <label className={labelClass}>
             <input
               type="checkbox"
-              defaultChecked={checked}
+              defaultChecked={option.selected}
               disabled={disabled}
               data-value={option.value}
               onChange={props.onChange} />
@@ -79,7 +79,8 @@ MultiSelect.defaultProps = {
   labelStrong: true,
   rightAlign: false,
   enabled: true,
-  minSelected: 0
+  minSelected: 0,
+  onChange: function () {}
 };
 
 module.exports = MultiSelect;
