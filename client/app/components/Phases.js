@@ -3,6 +3,7 @@ var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
 var PhaseLineContainer = require("../containers/PhaseLineContainer");
 var PhaseMapContainer = require("../containers/PhaseMapContainer");
+var ViewActionCreators = require("../actions/ViewActionCreators");
 
 var outerStyle = {
   backgroundColor: "white",
@@ -18,17 +19,16 @@ var outerStyle = {
 
 var labelStyle = {
   marginTop: 5,
-  marginBottom: 5,
-  marginLeft: 10
+  marginBottom: 5
 };
 
 var nameStyle = {
-  fontWeight: "bold"
+  fontWeight: "bold",
+  marginLeft: 10
 };
 
-var sourceStyle = {
-  marginRight: 10,
-  float: "right"
+var checkboxStyle = {
+  marginTop: 4
 };
 
 var rowStyle = {
@@ -59,6 +59,10 @@ var collapseColumnStyle = {
   borderLeft: "1px solid #ccc"
 };
 
+function handleShowPhaseOverlayChange(e) {
+  ViewActionCreators.changeShowPhaseOverlay(e.currentTarget.checked);
+}
+
 function Phases(props) {
   if (props.phases.length === 0) {
     return null;
@@ -72,11 +76,19 @@ function Phases(props) {
   return (
     <div className="text-left" style={outerStyle}>
       <div className="row">
-        <div className="col-xs-12">
-          <div style={labelStyle}>
-            <span style={nameStyle}>Phases</span>
-            <span style={sourceStyle}>Simulation</span>
-          </div>
+        <div className="col-xs-4" style={labelStyle}>
+          <span style={nameStyle}>Phases</span>
+        </div>
+        <div className="col-xs-4 text-center" style={checkboxStyle}>
+          <label className="checkbox-inline">
+            <input
+              type="checkbox"
+              onChange={handleShowPhaseOverlayChange} />
+            Show overlay
+          </label>
+        </div>
+        <div className="col-xs-3 text-right" style={labelStyle}>
+          Simulation
         </div>
       </div>
       <div>
