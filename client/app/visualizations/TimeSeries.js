@@ -123,7 +123,7 @@ module.exports = function() {
     drawLegend();
 
     // Update tooltips
-    $(".timeSeries .curves > g").tooltip({
+    $(".timeSeries .curve").tooltip({
       container: "body",
       placement: "auto top",
       animation: false,
@@ -218,8 +218,8 @@ module.exports = function() {
           .on("mouseover", function(d) {
             svg.selectAll(".curve").each(function(e) {
               if (e !== d) {
-                d3.select(this).select("path")
-                    .style("stroke-opacity", 0.1);
+                d3.select(this).selectAll("path")
+                    .style("stroke-opacity", 0.2);
               }
             });
           })
