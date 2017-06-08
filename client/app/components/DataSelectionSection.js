@@ -25,19 +25,19 @@ function DataSelectionSection(props) {
   return (
     <div className="container-fluid well" style={containerStyle}>
       <div className="row">
-        <div className="col-xs-12">
+        <div className="col-sm-12">
           <Workspace workspace={props.workspace} />
         </div>
       </div>
       <hr style={hrStyle}/>
       <div className="row">
-        <div className="col-xs-3 text-center" style={selectStyle}>
+        <div className="col-sm-3 text-center" style={selectStyle}>
           <ModelSelectContainer />
         </div>
-        <div className="col-xs-6 text-center" style={selectStyle}>
+        <div className="col-sm-6 text-center" style={selectStyle}>
           <DatasetSelectContainer />
         </div>
-        <div className="col-xs-3 text-center" style={selectStyle}>
+        <div className="col-sm-3 text-center" style={selectStyle}>
           <SummaryPlotSelectContainer />
         </div>
       </div>
