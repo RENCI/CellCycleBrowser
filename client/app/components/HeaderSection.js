@@ -6,9 +6,11 @@ function HeaderSection() {
     <div className="row well">
       <div className="media">
         <div className="media-left media-middle text-center" style={{width:"25%"}}>
-          <img
-            src="/static/cc_core/images/ccb_logo_alpha_cropped.png"
-            style={{height: 100}} />
+          <a href="http://www.med.unc.edu/genetics/purvislab">
+            <img
+              src="/static/cc_core/images/ccb_logo_alpha_cropped.png"
+              style={{height: 100}} />
+          </a>
         </div>
         <div className="media-body media-middle text-center">
           <Header header="Cell Cycle Browser" />
