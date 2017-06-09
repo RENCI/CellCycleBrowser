@@ -1,7 +1,11 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var Collapsible = require("../components/Collapsible");
-var SliderContainer = require("../containers/SliderContainer");
+var ExpressionLevelSliderContainer = require("../containers/ExpressionLevelSliderContainer");
+
+var divStyle = {
+  marginTop: 10
+};
 
 function SpeciesValueSliders(props) {
   var sliders = props.species.map(function (species, i) {
@@ -15,7 +19,7 @@ function SpeciesValueSliders(props) {
     var value = props.values[species];
 
     return (
-      <SliderContainer
+      <ExpressionLevelSliderContainer
         key={i}
         label={species}
         min={value.min}
@@ -29,7 +33,9 @@ function SpeciesValueSliders(props) {
     <Collapsible
       id="speciesValueSliders"
       label="Expression levels">
-        {sliders}
+        <div style={divStyle}>
+          {sliders}
+        </div>
     </Collapsible>
   );
 }

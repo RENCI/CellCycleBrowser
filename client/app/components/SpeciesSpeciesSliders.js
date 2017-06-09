@@ -1,7 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var Collapsible = require("../components/Collapsible");
-var SliderContainer = require("../containers/SliderContainer");
+var InteractionSliderContainer = require("../containers/InteractionSliderContainer");
 var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
 
@@ -30,7 +30,7 @@ function SpeciesSpeciesSliders(props) {
         var value = props.matrices[phase][upstream][downstream];
 
         sliders.push(
-          <SliderContainer
+          <InteractionSliderContainer
             key={j * props.species.length + k}
             label={upstream + "→" + downstream + " (" + phase + ")"}
             min={value.min}
