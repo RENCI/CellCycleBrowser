@@ -24,7 +24,7 @@ function SpeciesValueSliders(props) {
         label={species}
         min={value.min}
         max={value.max}
-        initialValue={value.value}
+        value={value.value}
         onChange={handleChange} />
     );
   });
