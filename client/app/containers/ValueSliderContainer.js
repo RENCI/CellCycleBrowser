@@ -6,23 +6,27 @@ var ValueSlider = require("../components/ValueSlider");
 var ValueSliderContainer = React.createClass ({
   propTypes: {
     label: PropTypes.string,
+    sup: PropTypes.string,
     // initialValue: PropTypes.number XXX: Should have initialValue here
     min: PropTypes.number,
     max: PropTypes.number,
     step: PropTypes.number,
     value: PropTypes.number,
     handleRadius: PropTypes.number,
+    labelCol: PropTypes.number,
     onChange: PropTypes.func
   },
   getDefaultProps: function () {
     return {
       label: "",
+      sup: "",
       min: 0,
       max: 1,
       step: 0.1,
       value: 0.5,
       width: 200,
-      handleRadius: 8
+      handleRadius: 8,
+      labelCol: 2
     };
   },
   getInitialState: function () {
@@ -124,17 +128,20 @@ var ValueSliderContainer = React.createClass ({
     document.removeEventListener("mouseup", this.handleMouseUp);
   },
   render: function () {
+    var labelClass = "col-xs-" + this.props.labelCol;
+    var sliderClass = "col-xs-" + (12 - this.props.labelCol);
+
     return (
       <form className="form-horizontal">
         <div className="form-group">
           <label
-            className=" col-xs-2">
+            className={labelClass}>
               {this.props.label}
+              <sup>{this.props.sup}</sup>
           </label>
-          <div className="col-xs-10">
+          <div className={sliderClass}>
             <div ref="wrapper">
               <ValueSlider
-                label={this.props.label}
                 initialValue={this.state.initialValue}
                 min={this.props.min}
                 max={this.props.max}

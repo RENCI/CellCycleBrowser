@@ -1,7 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var Collapsible = require("../components/Collapsible");
-var InteractionSliderContainer = require("../containers/InteractionSliderContainer");
+var ValueSliderContainer = require("../containers/ValueSliderContainer");
 var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
 
@@ -22,13 +22,14 @@ function SpeciesPhaseSliders(props) {
 
       var value = props.matrix[species][phase];
 
-      return(
-        <InteractionSliderContainer
+      return (
+        <ValueSliderContainer
           key={j}
           label={species + "→" + phase}
           min={value.min}
           max={value.max}
-          initialValue={value.value}
+          value={value.value}
+          labelCol={4}
           onChange={handleChange} />
       );
     });
@@ -61,6 +62,7 @@ function SpeciesPhaseSliders(props) {
             borderColor: colorScale(phase),
             paddingLeft: 10,
             paddingRight: 10,
+            paddingTop: 10,
             marginBottom: 10,
             borderBottomLeftRadius: 5,
             borderBottomRightRadius: 5

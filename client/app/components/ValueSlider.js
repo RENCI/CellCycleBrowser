@@ -87,7 +87,6 @@ function ValueSlider(props) {
 }
 
 ValueSlider.propTypes = {
-  label: PropTypes.string.isRequired,
   initialValue: PropTypes.number.isRequired,
   min: PropTypes.number.isRequired,
   max: PropTypes.number.isRequired,
