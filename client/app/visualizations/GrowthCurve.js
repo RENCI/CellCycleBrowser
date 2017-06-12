@@ -167,7 +167,7 @@ module.exports = function() {
 
       // Bind curve data
       var curve = svg.select(".curves").selectAll(".curve")
-          .data(curves);
+          .data(curves.slice().reverse());
 
       // Enter + update
       var curveEnter = curve.enter().append("g")
