@@ -1,6 +1,5 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
-var d3 = require("d3");
 
 function ExpressionLevelSlider(props) {
   var strokeWidth = 2;
@@ -8,90 +7,82 @@ function ExpressionLevelSlider(props) {
   var margin = r + strokeWidth / 2;
   var innerWidth = props.width - margin * 2;
   var height = margin * 2;
-  var initialValueRadius = r / 3;
+  var initialValueRadius = r / 2;
 
-  var sliderScale = d3.scaleLinear()
-      .domain([props.min, props.max])
-      .range([0, innerWidth])
-      .clamp(true);
+  function toSlider(v) {
+    var value = (v - props.min) / (props.max - props.min) * innerWidth;
+    return Math.min(Math.max(0, value), innerWidth);
+  }
 
   var gTransform = "translate(" + margin + "," + margin + ")";
 
-  var svgStyle = {
-    pointerEvents: "all"
-  };
-
-  var backgroundLineStyle = {
+  var lineStyle = {
     stroke: "#ccc",
-    strokeWidth: strokeWidth,
-    strokeLinecap: "round"
+    strokeWidth: 1,
+    strokeLinecap: "round",
+    pointerEvents: "none"
   };
 
   var foregroundLineStyle = {
     stroke: "#aaa",
-    strokeWidth: strokeWidth
+    strokeWidth: strokeWidth,
+    pointerEvents: "none"
   };
 
   var initialValueStyle = {
     fill: "#aaa"
   };
 
-  var valueStyle = {
+  var handleStyle = {
     fill: "#fff",
     stroke: "#aaa",
-    strokeWidth: strokeWidth
+    strokeWidth: strokeWidth,
+    cursor: "pointer"
   };
 
-  function onMouseMove(e) {
-    var svg = e.currentTarget;
-    var svgPoint = svg.createSVGPoint();
+  function onMouseDown(e) {
+    if (e.target !== e.currentTarget) {
+      // Must have come from the handle
+      props.onMouseDown(e, margin, props.width - margin);
+    }
+  }
 
-    svgPoint.x = e.clientX;
-    svgPoint.y = e.clientY;
+  function onClick(e) {
+    props.onClick(e, margin, props.width - margin);
+  }
 
-    var point = svgPoint.matrixTransform(svg.getScreenCTM().inverse());
-
-    props.onMouseMove(sliderScale.invert(point.x - margin));
-  };
+  function ignoreEvent(e) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
 
   return (
-    <form className="form-horizontal">
-      <div className="form-group">
-        <label
-          className="control-label col-xs-2">
-            {props.label}
-        </label>
-        <div className="col-xs-10">
-          <svg
-            width={props.width}
-            height={height}
-            style={svgStyle}
-            onMouseMove={onMouseMove}>
-              <g transform={gTransform}>
-                <line
-                  x1={0}
-                  x2={innerWidth}
-                  style={backgroundLineStyle} />
-                <line
-                  x1={sliderScale(props.initialValue)}
-                  x2={sliderScale(props.value)}
-                  style={foregroundLineStyle} />
-                <circle
-                  cx={sliderScale(props.initialValue)}
-                  r={initialValueRadius}
-                  style={initialValueStyle}
-                  onDoubleClick={props.onDoubleClick} />
-                <circle
-                  cx={sliderScale(props.value)}
-                  r={r}
-                  style={valueStyle}
-                  onMouseDown={props.onMouseDown}
-                  onMouseUp={props.onMouseUp} />
-            </g>
-          </svg>
-        </div>
-      </div>
-    </form>
+    <svg
+      width={"100%"}
+      height={height}
+      onMouseDown={onMouseDown}
+      onClick={onClick}>
+        <g transform={gTransform}>
+          <line
+            x1={0}
+            x2={innerWidth}
+            style={lineStyle} />
+          <line
+            x1={toSlider(props.initialValue)}
+            x2={toSlider(props.value)}
+            style={foregroundLineStyle} />
+          <circle
+            cx={toSlider(props.initialValue)}
+            r={initialValueRadius}
+            style={initialValueStyle}
+            onClick={ignoreEvent}
+            onDoubleClick={props.onDoubleClick} />
+          <circle
+            cx={toSlider(props.value)}
+            r={r}
+            style={handleStyle} />
+      </g>
+    </svg>
   );
 }
 
@@ -105,8 +96,7 @@ ExpressionLevelSlider.propTypes = {
   width: PropTypes.number.isRequired,
   handleRadius: PropTypes.number.isRequired,
   onMouseDown: PropTypes.func.isRequired,
-  onMouseMove: PropTypes.func.isRequired,
-  onMouseUp: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired
 };
 
