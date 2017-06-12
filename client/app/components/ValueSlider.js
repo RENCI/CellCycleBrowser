@@ -1,7 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
-function ExpressionLevelSlider(props) {
+function ValueSlider(props) {
   var strokeWidth = 2;
   var r = props.handleRadius;
   var margin = r + strokeWidth / 2;
@@ -86,7 +86,7 @@ function ExpressionLevelSlider(props) {
   );
 }
 
-ExpressionLevelSlider.propTypes = {
+ValueSlider.propTypes = {
   label: PropTypes.string.isRequired,
   initialValue: PropTypes.number.isRequired,
   min: PropTypes.number.isRequired,
@@ -100,4 +100,4 @@ ExpressionLevelSlider.propTypes = {
   onDoubleClick: PropTypes.func.isRequired
 };
 
-module.exports = ExpressionLevelSlider;
+module.exports = ValueSlider;

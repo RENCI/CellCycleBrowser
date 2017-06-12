@@ -1,9 +1,9 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var ReactDOM = require("react-dom");
-var ExpressionLevelSlider = require("../components/ExpressionLevelSlider");
+var ValueSlider = require("../components/ValueSlider");
 
-var ExpressionLevelSliderContainer = React.createClass ({
+var ValueSliderContainer = React.createClass ({
   propTypes: {
     label: PropTypes.string,
     // initialValue: PropTypes.number XXX: Should have initialValue here
@@ -52,9 +52,7 @@ var ExpressionLevelSliderContainer = React.createClass ({
       width: this.refs.wrapper.clientWidth
     });
   },
-  handleMouseDown: function (e, sliderMin, sliderMax) {
-    e.preventDefault();
-
+  updateSVG: function (e, sliderMin, sliderMax) {
     // Save svg element and create an svg point for transforming coordinates
     // XXX: Get this after rendering?
     this.svg = e.currentTarget;
@@ -65,27 +63,27 @@ var ExpressionLevelSliderContainer = React.createClass ({
       var v = this.props.min + (x - sliderMin) / (sliderMax - sliderMin) * (this.props.max - this.props.min)
       return Math.min(Math.max(this.props.min, v), this.props.max);
     }
+  },
+  transformPoint: function (e) {
+    this.svgPoint.x = e.clientX;
+    this.svgPoint.y = e.clientY;
+
+    var point = this.svgPoint.matrixTransform(this.svg.getScreenCTM().inverse());
+
+    return this.toValue(point.x);
+  },
+  handleMouseDown: function (e, sliderMin, sliderMax) {
+    e.preventDefault();
+
+    this.updateSVG(e, sliderMin, sliderMax);
 
     // Register to receive mouse events on the whole document
     this.registerMouseCallbacks();
   },
   handleClick: function (e, sliderMin, sliderMax) {
-    // Save svg element and create an svg point for transforming coordinates
-    // XXX: Get this after rendering?
-    this.svg = e.currentTarget;
-    this.svgPoint = this.svg.createSVGPoint();
+    this.updateSVG(e, sliderMin, sliderMax);
 
-    // Create function for converting to value from slider position
-    this.toValue = function (x) {
-      var v = this.props.min + (x - sliderMin) / (sliderMax - sliderMin) * (this.props.max - this.props.min)
-      return Math.min(Math.max(this.props.min, v), this.props.max);
-    }
-
-    this.svgPoint.x = e.clientX;
-    this.svgPoint.y = e.clientY;
-
-    var point = this.svgPoint.matrixTransform(this.svg.getScreenCTM().inverse());
-    var value = this.toValue(point.x);
+    var value = this.transformPoint(e);
 
     this.setState({
       value: value
@@ -96,11 +94,7 @@ var ExpressionLevelSliderContainer = React.createClass ({
   handleMouseMove: function (e) {
     e.stopPropagation();
 
-    this.svgPoint.x = e.clientX;
-    this.svgPoint.y = e.clientY;
-
-    var point = this.svgPoint.matrixTransform(this.svg.getScreenCTM().inverse());
-    var value = this.toValue(point.x);
+    var value = this.transformPoint(e);
 
     this.setState({
       value: value
@@ -139,7 +133,7 @@ var ExpressionLevelSliderContainer = React.createClass ({
           </label>
           <div className="col-xs-10">
             <div ref="wrapper">
-              <ExpressionLevelSlider
+              <ValueSlider
                 label={this.props.label}
                 initialValue={this.state.initialValue}
                 min={this.props.min}
@@ -159,4 +153,4 @@ var ExpressionLevelSliderContainer = React.createClass ({
   }
 });
 
-module.exports = ExpressionLevelSliderContainer;
+module.exports = ValueSliderContainer;

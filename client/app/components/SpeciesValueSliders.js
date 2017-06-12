@@ -1,7 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var Collapsible = require("../components/Collapsible");
-var ExpressionLevelSliderContainer = require("../containers/ExpressionLevelSliderContainer");
+var ValueSliderContainer = require("../containers/ValueSliderContainer");
 
 var divStyle = {
   marginTop: 10
@@ -19,7 +19,7 @@ function SpeciesValueSliders(props) {
     var value = props.values[species];
 
     return (
-      <ExpressionLevelSliderContainer
+      <ValueSliderContainer
         key={i}
         label={species}
         min={value.min}
