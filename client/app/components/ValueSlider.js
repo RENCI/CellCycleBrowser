@@ -3,6 +3,7 @@ var PropTypes = React.PropTypes;
 
 function ValueSlider(props) {
   var strokeWidth = 2;
+  var stroke = "#999";
   var r = props.handleRadius;
   var margin = r + strokeWidth / 2;
   var innerWidth = props.width - margin * 2;
@@ -24,19 +25,19 @@ function ValueSlider(props) {
   };
 
   var foregroundLineStyle = {
-    stroke: "#aaa",
+    stroke: stroke,
     strokeWidth: strokeWidth,
     pointerEvents: "none"
   };
 
   var initialValueStyle = {
-    fill: "#aaa"
+    fill: stroke
   };
 
   var handleStyle = {
     fill: props.handleColor,
-    stroke: "#aaa",
-    strokeWidth: strokeWidth,
+    stroke: stroke,
+    strokeWidth: 1,
     cursor: "pointer"
   };
 
