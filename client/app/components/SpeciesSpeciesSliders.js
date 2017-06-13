@@ -12,6 +12,11 @@ function SpeciesSpeciesSliders(props) {
   var colorScale = d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
       .domain(props.phases);
 
+  // TODO: Move to global settings somewhere
+  var linkColorScale = d3.scaleLinear()
+      .domain([-1, -Number.EPSILON, 0, Number.EPSILON, 1])
+      .range(["#00d", "#bbd", "#ccc", "#dbb", "#d00"]);
+
   var tabs = props.phases.map(function (phase, i) {
     var sliders = [];
     props.species.forEach(function (upstream, j) {
@@ -48,13 +53,10 @@ function SpeciesSpeciesSliders(props) {
           <div key={j * props.species.length + k} style={{display: "flex"}}>
             <div style={{flex: 1}}>
               <ValueSliderContainer
-                label={upstream}
-                rightLabel={downstream}
-                sup={phase}
                 min={value.min}
                 max={value.max}
                 value={value.value}
-                labelCol={5}
+                handleColorScale={linkColorScale}
                 onChange={handleChange} />
             </div>
             <div className="text-left" style={{width: 50, marginLeft: 5}}>

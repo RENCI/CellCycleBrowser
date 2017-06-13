@@ -10,6 +10,11 @@ function SpeciesPhaseSliders(props) {
   var colorScale = d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
       .domain(props.phases);
 
+  // TODO: Move to global settings somewhere
+  var linkColorScale = d3.scaleLinear()
+      .domain([-1, -Number.EPSILON, 0, Number.EPSILON, 1])
+      .range(["#00d", "#bbd", "#ccc", "#dbb", "#d00"]);
+
   var tabs = props.phases.map(function(phase, i) {
     var sliders = props.species.map(function(species, j) {
       function handleChange(value) {
@@ -32,6 +37,7 @@ function SpeciesPhaseSliders(props) {
               min={value.min}
               max={value.max}
               value={value.value}
+              handleColorScale={linkColorScale}
               onChange={handleChange} />
           </div>
         </div>

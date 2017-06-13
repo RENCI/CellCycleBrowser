@@ -34,7 +34,7 @@ function ValueSlider(props) {
   };
 
   var handleStyle = {
-    fill: "#fff",
+    fill: props.handleColor,
     stroke: "#aaa",
     strokeWidth: strokeWidth,
     cursor: "pointer"
@@ -94,6 +94,7 @@ ValueSlider.propTypes = {
   value: PropTypes.number.isRequired,
   width: PropTypes.number.isRequired,
   handleRadius: PropTypes.number.isRequired,
+  handleColor: PropTypes.string.isRequired,
   onMouseDown: PropTypes.func.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired
