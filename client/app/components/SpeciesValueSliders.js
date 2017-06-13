@@ -19,13 +19,18 @@ function SpeciesValueSliders(props) {
     var value = props.values[species];
 
     return (
-      <ValueSliderContainer
-        key={i}
-        label={species}
-        min={value.min}
-        max={value.max}
-        value={value.value}
-        onChange={handleChange} />
+      <div key={i} style={{display: "flex"}}>
+        <div className="text-right" style={{width: 50, marginRight: 5}}>
+          <label>{species}</label>
+        </div>
+        <div style={{flex: 1}}>
+          <ValueSliderContainer
+            min={value.min}
+            max={value.max}
+            value={value.value}
+            onChange={handleChange} />
+        </div>
+      </div>
     );
   });
 

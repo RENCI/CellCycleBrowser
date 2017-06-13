@@ -5,26 +5,23 @@ var ValueSlider = require("../components/ValueSlider");
 
 var ValueSliderContainer = React.createClass ({
   propTypes: {
-    label: PropTypes.string,
-    sup: PropTypes.string,
     // initialValue: PropTypes.number XXX: Should have initialValue here
     min: PropTypes.number,
     max: PropTypes.number,
     step: PropTypes.number,
     value: PropTypes.number,
     handleRadius: PropTypes.number,
-    labelCol: PropTypes.number,
     onChange: PropTypes.func
   },
   getDefaultProps: function () {
     return {
       label: "",
+      rightLabel: "",
       sup: "",
       min: 0,
       max: 1,
       step: 0.1,
       value: 0.5,
-      width: 200,
       handleRadius: 8,
       labelCol: 2
     };
@@ -128,34 +125,20 @@ var ValueSliderContainer = React.createClass ({
     document.removeEventListener("mouseup", this.handleMouseUp);
   },
   render: function () {
-    var labelClass = "col-xs-" + this.props.labelCol;
-    var sliderClass = "col-xs-" + (12 - this.props.labelCol);
-
     return (
-      <form className="form-horizontal">
-        <div className="form-group">
-          <label
-            className={labelClass}>
-              {this.props.label}
-              <sup>{this.props.sup}</sup>
-          </label>
-          <div className={sliderClass}>
-            <div ref="wrapper">
-              <ValueSlider
-                initialValue={this.state.initialValue}
-                min={this.props.min}
-                max={this.props.max}
-                step={this.props.step}
-                value={this.state.value}
-                width={this.state.width}
-                handleRadius={this.props.handleRadius}
-                onMouseDown={this.handleMouseDown}
-                onClick={this.handleClick}
-                onDoubleClick={this.handleDoubleClick} />
-            </div>
-          </div>
-        </div>
-      </form>
+      <div ref="wrapper">
+        <ValueSlider
+          initialValue={this.state.initialValue}
+          min={this.props.min}
+          max={this.props.max}
+          step={this.props.step}
+          value={this.state.value}
+          width={this.state.width}
+          handleRadius={this.props.handleRadius}
+          onMouseDown={this.handleMouseDown}
+          onClick={this.handleClick}
+          onDoubleClick={this.handleDoubleClick} />
+      </div>
     );
   }
 });

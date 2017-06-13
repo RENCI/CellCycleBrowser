@@ -29,21 +29,47 @@ function SpeciesSpeciesSliders(props) {
 
         var value = props.matrices[phase][upstream][downstream];
 
+        if (k === 0 || (j === 0 && k === 1)) {
+          sliders.push(
+            <div key={"header" + j} style={{display: "flex"}}>
+              <div>
+                <small>{phase}</small>
+              </div>
+              <div style={{flex: 1}}>
+                <label>{upstream + "→"}</label>
+              </div>
+              <div style={{width: 50}}>
+              </div>
+            </div>
+          );
+        }
+
         sliders.push(
-          <ValueSliderContainer
-            key={j * props.species.length + k}
-            label={upstream + "→" + downstream}
-            sup={phase}
-            min={value.min}
-            max={value.max}
-            value={value.value}
-            labelCol={5}
-            onChange={handleChange} />
+          <div key={j * props.species.length + k} style={{display: "flex"}}>
+            <div style={{flex: 1}}>
+              <ValueSliderContainer
+                label={upstream}
+                rightLabel={downstream}
+                sup={phase}
+                min={value.min}
+                max={value.max}
+                value={value.value}
+                labelCol={5}
+                onChange={handleChange} />
+            </div>
+            <div className="text-left" style={{width: 50, marginLeft: 5}}>
+              <label>{downstream}</label>
+            </div>
+          </div>
         );
 
         var numSpecies = props.species.length;
         if (j < numSpecies - 1 && k === numSpecies - 1) {
-          sliders.push(<hr key={"line" + j} />);
+          sliders.push(
+            <hr
+              key={"line" + j}
+              style={{marginTop: 5, marginBottom: 10}} />
+          );
         }
       });
     });

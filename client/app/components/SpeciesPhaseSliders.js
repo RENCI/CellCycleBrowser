@@ -23,14 +23,18 @@ function SpeciesPhaseSliders(props) {
       var value = props.matrix[species][phase];
 
       return (
-        <ValueSliderContainer
-          key={j}
-          label={species + "→" + phase}
-          min={value.min}
-          max={value.max}
-          value={value.value}
-          labelCol={4}
-          onChange={handleChange} />
+        <div key={j} style={{display: "flex"}}>
+          <div className="text-right" style={{width: 80, marginRight: 5}}>
+            <label>{species + "→" + phase}</label>
+          </div>
+          <div style={{flex: 1}}>
+            <ValueSliderContainer
+              min={value.min}
+              max={value.max}
+              value={value.value}
+              onChange={handleChange} />
+          </div>
+        </div>
       );
     });
 
