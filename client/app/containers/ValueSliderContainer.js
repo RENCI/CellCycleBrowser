@@ -127,9 +127,12 @@ var ValueSliderContainer = React.createClass ({
     document.removeEventListener("mouseup", this.handleMouseUp);
   },
   render: function () {
-    var color = this.props.handleColorScale ?
-                this.props.handleColorScale(this.state.value) :
-                "white";
+    var handleColor = initialValueColor = "white";
+
+    if (this.props.handleColorScale) {
+      handleColor = this.props.handleColorScale(this.state.value);
+      initialValueColor = this.props.handleColorScale(this.state.initialValue);
+    }
 
     return (
       <div ref="wrapper">
@@ -141,7 +144,8 @@ var ValueSliderContainer = React.createClass ({
           value={this.state.value}
           width={this.state.width}
           handleRadius={this.props.handleRadius}
-          handleColor={color}
+          handleColor={handleColor}
+          initialValueColor={initialValueColor}
           onMouseDown={this.handleMouseDown}
           onClick={this.handleClick}
           onDoubleClick={this.handleDoubleClick} />

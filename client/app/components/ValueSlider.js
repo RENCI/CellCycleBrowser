@@ -8,7 +8,7 @@ function ValueSlider(props) {
   var margin = r + strokeWidth / 2;
   var innerWidth = props.width - margin * 2;
   var height = margin * 2;
-  var initialValueRadius = r / 2;
+  var initialValueRadius = r / 3;
 
   function toSlider(v) {
     var value = (v - props.min) / (props.max - props.min) * innerWidth;
@@ -31,7 +31,10 @@ function ValueSlider(props) {
   };
 
   var initialValueStyle = {
-    fill: stroke
+    fill: props.initialValueColor,
+    stroke: stroke,
+    strokeWidth: 1,
+    cursor: "pointer"
   };
 
   var handleStyle = {
@@ -96,6 +99,7 @@ ValueSlider.propTypes = {
   width: PropTypes.number.isRequired,
   handleRadius: PropTypes.number.isRequired,
   handleColor: PropTypes.string.isRequired,
+  initialValueColor: PropTypes.string.isRequired,
   onMouseDown: PropTypes.func.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired
