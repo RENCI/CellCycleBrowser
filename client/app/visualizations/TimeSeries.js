@@ -212,7 +212,7 @@ module.exports = function() {
           .data(data);
 
       // Enter + update
-      var curveEnter = curve.enter().append("g")
+      curve.enter().append("g")
           .attr("class", "curve")
           .attr("data-toggle", "tooltip")
           .on("mouseover", function(d) {
