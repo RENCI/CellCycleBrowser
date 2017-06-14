@@ -170,7 +170,7 @@ module.exports = function() {
           .data(curves.slice().reverse());
 
       // Enter + update
-      var curveEnter = curve.enter().append("g")
+      curve.enter().append("g")
           .attr("class", "curve")
         .merge(curve)
           .each(drawCurve);
