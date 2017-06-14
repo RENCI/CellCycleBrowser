@@ -61,7 +61,7 @@ module.exports = function() {
       g.append("g").attr("class", "arrows");
       g.append("g").attr("class", "links");
       g.append("g").attr("class", "nodes");
-      g.append("g").attr("class", "nodeLabels")
+      g.append("g").attr("class", "nodeLabels");
 
       svg = svgEnter.merge(svg);
 
