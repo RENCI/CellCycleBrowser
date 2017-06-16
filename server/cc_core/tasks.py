@@ -34,10 +34,14 @@ def run_model_task(filename, id_to_names, species, phases, traj='', species_val_
         logger.debug('changing ' + str(id) + ' parameter value ' + str(val))
         smod.ChangeParameter(str(id), float(val))
 
-    # call a custom simulation method by setting cellcycle to True which automatically detects
-    # when the last phase ends without requiring end time input. Setting end to int type max
-    # but simulation will break out of the loop after the cell cycle ends
-    smod.DoStochSim(mode="time", trajectories=num_traj, end=sys.maxint, cellcycle=True)
+    try:
+        # call a custom simulation method by setting cellcycle to True which automatically detects
+        # when the last phase ends without requiring end time input. Setting end to int type max
+        # but simulation will break out of the loop after the cell cycle ends
+        smod.DoStochSim(mode="time", trajectories=num_traj, end=sys.maxint, cellcycle=True)
+    except Exception as ex:
+        raise Exception(ex.message)
+
     max_traj = smod.data_stochsim.simulation_trajectory
     if max_traj != num_traj:
         logger.debug("StochPy default simulation trajectory is not the latest trajectory, "

@@ -502,8 +502,19 @@ def check_task_status(request):
     '''
     task_id = request.POST.get('task_id')
     result = run_model_task.AsyncResult(task_id)
+    ret_result = {}
     if result.ready():
-        return HttpResponse(json.dumps({'result': result.get()}),
+        try:
+            get_result = result.get()
+        except Exception as ex:
+            ret_result['result'] = None
+            ret_result['error'] = ex.message
+            return HttpResponse(json.dumps(ret_result),
+                                content_type="application/json")
+
+        ret_result['result'] = get_result
+        ret_result['error'] = None
+        return HttpResponse(json.dumps(ret_result),
                             content_type="application/json")
     else:
         return HttpResponse(json.dumps({"result": None}),
