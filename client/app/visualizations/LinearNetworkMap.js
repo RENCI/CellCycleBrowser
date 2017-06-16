@@ -269,8 +269,6 @@ module.exports = function() {
       }
     }
 
-
-
     function drawNodes() {
       var maxValue = d3.max(data.species, function(d) { return d.max; });
 

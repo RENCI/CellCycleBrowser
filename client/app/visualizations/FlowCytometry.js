@@ -86,7 +86,7 @@ module.exports = function() {
 
     function drawTitle() {
       svg.select(".title")
-          .text("Flow Cytometry")
+          .text("Cell Cycle Analysis")
           .attr("dy", "1.5em")
           .style("text-anchor", "middle")
           .attr("x", width / 2);

@@ -31,7 +31,7 @@ var plots = [
     }
   },
   {
-    name: "DNA Content",
+    name: "Cell Cycle Analysis",
     component: <FlowCytometryArea />,
     selected: true,
     hasInput: function () {
