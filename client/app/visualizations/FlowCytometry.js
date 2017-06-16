@@ -110,7 +110,7 @@ module.exports = function() {
       gAxes.selectAll(".xLabel")
           .data([0])
         .enter().append("text")
-          .text("X")
+          .text("DAPI")
           .attr("class", "xLabel")
           .attr("dy", "2.5em")
           .style("text-anchor", "middle");
@@ -132,7 +132,7 @@ module.exports = function() {
       gAxes.selectAll(".yLabel")
           .data([0])
         .enter().append("text")
-          .text("Y")
+          .text("Edu")
           .attr("class", "yLabel")
           .attr("dy", "-2.25em")
           .style("text-anchor", "middle");
