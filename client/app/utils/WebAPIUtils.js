@@ -173,7 +173,14 @@ function pollSimulation(taskId) {
       task_id: taskId
     },
     success: function(data) {
-      if (data.result) {
+      if (data.error) {
+        if (timeOutStatusId > -1) {
+          clearTimeout(timeOutStatusId);
+        }
+        console.log(data.error)
+        ServerActionCreators.receiveSimulationOutput([]);
+      }
+      else if (data.result) {
         if (timeOutStatusId > -1) {
           clearTimeout(timeOutStatusId);
         }
