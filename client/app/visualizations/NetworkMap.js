@@ -54,6 +54,16 @@ module.exports = function() {
       // Defs section for arrow markers
       var filter = svgEnter.append("defs");
 
+      // Background
+      svgEnter.append("rect")
+          .attr("width", "100%")
+          .attr("height", "100%")
+          .style("visibility", "hidden")
+          .style("pointer-events", "all")
+          .on("click", function() {
+            dispatcher.call("selectPhase", this, "");
+          });
+
       var g = svgEnter.append("g");
 
       // Groups for layout
