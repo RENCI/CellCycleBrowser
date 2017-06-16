@@ -13,8 +13,8 @@ function component(plot, i, a) {
   );
 }
 
-function SummaryPlots(props) {
-  var plots = props.summaryPlots.filter(function (plot) {
+function AnalysisPlots(props) {
+  var plots = props.AnalysisPlots.filter(function (plot) {
     return plot.selected;
   });
 
@@ -25,8 +25,8 @@ function SummaryPlots(props) {
   );
 }
 
-SummaryPlots.propsTypes = {
-  summaryPlots: PropTypes.arrayOf(PropTypes.object).isRequired
+AnalysisPlots.propsTypes = {
+  AnalysisPlots: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
-module.exports = SummaryPlots;
+module.exports = AnalysisPlots;

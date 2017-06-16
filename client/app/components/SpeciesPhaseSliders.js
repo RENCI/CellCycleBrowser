@@ -13,7 +13,7 @@ function SpeciesPhaseSliders(props) {
 
   // TODO: Move to global settings somewhere
   var linkColorScale = d3.scaleLinear()
-      .domain([-1, -Number.EPSILON, 0, Number.EPSILON, 1])
+      .domain([-10, -Number.EPSILON, 0, Number.EPSILON, 10])
       .range(["#00d", "#bbd", "#ccc", "#dbb", "#d00"]);
 
   var tabs = props.phases.map(function(phase, i) {

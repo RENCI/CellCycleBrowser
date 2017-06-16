@@ -72,8 +72,8 @@ function createControls(model) {
     controls.speciesPhaseMatrix[species] = {};
     controls.phases.forEach(function (phase, j) {
       controls.speciesPhaseMatrix[species][phase] = {
-        min: -1,
-        max: 1,
+        min: -10,
+        max: 10,
         value: model.speciesPhaseMatrix[i][j]
       };
     });
@@ -89,8 +89,8 @@ function createControls(model) {
         if (j === k) return;
 
         controls.speciesSpeciesMatrices[phase][upstream][downstream] = {
-          min: -1,
-          max: 1,
+          min: -10,
+          max: 10,
           value: model.speciesMatrices[i][j][k]
         };
       });

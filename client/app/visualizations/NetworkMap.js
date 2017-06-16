@@ -383,11 +383,11 @@ module.exports = function() {
 //      var linkColorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
 //          .domain([1, -1]);
       var linkColorScale = d3.scaleLinear()
-          .domain([-1, 0, Number.EPSILON, 1])
+          .domain([-10, 0, Number.EPSILON, 10])
           .range(["#00d", "#bbd", "#dbb", "#d00"]);
 
       var linkWidthScale = d3.scaleLinear()
-          .domain([0, 1])
+          .domain([0, 10])
           .range([1, 8]);
 
       // Bind data for markers
@@ -499,11 +499,11 @@ module.exports = function() {
 
   function processData() {
     var distanceScale = d3.scaleLinear()
-        .domain([0, 1])
+        .domain([0, 10])
         .range([100, 0]);
 
     var strengthScale = d3.scaleLinear()
-        .domain([0, 1])
+        .domain([0, 10])
         .range([0, 1]);
 
     var newNodes = data.phases.slice().concat(data.species).slice();

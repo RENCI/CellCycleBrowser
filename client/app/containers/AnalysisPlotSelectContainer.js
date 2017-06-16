@@ -1,12 +1,12 @@
 var React = require("react");
-var SummaryPlotStore = require("../stores/SummaryPlotStore");
+var AnalysisPlotStore = require("../stores/AnalysisPlotStore");
 var MultiSelect = require("../components/MultiSelect");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
 // Retrieve the current state from the store
 function getStateFromStore() {
   return {
-    summaryPlots: SummaryPlotStore.getAllPlots(),
+    AnalysisPlots: AnalysisPlotStore.getAllPlots(),
   };
 }
 
@@ -19,21 +19,21 @@ function option(plot) {
   };
 }
 
-var SummaryPlotSelectContainer = React.createClass ({
+var AnalysisPlotSelectContainer = React.createClass ({
   getInitialState: function () {
     return getStateFromStore();
   },
   componentDidMount: function () {
-    SummaryPlotStore.addChangeListener(this.onSummaryPlotChange);
+    AnalysisPlotStore.addChangeListener(this.onAnalysisPlotChange);
   },
   componentWillUnmount: function () {
-    SummaryPlotStore.removeChangeListener(this.onSummaryPlotChange);
+    AnalysisPlotStore.removeChangeListener(this.onAnalysisPlotChange);
   },
-  onSummaryPlotChange: function () {
+  onAnalysisPlotChange: function () {
     this.setState(getStateFromStore());
   },
-  handleChangeSummaryPlot: function (e) {
-    ViewActionCreators.selectSummaryPlot({
+  handleChangeAnalysisPlot: function (e) {
+    ViewActionCreators.selectAnalysisPlot({
       name: e.currentTarget.dataset.value,
       selected: e.currentTarget.checked
     });
@@ -43,11 +43,11 @@ var SummaryPlotSelectContainer = React.createClass ({
       <MultiSelect
         label="Analysis Plots: "
         rightAlign={true}
-        options={this.state.summaryPlots.map(option)}
+        options={this.state.AnalysisPlots.map(option)}
         enabled={option.active}
-        onChange={this.handleChangeSummaryPlot} />
+        onChange={this.handleChangeAnalysisPlot} />
     );
   }
 });
 
-module.exports = SummaryPlotSelectContainer;
+module.exports = AnalysisPlotSelectContainer;

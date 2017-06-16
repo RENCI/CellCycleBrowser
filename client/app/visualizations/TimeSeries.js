@@ -197,7 +197,7 @@ module.exports = function() {
       gAxes.selectAll(".yLabel")
           .data([0])
         .enter().append("text")
-          .text("Value")
+          .text("Normalized Signal")
           .attr("class", "yLabel")
           .attr("dy", "-2.25em")
           .style("text-anchor", "middle");
@@ -212,7 +212,7 @@ module.exports = function() {
           .data(data);
 
       // Enter + update
-      var curveEnter = curve.enter().append("g")
+      curve.enter().append("g")
           .attr("class", "curve")
           .attr("data-toggle", "tooltip")
           .on("mouseover", function(d) {

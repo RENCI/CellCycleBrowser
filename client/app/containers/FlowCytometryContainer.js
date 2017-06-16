@@ -3,7 +3,7 @@ var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
 var ModelStore = require("../stores/ModelStore");
 var d3 = require("d3");
-var Distribution = require("../visualizations/Distribution");
+var FlowCytometry = require("../visualizations/FlowCytometry");
 
 var refName = "ref";
 
@@ -101,7 +101,7 @@ function createCells(reactions) {
   });
 }
 
-var DistributionContainer = React.createClass ({
+var FlowCytometryContainer = React.createClass ({
   // Don't make propsTypes required, as a warning is given for the first render
   // if using React.cloneElement, as  in VisualizationContainer
   propTypes: {
@@ -109,7 +109,7 @@ var DistributionContainer = React.createClass ({
   },
   getInitialState: function () {
     // Create visualization function
-    this.distribution = Distribution();
+    this.distribution = FlowCytometry();
 
     return getStateFromStore();
   },
@@ -144,4 +144,4 @@ var DistributionContainer = React.createClass ({
   }
 });
 
-module.exports = DistributionContainer;
+module.exports = FlowCytometryContainer;

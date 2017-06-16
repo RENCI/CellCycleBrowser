@@ -37,7 +37,7 @@ module.exports = {
       feature: feature
     });
   },
-  selectSummaryPlot: function (plot) {
+  selectAnalysisPlot: function (plot) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_SUMMARY_PLOT,
       plot: plot

@@ -6,7 +6,7 @@ var Constants = require("../constants/Constants");
 var DataUtils = require("../utils/DataUtils");
 var TimeSeriesArea = require("../components/TimeSeriesArea");
 var GrowthCurveArea = require("../components/GrowthCurveArea");
-var DistributionArea = require("../components/DistributionArea");
+var FlowCytometryArea = require("../components/FlowCytometryArea");
 var ModelStore = require("./ModelStore");
 var DataStore = require("./DataStore");
 
@@ -31,8 +31,8 @@ var plots = [
     }
   },
   {
-    name: "Distribution",
-    component: <DistributionArea />,
+    name: "Cell Cycle Analysis",
+    component: <FlowCytometryArea />,
     selected: true,
     hasInput: function () {
       return hasModel();
@@ -61,7 +61,7 @@ function checkAvailability() {
   });
 }
 
-var SummaryPlotStore = assign({}, EventEmitter.prototype, {
+var AnalysisPlotStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
     this.emit(CHANGE_EVENT);
   },
@@ -87,14 +87,14 @@ AppDispatcher.register(function (action) {
       AppDispatcher.waitFor([ModelStore.dispatchToken,
                              DataStore.dispatchToken]);
       checkAvailability();
-      SummaryPlotStore.emitChange();
+      AnalysisPlotStore.emitChange();
       break;
 
     case Constants.RECEIVE_MODEL:
     case Constants.SELECT_MODEL:
       AppDispatcher.waitFor([ModelStore.dispatchToken]);
       checkAvailability();
-      SummaryPlotStore.emitChange();
+      AnalysisPlotStore.emitChange();
       break;
 
     case Constants.RECEIVE_DATASET:
@@ -102,15 +102,15 @@ AppDispatcher.register(function (action) {
     case Constants.RECEIVE_SIMULATION_OUTPUT:
       AppDispatcher.waitFor([DataStore.dispatchToken]);
       checkAvailability();
-      SummaryPlotStore.emitChange();
+      AnalysisPlotStore.emitChange();
       break;
 
     case Constants.SELECT_SUMMARY_PLOT:
       selectPlot(action.plot);
       checkAvailability();
-      SummaryPlotStore.emitChange();
+      AnalysisPlotStore.emitChange();
       break;
   }
 });
 
-module.exports = SummaryPlotStore;
+module.exports = AnalysisPlotStore;
