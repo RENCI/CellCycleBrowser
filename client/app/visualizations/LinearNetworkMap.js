@@ -217,7 +217,7 @@ module.exports = function() {
       // Exit
       phase.exit().remove();
 
-      function drawPhase(d) {
+      function drawPhase(d, i) {
         var g = d3.select(this);
 
         // Bind phase data twice
@@ -256,14 +256,29 @@ module.exports = function() {
             " L " + (tw / 2) + " " + (-th / 2) +
             " z";
 
+        var axisY = (yScale.bandwidth() + phaseSpacing / 2);
+
         var arrowTransform =
-            "translate(" +
-            (phaseWidth / 2) + "," +
-            (yScale.bandwidth() + phaseSpacing / 2) + ")";
+            "translate(" + (phaseWidth / 2) + "," + axisY + ")";
 
         phaseUpdate.select("path")
             .attr("d", arrowPath)
             .attr("transform", arrowTransform);
+
+        // Draw axis line
+        var axis = g.selectAll(".axis")
+            .data([d]);
+
+        // Enter + update
+        axis.enter().append("line")
+            .attr("class", "axis")
+            .style("stroke", "#999")
+            .style("stroke-dasharray", "5 5")
+          .merge(axis)
+            .attr("x1", xScale.range()[0])
+            .attr("y1", axisY)
+            .attr("x2", xScale.range()[1])
+            .attr("y2", axisY);
 
         function fill(d) {
           return phaseColorScale(d.name);
