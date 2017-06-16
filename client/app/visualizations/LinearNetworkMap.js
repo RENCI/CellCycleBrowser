@@ -133,8 +133,6 @@ module.exports = function() {
   }
 
   function draw() {
-    console.log(data);
-
     // Set width and height
     svg .attr("width", width)
         .attr("height", height);
@@ -454,7 +452,7 @@ module.exports = function() {
             visible: true,
             xPos: x,
             yPos: y,
-            fx: x,            
+            fx: x,
             y: y
           };
         });
@@ -511,8 +509,6 @@ module.exports = function() {
           });
         });
       });
-
-      console.log(newNodes);
 
       newNodes = d3.merge(newNodes);
 
