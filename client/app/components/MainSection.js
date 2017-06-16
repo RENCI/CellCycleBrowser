@@ -3,7 +3,7 @@ var PropTypes = React.PropTypes;
 var MapArea = require("../components/MapArea");
 var BrowserContainer = require("../containers/BrowserContainer");
 var ControlsContainer = require("../containers/ControlsContainer");
-var SummaryPlotsContainer = require("../containers/SummaryPlotsContainer");
+var AnalysisPlotsContainer = require("../containers/AnalysisPlotsContainer");
 
 var divClass = "container-fluid well";
 
@@ -21,7 +21,7 @@ function MainSection(props) {
             <BrowserContainer />
           </div>
           <div className="col-sm-3 text-center">
-            <SummaryPlotsContainer />
+            <AnalysisPlotsContainer />
           </div>
         </div>
       </div>
@@ -36,7 +36,7 @@ function MainSection(props) {
             <ControlsContainer />
           </div>
           <div className="col-sm-4 text-center">
-            <SummaryPlotsContainer />
+            <AnalysisPlotsContainer />
           </div>
         </div>
       </div>
@@ -50,7 +50,7 @@ function MainSection(props) {
             <BrowserContainer />
           </div>
           <div className="col-sm-4 text-center">
-            <SummaryPlotsContainer />
+            <AnalysisPlotsContainer />
           </div>
         </div>
       </div>

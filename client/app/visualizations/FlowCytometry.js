@@ -24,7 +24,7 @@ module.exports = function() {
       // Start with empty selection
       svg = d3.select();
 
-  function distribution(selection) {
+  function flowCytometry(selection) {
     selection.each(function(d) {
       data = d;
 
@@ -32,7 +32,7 @@ module.exports = function() {
           .data([data]);
 
       var svgEnter = svg.enter().append("svg")
-          .attr("class", "Distribution")
+          .attr("class", "flowCytometry")
           .on("mousedown", function() {
             // Stop text highlighting
             d3.event.preventDefault();
@@ -86,7 +86,7 @@ module.exports = function() {
 
     function drawTitle() {
       svg.select(".title")
-          .text("Phase Distribution")
+          .text("Flow Cytometry")
           .attr("dy", "1.5em")
           .style("text-anchor", "middle")
           .attr("x", width / 2);
@@ -195,11 +195,11 @@ module.exports = function() {
     }
   };
 
-  distribution.width = function(_) {
+  flowCytometry.width = function(_) {
     if (!arguments.length) return width;
     width = _;
-    return distribution;
+    return flowCytometry;
   };
 
-  return distribution;
+  return flowCytometry;
 }

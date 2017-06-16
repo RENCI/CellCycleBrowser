@@ -1,13 +1,13 @@
 var React = require("react");
 var VisualizationContainer = require("../containers/VisualizationContainer");
-var DistributionContainer = require("../containers/DistributionContainer");
+var FlowCytometryContainer = require("../containers/FlowCytometryContainer");
 
-function DistributionArea(props) {
+function FlowCytometryArea(props) {
   return (
     <VisualizationContainer>
-      <DistributionContainer />
+      <FlowCytometryContainer />
     </VisualizationContainer>
   );
 }
 
-module.exports = DistributionArea;
+module.exports = FlowCytometryArea;

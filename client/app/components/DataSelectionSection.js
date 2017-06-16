@@ -3,7 +3,7 @@ var PropTypes = React.PropTypes;
 var Workspace = require("../components/Workspace");
 var ModelSelectContainer = require("../containers/ModelSelectContainer");
 var DatasetSelectContainer = require("../containers/DatasetSelectContainer");
-var SummaryPlotSelectContainer = require("../containers/SummaryPlotSelectContainer");
+var AnalysisPlotSelectContainer = require("../containers/AnalysisPlotSelectContainer");
 
 var containerStyle = {
   paddingTop: 0,
@@ -38,7 +38,7 @@ function DataSelectionSection(props) {
           <DatasetSelectContainer />
         </div>
         <div className="col-sm-3 text-center" style={selectStyle}>
-          <SummaryPlotSelectContainer />
+          <AnalysisPlotSelectContainer />
         </div>
       </div>
     </div>
