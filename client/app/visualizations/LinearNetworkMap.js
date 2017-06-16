@@ -17,6 +17,8 @@ module.exports = function() {
       // Layout
       nodeRadiusScale = d3.scaleLinear()
           .range([3, 7]);
+      // XXX: Use separate simualtion for each phases, then don't need
+      // distanceMax
       force = d3.forceSimulation()
           .force("link", d3.forceLink())
           .force("x", d3.forceX(function(d) {
