@@ -24,7 +24,11 @@ module.exports = function() {
           .on("tick", updateForce),
 
       // Scales
+      // TODO: Move color scales to global settings somewhere
       phaseColorScale = d3.scaleOrdinal(),
+      interactionColorScale = d3.scaleLinear()
+          .domain([-10, -Number.EPSILON, 0, Number.EPSILON, 10])
+          .range(["#00d", "#bbd", "#ccc", "#dbb", "#d00"]);
 
       // Start with empty selection
       svg = d3.select(),
@@ -51,7 +55,7 @@ module.exports = function() {
       var filter = svgEnter.append("defs");
 
       var g = svgEnter.append("g")
-          .attr("transform", "translate(" + margin.left + "," + margin.right + ")");
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
       g.append("g").attr("class", "phases");
@@ -146,6 +150,13 @@ module.exports = function() {
         .attr("height", height);
 
     // Update scales
+    var maxValue = d3.max(data.species, function(d) { return d.max; });
+
+    nodeRadiusScale
+        .domain([0, maxValue]);
+
+    var maxRadius = nodeRadiusScale.range()[1];
+
     var yScale = d3.scaleBand()
         .domain(data.phases.map(function(d) {
           return d.name;
@@ -158,7 +169,8 @@ module.exports = function() {
 
     var xScale = d3.scaleLinear()
         .domain([-10, 10])
-        .range([phaseWidth, innerWidth() - phaseWidth]);
+        .range([phaseWidth * 1.5 + maxRadius,
+                innerWidth() - phaseWidth * 1.5 - maxRadius]);
 
     // Draw the visualization
     drawPhases();
@@ -167,7 +179,7 @@ module.exports = function() {
 //    drawLinks();
 
     // Update tooltips
-    $(".linearNetworkMap .nodes > g").tooltip({
+    $(".linearNetworkMap .node").tooltip({
       container: "body",
       placement: "auto top",
       animation: false
@@ -259,7 +271,7 @@ module.exports = function() {
 
         function transform(d, i) {
           return i === 0 ? null :
-                 "translate(" + xScale.range()[1] + ",0)";
+                 "translate(" + (innerWidth() - phaseWidth) + ",0)";
         }
       }
 
@@ -270,22 +282,30 @@ module.exports = function() {
     }
 
     function drawNodes() {
-      var maxValue = d3.max(data.species, function(d) { return d.max; });
+      var node = svg.select(".nodes").selectAll(".node")
+          .data(nodes);
 
-      nodeRadiusScale
-          .domain([0, maxValue]);
+      // Node enter + update
+      node.enter().append("circle")
+          .attr("class", "node")
+          .attr("data-toggle", "tooltip")
+          .style("stroke", "black")
+//          .call(drag);
+        .merge(node)
+          .attr("data-original-title", nodeTooltip)
+          .attr("r", function(d) { return nodeRadiusScale(d.species.value); })
+          .attr("cx", function(d) { return xScale(d.value); })
+          .attr("cy", function(d) {
+            return yScale(d.phase.name) + yScale.bandwidth() + phaseSpacing / 2;
+          })
+          .style("fill", function(d) { return interactionColorScale(d.value); });
 
-      // Generate nodes per phase
-      var nodes = data.phases.map(function(phase) {
-        return data.species.map(function(species) {
-          return {
-            phase: phase,
-            species: species
-          };
-        });
-      });
+      // Node exit
+      node.exit().remove();
 
-      console.log(nodes);
+      function nodeTooltip(d) {
+        return d.species.name + ": " + d.species.value;
+      }
     }
 
     function drawArrows() {
@@ -426,6 +446,19 @@ module.exports = function() {
   }
 
   function processData() {
+    // Create new nodes
+    var newNodes = d3.merge(data.phases.map(function(phase, i) {
+      return data.species.map(function(species, j) {
+        return {
+          phase: phase,
+          species: species,
+          value: data.speciesPhaseMatrix[j][i]
+        };
+      });
+    }));
+
+    nodes = newNodes;
+
 /*
     var distanceScale = d3.scaleLinear()
         .domain([0, 1])
