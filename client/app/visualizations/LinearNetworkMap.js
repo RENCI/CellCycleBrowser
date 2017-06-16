@@ -2,7 +2,7 @@ var d3 = require("d3");
 
 module.exports = function() {
       // Size
-  var margin = { top: 20, left: 20, bottom: 40, right: 20 },
+  var margin = { top: 20, left: 20, bottom: 60, right: 20 },
       width = 200,
       height = 200,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -18,11 +18,17 @@ module.exports = function() {
       nodeRadiusScale = d3.scaleLinear()
           .range([3, 7]);
       force = d3.forceSimulation()
-          //.force("link", d3.forceLink())
-          .force("x", d3.forceX(function(d) { return d.xPos; }).strength(1))
-          .force("y", d3.forceY(function(d) { return d.yPos; }))
+          .force("link", d3.forceLink())
+          .force("x", d3.forceX(function(d) {
+            return d.xPos;
+          }).strength(function(d) {
+            return d.midNode ? 0.7 : 1;
+          }))
+          .force("y", d3.forceY(function(d) {
+            return d.yPos;
+          }))
           .force("collide", d3.forceCollide(10))
-          //.force("manyBody", d3.forceManyBody().strength(-1))
+          .force("manyBody", d3.forceManyBody(-10).distanceMax(50))
           .on("tick", updateForce),
 
       // Scales
@@ -77,10 +83,7 @@ module.exports = function() {
 
     svg.select(".links").selectAll(".link")
         .attr("d", function(d) {
-          console.log(d);
-
-          var reduction = typeof(d.target.value) !== "undefined" ?
-                          nodeRadiusScale(d.target.value) : 0;
+          var reduction = nodeRadiusScale(d.target.species.value);
 //          reduction += +d3.select(this).style("stroke-width").slice(0, -2) * 3 / 2;
           // XXX: This is half of the marker size. Should make a variable.
           reduction += 10;
@@ -451,7 +454,7 @@ module.exports = function() {
             visible: true,
             xPos: x,
             yPos: y,
-            fx: x,
+            fx: x,            
             y: y
           };
         });
@@ -471,11 +474,12 @@ module.exports = function() {
                 xPos: x,
                 yPos: y,
                 x: x,
-                y: y
+                y: y,
+                midNode: true
               };
 
               newNodes.push([midNode]);
-
+/*
               links.push({
                 source: newNodes[i][j],
                 target: midNode,
@@ -485,6 +489,13 @@ module.exports = function() {
 
               links.push({
                 source: midNode,
+                target: newNodes[i][k],
+                value: e,
+                forceValue: e
+              });
+*/
+              links.push({
+                source: newNodes[i][j],
                 target: newNodes[i][k],
                 value: e,
                 forceValue: e
@@ -521,10 +532,9 @@ module.exports = function() {
 
       force.nodes(nodes);
 
-//      force.force("link").links(links);
-          //.distance(function(d) {
-          //  return distanceScale(Math.abs(d.value));
-          //});
+      force.force("link").links(links)
+          .distance(50)
+          .strength(1);
           //.distance(Math.min(width, height) / 20)
           //.strength(function(d) {
           //  return strengthScale(Math.abs(d.forceValue));
