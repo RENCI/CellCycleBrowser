@@ -5,8 +5,8 @@ var SimulationControlStore = require("../stores/SimulationControlStore");
 var PhaseColorStore = require("../stores/PhaseColorStore");
 var PhaseStore = require("../stores/PhaseStore");
 var d3 = require("d3");
-//var NetworkMap = require("../visualizations/NetworkMap");
-var LinearNetworkMap = require("../visualizations/LinearNetworkMap");
+var NetworkMap = require("../visualizations/NetworkMap");
+//var LinearNetworkMap = require("../visualizations/LinearNetworkMap");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
 function createModel(controls) {
@@ -73,15 +73,16 @@ var MapVisualizationContainer = React.createClass ({
   },
   getInitialState: function () {
     // Create visualization function
-/*
+
     this.networkMap = NetworkMap()
         .on("selectPhase", this.handleSelectPhase)
         .on("selectSpecies", this.handleSelectSpecies);
-*/
+
+/*
     this.linearNetworkMap = LinearNetworkMap()
         .on("selectPhase", this.handleSelectPhase)
         .on("selectSpecies", this.handleSelectSpecies);
-
+*/
     return {
       model: createModel(SimulationControlStore.getControls()),
       phase: PhaseStore.getPhase(),
@@ -114,7 +115,7 @@ var MapVisualizationContainer = React.createClass ({
   },
   drawVisualization: function (props, state) {
     if (!state.model) return;
-
+/*
     this.linearNetworkMap
         .width(props.width)
         .height(props.width * this.state.model.phases.length * 0.5)
@@ -123,7 +124,8 @@ var MapVisualizationContainer = React.createClass ({
     d3.select(ReactDOM.findDOMNode(this))
         .datum(state.model)
         .call(this.linearNetworkMap);
-/*
+*/
+
     this.networkMap
         .width(props.width)
         .height(props.width)
@@ -133,7 +135,7 @@ var MapVisualizationContainer = React.createClass ({
     d3.select(ReactDOM.findDOMNode(this))
         .datum(state.model)
         .call(this.networkMap);
-*/
+
   },
   handleSelectPhase: function (phase) {
     ViewActionCreators.selectPhase(phase);

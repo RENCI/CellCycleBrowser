@@ -18,9 +18,11 @@ module.exports = function() {
       nodeRadiusScale = d3.scaleLinear()
           .range([3, 7]);
       force = d3.forceSimulation()
-          .force("link", d3.forceLink())
+          //.force("link", d3.forceLink())
+          .force("x", d3.forceX(function(d) { return d.xPos; }).strength(1))
+          .force("y", d3.forceY(function(d) { return d.yPos; }))
           .force("collide", d3.forceCollide(10))
-          .force("manyBody", d3.forceManyBody().strength(-15))
+          //.force("manyBody", d3.forceManyBody().strength(-1))
           .on("tick", updateForce),
 
       // Scales
@@ -66,31 +68,17 @@ module.exports = function() {
 
       svg = svgEnter.merge(svg);
 
-      // Create nodes and links
-      processData();
       draw();
     });
   }
 
   function updateForce() {
-/*
     if (!data) return;
 
-    // Constrain to radius
-    var r = Math.min(width, height) / 2 - 70;
-
-    data.species.forEach(function(d) {
-      var dist = Math.sqrt(d.x * d.x + d.y * d.y);
-
-      if (dist > r) {
-        var scale = r / dist;
-        d.x *= scale;
-        d.y *= scale;
-      }
-    });
-
-    svg.select(".links").selectAll("path")
+    svg.select(".links").selectAll(".link")
         .attr("d", function(d) {
+          console.log(d);
+
           var reduction = typeof(d.target.value) !== "undefined" ?
                           nodeRadiusScale(d.target.value) : 0;
 //          reduction += +d3.select(this).style("stroke-width").slice(0, -2) * 3 / 2;
@@ -130,11 +118,10 @@ module.exports = function() {
 //              .style("stroke-dasharray", length - width * 1.5 + 1);
         });
 
-    svg.select(".nodes").selectAll(".nodes > g")
-        .attr("transform", function(d) {
-          return "translate(" + d.x + "," + d.y + ")";
-        });
-
+    svg.select(".nodes").selectAll(".node")
+        .attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y });
+/*
     svg.select(".nodeLabels").selectAll(".nodeLabels > g")
         .attr("transform", function(d) {
           return "translate(" + d.x + "," + (d.y - nodeRadiusScale(d.value)) + ")";
@@ -165,7 +152,8 @@ module.exports = function() {
         .paddingInner(0.15);
 
     var phaseSpacing = yScale.step() - yScale.bandwidth(),
-        phaseWidth = phaseSpacing / 2;
+        phaseWidth = phaseSpacing / 2,
+        axisY = (yScale.bandwidth() + phaseSpacing / 2);
 
     var xScale = d3.scaleLinear()
         .domain([-10, 10])
@@ -173,10 +161,11 @@ module.exports = function() {
                 innerWidth() - phaseWidth * 1.5 - maxRadius]);
 
     // Draw the visualization
+    processData();
     drawPhases();
+    drawLinks();
     drawNodes();
 //    drawNodeLabels();
-//    drawLinks();
 
     // Update tooltips
     $(".linearNetworkMap .node").tooltip({
@@ -185,7 +174,7 @@ module.exports = function() {
       animation: false
     });
 
-    $(".linearNetworkMap .links > path").tooltip({
+    $(".linearNetworkMap .link").tooltip({
       container: "body",
       placement: "auto top",
       animation: false
@@ -256,8 +245,6 @@ module.exports = function() {
             " L " + (tw / 2) + " " + (-th / 2) +
             " z";
 
-        var axisY = (yScale.bandwidth() + phaseSpacing / 2);
-
         var arrowTransform =
             "translate(" + (phaseWidth / 2) + "," + axisY + ")";
 
@@ -298,7 +285,7 @@ module.exports = function() {
 
     function drawNodes() {
       var node = svg.select(".nodes").selectAll(".node")
-          .data(nodes);
+          .data(nodes.filter(function(d) { return d.visible; }));
 
       // Node enter + update
       node.enter().append("circle")
@@ -309,10 +296,6 @@ module.exports = function() {
         .merge(node)
           .attr("data-original-title", nodeTooltip)
           .attr("r", function(d) { return nodeRadiusScale(d.species.value); })
-          .attr("cx", function(d) { return xScale(d.value); })
-          .attr("cy", function(d) {
-            return yScale(d.phase.name) + yScale.bandwidth() + phaseSpacing / 2;
-          })
           .style("fill", function(d) { return interactionColorScale(d.value); });
 
       // Node exit
@@ -375,14 +358,8 @@ module.exports = function() {
     }
 
     function drawLinks() {
-//      var linkColorScale = d3.scaleSequential(d3ScaleChromatic.interpolateRdBu)
-//          .domain([1, -1]);
-      var linkColorScale = d3.scaleLinear()
-          .domain([-1, 0, Number.EPSILON, 1])
-          .range(["#00d", "#bbd", "#dbb", "#d00"]);
-
       var linkWidthScale = d3.scaleLinear()
-          .domain([0, 1])
+          .domain([0, 10])
           .range([1, 8]);
 
       // Bind data for markers
@@ -410,27 +387,26 @@ module.exports = function() {
                    "M 0 0 L 5 0 L 5 10 L 0 10 z" :
                    "M 0 0 L 5 5 L 0 10 z";
           })
-          .style("fill", function(d) { return linkColorScale(d.value); });
+          .style("fill", function(d) { return interactionColorScale(d.value); });
 
       // Marker exit
       marker.exit().remove();
 
       // Bind data for links
-      var link = svg.select(".links").selectAll(".links > path")
+      var link = svg.select(".links").selectAll(".link")
           .data(biLinks);
 
-      // Link enter
-      var linkEnter = link.enter().append("path")
-          .attr("data-toggle", "tooltip");
-
-      // Link update
-      linkEnter.merge(link).sort(function(a, b) {
-          return d3.descending(Math.abs(a.value), Math.abs(b.value));
-        })
+      // Link enter + update
+      link.enter().append("path")
+          .attr("class", "link")
+          .attr("data-toggle", "tooltip")
+        .merge(link).sort(function(a, b) {
+            return d3.descending(Math.abs(a.value), Math.abs(b.value));
+          })
           .attr("data-original-title", linkTooltip)
           .style("fill", "none")
           .style("stroke", function(d) {
-            return linkColorScale(d.value);
+            return interactionColorScale(d.value);
           })
           .style("stroke-width", function(d) {
             return linkWidthScale(Math.abs(d.value));
@@ -443,7 +419,7 @@ module.exports = function() {
           .each(function(d, i) {
             var length = this.getTotalLength();
 
-            d3.select(this)
+//            d3.select(this)
 //                .style("stroke-dasharray", length * 0.9);
           });
 
@@ -458,85 +434,50 @@ module.exports = function() {
         return "marker_" + d.middle.name;
       }
     }
-  }
 
-  function processData() {
-    // Create new nodes
-    var newNodes = d3.merge(data.phases.map(function(phase, i) {
-      return data.species.map(function(species, j) {
-        return {
-          phase: phase,
-          species: species,
-          value: data.speciesPhaseMatrix[j][i]
-        };
-      });
-    }));
+    function processData() {
+      // Create new nodes
+      var newNodes = data.phases.map(function(phase, i) {
+        return data.species.map(function(species, j) {
+          var value = data.speciesPhaseMatrix[j][i];
+          var x = xScale(value);
+          var y = yScale(phase.name) + axisY;
 
-    nodes = newNodes;
-
-/*
-    var distanceScale = d3.scaleLinear()
-        .domain([0, 1])
-        .range([100, 0]);
-
-    var strengthScale = d3.scaleLinear()
-        .domain([0, 1])
-        .range([0, 1]);
-
-    var newNodes = data.phases.slice().concat(data.species).slice();
-
-    links = [];
-    biLinks = [];
-    data.speciesPhaseMatrix.forEach(function(d, i) {
-      d.forEach(function(e, j) {
-        if (Math.abs(e) > 0) {
-          var midNode = {
-            name: data.species[i].name + "→" + data.phases[j].name
+          return {
+            name: species.name + "→" + phase.name,
+            phase: phase,
+            species: species,
+            value: data.speciesPhaseMatrix[j][i],
+            visible: true,
+            xPos: x,
+            yPos: y,
+            fx: x,
+            y: y
           };
-
-          newNodes.push(midNode);
-
-          links.push({
-            source: data.species[i],
-            target: midNode,
-            value: e,
-            forceValue: e
-          });
-
-          links.push({
-            source: midNode,
-            target: data.phases[j],
-            value: e,
-            forceValue: e
-          });
-
-          biLinks.push({
-            source: data.species[i],
-            middle: midNode,
-            target: data.phases[j],
-            value: e
-          });
-        }
+        });
       });
-    });
 
-    if (currentPhase !== null) {
-      var index = data.phases.map(function(d) {
-        return d.name;
-      }).indexOf(currentPhase.name);
-
-      if (index > -1) {
-        data.speciesMatrices[index].forEach(function(d, i) {
-          d.forEach(function(e, j) {
+      links = [];
+      biLinks = [];
+      data.speciesMatrices.forEach(function(matrix, i) {
+        matrix.forEach(function(d, j) {
+          d.forEach(function(e, k) {
             if (Math.abs(e) > 0) {
+              var x = (newNodes[i][j].xPos + newNodes[i][k].xPos) / 2,
+                  y = newNodes[i][j].yPos;
+
               var midNode = {
-                name: data.species[i].name + "→" + data.species[j].name
+                name: data.phases[i].name + ":" + data.species[j].name + "→" + data.species[k].name,
+                xPos: x,
+                yPos: y,
+                x: x,
+                y: y
               };
 
-              newNodes.push(midNode);
+              newNodes.push([midNode]);
 
               links.push({
-                source: data.species[i],
+                source: newNodes[i][j],
                 target: midNode,
                 value: e,
                 forceValue: e
@@ -544,51 +485,54 @@ module.exports = function() {
 
               links.push({
                 source: midNode,
-                target: data.species[j],
+                target: newNodes[i][k],
                 value: e,
                 forceValue: e
               });
 
               biLinks.push({
-                source: data.species[i],
+                source: newNodes[i][j],
                 middle: midNode,
-                target: data.species[j],
+                target: newNodes[i][k],
                 value: e
               });
             }
           });
         });
-      }
-    }
-
-    // Copy previous node position
-    if (nodes) {
-      newNodes.forEach(function(d) {
-        nodes.forEach(function(e) {
-          if (d.name === e.name) {
-            d.x = e.x;
-            d.y = e.y;
-          }
-        });
       });
-    }
 
-    nodes = newNodes;
+      console.log(newNodes);
 
-    force.nodes(nodes);
+      newNodes = d3.merge(newNodes);
 
-    force.force("link").links(links)
-        //.distance(function(d) {
-        //  return distanceScale(Math.abs(d.value));
-        //});
-        .distance(Math.min(width, height) / 20)
-        .strength(function(d) {
-          return strengthScale(Math.abs(d.forceValue));
+      // Copy previous node position
+      if (nodes) {
+        newNodes.forEach(function(d) {
+          nodes.forEach(function(e) {
+            if (d.name === e.name) {
+              d.x = e.x;
+              d.y = e.y;
+            }
+          });
         });
+      }
 
-    force.alpha(1);
-    force.restart();
-*/
+      nodes = newNodes;
+
+      force.nodes(nodes);
+
+//      force.force("link").links(links);
+          //.distance(function(d) {
+          //  return distanceScale(Math.abs(d.value));
+          //});
+          //.distance(Math.min(width, height) / 20)
+          //.strength(function(d) {
+          //  return strengthScale(Math.abs(d.forceValue));
+          //});
+
+      force.alpha(1);
+      force.restart();
+    }
   }
 
   linearNetworkMap.width = function(_) {
@@ -622,7 +566,6 @@ module.exports = function() {
 
       currentPhase = index !== -1 ? data.phases[index] : null;
 
-      processData();
       draw();
     }
 
