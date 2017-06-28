@@ -57,6 +57,9 @@ var RunSimulationButtonContainer = React.createClass ({
 
     ViewActionCreators.runSimulation();
   },
+  handleCancel: function () {
+    ViewActionCreators.cancelSimulation();
+  },
   render: function () {
     var disabled = this.state.outputState === Constants.SIMULATION_OUTPUT_INVALID;
 
@@ -65,11 +68,11 @@ var RunSimulationButtonContainer = React.createClass ({
         <RunSimulationButton
           label={this.state.label}
           disabled={disabled}
-          onClick={this.handleButtonClick} />
-        {this.state.error !== null ?
+          onClick={this.handleButtonClick}
+          onCancel={this.handleCancel} />
+        {this.state.error === null ? null :
           <SimulationError
-            error={this.state.error} />
-          : null}
+            error={this.state.error} />}
       </div>
     );
   }

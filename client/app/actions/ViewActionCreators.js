@@ -100,6 +100,13 @@ module.exports = {
 
     WebAPIUtils.runSimulation();
   },
+  cancelSimulation: function () {
+    AppDispatcher.dispatch({
+      actionType: Constants.CANCEL_SIMULATION
+    });
+
+    WebAPIUtils.cancelSimulation();
+  },
   changeSimulationParameter: function (parameter, value) {
     AppDispatcher.dispatch({
       actionType: Constants.CHANGE_SIMULATION_PARAMETER,
