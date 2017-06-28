@@ -1,12 +1,14 @@
 var React = require("react");
 var SimulationOutputStore = require("../stores/SimulationOutputStore");
 var RunSimulationButton = require("../components/RunSimulationButton");
+var SimulationError = require("../components/SimulationError");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var Constants = require("../constants/Constants");
 
 function getStateFromStore() {
   return {
-    simulationOutputState: SimulationOutputStore.getState()
+    outputState: SimulationOutputStore.getState(),
+    error: SimulationOutputStore.getError()
   };
 }
 
@@ -16,7 +18,8 @@ var RunSimulationButtonContainer = React.createClass ({
   getInitialState: function () {
     return {
       label: defaultLabel,
-      simulationOutputState: SimulationOutputStore.getState()
+      outputState: SimulationOutputStore.getState(),
+      error: SimulationOutputStore.getError()
     }
   },
   componentDidMount: function () {
@@ -33,7 +36,7 @@ var RunSimulationButtonContainer = React.createClass ({
     var count = 0;
     (function timer() {
       if (count > 0 &&
-          this.state.simulationOutputState === Constants.SIMULATION_OUTPUT_VALID) {
+          this.state.outputState === Constants.SIMULATION_OUTPUT_VALID) {
         // Reset label to default
         this.setState({
           label: defaultLabel
@@ -55,13 +58,19 @@ var RunSimulationButtonContainer = React.createClass ({
     ViewActionCreators.runSimulation();
   },
   render: function () {
-    var disabled = this.state.simulationOutputState === Constants.SIMULATION_OUTPUT_INVALID;
+    var disabled = this.state.outputState === Constants.SIMULATION_OUTPUT_INVALID;
 
     return (
-      <RunSimulationButton
-        label={this.state.label}
-        disabled={disabled}
-        onClick={this.handleButtonClick} />
+      <div>
+        <RunSimulationButton
+          label={this.state.label}
+          disabled={disabled}
+          onClick={this.handleButtonClick} />
+        {this.state.error !== null ?
+          <SimulationError
+            error={this.state.error} />
+          : null}
+      </div>
     );
   }
 });

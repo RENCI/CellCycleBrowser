@@ -155,7 +155,7 @@ function requestSimulationOutput(url) {
       ServerActionCreators.receiveSimulationOutput(data.result);
     },
     error: function (xhr, textStatus, errorThrown) {
-      console.log(textStatus + ": " + errorThrown);
+      ServerActionCreators.receiveSimulationOutput([], textStatus + ": " + errorThrown);
     }
   });
 }
@@ -177,8 +177,8 @@ function pollSimulation(taskId) {
         if (timeOutStatusId > -1) {
           clearTimeout(timeOutStatusId);
         }
-        console.log(data.error)
-        ServerActionCreators.receiveSimulationOutput([]);
+
+        ServerActionCreators.receiveSimulationOutput([], data.error);
       }
       else if (data.result) {
         if (timeOutStatusId > -1) {
@@ -198,9 +198,7 @@ function pollSimulation(taskId) {
         clearTimeout(timeOutStatusId);
       }
 
-      console.log(textStatus + ": " + errorThrown);
-
-      ServerActionCreators.receiveSimulationOutput([]);
+      ServerActionCreators.receiveSimulationOutput([], textStatus + ": " + errorThrown);
     }
   });
 }

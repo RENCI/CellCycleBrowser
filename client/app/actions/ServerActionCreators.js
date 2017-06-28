@@ -39,10 +39,13 @@ module.exports = {
       dataset: dataset
     });
   },
-  receiveSimulationOutput: function(output) {
+  receiveSimulationOutput: function(output, error) {
+    if (typeof(error) === "undefined") error = null;
+
     AppDispatcher.dispatch({
       actionType: Constants.RECEIVE_SIMULATION_OUTPUT,
-      output: output
+      output: output,
+      error: error
     });
   }
 };
