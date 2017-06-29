@@ -2,7 +2,7 @@ var d3 = require("d3");
 
 module.exports = function() {
       // Size
-  var margin = { top: 20, left: 20, bottom: 60, right: 20 },
+  var margin = { top: 20, left: 20, bottom: 80, right: 20 },
       width = 200,
       height = 200,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -15,10 +15,8 @@ module.exports = function() {
       biLinks,
 
       // Layout
-      nodeRadiusScale = d3.scaleLinear()
-          .range([3, 7]);
-      // XXX: Use separate simualtion for each phases, then don't need
-      // distanceMax
+      // XXX: Would be nice to use a separate simualtion for each phases,
+      // but it seems that only one simulation can be active at a time
       force = d3.forceSimulation()
           .force("link", d3.forceLink())
           .force("x", d3.forceX(function(d) {
@@ -32,13 +30,19 @@ module.exports = function() {
           .force("collide", d3.forceCollide(10))
           .force("manyBody", d3.forceManyBody(-10).distanceMax(50))
           .on("tick", updateForce),
+      nodePathLine = d3.line()
+          .curve(d3.curveCardinal)
+          .x(function(d) { return d.x; })
+          .y(function(d) { return d.y; }),
 
       // Scales
       // TODO: Move color scales to global settings somewhere
       phaseColorScale = d3.scaleOrdinal(),
       interactionColorScale = d3.scaleLinear()
           .domain([-10, -Number.EPSILON, 0, Number.EPSILON, 10])
-          .range(["#00d", "#bbd", "#ccc", "#dbb", "#d00"]);
+          .range(["#00d", "#bbd", "#ccc", "#dbb", "#d00"]),
+      nodeRadiusScale = d3.scaleLinear()
+          .range([3, 7]),
 
       // Start with empty selection
       svg = d3.select(),
@@ -68,6 +72,7 @@ module.exports = function() {
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
+      g.append("g").attr("class", "info");
       g.append("g").attr("class", "phases");
       g.append("g").attr("class", "nodePaths");
       g.append("g").attr("class", "links");
@@ -126,6 +131,9 @@ module.exports = function() {
     svg.select(".nodes").selectAll(".node")
         .attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y });
+
+    svg.select(".nodePaths").selectAll(".nodePath")
+        .attr("d", nodePathLine);
 /*
     svg.select(".nodeLabels").selectAll(".nodeLabels > g")
         .attr("transform", function(d) {
@@ -165,9 +173,11 @@ module.exports = function() {
 
     // Draw the visualization
     processData();
+    drawInfo();
     drawPhases();
     drawLinks();
     drawNodes();
+    drawNodePaths();
 //    drawNodeLabels();
 
     // Update tooltips
@@ -182,6 +192,42 @@ module.exports = function() {
       placement: "auto top",
       animation: false
     });
+
+    function drawInfo() {
+      var labels = ["Inhibit", "Promote"];
+
+      var xScale = d3.scaleBand()
+          .domain(labels)
+          .range([0, innerWidth()]);
+
+      // Labels
+      var label = svg.select(".info").selectAll(".infoLabel")
+          .data(labels);
+
+      label.enter().append("text")
+          .attr("class", "infoLabel")
+          .style("font-size", "small")
+          .style("text-anchor", "middle")
+        .merge(label)
+          .text(function(d) { return d; })
+          .attr("x", function(d) {
+            return xScale(d) + xScale.bandwidth() / 2;
+          });
+
+      // Divider line
+      var divider = svg.select(".info").selectAll(".divider")
+          .data([0]);
+
+      divider.enter().append("line")
+          .attr("class", "divider")
+          .style("stroke", "#ccc")
+          .style("stroke-dasharray", "5 5")
+        .merge(divider)
+          .attr("x1", innerWidth() / 2)
+          .attr("y1", 0)
+          .attr("x2", innerWidth() / 2)
+          .attr("y2", innerHeight());
+    }
 
     function drawPhases() {
       // Bind phase data
@@ -298,8 +344,12 @@ module.exports = function() {
 //          .call(drag);
         .merge(node)
           .attr("data-original-title", nodeTooltip)
-          .attr("r", function(d) { return nodeRadiusScale(d.species.value); })
-          .style("fill", function(d) { return interactionColorScale(d.value); });
+          .attr("r", function(d) {
+            return nodeRadiusScale(d.species.value);
+          })
+          .style("fill", function(d) {
+            return interactionColorScale(d.value);
+          });
 
       // Node exit
       node.exit().remove();
@@ -307,6 +357,30 @@ module.exports = function() {
       function nodeTooltip(d) {
         return d.species.name + ": " + d.species.value;
       }
+    }
+
+    function drawNodePaths() {
+      var nodePaths = d3.nest()
+          .key(function(d) { return d.species.name; })
+          .entries(nodes.filter(function(d) { return d.visible; }))
+          .map(function(d) { return d.values; });
+
+      var nodePath = svg.select(".nodePaths").selectAll(".nodePath")
+          .data(nodePaths);
+
+      // NodePath enter + update
+      nodePath.enter().append("path")
+          .attr("class", "nodePath")
+          .style("fill", "none")
+          .style("stroke", "#eee")
+          .style("stroke-width", function(d) {
+            return nodeRadiusScale(d[0].species.value);
+          })
+        .merge(nodePath)
+          .attr("d", nodePathLine);
+
+      // Node exit
+      nodePath.exit().remove();
     }
 
     function drawArrows() {
@@ -455,7 +529,7 @@ module.exports = function() {
             xPos: x,
             yPos: y,
             fx: x,
-            y: y
+            fy: y
           };
         });
       });
@@ -467,7 +541,7 @@ module.exports = function() {
           d.forEach(function(e, k) {
             if (Math.abs(e) > 0) {
               var x = (newNodes[i][j].xPos + newNodes[i][k].xPos) / 2,
-                  y = newNodes[i][j].yPos;
+                  y = (newNodes[i][j].yPos + newNodes[i][k].yPos) / 2;
 
               var midNode = {
                 name: data.phases[i].name + ":" + data.species[j].name + "→" + data.species[k].name,
@@ -520,6 +594,7 @@ module.exports = function() {
           nodes.forEach(function(e) {
             if (d.name === e.name) {
               d.x = e.x;
+              d.fy = null;
               d.y = e.y;
             }
           });
@@ -538,8 +613,15 @@ module.exports = function() {
           //  return strengthScale(Math.abs(d.forceValue));
           //});
 
-      force.alpha(1);
-      force.restart();
+      force
+          .alpha(1)
+          .restart()
+          .tick();
+
+      // Free the y coordinates
+      nodes.forEach(function(d) {
+        d.fy = null;
+      });
     }
   }
 
