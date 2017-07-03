@@ -2,7 +2,7 @@ var d3 = require("d3");
 
 module.exports = function() {
       // Size
-  var margin = { top: 20, left: 20, bottom: 80, right: 20 },
+  var margin = { top: 20, left: 30, bottom: 80, right: 30 },
       width = 200,
       height = 200,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -178,7 +178,7 @@ module.exports = function() {
     drawLinks();
     drawNodes();
     drawNodePaths();
-//    drawNodeLabels();
+    drawNodeLabels();
 
     // Update tooltips
     $(".linearNetworkMap .node").tooltip({
@@ -255,7 +255,7 @@ module.exports = function() {
       // Exit
       phase.exit().remove();
 
-      function drawPhase(d, i) {
+      function drawPhase(d) {
         var g = d3.select(this);
 
         // Bind phase data twice
@@ -270,6 +270,16 @@ module.exports = function() {
             .style("fill", fill)
             .style("stroke", "#999");
 
+        phaseEnter.append("text")
+            .attr("dx", function(d, i) {
+              return i === 0 ? "-.4em" : ".4em";
+            })
+            .style("fill", "black")
+            .style("font-size", "x-small")
+            .style("text-anchor", function(d, i) {
+              return i === 0 ? "end" : "start";
+            });
+
         phaseEnter.append("path")
             .style("fill", "#eee")
             .style("stroke", "#999");
@@ -283,6 +293,14 @@ module.exports = function() {
             .attr("height", yScale.bandwidth())
             .attr("rx", phaseWidth / 2)
             .attr("ry", phaseWidth / 2);
+
+        // Label
+        phaseUpdate.select("text")
+            .text(d.name)
+            .attr("x", function(d, i) {
+              return i === 0 ? 0 : phaseWidth;
+            })
+            .attr("y", yScale.bandwidth() / 2);
 
         // Arrow
         var tw = phaseWidth,
@@ -332,6 +350,28 @@ module.exports = function() {
       }
     }
 
+    function drawArrows() {
+      // Bind phase data
+      var arrow = svg.select(".arrows").selectAll(".arrow")
+          .data(data.phases);
+
+      // Enter + update
+      arrow.enter().append("path")
+          .attr("class", "arrow")
+          .attr("pointer-events", "none")
+          .style("fill", "#eee")
+          .style("stroke", "#999")
+        .merge(arrow)
+    //          .attr("d", "M 0 -10 L 10 0 L 0 10 z")
+          .attr("d", "M -10 -15 L 10 0 L -10 15 z")
+          .attr("transform", function(d) {
+            return "translate(" + radius + ",0)rotate(90)";
+          });
+
+      // Exit
+      arrow.exit().remove();
+    }
+
     function drawNodes() {
       var node = svg.select(".nodes").selectAll(".node")
           .data(nodes.filter(function(d) { return d.visible; }));
@@ -365,6 +405,21 @@ module.exports = function() {
           .entries(nodes.filter(function(d) { return d.visible; }))
           .map(function(d) { return d.values; });
 
+      // Add labels
+      // XXX: Duplicating code from drawNodeLabels...
+      var labelXScale = d3.scalePoint()
+          .domain(d3.range(nodePaths.length))
+          .range([0, innerWidth()])
+          .padding(0.5);
+
+      nodePaths.forEach(function(d, i) {
+        d.unshift({
+          species: d[0].species,
+          x: labelXScale(i),
+          y: yScale.bandwidth() / 2
+        });
+      });
+
       var nodePath = svg.select(".nodePaths").selectAll(".nodePath")
           .data(nodePaths);
 
@@ -376,6 +431,7 @@ module.exports = function() {
           .style("stroke-width", function(d) {
             return nodeRadiusScale(d[0].species.value);
           })
+          .style("stroke-linecap", "round")
         .merge(nodePath)
           .attr("d", nodePathLine);
 
@@ -383,52 +439,43 @@ module.exports = function() {
       nodePath.exit().remove();
     }
 
-    function drawArrows() {
-      // Bind phase data
-      var arrow = svg.select(".arrows").selectAll(".arrow")
-          .data(data.phases);
-
-      // Enter + update
-      arrow.enter().append("path")
-          .attr("class", "arrow")
-          .attr("pointer-events", "none")
-          .style("fill", "#eee")
-          .style("stroke", "#999")
-        .merge(arrow)
-//          .attr("d", "M 0 -10 L 10 0 L 0 10 z")
-          .attr("d", "M -10 -15 L 10 0 L -10 15 z")
-          .attr("transform", function(d) {
-            return "translate(" + radius + ",0)rotate(90)";
-          });
-
-      // Exit
-      arrow.exit().remove();
-    }
-
     function drawNodeLabels() {
+      var nodeLabels = nodes.filter(function(d) {
+        return d.phase === data.phases[0];
+      });
+
+      var labelXScale = d3.scalePoint()
+          .domain(d3.range(nodeLabels.length))
+          .range([0, innerWidth()])
+          .padding(0.5);
+
       // Bind species data
-      var label = svg.select(".nodeLabels").selectAll(".nodeLabels > g")
-          .data(data.species);
+      var label = svg.select(".nodeLabels").selectAll(".nodeLabel")
+          .data(nodeLabels);
 
       // Label enter
       var labelEnter = label.enter().append("g")
-          .style("pointer-events", "none");
+          .attr("class", "nodeLabel");
 
       labelEnter.append("text")
-          .attr("dy", "-.2em")
+          .attr("dy", "-.5em")
           .style("fill", "white")
           .style("stroke", "white")
           .style("stroke-width", 2)
           .style("text-anchor", "middle");
 
       labelEnter.append("text")
-          .attr("dy", "-.2em")
+          .attr("dy", "-.5em")
           .style("fill", "black")
           .style("text-anchor", "middle");
 
       // Label update
-      labelEnter.merge(label).selectAll("text")
-          .text(function(d) { return d.name; });
+      labelEnter.merge(label)
+          .attr("transform", function(d, i) {
+            return "translate(" + labelXScale(i) + "," + yScale.bandwidth() / 2 + ")";
+          })
+        .selectAll("text")
+          .text(function(d) { return d.species.name; });
 
       // Label exit
       label.exit().remove();
