@@ -12,7 +12,7 @@ module.exports = function() {
       data,
       nodes,
       links,
-      biLinks,
+//      biLinks,
 
       // Layout
       // XXX: Would be nice to use a separate simualtion for each phases,
@@ -95,8 +95,27 @@ module.exports = function() {
           // XXX: This is half of the marker size. Should make a variable.
           reduction += 10;
 
-          var middle = adjustDistance(d.target, d.middle, -reduction),
-              target = adjustDistance(middle, d.target, reduction);
+          var vx = d.target.x - d.source.x,
+              vy = d.target.y - d.source.y,
+              mag = Math.sqrt(vx * vx + vy * vy);
+
+          vx /= mag;
+          vy /= mag;
+
+          var temp = vx;
+          vx = -vy;
+          vy = temp;
+
+          var s = -0.5,
+              x = (d.source.x + d.target.x) / 2,
+              y =  (d.source.y + d.target.y) / 2,
+              middle = {
+                x: x + vx * mag * s,
+                y: y + vy * mag * s
+              };
+
+          middle = adjustDistance(d.target, middle, -reduction);
+          var target = adjustDistance(middle, d.target, reduction);
 
           return "M" + d.source.x + "," + d.source.y
                + "S" + middle.x + "," + middle.y
@@ -488,7 +507,7 @@ module.exports = function() {
 
       // Bind data for markers
       var marker = svg.select("defs").selectAll("marker")
-          .data(biLinks);
+          .data(links);
 
       // Marker enter
       var markerEnter = marker.enter().append("marker")
@@ -518,7 +537,7 @@ module.exports = function() {
 
       // Bind data for links
       var link = svg.select(".links").selectAll(".link")
-          .data(biLinks);
+          .data(links);
 
       // Link enter + update
       link.enter().append("path")
@@ -551,11 +570,13 @@ module.exports = function() {
       link.exit().remove();
 
       function linkTooltip(d) {
-        return d.middle.name + ": " + d.value;
+//        return d.middle.name + ": " + d.value;
+        return d.name + ": " + d.value;
       }
 
       function markerName(d) {
-        return "marker_" + d.middle.name;
+//        return "marker_" + d.middle.name;
+        return "marker_" + d.name;
       }
     }
 
@@ -582,14 +603,14 @@ module.exports = function() {
       });
 
       links = [];
-      biLinks = [];
+//      biLinks = [];
       data.speciesMatrices.forEach(function(matrix, i) {
         matrix.forEach(function(d, j) {
           d.forEach(function(e, k) {
             if (Math.abs(e) > 0) {
               var x = (newNodes[i][j].xPos + newNodes[i][k].xPos) / 2,
                   y = (newNodes[i][j].yPos + newNodes[i][k].yPos) / 2;
-
+/*
               var midNode = {
                 name: data.phases[i].name + ":" + data.species[j].name + "→" + data.species[k].name,
                 xPos: x,
@@ -600,6 +621,7 @@ module.exports = function() {
               };
 
               newNodes.push([midNode]);
+*/
 /*
               links.push({
                 source: newNodes[i][j],
@@ -619,15 +641,17 @@ module.exports = function() {
                 source: newNodes[i][j],
                 target: newNodes[i][k],
                 value: e,
+                name: data.phases[i].name + ":" + data.species[j].name + "→" + data.species[k].name,
                 forceValue: e
               });
-
+/*
               biLinks.push({
                 source: newNodes[i][j],
                 middle: midNode,
                 target: newNodes[i][k],
                 value: e
               });
+*/
             }
           });
         });
