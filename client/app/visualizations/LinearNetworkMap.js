@@ -18,17 +18,15 @@ module.exports = function() {
       // XXX: Would be nice to use a separate simualtion for each phases,
       // but it seems that only one simulation can be active at a time
       force = d3.forceSimulation()
-          .force("link", d3.forceLink())
           .force("x", d3.forceX(function(d) {
             return d.xPos;
-          }).strength(function(d) {
-            return d.midNode ? 0.7 : 1;
-          }))
+          }).strength(1))
           .force("y", d3.forceY(function(d) {
             return d.yPos;
+          }).strength(0.2))
+          .force("collide", d3.forceCollide(function(d) {
+            return nodeRadiusScale(d.species.value) + nodeRadiusScale.range()[1] / 2;
           }))
-          .force("collide", d3.forceCollide(10))
-          .force("manyBody", d3.forceManyBody(-10).distanceMax(50))
           .on("tick", updateForce),
       nodePathLine = d3.line()
           .curve(d3.curveCardinal)
@@ -675,14 +673,6 @@ module.exports = function() {
       nodes = newNodes;
 
       force.nodes(nodes);
-
-      force.force("link").links(links)
-          .distance(50)
-          .strength(1);
-          //.distance(Math.min(width, height) / 20)
-          //.strength(function(d) {
-          //  return strengthScale(Math.abs(d.forceValue));
-          //});
 
       force
           .alpha(1)
