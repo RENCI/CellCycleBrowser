@@ -1,3 +1,5 @@
+const path = require('path');
+
 var HtmlWebpackPlugin = require("html-webpack-plugin");
 var HtmlWebpackPluginConfig = new HtmlWebpackPlugin({
   template: __dirname + "/app/index.html",
@@ -10,7 +12,7 @@ module.exports = {
     "./app/app.js"
   ],
   output: {
-    path: __dirname + "/../../server/cc_core/static/cc_core/js",
+    path: path.resolve(__dirname, "../server/cc_core/static/cc_core/js"),
     filename: "index_bundle.js"
   },
   module: {
