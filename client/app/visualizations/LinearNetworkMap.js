@@ -198,6 +198,7 @@ module.exports = function() {
     drawNodeLabels();
 
     // Update tooltips
+/*
     $(".linearNetworkMap .node").tooltip({
       container: "body",
       placement: "auto top",
@@ -209,6 +210,7 @@ module.exports = function() {
       placement: "auto top",
       animation: false
     });
+*/
 
     function drawInfo() {
       var labels = ["Inhibit", "Promote"];
@@ -396,11 +398,16 @@ module.exports = function() {
       // Node enter + update
       node.enter().append("circle")
           .attr("class", "node")
-          .attr("data-toggle", "tooltip")
+//          .attr("data-toggle", "tooltip")
           .style("stroke", "black")
-//          .call(drag);
+          .on("mouseover", function(d) {
+            highlightSpecies(d.species);
+          })
+          .on("mouseout", function() {
+            highlightSpecies();
+          })
         .merge(node)
-          .attr("data-original-title", nodeTooltip)
+//          .attr("data-original-title", nodeTooltip)
           .attr("r", function(d) {
             return nodeRadiusScale(d.species.value);
           })
@@ -414,6 +421,24 @@ module.exports = function() {
       function nodeTooltip(d) {
         return d.species.name + ": " + d.species.value;
       }
+    }
+
+    function highlightSpecies(species) {
+      svg.select(".nodes").selectAll(".node")
+          .style("stroke-width", function(d) {
+            return d.species === species ? 2 : null;
+          });
+
+      svg.select(".nodePaths").selectAll(".nodePath")
+          .style("visibility", function(d) {
+            return !species ? null :
+                   d[0].species === species ? "visible" : "hidden";
+          });
+
+      svg.select(".nodeLabels").selectAll(".nodeLabel")
+          .style("font-weight", function(d) {
+            return d.species === species ? "bold" : null;
+          });
     }
 
     function drawNodePaths() {
@@ -472,7 +497,13 @@ module.exports = function() {
 
       // Label enter
       var labelEnter = label.enter().append("g")
-          .attr("class", "nodeLabel");
+          .attr("class", "nodeLabel")
+          .on("mouseover", function(d) {
+            highlightSpecies(d.species);
+          })
+          .on("mouseout", function() {
+            highlightSpecies();
+          });
 
       labelEnter.append("text")
           .attr("dy", "-.5em")
@@ -540,11 +571,11 @@ module.exports = function() {
       // Link enter + update
       link.enter().append("path")
           .attr("class", "link")
-          .attr("data-toggle", "tooltip")
+//          .attr("data-toggle", "tooltip")
         .merge(link).sort(function(a, b) {
             return d3.descending(Math.abs(a.value), Math.abs(b.value));
           })
-          .attr("data-original-title", linkTooltip)
+//          .attr("data-original-title", linkTooltip)
           .style("fill", "none")
           .style("stroke", function(d) {
             return interactionColorScale(d.value);
