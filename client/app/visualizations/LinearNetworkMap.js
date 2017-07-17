@@ -599,12 +599,10 @@ module.exports = function() {
       link.exit().remove();
 
       function linkTooltip(d) {
-//        return d.middle.name + ": " + d.value;
         return d.name + ": " + d.value;
       }
 
       function markerName(d) {
-//        return "marker_" + d.middle.name;
         return "marker_" + d.name;
       }
     }
@@ -631,41 +629,15 @@ module.exports = function() {
         });
       });
 
+      // Create links
       links = [];
-//      biLinks = [];
       data.speciesMatrices.forEach(function(matrix, i) {
         matrix.forEach(function(d, j) {
           d.forEach(function(e, k) {
             if (Math.abs(e) > 0) {
               var x = (newNodes[i][j].xPos + newNodes[i][k].xPos) / 2,
                   y = (newNodes[i][j].yPos + newNodes[i][k].yPos) / 2;
-/*
-              var midNode = {
-                name: data.phases[i].name + ":" + data.species[j].name + "→" + data.species[k].name,
-                xPos: x,
-                yPos: y,
-                x: x,
-                y: y,
-                midNode: true
-              };
 
-              newNodes.push([midNode]);
-*/
-/*
-              links.push({
-                source: newNodes[i][j],
-                target: midNode,
-                value: e,
-                forceValue: e
-              });
-
-              links.push({
-                source: midNode,
-                target: newNodes[i][k],
-                value: e,
-                forceValue: e
-              });
-*/
               links.push({
                 source: newNodes[i][j],
                 target: newNodes[i][k],
@@ -673,17 +645,13 @@ module.exports = function() {
                 name: data.phases[i].name + ":" + data.species[j].name + "→" + data.species[k].name,
                 forceValue: e
               });
-/*
-              biLinks.push({
-                source: newNodes[i][j],
-                middle: midNode,
-                target: newNodes[i][k],
-                value: e
-              });
-*/
             }
           });
         });
+      });
+
+      links.sort(function(a, b) {
+        return d3.descending(a.value, b.value);
       });
 
       newNodes = d3.merge(newNodes);
