@@ -12,7 +12,6 @@ module.exports = function() {
       data,
       nodes,
       links,
-//      biLinks,
 
       // Layout
       // XXX: Would be nice to use a separate simualtion for each phases,
@@ -134,7 +133,8 @@ module.exports = function() {
               y: p1.y + vy *d
             };
           }
-        })
+        });
+/*
         .each(function(d, i) {
           var length = this.getTotalLength(),
               // Could get width from link width scale, but would need to make global
@@ -142,8 +142,9 @@ module.exports = function() {
 
           // Make length shorter to match marker
           d3.select(this)
-//              .style("stroke-dasharray", length - width * 1.5 + 1);
+              .style("stroke-dasharray", length - width * 1.5 + 1);
         });
+*/
 
     svg.select(".nodes").selectAll(".node")
         .attr("cx", function(d) { return d.x; })
@@ -204,13 +205,12 @@ module.exports = function() {
       placement: "auto top",
       animation: false
     });
-
+*/
     $(".linearNetworkMap .link").tooltip({
       container: "body",
       placement: "auto top",
       animation: false
     });
-*/
 
     function drawInfo() {
       var labels = ["Inhibit", "Promote"];
@@ -571,11 +571,11 @@ module.exports = function() {
       // Link enter + update
       link.enter().append("path")
           .attr("class", "link")
-//          .attr("data-toggle", "tooltip")
+          .attr("data-toggle", "tooltip")
         .merge(link).sort(function(a, b) {
             return d3.descending(Math.abs(a.value), Math.abs(b.value));
           })
-//          .attr("data-original-title", linkTooltip)
+          .attr("data-original-title", linkTooltip)
           .style("fill", "none")
           .style("stroke", function(d) {
             return interactionColorScale(d.value);
@@ -587,19 +587,33 @@ module.exports = function() {
           .style("marker-end", null)
           .style("marker-end", function(d) {
             return "url(#" + markerName(d) + ")";
-          })
+          });
+/*
           .each(function(d, i) {
             var length = this.getTotalLength();
 
-//            d3.select(this)
-//                .style("stroke-dasharray", length * 0.9);
+            d3.select(this)
+                .style("stroke-dasharray", length * 0.9);
           });
+*/
 
       // Link exit
       link.exit().remove();
 
       function linkTooltip(d) {
-        return d.name + ": " + d.value;
+        return d.source.species.name + "→" +
+               d.target.species.name + ": " +
+               toString(d.value);
+
+        function toString(d) {
+          var s = d.toString();
+
+          if (s.indexOf(".") !== -1) {
+            s = d.toFixed(2);
+          }
+
+          return s;
+        }
       }
 
       function markerName(d) {

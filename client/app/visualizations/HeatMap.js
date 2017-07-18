@@ -186,7 +186,9 @@ module.exports = function () {
             .attr("y", y)
             .attr("width", width)
             .attr("height", height)
-            .attr("data-original-title", function(d) { return d.value; })
+            .attr("data-original-title", function(d) {
+              return toString(d.value);
+            })
             .style("fill", function(d) { return color(d, row, rowIndex); });
 
         // Exit
@@ -212,6 +214,16 @@ module.exports = function () {
 
         function color(d) {
           return colorScale(d.value);
+        }
+
+        function toString(d) {
+          var s = d.toString();
+          
+          if (s.indexOf(".") !== -1) {
+            s = d.toFixed(2);
+          }
+
+          return s;
         }
       }
     }
