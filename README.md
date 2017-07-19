@@ -1,6 +1,6 @@
 # CellCycleBrowser
 
-# Guide for setting up docker-based Django server local development environment for CellCycleBrowser project#
+# Guide for setting up docker-based Django server local development environment for CellCycleBrowser project
 
 ## Prerequisite ##
 [Docker](https://www.docker.com/ "Docker") and [Docker Compose](https://docs.docker.com/compose/ "Docker Compose") need to be installed. On Windows, a Linux VM is needed.
