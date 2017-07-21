@@ -23,9 +23,9 @@ function createModel(controls) {
   model.species = controls.species.map(function(d) {
     return {
       name: d,
-      min: controls.speciesInitialValues[d].min,
-      max: controls.speciesInitialValues[d].max,
-      value: controls.speciesInitialValues[d].value
+      min: controls.speciesExpressionLevels[d].min,
+      max: controls.speciesExpressionLevels[d].max,
+      value: controls.speciesExpressionLevels[d].value
     };
   });
 

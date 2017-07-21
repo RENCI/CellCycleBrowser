@@ -20,7 +20,7 @@ var controls = {
   ],
   species: [],
   phases: [],
-  speciesInitialValues: {},
+  speciesExpressionLevels: {},
   speciesPhaseMatrix: {},
   speciesSpeciesMatrices: {}
 };
@@ -56,10 +56,10 @@ function createControls(model) {
     return phase.name;
   });
 
-  // Create species value object
-  controls.speciesInitialValues = {};
+  // Create species expression levels object
+  controls.speciesExpressionLevels = {};
   model.species.forEach(function (species, i) {
-    controls.speciesInitialValues[species.name] = {
+    controls.speciesExpressionLevels[species.name] = {
       min: species.min,
       max: species.max,
       value: model.species[i].value
@@ -116,8 +116,8 @@ AppDispatcher.register(function (action) {
       SimulationControlStore.emitChange();
       break;
 
-    case Constants.CHANGE_SPECIES_INITIAL_VALUE:
-      controls.speciesInitialValues[action.species].value = action.value;
+    case Constants.CHANGE_SPECIES_EXPRESSION_LEVEL:
+      controls.speciesExpressionLevels[action.species].value = action.value;
       SimulationControlStore.emitChange();
       break;
 

@@ -114,9 +114,9 @@ module.exports = {
       value: value
     });
   },
-  changeSpeciesInitialValue: function (species, value) {
+  changeSpeciesExpressionLevel: function (species, value) {
     AppDispatcher.dispatch({
-      actionType: Constants.CHANGE_SPECIES_INITIAL_VALUE,
+      actionType: Constants.CHANGE_SPECIES_EXPRESSION_LEVEL,
       species: species,
       value: value
     });

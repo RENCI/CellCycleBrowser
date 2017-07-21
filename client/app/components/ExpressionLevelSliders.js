@@ -7,7 +7,7 @@ var divStyle = {
   marginTop: 10
 };
 
-function SpeciesValueSliders(props) {
+function ExpressionLevelSliders(props) {
   var sliders = props.species.map(function (species, i) {
     function handleChange(value) {
       props.onChange({
@@ -36,7 +36,7 @@ function SpeciesValueSliders(props) {
 
   return (
     <Collapsible
-      id="speciesValueSliders"
+      id="ExpressionLevelSliders"
       label="Expression levels">
         <div style={divStyle}>
           {sliders}
@@ -45,10 +45,10 @@ function SpeciesValueSliders(props) {
   );
 }
 
-SpeciesValueSliders.propTypes = {
+ExpressionLevelSliders.propTypes = {
   species: PropTypes.arrayOf(PropTypes.string).isRequired,
   values: PropTypes.object.isRequired,
   onChange: PropTypes.func.isRequired
 };
 
-module.exports = SpeciesValueSliders;
+module.exports = ExpressionLevelSliders;

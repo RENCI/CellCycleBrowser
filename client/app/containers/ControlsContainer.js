@@ -3,7 +3,7 @@ var SimulationControlStore = require("../stores/SimulationControlStore");
 var PhaseStore = require("../stores/PhaseStore");
 var RunSimulationButtonContainer = require("../containers/RunSimulationButtonContainer");
 var SimulationParameterSliders = require("../components/SimulationParameterSliders");
-var SpeciesValueSliders = require("../components/SpeciesValueSliders");
+var ExpressionLevelSliders = require("../components/ExpressionLevelSliders");
 var SpeciesPhaseSliders = require("../components/SpeciesPhaseSliders");
 var SpeciesSpeciesSliders = require("../components/SpeciesSpeciesSliders");
 var ViewActionCreators = require("../actions/ViewActionCreators");
@@ -56,7 +56,7 @@ var ControlsContainer = React.createClass ({
     );
   },
   handleSpeciesSliderChange: function (data) {
-    ViewActionCreators.changeSpeciesInitialValue(
+    ViewActionCreators.changeSpeciesExpressionLevel(
       data.species, data.value
     );
   },
@@ -84,9 +84,9 @@ var ControlsContainer = React.createClass ({
         <SimulationParameterSliders
           parameters={this.state.controls.parameters}
           onChange={this.handleSimulationParameterChange} />
-        <SpeciesValueSliders
+        <ExpressionLevelSliders
           species={this.state.controls.species}
-          values={this.state.controls.speciesInitialValues}
+          values={this.state.controls.speciesExpressionLevels}
           onChange={this.handleSpeciesSliderChange} />
         <SpeciesPhaseSliders
           species={this.state.controls.species}
