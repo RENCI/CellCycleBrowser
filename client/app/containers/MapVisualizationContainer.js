@@ -25,7 +25,7 @@ function createModel(controls) {
       name: d,
       min: controls.speciesExpressionLevels[d].min,
       max: controls.speciesExpressionLevels[d].max,
-      value: controls.speciesExpressionLevels[d].value
+      value: controls.speciesExpressionLevels[d].exponent
     };
   });
 

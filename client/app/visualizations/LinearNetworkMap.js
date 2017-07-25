@@ -39,7 +39,7 @@ module.exports = function() {
           .domain([-10, -Number.EPSILON, 0, Number.EPSILON, 10])
           .range(["#00d", "#bbd", "#ccc", "#dbb", "#d00"]),
       nodeRadiusScale = d3.scaleLinear()
-          .range([3, 7]),
+          .range([3, 12]),
 
       // Start with empty selection
       svg = d3.select(),
@@ -166,10 +166,15 @@ module.exports = function() {
         .attr("height", height);
 
     // Update scales
-    var maxValue = d3.max(data.species, function(d) { return d.max; });
+    var minValue = d3.min(data.species, function(d) {
+      return d.min;
+    });
+    var maxValue = d3.max(data.species, function(d) {
+      return d.max;
+    });
 
     nodeRadiusScale
-        .domain([0, maxValue]);
+        .domain([minValue, maxValue]);
 
     var maxRadius = nodeRadiusScale.range()[1];
 

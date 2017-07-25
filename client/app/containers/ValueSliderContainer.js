@@ -16,16 +16,12 @@ var ValueSliderContainer = React.createClass ({
   },
   getDefaultProps: function () {
     return {
-      label: "",
-      rightLabel: "",
-      sup: "",
       min: 0,
       max: 1,
       step: 0.1,
       value: 0.5,
       handleRadius: 8,
-      handleColorScale: null,
-      labelCol: 2
+      handleColorScale: null
     };
   },
   getInitialState: function () {
@@ -68,7 +64,7 @@ var ValueSliderContainer = React.createClass ({
 
     // Create function for converting to value from slider position
     this.toValue = function (x) {
-      var v = this.props.min + (x - sliderMin) / (sliderMax - sliderMin) * (this.props.max - this.props.min)
+      var v = this.props.min + (x - sliderMin) / (sliderMax - sliderMin) * (this.props.max - this.props.min);
       return Math.min(Math.max(this.props.min, v), this.props.max);
     }
   },

@@ -60,9 +60,10 @@ function createControls(model) {
   controls.speciesExpressionLevels = {};
   model.species.forEach(function (species, i) {
     controls.speciesExpressionLevels[species.name] = {
-      min: species.min,
-      max: species.max,
-      value: model.species[i].value
+      min: -5,
+      max: 5,
+      exponent: 0,
+      initialValue: model.species[i].value
     };
   });
 
@@ -117,7 +118,7 @@ AppDispatcher.register(function (action) {
       break;
 
     case Constants.CHANGE_SPECIES_EXPRESSION_LEVEL:
-      controls.speciesExpressionLevels[action.species].value = action.value;
+      controls.speciesExpressionLevels[action.species].exponent = action.value;
       SimulationControlStore.emitChange();
       break;
 

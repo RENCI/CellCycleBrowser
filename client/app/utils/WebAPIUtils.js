@@ -228,9 +228,13 @@ function simulationParameters() {
   }).indexOf("numCells")].value;
 
   var species = controls.species.map(function (species) {
+    // XXX: Hard-coding base here
+    var e = controls.speciesExpressionLevels[species],
+        v = e.exponent > e.min ? e.initialValue * Math.pow(2, e.exponent) : 0;
+
     return {
       species: species,
-      value: controls.speciesInitialValues[species].value
+      value: v
     };
   });
 
