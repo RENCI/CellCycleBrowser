@@ -42,8 +42,13 @@ def read_metadata_from_csv_data(file_base_name, csv_data, required_md_elems=[]):
                 continue
 
             key = row[0]
-            val = row[1]
-            mdict[key] = val if len(row) == 2 else ', '.join(row[1:])
+            val = ''
+            if len(row) >= 2:
+                val = row[1]
+                for idx in range(2, len(row)-1):
+                    if row[idx]:
+                        val += row[idx]
+            mdict[key] = val
 
     if md_begin and not md_end:
         raise ValidationError('Dataset is malformed: <begin metadata> tag '
