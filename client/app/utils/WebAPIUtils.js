@@ -174,10 +174,10 @@ function createDataset(id, dataset) {
       .entries(data).map(function (d) {
         return d.key;
       }).map(function (feature, i) {
-        // Only first feature active
+        // All feature active
         return {
           name: feature,
-          active: i === 0
+          active: true
         };
       });
 

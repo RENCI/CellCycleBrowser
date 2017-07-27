@@ -136,10 +136,13 @@ function updateData() {
           dataset.features.filter(function(d) {
             return d.active;
           }).forEach(function (feature) {
-            var traces = species.cells.map(function (cell) {
+            var traces = [];
+            species.cells.forEach(function (cell) {
               var featureIndex = cell.features.map(function (d) {
                 return d.name;
               }).indexOf(feature.name);
+
+              if (featureIndex === -1) return;
 
               var values = cell.features[featureIndex].values.map(function (d, i, a) {
                 return {
@@ -151,21 +154,23 @@ function updateData() {
                 return !isNaN(d.value);
               });
 
-              return {
+              traces.push({
                 name: cell.name,
                 selected: false,
                 values: values,
                 timeSpan: computeTimeSpan(values)
-              };
+              });
             });
 
-            tracks.push({
-              species: species.name,
-              feature: feature.name,
-              source: dataset.name,
-              traces: traces,
-              dataExtent: computeDataExtent(traces)
-            });
+            if (traces.length > 0) {
+              tracks.push({
+                species: species.name,
+                feature: feature.name,
+                source: dataset.name,
+                traces: traces,
+                dataExtent: computeDataExtent(traces)
+              });
+            }
           });
         });
       });
@@ -258,11 +263,11 @@ function updateData() {
     return [ Math.min.apply(null, timeExtent), Math.max.apply(null, timeExtent) ];
   }
 
-  function alignData(species, timeExtent, alignment) {
-    species.forEach(function (species) {
-      align(species.average.values);
+  function alignData(tracks, timeExtent, alignment) {
+    tracks.forEach(function (track) {
+      align(track.average.values);
 
-      species.traces.map(function (d) {
+      track.traces.map(function (d) {
         return d.values;
       }).forEach(align);
     });
