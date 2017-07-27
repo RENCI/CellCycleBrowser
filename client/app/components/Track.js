@@ -84,7 +84,9 @@ function Track(props) {
   var collapseId = props.track.species + "_" +
                    props.track.feature + "_" +
                    props.track.source + "_Collapse";
-  collapseId = collapseId.replace(/\s/g, "");
+
+  // Remove non "word" characters
+  collapseId = collapseId.replace(/\W/g, "");
 
   var averageHeight = 32;
   var traceHeight = 20;
