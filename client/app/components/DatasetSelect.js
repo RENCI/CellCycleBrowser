@@ -45,19 +45,23 @@ function DatasetSelect(props) {
           {option.description}
         </td>
         <td style={tdStyle}>
-          <MultiSelect
-            label="Features: "
-            labelStrong={false}
-            options={features}
-            enabled={option.active}
-            minSelected={1} />
+          {option.active ?
+            <MultiSelect
+              label="Features: "
+              labelStrong={false}
+              options={features}
+              enabled={option.active}
+              minSelected={1} />
+          : null}
         </td>
         <td style={tdStyle}>
-          <a
-            href={'/cell_data_meta/' + option.fileName + '/'}
-            target="_blank">
-            metadata
-          </a>
+          {option.active ?
+            <a
+              href={'/cell_data_meta/' + option.fileName + '/'}
+              target="_blank">
+              metadata
+            </a>
+          : null}
         </td>
       </tr>
     );
