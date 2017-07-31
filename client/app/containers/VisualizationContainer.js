@@ -1,4 +1,5 @@
 var React = require("react");
+var PropTypes = React.PropTypes;
 var ReactDOM = require("react-dom");
 
 var divStyle = {
@@ -10,6 +11,9 @@ var divStyle = {
 };
 
 var VisualizationContainer = React.createClass ({
+  propTypes: {
+    info: PropTypes.element
+  },
   getInitialState: function () {
     return {
       width: 100,
@@ -48,6 +52,7 @@ var VisualizationContainer = React.createClass ({
 
     return (
       <div style={divStyle}>
+        {this.props.info}
         {React.cloneElement(this.props.children, props)}
       </div>
     );
