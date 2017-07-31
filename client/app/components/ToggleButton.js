@@ -4,24 +4,22 @@ var PropTypes = React.PropTypes;
 function ToggleButton(props) {
   var style = {
     width: "100%",
-    height: "100%"
+    height: "100%",
+    backgroundColor: "#ccc"
   };
 
   var classes ="btn btn-default" + (props.selected ? " active" : "");
 
   return (
-    <label
+    <div
       className={classes}
       style={style}
-      data-value={props.value}
       onClick={props.onClick}>
-    </label>
+    </div>
   );
 }
 
 ToggleButton.propTypes = {
-  label: PropTypes.string,
-  value: PropTypes.string,
   selected: PropTypes.bool,
   height: PropTypes.number,
   onClick: PropTypes.func
