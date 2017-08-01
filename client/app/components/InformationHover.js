@@ -1,6 +1,11 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
+var divStyle = {
+  position: "absolute",
+  marginLeft: 2
+};
+
 var iconStyle = {
   color: "#aaa",
   pointerEvents: "none"
@@ -8,18 +13,21 @@ var iconStyle = {
 
 function InformationHover(props) {
   return (
-    <div className="text-left">
+    <div className="text-left" style={divStyle}>
       <label
         className="text-left"
         data-toggle="tooltip"
         data-container="body"
         data-placement="auto right"
-        title={"Information"}>
+        data-html="true">
           <span
             className="glyphicon glyphicon-info-sign"
             style={iconStyle}>
           </span>
       </label>
+      <div className="hidden">
+        {props.children}
+      </div>
     </div>
   );
 }
