@@ -46,6 +46,11 @@ var AppContainer = React.createClass({
     WebAPIUtils.getWorkspaceList();
     WebAPIUtils.getModelList();
     WebAPIUtils.getDatasetList();
+
+    this.enableTooltips();
+  },
+  componentDidUpdate: function () {
+    this.enableTooltips();
   },
   componentWillUnmount: function () {
     WorkspaceStore.removeChangeListener(this.onWorkspaceChange);
@@ -60,6 +65,9 @@ var AppContainer = React.createClass({
   },
   onDataChange: function () {
     this.setState(getStateFromDataStore());
+  },
+  enableTooltips: function () {
+    $("[data-toggle='tooltip']").tooltip();
   },
   render: function () {
     var hasWorkspace = this.state.workspace.name !== undefined;

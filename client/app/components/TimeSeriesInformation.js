@@ -4,7 +4,8 @@ var InformationWrapper = require("./InformationWrapper");
 function TimeSeriesInformation() {
   return (
     <InformationWrapper>
-      Time series information
+      <h4>Time Series Analysis Plot</h4>
+      Information about time series analysis plot
     </InformationWrapper>
   );
 }

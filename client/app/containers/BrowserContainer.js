@@ -84,12 +84,6 @@ var BrowserContainer = React.createClass({
     PhaseColorStore.removeChangeListener(this.onPhaseColorChange);
     PhaseOverlayStore.removeChangeListener(this.onPhaseOverlayChange);
   },
-  componentDidUpdate: function () {
-    // Enable tooltips
-    // Placing here to capture any elements that might not have been drawn
-    // before data was loaded
-    $("[data-toggle='tooltip']").tooltip();
-  },
   onDataChange: function () {
     // XXX: I think this is necessary because we are getting state from a store
     // here that is already being retrieved in a parent component. Try passing
