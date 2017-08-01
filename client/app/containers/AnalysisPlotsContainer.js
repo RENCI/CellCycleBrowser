@@ -22,7 +22,7 @@ var AnalysisPlotsContainer = React.createClass({
     this.setState(getStateFromStore());
   },
   render: function() {
-    return <AnalysisPlots AnalysisPlots={this.state.AnalysisPlots}/>
+    return <AnalysisPlots plots={this.state.AnalysisPlots}/>
   }
 });
 

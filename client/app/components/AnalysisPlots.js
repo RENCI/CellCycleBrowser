@@ -14,7 +14,7 @@ function component(plot, i, a) {
 }
 
 function AnalysisPlots(props) {
-  var plots = props.AnalysisPlots.filter(function (plot) {
+  var plots = props.plots.filter(function (plot) {
     return plot.selected;
   });
 
@@ -26,7 +26,7 @@ function AnalysisPlots(props) {
 }
 
 AnalysisPlots.propsTypes = {
-  AnalysisPlots: PropTypes.arrayOf(PropTypes.object).isRequired
+  plots: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
 module.exports = AnalysisPlots;
