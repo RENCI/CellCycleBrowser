@@ -435,6 +435,7 @@ module.exports = function() {
           });
 
       svg.select(".nodePaths").selectAll(".nodePath")
+          .style("stroke", species ? "#999" : "#eee")
           .style("visibility", function(d) {
             return !species ? null :
                    d[0].species === species ? "visible" : "hidden";
@@ -476,7 +477,7 @@ module.exports = function() {
           .style("fill", "none")
           .style("stroke", "#eee")
           .style("stroke-width", function(d) {
-            return nodeRadiusScale(d[0].species.value);
+            return nodeRadiusScale(d[0].species.value) / 2;
           })
           .style("stroke-linecap", "round")
         .merge(nodePath)
@@ -643,7 +644,7 @@ module.exports = function() {
             xPos: x,
             yPos: y,
             fx: x,
-            fy: y
+            fy: y + j * 100
           };
         });
       });
@@ -681,8 +682,8 @@ module.exports = function() {
           nodes.forEach(function(e) {
             if (d.name === e.name) {
               d.x = e.x;
-              d.fy = null;
               d.y = e.y;
+              d.fy = null;
             }
           });
         });
