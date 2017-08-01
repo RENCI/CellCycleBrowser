@@ -67,8 +67,6 @@ function DatasetSelect(props) {
     );
   }
 
-  var popoverContentClass = "datasetSelectPopoverContent";
-
   return (
     <div>
       <strong>
@@ -86,13 +84,11 @@ function DatasetSelect(props) {
         Select <span className="caret"></span>
       </button>
       <div className="hidden">
-        <div className={popoverContentClass}>
-          <table className={"table table-hover table-condensed"}>
-            <tbody>
-              {props.options.map(option)}
-            </tbody>
-          </table>
-        </div>
+        <table className={"table table-hover table-condensed"}>
+          <tbody>
+            {props.options.map(option)}
+          </tbody>
+        </table>
       </div>
     </div>
   );
