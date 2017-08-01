@@ -13,6 +13,8 @@ var TrackSort = require("../components/TrackSort");
 var Phases = require("../components/Phases");
 var Track = require("../components/Track");
 var TrackDividerContainer = require("../containers/TrackDividerContainer");
+var InformationHoverContainer = require("./InformationHoverContainer");
+var BrowserInformation = require("../components/BrowserInformation");
 var d3 = require("d3");
 
 var refName = "ref";
@@ -137,6 +139,9 @@ var BrowserContainer = React.createClass({
 
     return (
       <div ref={refName}>
+        <InformationHoverContainer>
+          <BrowserInformation />
+        </InformationHoverContainer>
         <BrowserControls />
         <TimeScaleArea
           timeExtent={this.state.data.timeExtent}

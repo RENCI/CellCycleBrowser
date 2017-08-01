@@ -3,7 +3,8 @@ var PropTypes = React.PropTypes;
 
 var divStyle = {
   position: "absolute",
-  marginLeft: 2
+  marginTop: 4,
+  marginLeft: 5
 };
 
 var iconStyle = {

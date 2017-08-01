@@ -11,9 +11,6 @@ var divStyle = {
 };
 
 var VisualizationContainer = React.createClass ({
-  propTypes: {
-    info: PropTypes.element
-  },
   getInitialState: function () {
     return {
       width: 100,
@@ -32,15 +29,6 @@ var VisualizationContainer = React.createClass ({
   },
   componentWillReceiveProps: function () {
     this.onResize();
-  },
-  componentDidUpdate: function () {
-    // Activate information hover
-    var trigger = $(ReactDOM.findDOMNode(this)).find("[data-toggle='tooltip']").first();
-    var content = trigger.next().first();
-
-    trigger.tooltip({
-       title: content.html()
-    });
   },
   getSize: function () {
     var node = ReactDOM.findDOMNode(this);
@@ -61,7 +49,6 @@ var VisualizationContainer = React.createClass ({
 
     return (
       <div style={divStyle}>
-        {this.props.info}
         {React.cloneElement(this.props.children, props)}
       </div>
     );

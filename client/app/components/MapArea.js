@@ -2,21 +2,21 @@ var React = require("react");
 var MapControls = require("./MapControls");
 var VisualizationContainer = require("../containers/VisualizationContainer");
 var MapVisualizationContainer = require("../containers/MapVisualizationContainer");
-var InformationHover = require("./InformationHover");
+var InformationHoverContainer = require("../containers/InformationHoverContainer");
 var MapInformation = require("./MapInformation");
 
 function MapArea() {
-  // Create information hover for map
-  var information = <InformationHover>
-    <MapInformation />
-  </InformationHover>
-
   return (
     <div>
       <MapControls />
-      <VisualizationContainer info={information}>
-        <MapVisualizationContainer />
-      </VisualizationContainer>
+      <div>
+        <InformationHoverContainer>
+          <MapInformation />
+        </InformationHoverContainer>
+        <VisualizationContainer>
+          <MapVisualizationContainer />
+        </VisualizationContainer>
+      </div>
     </div>
   );
 }

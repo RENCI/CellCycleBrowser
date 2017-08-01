@@ -1,19 +1,19 @@
 var React = require("react");
 var VisualizationContainer = require("../containers/VisualizationContainer");
 var GrowthCurveContainer = require("../containers/GrowthCurveContainer");
-var InformationHover = require("./InformationHover");
+var InformationHoverContainer = require("../containers/InformationHoverContainer");
 var GrowthCurveInformation = require("./GrowthCurveInformation");
 
 function GrowthCurveArea(props) {
-  // Create information hover for growth curve
-  var information = <InformationHover>
-    <GrowthCurveInformation />
-  </InformationHover>
-
   return (
-    <VisualizationContainer info={information}>
-      <GrowthCurveContainer />
-    </VisualizationContainer>
+    <div>
+      <InformationHoverContainer>
+        <GrowthCurveInformation />
+      </InformationHoverContainer>
+      <VisualizationContainer>
+        <GrowthCurveContainer />
+      </VisualizationContainer>
+    </div>
   );
 }
 
