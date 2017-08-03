@@ -6,14 +6,33 @@ var ViewActionCreators = require("../actions/ViewActionCreators");
 var d3 = require("d3");
 var d3ScaleChromatic = require("d3-scale-chromatic");
 
+var tabStyle = {
+  marginTop: 5
+};
+
+var labelStyle = {
+  width: 80,
+  marginRight: 5
+};
+
+var valueStyle = {
+  width: 20,
+  marginRight: 5
+};
+
+function valueLabel(value) {
+  return Math.round(value.value);
+}
+
 function SpeciesPhaseSliders(props) {
   // TODO: Move to global settings somewhere
   var colorScale = d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
       .domain(props.phases);
 
   // TODO: Move to global settings somewhere
+  var epsilon = Number.EPSILON;
   var linkColorScale = d3.scaleLinear()
-      .domain([-10, -Number.EPSILON, 0, Number.EPSILON, 10])
+      .domain([-10, -epsilon, 0, epsilon, 10])
       .range(["#00d", "#bbd", "#ccc", "#dbb", "#d00"]);
 
   var tabs = props.phases.map(function(phase, i) {
@@ -30,7 +49,7 @@ function SpeciesPhaseSliders(props) {
 
       return (
         <div key={j} style={{display: "flex"}}>
-          <div className="text-right" style={{width: 80, marginRight: 5}}>
+          <div className="text-right" style={labelStyle}>
             <label>{species + "→" + phase}</label>
           </div>
           <div style={{flex: 1}}>
@@ -40,6 +59,9 @@ function SpeciesPhaseSliders(props) {
               value={value.value}
               handleColorScale={linkColorScale}
               onChange={handleChange} />
+          </div>
+          <div className="text-right" style={valueStyle}>
+            <label>{valueLabel(value)}</label>
           </div>
         </div>
       );
@@ -104,7 +126,7 @@ function SpeciesPhaseSliders(props) {
     <Collapsible
       id="speciesPhaseSliders"
       label="Species→phase interactions">
-        <ul className="nav nav-tabs" style={{marginTop: 5}}>
+        <ul className="nav nav-tabs" style={{tabStyle}}>
           {tabs.map(function(tab) { return tab.tab; })}
         </ul>
         <div className="tab-content">

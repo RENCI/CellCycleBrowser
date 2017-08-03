@@ -10,6 +10,11 @@ var divStyle = {
 var labelStyle = {
   width: 50,
   marginRight: 5
+}
+
+var valueStyle = {
+  width: 30,
+  marginLeft: 5
 };
 
 function valueLabel(value) {
@@ -50,7 +55,7 @@ function ExpressionLevelSliders(props) {
             value={value.exponent}
             onChange={handleChange} />
         </div>
-        <div className="text-right" style={labelStyle}>
+        <div className="text-right" style={valueStyle}>
           <label>{valueLabel(value)}</label>
         </div>
       </div>

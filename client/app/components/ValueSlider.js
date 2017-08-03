@@ -79,6 +79,7 @@ function ValueSlider(props) {
             cx={toSlider(props.initialValue)}
             r={initialValueRadius}
             style={initialValueStyle}
+            onMouseDown={ignoreEvent}
             onClick={ignoreEvent}
             onDoubleClick={props.onDoubleClick} />
           <circle
