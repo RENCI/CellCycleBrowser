@@ -20,8 +20,7 @@ function TrackSortButton(props) {
       onClick={props.onClick}>
         <span
           className="glyphicon glyphicon-sort"
-          style={iconStyle}>
-        </span>
+          style={iconStyle} />
     </label>
   );
 }

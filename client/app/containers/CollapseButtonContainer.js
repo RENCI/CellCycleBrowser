@@ -24,8 +24,8 @@ var CollapseButtonContainer = React.createClass ({
         targetId={this.props.targetId}
         onClick={this.handleClick}>
           {this.state.collapse ?
-            <span className="glyphicon glyphicon-plus"></span> :
-            <span className="glyphicon glyphicon-minus"></span>}
+            <span className="glyphicon glyphicon-plus" /> :
+            <span className="glyphicon glyphicon-minus" />}
       </CollapseButton>
     );
   }

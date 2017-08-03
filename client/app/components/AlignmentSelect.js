@@ -30,8 +30,7 @@ function AlignmentSelect(props) {
               <input type="radio" />
               <span
                 className="glyphicon glyphicon-align-left"
-                style={iconStyle}>
-              </span>
+                style={iconStyle} />
           </label>
           <label
             className={classes("justify")}
@@ -44,8 +43,7 @@ function AlignmentSelect(props) {
               <input type="radio" />
               <span
                 className="glyphicon glyphicon-align-justify"
-                style={iconStyle}>
-              </span>
+                style={iconStyle} />
           </label>
           <label
             className={classes("right")}
@@ -58,8 +56,7 @@ function AlignmentSelect(props) {
               <input type="radio" />
               <span
                 className="glyphicon glyphicon-align-right"
-                style={iconStyle}>
-              </span>
+                style={iconStyle} />
           </label>
         </div>
       </div>

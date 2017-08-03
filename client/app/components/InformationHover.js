@@ -23,8 +23,7 @@ function InformationHover(props) {
         data-html="true">
           <span
             className="glyphicon glyphicon-info-sign"
-            style={iconStyle}>
-          </span>
+            style={iconStyle} />
       </label>
       <div className="hidden">
         {props.children}

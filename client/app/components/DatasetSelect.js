@@ -27,7 +27,7 @@ function DatasetSelect(props) {
       <tr key={i} className={labelClass}>
         <td style={tdStyle}>
           {option.default ?
-            <span className="glyphicon glyphicon-star"></span> :
+            <span className="glyphicon glyphicon-star" /> :
             null}
         </td>
         <td style={tdStyle}>

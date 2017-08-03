@@ -17,7 +17,7 @@ function SimulationError(props) {
         <button type="button" className="close" data-dismiss="alert">
           <span>&times;</span>
         </button>
-        <span className="glyphicon glyphicon-exclamation-sign" style={iconStyle}></span>
+        <span className="glyphicon glyphicon-exclamation-sign" style={iconStyle} />
         {props.error}
       </div>
     </div>

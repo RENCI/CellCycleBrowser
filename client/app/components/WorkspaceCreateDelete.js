@@ -1,6 +1,10 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
+var iconStyle = {
+  color: "#aaa"
+};
+
 function WorkspaceCreateDelete(props) {
   return (
     <div className="btn-group">
@@ -11,7 +15,9 @@ function WorkspaceCreateDelete(props) {
         data-container="body"
         data-placement="auto top"
         title="Create workspace">
-          <span className="glyphicon glyphicon-plus-sign"></span>
+          <span
+            className="glyphicon glyphicon-plus-sign"
+            style={iconStyle} />
       </a>
       <a
         href="/delete_profile/login/"
@@ -20,7 +26,9 @@ function WorkspaceCreateDelete(props) {
         data-container="body"
         data-placement="auto top"
         title="Delete workspace">
-        <span className="glyphicon glyphicon-minus-sign"></span>
+        <span
+          className="glyphicon glyphicon-minus-sign"
+          style={iconStyle} />
       </a>
     </div>
   );
