@@ -39,7 +39,7 @@ module.exports = function() {
           .domain([-10, -Number.EPSILON, 0, Number.EPSILON, 10])
           .range(["#00d", "#bbd", "#ccc", "#dbb", "#d00"]),
       nodeRadiusScale = d3.scaleLinear()
-          .range([3, 12]),
+          .range([1, 12]),
 
       // Start with empty selection
       svg = d3.select(),
