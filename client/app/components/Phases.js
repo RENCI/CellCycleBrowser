@@ -17,18 +17,21 @@ var outerStyle = {
   marginBottom: 10
 };
 
-var labelStyle = {
-  marginTop: 5,
-  marginBottom: 5
-};
-
 var nameStyle = {
-  fontWeight: "bold",
-  marginLeft: 10
+  marginTop: 5,
+  marginBottom: 5,
+  marginLeft: 10,
+  fontWeight: "bold"
 };
 
 var checkboxStyle = {
+  flex: 1,
   marginTop: 4
+};
+
+var sourceStyle = {
+  marginTop: 5,
+  marginRight: 30
 };
 
 var rowStyle = {
@@ -76,19 +79,21 @@ function Phases(props) {
   return (
     <div className="text-left" style={outerStyle}>
       <div className="row">
-        <div className="col-xs-4" style={labelStyle}>
-          <span style={nameStyle}>Phases</span>
-        </div>
-        <div className="col-xs-4 text-center" style={checkboxStyle}>
-          <label className="checkbox-inline">
-            <input
-              type="checkbox"
-              onChange={handleShowPhaseOverlayChange} />
-            Show overlay
-          </label>
-        </div>
-        <div className="col-xs-3 text-right" style={labelStyle}>
-          Simulation
+        <div className="col-xs-12" style={{display: "flex"}}>
+          <div style={nameStyle}>
+            Phases
+          </div>
+          <div className="text-center" style={checkboxStyle}>
+            <label className="checkbox-inline">
+              <input
+                type="checkbox"
+                onChange={handleShowPhaseOverlayChange} />
+              Show overlay
+            </label>
+          </div>
+          <div className="text-right" style={sourceStyle}>
+            Simulation
+          </div>
         </div>
       </div>
       <div>

@@ -19,30 +19,29 @@ var outerStyle = {
 
 var dragStyle = {
   cursor: "ns-resize"
-}
-
-var labelStyle = {
-  marginTop: 5,
-  marginBottom: 5,
-  marginLeft: 10
 };
 
 var nameStyle = {
+  marginTop: 5,
+  marginLeft: 10,
   fontWeight: "bold"
 };
 
 var featureStyle = {
-  fontStyle: "italic"
+  fontStyle: "italic",
+  fontWeight: "normal"
 };
 
 var sourceStyle = {
-  float: "right"
+  flex: 1,
+  marginTop: 5,
+  marginRight: 10
 };
 
 var colorStyle = {
   padding: 4,
   height: 32,
-  width: "100%"
+  width: 20
 };
 
 var rowStyle = {
@@ -147,14 +146,12 @@ function Track(props) {
         style={dragStyle}
         draggable="true"
         onDragStart={onDragStart}>
-          <div className="col-xs-11">
-            <div style={labelStyle}>
-              <span style={nameStyle}>{props.track.species}</span>
+          <div className="col-xs-12" style={{display: "flex"}}>
+            <div style={nameStyle}>
+              {props.track.species}
               {featureSpan}
-              <span style={sourceStyle}>{props.track.source}</span>
             </div>
-          </div>
-          <div className ="col-xs-1">
+            <div className="text-right" style={sourceStyle}>{props.track.source}</div>
             <div style={colorStyle}>
               <div
                 style={sourceColorStyle}
