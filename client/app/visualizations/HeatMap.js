@@ -92,12 +92,10 @@ module.exports = function () {
         .range([0, height]);
 
     var heightScale = d3.scaleLinear()
-        .domain(dataExtent)
         //.range([0, yScale.bandwidth()]);
         .range([yScale.bandwidth(), yScale.bandwidth()]);
 
     var colorScale = d3.scaleLinear()
-        .domain(dataExtent)
         .range(["white", "black"]);
 
     // Draw the visualization
@@ -149,6 +147,9 @@ module.exports = function () {
       row.exit().remove();
 
       function cells(row, rowIndex) {
+        heightScale.domain(dataExtent[rowIndex]);
+        colorScale.domain(dataExtent[rowIndex]);
+
         // Bind cell data
         var cell = d3.select(this).selectAll(".cell")
             .data(function(d) { return d; });
@@ -218,7 +219,7 @@ module.exports = function () {
 
         function toString(d) {
           var s = d.toString();
-          
+
           if (s.indexOf(".") !== -1) {
             s = d.toFixed(2);
           }

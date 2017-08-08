@@ -2,10 +2,8 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
 var TraceToggleButtons = require("./TraceToggleButtons");
-var HeatLineContainer = require("../containers/HeatLineContainer");
 var HeatMapContainer = require("../containers/HeatMapContainer");
 var Constants = require("../constants/Constants");
-
 
 var outerStyle = {
   backgroundColor: "white",
@@ -36,6 +34,11 @@ var sourceStyle = {
   flex: 1,
   marginTop: 5,
   marginRight: 10
+};
+
+var scaleAllStyle = {
+  marginTop: 5,
+  marginRight: 5
 };
 
 var colorStyle = {
@@ -139,6 +142,22 @@ function Track(props) {
     averagePhases = [props.activePhases];
   }
 
+  var averageExtent = props.scaleAll ? [props.track.dataExtent] :
+    [extent(props.track.average.values.map(function(v) { return v.value; }))];
+
+  var dataExtent = props.track.traces.map(function (trace) {
+    if (props.scaleAll) {
+      return props.track.dataExtent;
+    }
+    else {
+      return extent(trace.values.map(function (v) { return v.value; }));
+    }
+  });
+
+  function extent(values) {
+    return [Math.min.apply(null, values), Math.max.apply(null, values)];
+  }
+
   return (
     <div className="text-left" style={outerStyle}>
       <div
@@ -152,6 +171,19 @@ function Track(props) {
               {featureSpan}
             </div>
             <div className="text-right" style={sourceStyle}>{props.track.source}</div>
+            <div style={scaleAllStyle}>
+              <label
+                className={"btn btn-default btn-xs" + (!props.scaleAll ? " active" : "")}
+                data-toggle="tooltip"
+                data-container="body"
+                data-placement="auto top"
+                title={"Rescale"}
+                onClick={props.onClickScaleAll}>
+                  <span
+                    className="glyphicon glyphicon-equalizer"
+                    style={{color: "#aaa"}} />
+              </label>
+            </div>
             <div style={colorStyle}>
               <div
                 style={sourceColorStyle}
@@ -184,7 +216,7 @@ function Track(props) {
           <div className="col-xs-10" style={visColumnStyle}>
             <HeatMapContainer
               data={[props.track.average.values]}
-              dataExtent={props.track.dataExtent}
+              dataExtent={averageExtent}
               phases={averagePhases}
               timeExtent={props.timeExtent}
               activePhase={props.activePhase}
@@ -205,7 +237,7 @@ function Track(props) {
           <div className="col-xs-10" style={collapseColumnStyle}>
             <HeatMapContainer
               data={props.track.traces.map(function (d) { return d.values; })}
-              dataExtent={props.track.dataExtent}
+              dataExtent={dataExtent}
               phases={phases}
               timeExtent={props.timeExtent}
               activePhase={props.activePhase}
@@ -227,7 +259,9 @@ Track.propTypes = {
   activePhases: PropTypes.arrayOf(PropTypes.object).isRequired,
   activePhase: PropTypes.string.isRequired,
   phaseColorScale: PropTypes.func.isRequired,
-  phaseOverlayOpacity: PropTypes.number.isRequired
+  phaseOverlayOpacity: PropTypes.number.isRequired,
+  scaleAll: PropTypes.bool.isRequired,
+  onClickScaleAll: PropTypes.func.isRequired
 };
 
 module.exports = Track;

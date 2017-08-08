@@ -7,9 +7,9 @@ var HeatMap = require("../visualizations/HeatMap");
 var HeatMapContainer = React.createClass({
   propTypes: {
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
-    dataExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
-    timeExtent: PropTypes.arrayOf(PropTypes.number),
+    dataExtent: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
     phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+    timeExtent: PropTypes.arrayOf(PropTypes.number),
     activePhase: PropTypes.string.isRequired,
     phaseColorScale: PropTypes.func.isRequired,
     phaseOverlayOpacity: PropTypes.number.isRequired,
