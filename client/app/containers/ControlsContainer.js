@@ -33,7 +33,8 @@ var ControlsContainer = React.createClass ({
   getInitialState: function () {
     return {
       controls: SimulationControlStore.getControls(),
-      activePhase: PhaseStore.getPhase()
+      activePhase: PhaseStore.getPhase(),
+      collapseToggle: false
     };
   },
   componentDidMount: function () {
@@ -50,12 +51,17 @@ var ControlsContainer = React.createClass ({
   onPhaseStoreChange: function () {
     this.setState(getStateFromPhaseStore());
   },
+  handleCollapse: function () {
+    this.setState({
+      collapseToggle: !this.state.collapseToggle
+    });
+  },
   handleSimulationParameterChange: function (data) {
     ViewActionCreators.changeSimulationParameter(
       data.parameter, data.value
     );
   },
-  handleSpeciesSliderChange: function (data) {
+  handleExpressionLevelSliderChange: function (data) {
     ViewActionCreators.changeSpeciesExpressionLevel(
       data.species, data.value
     );
@@ -87,19 +93,22 @@ var ControlsContainer = React.createClass ({
         <ExpressionLevelSliders
           species={this.state.controls.species}
           values={this.state.controls.speciesExpressionLevels}
-          onChange={this.handleSpeciesSliderChange} />
+          onChange={this.handleExpressionLevelSliderChange}
+          onCollapse={this.handleCollapse} />
         <SpeciesPhaseSliders
           species={this.state.controls.species}
           phases={this.state.controls.phases}
           matrix={this.state.controls.speciesPhaseMatrix}
           activePhase={this.state.activePhase}
-          onChange={this.handleSpeciesPhaseSliderChange} />
+          onChange={this.handleSpeciesPhaseSliderChange}
+          onCollapse={this.handleCollapse} />
         <SpeciesSpeciesSliders
           species={this.state.controls.species}
           phases={this.state.controls.phases}
           matrices={this.state.controls.speciesSpeciesMatrices}
           activePhase={this.state.activePhase}
-          onChange={this.handleSpeciesSpeciesSliderChange} />
+          onChange={this.handleSpeciesSpeciesSliderChange}
+          onCollapse={this.handleCollapse} />
       </div>
     );
   }

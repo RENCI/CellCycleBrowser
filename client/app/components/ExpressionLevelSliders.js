@@ -65,7 +65,8 @@ function ExpressionLevelSliders(props) {
   return (
     <Collapsible
       id="ExpressionLevelSliders"
-      label="Expression levels">
+      label="Expression levels"
+      onCollapse={props.onCollapse}>
         <div style={divStyle}>
           {sliders}
         </div>
@@ -76,7 +77,8 @@ function ExpressionLevelSliders(props) {
 ExpressionLevelSliders.propTypes = {
   species: PropTypes.arrayOf(PropTypes.string).isRequired,
   values: PropTypes.object.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  onCollapse: PropTypes.func.isRequired
 };
 
 module.exports = ExpressionLevelSliders;

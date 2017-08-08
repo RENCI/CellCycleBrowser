@@ -162,7 +162,8 @@ function SpeciesSpeciesSliders(props) {
   return (
     <Collapsible
       id="speciesSpeciesSliders"
-      label="Species→species interactions">
+      label="Species→species interactions"
+      onCollapse={props.onCollapse}>
         <ul className="nav nav-tabs" style={tabStyle}>
           {tabs.map(function(tab) { return tab.tab; })}
         </ul>
@@ -177,7 +178,8 @@ SpeciesSpeciesSliders.propTypes = {
   species: PropTypes.arrayOf(PropTypes.string).isRequired,
   phases: PropTypes.arrayOf(PropTypes.string).isRequired,
   matrices: PropTypes.object.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  onCollapse: PropTypes.func.isRequired
 };
 
 module.exports = SpeciesSpeciesSliders;

@@ -19,7 +19,8 @@ function Collapsible(props) {
         className="btn btn-default"
         style={buttonStyle}
         data-toggle="collapse"
-        data-target={"#" + props.id}>
+        data-target={"#" + props.id}
+        onClick={props.onCollapse}>
           {props.label}
       </button>
       <div className="in" id={props.id} style={collapseStyle}>
@@ -31,11 +32,8 @@ function Collapsible(props) {
 
 Collapsible.propTypes = {
   id: PropTypes.string.isRequired,
-  label: PropTypes.string
-};
-
-Collapsible.defaultProps = {
-  label: ""
+  label: PropTypes.string,
+  onCollapse: PropTypes.func
 };
 
 module.exports = Collapsible;

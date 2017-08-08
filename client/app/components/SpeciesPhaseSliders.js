@@ -125,7 +125,8 @@ function SpeciesPhaseSliders(props) {
   return (
     <Collapsible
       id="speciesPhaseSliders"
-      label="Species→phase interactions">
+      label="Species→phase interactions"
+      onCollapse={props.onCollapse}>
         <ul className="nav nav-tabs" style={{tabStyle}}>
           {tabs.map(function(tab) { return tab.tab; })}
         </ul>
@@ -141,7 +142,8 @@ SpeciesPhaseSliders.propTypes = {
   phases: PropTypes.arrayOf(PropTypes.string).isRequired,
   matrix: PropTypes.object.isRequired,
   activePhase: PropTypes.string.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  onCollapse: PropTypes.func.isRequired
 };
 
 module.exports = SpeciesPhaseSliders;
