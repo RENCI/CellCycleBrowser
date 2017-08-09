@@ -1,7 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
-var PhaseLineContainer = require("../containers/PhaseLineContainer");
 var PhaseMapContainer = require("../containers/PhaseMapContainer");
 
 var rowStyle = {
