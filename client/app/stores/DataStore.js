@@ -26,6 +26,9 @@ function updateData() {
   // Keep track of selected traces
   var selectedTraces = saveSelectedTraces(data.tracks);
 
+  // Kep track of rescale traces
+  var rescaleTraces = saveRescaleTraces(data.tracks);
+
   // Create tracks
   data.tracks = createTracks(data.tracks, datasets, simulationOutput);
 
@@ -46,6 +49,9 @@ function updateData() {
   // Apply selected traces
   applySelectedTraces(data.tracks, selectedTraces);
 
+  // Apply rescale traces
+  applyRescaleTraces(data.tracks, rescaleTraces);
+
   // XXX: Switch to generating ids and using that for matching via a selected store?
   function trackId(track) {
     return track.source + ":" + track.species + ":" + track.feature;
@@ -57,9 +63,7 @@ function updateData() {
     tracks.forEach(function (track) {
       var id = trackId(track);
 
-      if (!selectedTraces[id]) {
-        selectedTraces[id] = {};
-      }
+      selectedTraces[id] = {};
 
       [track.average].concat(track.traces).forEach(function (trace) {
         selectedTraces[id][trace.name] = trace.selected;
@@ -67,6 +71,19 @@ function updateData() {
     });
 
     return selectedTraces;
+  }
+
+  function saveRescaleTraces(tracks) {
+    var rescaleTraces = {};
+
+    tracks.forEach(function (track) {
+      var id = trackId(track);
+
+      rescaleTraces[id] = typeof track.rescaleTraces !== "undefined" ?
+                          track.rescaleTraces : false;
+    });
+
+    return rescaleTraces;
   }
 
   function applySelectedTraces(tracks, selectedTraces) {
@@ -78,6 +95,15 @@ function updateData() {
           trace.selected = selectedTraces[id][trace.name] === true;
         }
       });
+    });
+  }
+
+  function applyRescaleTraces(tracks, rescaleTraces) {
+    tracks.forEach(function (track) {
+      var id = trackId(track);
+
+      track.rescaleTraces = typeof rescaleTraces[id] !== "undefined" ?
+                            rescaleTraces[id] : false;
     });
   }
 
@@ -535,6 +561,10 @@ function selectTrace(trace, selected) {
   trace.selected = selected;
 }
 
+function rescaleTraces(track) {
+  track.rescaleTraces = !track.rescaleTraces;
+}
+
 var DataStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
     this.emit(CHANGE_EVENT);
@@ -607,6 +637,11 @@ DataStore.dispatchToken = AppDispatcher.register(function (action) {
 
     case Constants.SELECT_TRACE:
       selectTrace(action.trace, action.selected);
+      DataStore.emitChange();
+      break;
+
+    case Constants.RESCALE_TRACES:
+      rescaleTraces(action.track);
       DataStore.emitChange();
       break;
   }

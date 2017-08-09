@@ -69,6 +69,12 @@ module.exports = {
       selected: selected
     });
   },
+  rescaleTraces: function (track) {
+    AppDispatcher.dispatch({
+      actionType: Constants.RESCALE_TRACES,
+      track: track
+    });
+  },
   selectTrajectory: function (trajectory) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_TRAJECTORY,

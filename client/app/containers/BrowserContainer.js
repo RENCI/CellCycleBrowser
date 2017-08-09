@@ -11,7 +11,7 @@ var BrowserControls = require("../components/BrowserControls");
 var TimeScaleArea = require("../components/TimeScaleArea");
 var TrackSort = require("../components/TrackSort");
 var Phases = require("../components/Phases");
-var TrackContainer = require("../containers/TrackContainer");
+var Track = require("../components/Track");
 var TrackDividerContainer = require("../containers/TrackDividerContainer");
 var InformationHoverContainer = require("./InformationHoverContainer");
 var BrowserInformation = require("../components/BrowserInformation");
@@ -118,7 +118,7 @@ var BrowserContainer = React.createClass({
         <div key={i}>
           <TrackDividerContainer
             index={track.index} />
-          <TrackContainer
+          <Track
             track={track}
             phases={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}
             phaseAverage={this.state.showPhaseOverlay ? this.state.data.phaseAverage: []}

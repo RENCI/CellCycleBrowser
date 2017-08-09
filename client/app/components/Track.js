@@ -4,6 +4,7 @@ var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
 var TraceToggleButtons = require("./TraceToggleButtons");
 var HeatMapContainer = require("../containers/HeatMapContainer");
 var Constants = require("../constants/Constants");
+var ViewActionCreators = require("../actions/ViewActionCreators");
 
 var outerStyle = {
   backgroundColor: "white",
@@ -36,7 +37,7 @@ var sourceStyle = {
   marginRight: 10
 };
 
-var scaleAllStyle = {
+var rescaleTracesStyle = {
   marginTop: 5,
   marginRight: 5
 };
@@ -142,11 +143,11 @@ function Track(props) {
     averagePhases = [props.activePhases];
   }
 
-  var averageExtent = props.scaleAll ? [props.track.dataExtent] :
+  var averageExtent = !props.track.rescaleTraces ? [props.track.dataExtent] :
     [extent(props.track.average.values.map(function(v) { return v.value; }))];
 
   var dataExtent = props.track.traces.map(function (trace) {
-    if (props.scaleAll) {
+    if (!props.track.rescaleTraces) {
       return props.track.dataExtent;
     }
     else {
@@ -156,6 +157,10 @@ function Track(props) {
 
   function extent(values) {
     return [Math.min.apply(null, values), Math.max.apply(null, values)];
+  }
+
+  function handleRescaleTracesClick() {
+    ViewActionCreators.rescaleTraces(props.track);
   }
 
   return (
@@ -171,14 +176,14 @@ function Track(props) {
               {featureSpan}
             </div>
             <div className="text-right" style={sourceStyle}>{props.track.source}</div>
-            <div style={scaleAllStyle}>
+            <div style={rescaleTracesStyle}>
               <label
-                className={"btn btn-default btn-xs" + (!props.scaleAll ? " active" : "")}
+                className={"btn btn-default btn-xs" + (props.track.rescaleTraces ? " active" : "")}
                 data-toggle="tooltip"
                 data-container="body"
                 data-placement="auto top"
-                title={"Rescale"}
-                onClick={props.onClickScaleAll}>
+                title={"Rescale traces"}
+                onClick={handleRescaleTracesClick}>
                   <span
                     className="glyphicon glyphicon-equalizer"
                     style={{color: "#aaa"}} />
@@ -259,9 +264,7 @@ Track.propTypes = {
   activePhases: PropTypes.arrayOf(PropTypes.object).isRequired,
   activePhase: PropTypes.string.isRequired,
   phaseColorScale: PropTypes.func.isRequired,
-  phaseOverlayOpacity: PropTypes.number.isRequired,
-  scaleAll: PropTypes.bool.isRequired,
-  onClickScaleAll: PropTypes.func.isRequired
+  phaseOverlayOpacity: PropTypes.number.isRequired
 };
 
 module.exports = Track;
