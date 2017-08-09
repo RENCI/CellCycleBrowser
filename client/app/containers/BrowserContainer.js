@@ -10,7 +10,7 @@ var PhaseOverlayStore = require("../stores/PhaseOverlayStore");
 var BrowserControls = require("../components/BrowserControls");
 var TimeScaleArea = require("../components/TimeScaleArea");
 var TrackSort = require("../components/TrackSort");
-var Phases = require("../components/Phases");
+var PhaseTrack = require("../components/PhaseTrack");
 var Track = require("../components/Track");
 var TrackDividerContainer = require("../containers/TrackDividerContainer");
 var InformationHoverContainer = require("./InformationHoverContainer");
@@ -140,7 +140,7 @@ var BrowserContainer = React.createClass({
         <TimeScaleArea
           timeExtent={this.state.data.timeExtent}
           alignment={this.state.alignment} />
-        <Phases
+        <PhaseTrack
           phases={this.state.data.phases}
           phaseAverage={this.state.data.phaseAverage}
           timeExtent={this.state.data.timeExtent}
