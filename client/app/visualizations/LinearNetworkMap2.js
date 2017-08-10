@@ -2,7 +2,7 @@ var d3 = require("d3");
 
 module.exports = function() {
       // Size
-  var margin = { top: 20, left: 30, bottom: 80, right: 30 },
+  var margin = { top: 20, left: 20, bottom: 30, right: 20 },
       width = 200,
       height = 200,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -16,17 +16,6 @@ module.exports = function() {
       // Layout
       // XXX: Would be nice to use a separate simualtion for each phases,
       // but it seems that only one simulation can be active at a time
-      force = d3.forceSimulation()
-          .force("x", d3.forceX(function(d) {
-            return d.xPos;
-          }).strength(1))
-          .force("y", d3.forceY(function(d) {
-            return d.yPos;
-          }).strength(0.2))
-          .force("collide", d3.forceCollide(function(d) {
-            return nodeRadiusScale(d.species.value) + nodeRadiusScale.range()[1] / 2;
-          }))
-          .on("tick", updateForce),
       nodePathLine = d3.line()
           .curve(d3.curveCardinal)
           .x(function(d) { return d.x; })
@@ -69,9 +58,7 @@ module.exports = function() {
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Groups for layout
-      g.append("g").attr("class", "info");
       g.append("g").attr("class", "phases");
-      g.append("g").attr("class", "nodePaths");
       g.append("g").attr("class", "links");
       g.append("g").attr("class", "nodes");
       g.append("g").attr("class", "nodeLabels");
@@ -80,84 +67,6 @@ module.exports = function() {
 
       draw();
     });
-  }
-
-  function updateForce() {
-    if (!data) return;
-
-    svg.select(".links").selectAll(".link")
-        .attr("d", function(d) {
-          var reduction = nodeRadiusScale(d.target.species.value);
-//          reduction += +d3.select(this).style("stroke-width").slice(0, -2) * 3 / 2;
-          // XXX: This is half of the marker size. Should make a variable.
-          reduction += 10;
-
-          var vx = d.target.x - d.source.x,
-              vy = d.target.y - d.source.y,
-              mag = Math.sqrt(vx * vx + vy * vy);
-
-          vx /= mag;
-          vy /= mag;
-
-          var temp = vx;
-          vx = -vy;
-          vy = temp;
-
-          var s = -0.5,
-              x = (d.source.x + d.target.x) / 2,
-              y =  (d.source.y + d.target.y) / 2,
-              middle = {
-                x: x + vx * mag * s,
-                y: y + vy * mag * s
-              };
-
-          middle = adjustDistance(d.target, middle, -reduction);
-          var target = adjustDistance(middle, d.target, reduction);
-
-          return "M" + d.source.x + "," + d.source.y
-               + "S" + middle.x + "," + middle.y
-               + " " + target.x + "," + target.y;
-
-          function adjustDistance(p1, p2, r) {
-            var vx = p2.x - p1.x,
-                vy = p2.y - p1.y,
-                d = Math.sqrt(vx * vx + vy * vy);
-
-            vx /= d;
-            vy /= d;
-
-            d -= r;
-
-            return {
-              x: p1.x + vx * d,
-              y: p1.y + vy *d
-            };
-          }
-        });
-/*
-        .each(function(d, i) {
-          var length = this.getTotalLength(),
-              // Could get width from link width scale, but would need to make global
-              width = +d3.select(this).style("stroke-width").slice(0, -2);
-
-          // Make length shorter to match marker
-          d3.select(this)
-              .style("stroke-dasharray", length - width * 1.5 + 1);
-        });
-*/
-
-    svg.select(".nodes").selectAll(".node")
-        .attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y });
-
-    svg.select(".nodePaths").selectAll(".nodePath")
-        .attr("d", nodePathLine);
-/*
-    svg.select(".nodeLabels").selectAll(".nodeLabels > g")
-        .attr("transform", function(d) {
-          return "translate(" + d.x + "," + (d.y - nodeRadiusScale(d.value)) + ")";
-        });
-*/
   }
 
   function draw() {
@@ -186,7 +95,7 @@ module.exports = function() {
         .paddingInner(0.15);
 
     var phaseSpacing = yScale.step() - yScale.bandwidth(),
-        phaseWidth = phaseSpacing / 2,
+        phaseWidth = 20,
         axisY = (yScale.bandwidth() + phaseSpacing / 2);
 
     var xScale = d3.scaleLinear()
@@ -196,12 +105,10 @@ module.exports = function() {
 
     // Draw the visualization
     processData();
-    drawInfo();
     drawPhases();
     drawLinks();
     drawNodes();
-    drawNodePaths();
-    drawNodeLabels();
+//    drawNodeLabels();
 
     // Update tooltips
 /*
@@ -216,42 +123,6 @@ module.exports = function() {
       placement: "auto top",
       animation: false
     });
-
-    function drawInfo() {
-      var labels = ["Inhibit", "Promote"];
-
-      var xScale = d3.scaleBand()
-          .domain(labels)
-          .range([0, innerWidth()]);
-
-      // Labels
-      var label = svg.select(".info").selectAll(".infoLabel")
-          .data(labels);
-
-      label.enter().append("text")
-          .attr("class", "infoLabel")
-          .style("font-size", "small")
-          .style("text-anchor", "middle")
-        .merge(label)
-          .text(function(d) { return d; })
-          .attr("x", function(d) {
-            return xScale(d) + xScale.bandwidth() / 2;
-          });
-
-      // Divider line
-      var divider = svg.select(".info").selectAll(".divider")
-          .data([0]);
-
-      divider.enter().append("line")
-          .attr("class", "divider")
-          .style("stroke", "#ccc")
-          .style("stroke-dasharray", "5 5")
-        .merge(divider)
-          .attr("x1", innerWidth() / 2)
-          .attr("y1", 0)
-          .attr("x2", innerWidth() / 2)
-          .attr("y2", innerHeight());
-    }
 
     function drawPhases() {
       // Bind phase data
@@ -291,22 +162,15 @@ module.exports = function() {
             .attr("class", "phase");
 
         phaseEnter.append("rect")
-            .style("fill", fill)
-            .style("stroke", "#999");
+            .style("fill", "none")
+            .style("stroke", phaseColor)
+            .style("stroke-width", 2);
 
         phaseEnter.append("text")
-            .attr("dx", function(d, i) {
-              return i === 0 ? "-.4em" : ".4em";
-            })
+            .attr("alignment-baseline", "middle")
             .style("fill", "black")
             .style("font-size", "x-small")
-            .style("text-anchor", function(d, i) {
-              return i === 0 ? "end" : "start";
-            });
-
-        phaseEnter.append("path")
-            .style("fill", "#eee")
-            .style("stroke", "#999");
+            .style("text-anchor", "middle");
 
         // Enter + update
         var phaseUpdate = phaseEnter.merge(phase)
@@ -321,27 +185,8 @@ module.exports = function() {
         // Label
         phaseUpdate.select("text")
             .text(d.name)
-            .attr("x", function(d, i) {
-              return i === 0 ? 0 : phaseWidth;
-            })
+            .attr("x", phaseWidth / 2)
             .attr("y", yScale.bandwidth() / 2);
-
-        // Arrow
-        var tw = phaseWidth,
-            th = phaseSpacing / 2;
-
-        var arrowPath =
-            "M " + (-tw / 2) + " " + -th / 2 +
-            " L " + 0 + " " + (th / 2) +
-            " L " + (tw / 2) + " " + (-th / 2) +
-            " z";
-
-        var arrowTransform =
-            "translate(" + (phaseWidth / 2) + "," + axisY + ")";
-
-        phaseUpdate.select("path")
-            .attr("d", arrowPath)
-            .attr("transform", arrowTransform);
 
         // Draw axis line
         var axis = g.selectAll(".axis")
@@ -353,12 +198,12 @@ module.exports = function() {
             .style("stroke", "#999")
             .style("stroke-dasharray", "5 5")
           .merge(axis)
-            .attr("x1", xScale.range()[0])
+            .attr("x1", phaseWidth)
             .attr("y1", axisY)
-            .attr("x2", xScale.range()[1])
+            .attr("x2", innerWidth() - phaseWidth)
             .attr("y2", axisY);
 
-        function fill(d) {
+        function phaseColor(d) {
           return phaseColorScale(d.name);
         }
 
@@ -369,7 +214,7 @@ module.exports = function() {
       }
 
       function highlightPhase(selection, highlight) {
-        selection.select("rect")
+        selection.selectAll("rect")
             .style("stroke-width", highlight ? 2 : null);
       }
     }
@@ -690,18 +535,6 @@ module.exports = function() {
       }
 
       nodes = newNodes;
-
-      force.nodes(nodes);
-
-      force
-          .alpha(1)
-          .restart()
-          .tick();
-
-      // Free the y coordinates
-      nodes.forEach(function(d) {
-        d.fy = null;
-      });
     }
   }
 

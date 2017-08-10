@@ -6,7 +6,7 @@ var PhaseColorStore = require("../stores/PhaseColorStore");
 var PhaseStore = require("../stores/PhaseStore");
 var d3 = require("d3");
 //var NetworkMap = require("../visualizations/NetworkMap");
-var LinearNetworkMap = require("../visualizations/LinearNetworkMap");
+var LinearNetworkMap2 = require("../visualizations/LinearNetworkMap2");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
 function createModel(controls) {
@@ -78,7 +78,7 @@ var MapVisualizationContainer = React.createClass ({
         .on("selectPhase", this.handleSelectPhase)
         .on("selectSpecies", this.handleSelectSpecies);
 */
-    this.linearNetworkMap = LinearNetworkMap()
+    this.linearNetworkMap = LinearNetworkMap2()
         .on("selectPhase", this.handleSelectPhase)
         .on("selectSpecies", this.handleSelectSpecies);
 
