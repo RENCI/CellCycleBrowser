@@ -98,11 +98,8 @@ module.exports = function() {
         ])
         .range([0, innerWidth()]);
 
-    var yScales = data.tracks.map(function(d) {
-      return d3.scaleLinear()
-          .domain(d.dataExtent)
-          .range([innerHeight(), 0]);
-    });
+    var yScale = d3.scaleLinear()
+        .range([innerHeight(), 0]);
 
     function curveColor(d) {
       return d.track.color;
@@ -241,7 +238,10 @@ module.exports = function() {
               (d.track.feature ? " - " + d.track.feature : "") + "<br>" +
               d.name);
 
-        var yScale = yScales[d.track.index];
+        // Set y scale to extent for this trace, or this track
+        yScale.domain(d.track.rescaleTraces ?
+            d3.extent(d.curve.map(function(d) { return d[1]; })) :
+            d.track.dataExtent);
 
         var line = d3.line()
             .curve(d3.curveLinear)
