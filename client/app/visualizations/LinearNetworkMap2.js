@@ -388,7 +388,7 @@ module.exports = function() {
         .select("path")
           .attr("d", function(d) {
             return d.value < 0 ?
-                   "M 0 0 L 2.5 0 L 2.5 10 L 0 10 z" :
+                   "M 0 0 L 4 0 L 4 10 L 0 10 z" :
                    "M 0 0 L 5 5 L 0 10 z";
           })
           .style("fill", function(d) { return interactionColorScale(d.value); });
@@ -460,7 +460,7 @@ module.exports = function() {
       function linkPath(d) {
         var reduction = d.target.species ? nodeRadiusScale(d.target.species.value) : 0;
 //          reduction += +d3.select(this).style("stroke-width").slice(0, -2) * 3 / 2;
-        reduction += d.value < 0 ? markerSize / 4 : markerSize / 2;
+        reduction += d.value < 0 ? markerSize * 0.8 / 2 : markerSize / 2;
 
         var vx = d.target.x - d.source.x,
             vy = d.target.y - d.source.y,
@@ -496,7 +496,7 @@ module.exports = function() {
           vx /= d;
           vy /= d;
 
-          d -= r;
+          d -= r + 2;
 
           return {
             x: p1.x + vx * d,
