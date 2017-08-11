@@ -21,7 +21,7 @@ function valueLabel(value) {
   var x = value.exponent;
   var v = x > value.min ? Math.round(Math.pow(2, Math.abs(x))) : 0;
 
-  return x < 0 && x !== value.min ?
+  return x < 0 && x !== value.min && v !== 1 ?
          <div dangerouslySetInnerHTML={{__html: fraction(1, v)}}></div> :
          v + "x";
 
