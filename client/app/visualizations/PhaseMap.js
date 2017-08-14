@@ -9,7 +9,7 @@ module.exports = function () {
       data,
       timeExtent,
       activeIndex = "",
-      activePhase = "",
+      drawLabels = false,
 
       // Scales
       colorScale,
@@ -18,7 +18,7 @@ module.exports = function () {
       svg = d3.select(),
 
       // Event dispatcher
-      dispatcher = d3.dispatch("selectTrajectory", "selectPhase");
+      dispatcher = d3.dispatch("selectTrajectory");
 
   function phaseMap(selection) {
     selection.each(function(d) {
@@ -35,43 +35,10 @@ module.exports = function () {
             d3.event.preventDefault();
           });
 
-      // Background
-      svgEnter.append("rect")
-          .attr("width", "100%")
-          .attr("height", "100%")
-          .style("visibility", "hidden")
-          .style("pointer-events", "all")
-          .on("click", function() {
-            // Clear selection
-            dispatcher.call("selectTrajectory", this, {
-              id: null,
-              phases: []
-            });
-
-            dispatcher.call("selectPhase", this, "");
-          });
-
       var g = svgEnter.append("g");
 
       // Groups for layout
       g.append("g").attr("class", "rows");
-      g.append("g").attr("class", "borders");
-
-      g.append("rect")
-          .attr("class", "highlight")
-          .style("shape-rendering", "crispEdges")
-          .style("pointer-events", "none")
-          .style("fill", "none")
-          .style("stroke", "none")
-          .style("stroke-width", 2);
-
-      g.append("rect")
-          .attr("class", "highlight2")
-          .style("shape-rendering", "crispEdges")
-          .style("pointer-events", "none")
-          .style("fill", "none")
-          .style("stroke", "none")
-          .style("stroke-width", 2);
 
       svg = svgEnter.merge(svg);
 
@@ -94,7 +61,6 @@ module.exports = function () {
         .range([0, height]);
 
     // Draw the visualization
-    drawBorders();
     drawPhaseMap();
 
     // Update toltips
@@ -104,27 +70,9 @@ module.exports = function () {
       animation: false
     });
 
-    function drawBorders() {
-      // Borders
-      var border = svg.select(".borders").selectAll(".border")
-          .data(function(d) { return d; });
-
-      border.enter().append("rect")
-          .attr("class", "border")
-          .style("shape-rendering", "crispEdges")
-          .style("fill", "none")
-          .style("stroke", "#ccc")
-          .style("stroke-width", 1)
-        .merge(border).transition()
-          .attr("x", function(d) { return xScale(d[0].start); })
-          .attr("y", function(d, i) { return yScale(i); })
-          .attr("width", function(d) {
-            return xScale(d[d.length -1].stop) - xScale(d[0].start);
-          })
-          .attr("height", yScale.bandwidth());
-    }
-
     function drawPhaseMap() {
+      var strokeWidth = 2;
+
       // Rows
       var row = svg.select(".rows").selectAll(".row")
           .data(function(d) { return d; });
@@ -139,26 +87,9 @@ module.exports = function () {
 
       row.exit().remove();
 
-      // Highlight border
-      svg.select(".highlight2")
-          .style("stroke", "none");
-
-      svg.select(".borders").selectAll(".border")
-        .filter(function(d, i) {
-          return activeIndex === i.toString()
-        })
-        .each(function() {
-          var border = d3.select(this);
-
-          svg.select(".highlight2")
-              .attr("x", border.attr("x"))
-              .attr("y", border.attr("y"))
-              .attr("width", border.attr("width"))
-              .attr("height", border.attr("height"))
-              .style("stroke", "#999");
-        });
-
       function cells(row, rowIndex) {
+        var rowSelected = activeIndex === rowIndex.toString();
+
         var format = d3.format(".1f");
 
         // Bind cell data
@@ -170,71 +101,85 @@ module.exports = function () {
             .attr("class", "cell")
             .attr("shape-rendering", "crispEdges")
             .attr("data-toggle", "tooltip")
-            .style("stroke-width", 2)
-            .on("mouseover", function(d, i) {
-              var rect = d3.select(this);
-
-              svg.select(".highlight")
-                  .attr("x", rect.attr("x"))
-                  .attr("y", yScale(rowIndex))
-                  .attr("width", rect.attr("width"))
-                  .attr("height", rect.attr("height"))
-                  .style("stroke", highlightColor(colorScale(d.name)));
-
-              function highlightColor(color) {
-                var hcl = d3.hcl(color);
-                var l = hcl.l > 50 ? hcl.l - 25 : hcl.l + 25;
-
-                return d3.hcl(0, 0, l);
-              }
+            .style("stroke-width", strokeWidth)
+            .style("rx", yScale.bandwidth() / 4)
+            .style("ry", yScale.bandwidth() / 4)
+            .on("mouseover", function() {
+              d3.select(this.parentNode).selectAll(".cell")
+                  .attr("x", function(d) { return x(d) + strokeWidth / 2; })
+                  .attr("y", strokeWidth)
+                  .attr("width", function(d) { return width(d) - strokeWidth})
+                  .attr("height", yScale.bandwidth() - strokeWidth * 2)
+                  .style("stroke-width", strokeWidth * 2);
             })
-            .on("mouseout", function() {
-              // Remove border
-              svg.select(".highlight")
-                  .style("stroke", "none");
+            .on("mouseout", function () {
+              d3.select(this.parentNode).selectAll(".cell")
+                  .attr("x", x)
+                  .attr("y", strokeWidth / 2)
+                  .attr("width", width)
+                  .attr("height", yScale.bandwidth() - strokeWidth)
+                  .style("stroke-width", strokeWidth);
             })
-            .on("click", function(d) {
+            .on("click", function() {
+              var selected = activeIndex === rowIndex.toString();
+
+              // Select or unselect
               dispatcher.call("selectTrajectory", this, {
-                id: rowIndex.toString(),
-                phases: d3.select(this.parentNode).datum()
+                id: selected ? null : rowIndex.toString(),
+                phases: selected ? [] : d3.select(this.parentNode).datum()
               });
-
-              dispatcher.call("selectPhase", this, d.name);
             })
-          .merge(cell)//.transition()
+          .merge(cell)
             .attr("x", x)
+            .attr("y", strokeWidth / 2)
             .attr("width", width)
-            .attr("height", yScale.bandwidth())
+            .attr("height", yScale.bandwidth() - strokeWidth)
             .attr("data-original-title", label)
             .style("fill", function(d) {
-              return activeIndex === rowIndex.toString() ||
-                     activePhase === d.name ?
-                     highlightColor(colorScale(d.name)) :
-                     colorScale(d.name);
+              return rowSelected ? colorScale(d.name) : "white";
+            })
+            .style("fill-opacity", rowSelected ? 0.25 : 1)
+            .style("stroke", function(d) {
+              return colorScale(d.name);
             });
 
         // Exit
-        cell.exit()//.transition()
-            //.style("fill", "white")
-            .remove();
+        cell.exit().remove();
+
+        if (drawLabels) {
+          // Bind cell data
+          var label = d3.select(this).selectAll(".phaseLabel")
+              .data(function(d) { return d; });
+
+          // Enter + update
+          label.enter().append("text")
+              .attr("class", "phaseLabel")
+              .attr("alignment-baseline", "middle")
+              .style("font-size", "x-small")
+              .style("text-anchor", "middle")
+              .style("pointer-events", "none")
+            .merge(label)
+              .text(function(d) { return d.name; })
+              .attr("x", labelX)
+              .attr("y", yScale.bandwidth() / 2);
+
+          label.exit().remove();
+
+          function labelX(d) {
+            return xScale(d.start) + (xScale(d.stop) - xScale(d.start)) / 2;
+          }
+        }
 
         function x(d) {
-          return xScale(d.start);
+          return xScale(d.start) + strokeWidth / 2;
         }
 
         function width(d) {
-          return xScale(d.stop) - xScale(d.start);
+          return xScale(d.stop) - xScale(d.start) - strokeWidth;
         }
 
         function label(d) {
           return d.name + ": " + format(d.stop - d.start) + "h";
-        }
-
-        function highlightColor(color) {
-          var hcl = d3.hcl(color);
-          hcl.c *= 2;
-
-          return hcl;
         }
       }
     }
@@ -270,9 +215,9 @@ module.exports = function () {
     return phaseMap;
   };
 
-  phaseMap.activePhase = function(_) {
-    if (!arguments.length) return activePhase;
-    activePhase = _;
+  phaseMap.drawLabels = function(_) {
+    if (!arguments.length) return drawLabels;
+    drawLabels = _;
     return phaseMap;
   };
 
@@ -283,7 +228,6 @@ module.exports = function () {
   };
 
   phaseMap.on("selectTrajectory", phaseMap.selectTrajectory);
-  phaseMap.on("selectPhase", phaseMap.selectPhase);
 
   return phaseMap;
 }

@@ -10,7 +10,6 @@ var PhaseMapContainer = React.createClass({
     data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     timeExtent: PropTypes.arrayOf(PropTypes.number),
     activeIndex: PropTypes.string.isRequired,
-    activePhase: PropTypes.string.isRequired,
     colorScale: PropTypes.func.isRequired,
     height: PropTypes.number.isRequired,
     isAverage: PropTypes.bool
@@ -21,8 +20,7 @@ var PhaseMapContainer = React.createClass({
   getInitialState: function () {
     // Create visualization function
     this.phaseMap = PhaseMap()
-        .on("selectTrajectory", this.handleSelectTrajectory)
-        .on("selectPhase", this.handleSelectPhase);
+        .on("selectTrajectory", this.handleSelectTrajectory);
 
     return null;
   },
@@ -53,7 +51,7 @@ var PhaseMapContainer = React.createClass({
         .colorScale(props.colorScale)
         .timeExtent(props.timeExtent)
         .activeIndex(props.activeIndex)
-        .activePhase(props.activePhase)
+        .drawLabels(props.isAverage)
 
     // Draw phase map
     d3.select(this.getNode())
@@ -71,14 +69,11 @@ var PhaseMapContainer = React.createClass({
     return ReactDOM.findDOMNode(this);
   },
   handleSelectTrajectory: function(trajectory) {
-    if (this.props.isAverage) {
+    if (trajectory.id && this.props.isAverage) {
       trajectory.id = "average";
     }
 
     ViewActionCreators.selectTrajectory(trajectory);
-  },
-  handleSelectPhase: function(phase) {
-    ViewActionCreators.selectPhase(phase);
   },
   render: function() {
     // Create style here to update height and avoid mutated style warning

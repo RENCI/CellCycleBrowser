@@ -98,7 +98,6 @@ function TrackBody(props) {
               dataExtent={averageExtent}
               phases={averagePhases}
               timeExtent={props.timeExtent}
-              activePhase={props.activePhase}
               phaseColorScale={props.phaseColorScale}
               phaseOverlayOpacity={props.phaseOverlayOpacity}
               height={averageHeight} />
@@ -119,7 +118,6 @@ function TrackBody(props) {
               dataExtent={dataExtent}
               phases={phases}
               timeExtent={props.timeExtent}
-              activePhase={props.activePhase}
               phaseColorScale={props.phaseColorScale}
               phaseOverlayOpacity={props.phaseOverlayOpacity}
               height={props.track.traces.length * traceHeight} />
@@ -135,7 +133,6 @@ TrackBody.propTypes = {
   phaseAverage: PropTypes.arrayOf(PropTypes.object).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   activePhases: PropTypes.arrayOf(PropTypes.object).isRequired,
-  activePhase: PropTypes.string.isRequired,
   phaseColorScale: PropTypes.func.isRequired,
   phaseOverlayOpacity: PropTypes.number.isRequired
 };

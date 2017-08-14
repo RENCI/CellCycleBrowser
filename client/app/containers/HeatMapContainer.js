@@ -10,7 +10,6 @@ var HeatMapContainer = React.createClass({
     dataExtent: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
     phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
     timeExtent: PropTypes.arrayOf(PropTypes.number),
-    activePhase: PropTypes.string.isRequired,
     phaseColorScale: PropTypes.func.isRequired,
     phaseOverlayOpacity: PropTypes.number.isRequired,
     height: PropTypes.number.isRequired
@@ -46,7 +45,6 @@ var HeatMapContainer = React.createClass({
         .timeExtent(props.timeExtent)
         .phases(props.phases)
         .phaseColorScale(props.phaseColorScale)
-        .activePhase(props.activePhase)
         .phaseOverlayOpacity(props.phaseOverlayOpacity);
 
     // Draw heat map

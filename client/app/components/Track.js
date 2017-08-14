@@ -28,7 +28,6 @@ Track.propTypes = {
   phaseAverage: PropTypes.arrayOf(PropTypes.object).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   activePhases: PropTypes.arrayOf(PropTypes.object).isRequired,
-  activePhase: PropTypes.string.isRequired,
   phaseColorScale: PropTypes.func.isRequired,
   phaseOverlayOpacity: PropTypes.number.isRequired
 };

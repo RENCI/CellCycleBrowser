@@ -10,7 +10,6 @@ module.exports = function () {
       dataExtent,
       timeExtent,
       phases,
-      activePhase,
       phaseOverlayOpacity,
 
       // Scales
@@ -102,7 +101,6 @@ module.exports = function () {
     drawBorders();
     drawHeatMap();
     drawPhaseLines();
-//    drawPhases();
 
     // Update toltips
     $(".heatMap .cell").tooltip({
@@ -344,121 +342,6 @@ module.exports = function () {
         }
       }
     }
-
-    function drawPhases() {
-      // Phase data
-      var phaseRow = svg.select(".phaseRows").selectAll(".phaseRow")
-          .data(phases);
-
-      phaseRow.enter().append("g")
-          .attr("class", "phaseRow")
-        .merge(phaseRow)
-          .attr("transform", function(d, i) {
-            return "translate(0," + yScale(i) + ")";
-          })
-          .each(drawRow);
-
-      phaseRow.exit().remove();
-
-      function drawRow(row, rowIndex) {
-        // Bind phase data
-        var phase = d3.select(this).selectAll(".phase")
-            .data(function(d) { return d; });
-
-        // Enter
-        var phaseEnter = phase.enter().append("g")
-            .attr("class", "phase")
-            .style("pointer-events", "none")
-            .style("fill", phaseColor)
-            .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); })
-            .style("fill-opacity", phaseOverlayOpacity)
-            .style("stroke-opacity", phaseOverlayOpacity);
-
-        phaseEnter.append("line")
-            .attr("x1", x1)
-            .attr("y1", yScale.bandwidth() / 2)
-            .attr("x2", x2)
-            .attr("y2", yScale.bandwidth() / 2)
-            .style("fill", "none")
-            .style("stroke", phaseColor)
-            .style("stroke-width", strokeWidth)
-            .style("stroke-dasharray", "5,5");
-
-        phaseEnter.append("line")
-            .attr("x1", x1)
-            .attr("y1", yScale.bandwidth() / 2)
-            .attr("x2", x2)
-            .attr("y2", yScale.bandwidth() / 2)
-            .style("fill", "none")
-            .style("stroke", function (d) {
-              return d3.color(phaseColor(d)).darker();
-            })
-            .style("stroke-width", strokeWidth)
-            .style("stroke-dasharray", "5,5")
-            .style("stroke-dashoffset", 5);
-
-        phaseEnter.append("circle")
-            .attr("cx", x1)
-            .attr("cy", yScale.bandwidth() / 2)
-            .attr("r", r)
-            .attr("clip-path", "url(#clipLeft)");
-
-        phaseEnter.append("circle")
-            .attr("cx", x2)
-            .attr("cy", yScale.bandwidth() / 2)
-            .attr("r", r)
-            .attr("clip-path", "url(#clipRight)");
-
-        // Update
-        var phaseUpdate = phaseEnter.merge(phase)
-            .style("fill", phaseColor)
-            .style("stroke", function(d) { return d3.color(phaseColor(d)).darker(); })
-            .style("fill-opacity", phaseOverlayOpacity)
-            .style("stroke-opacity", phaseOverlayOpacity);
-
-        // XXX: This is ugly, should probably just bind data for lines above since there are two
-        phaseUpdate.selectAll("line")
-          .data(function(d) { return [d, d]; })
-            .attr("x1", x1)
-            .attr("y1", yScale.bandwidth() / 2)
-            .attr("x2", x2)
-            .attr("y2", yScale.bandwidth() / 2)
-            .style("stroke-width", strokeWidth);
-
-        // XXX: This is ugly, should probably just bind data for circles above since there are two
-        phaseUpdate.selectAll("circle")
-          .data(function(d) { return [d, d]; })
-            .attr("cx", function(d, i) { return i === 0 ? x1(d) : x2(d); })
-            .attr("cy", yScale.bandwidth() / 2)
-            .attr("r", r);
-
-        // Exit
-        phase.exit().transition()
-            .style("fill-opacity", 0)
-            .style("stroke-opacity", 0)
-            .remove();
-
-        function x1(d) {
-          return xScale(d.start);
-        }
-
-        function x2(d) {
-          return xScale(d.stop);
-        }
-
-        function phaseColor(d) {
-          return phaseColorScale(d.name);
-        }
-
-        function r(d) {
-          return d.name === activePhase ? 5 : 3;
-        };
-
-        function strokeWidth(d) {
-          return d.name === activePhase ? 3 : 1;
-        }
-      }
-    }
   }
 
   heatMap.width = function(_) {
@@ -494,12 +377,6 @@ module.exports = function () {
   heatMap.phaseColorScale = function(_) {
     if (!arguments.length) return phaseColorScale;
     phaseColorScale = _;
-    return heatMap;
-  };
-
-  heatMap.activePhase = function(_) {
-    if (!arguments.length) return activePhase;
-    activePhase = _;
     return heatMap;
   };
 

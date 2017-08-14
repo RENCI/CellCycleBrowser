@@ -48,7 +48,6 @@ function PhaseTrack(props) {
             data={[props.phaseAverage]}
             timeExtent={props.timeExtent}
             activeIndex={props.activeTrajectory.id === "average" ? "0" : "-1"}
-            activePhase={props.activePhase}
             colorScale={props.colorScale}
             height={averageHeight}
             isAverage={true} />
@@ -61,7 +60,6 @@ function PhaseTrack(props) {
             timeExtent={props.timeExtent}
             activeIndex={props.activeTrajectory.id && props.activeTrajectory !== "average" ?
                          props.activeTrajectory.id : "-1"}
-            activePhase={props.activePhase}
             colorScale={props.colorScale}
             height={props.phases.length * trackHeight} />
         </div>
@@ -75,7 +73,6 @@ PhaseTrack.propTypes = {
   phaseAverage: PropTypes.arrayOf(PropTypes.object).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   activeTrajectory: PropTypes.object.isRequired,
-  activePhase: PropTypes.string.isRequired,
   colorScale: PropTypes.func.isRequired
 };
 

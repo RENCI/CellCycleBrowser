@@ -224,9 +224,9 @@ module.exports = function() {
 
         phaseEnter.append("text")
             .attr("alignment-baseline", "middle")
-            .style("fill", "black")
             .style("font-size", "x-small")
-            .style("text-anchor", "middle");
+            .style("text-anchor", "middle")
+            .style("pointer-events", "none");
 
         // Enter + update
         var phaseUpdate = phaseEnter.merge(phase)
