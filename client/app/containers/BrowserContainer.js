@@ -99,7 +99,7 @@ var BrowserContainer = React.createClass({
 
     if (tracks.length < 1) return null;
 
-    var phases = !this.state.activeTrajectory ? [] :
+    var phases = !this.state.showPhaseOverlay || !this.state.activeTrajectory ? [] :
              this.state.activeTrajectory === "average" ?
              this.state.data.phaseAverage :
              this.state.data.phases[this.state.activeTrajectory];
