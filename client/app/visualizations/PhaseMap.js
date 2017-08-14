@@ -105,36 +105,29 @@ module.exports = function () {
             .style("rx", yScale.bandwidth() / 4)
             .style("ry", yScale.bandwidth() / 4)
             .on("mouseover", function() {
-              var selected = activeIndex === rowIndex.toString();
+              var selected = activeIndex === rowIndex.toString(),
+                  w = 1;
 
               if (!selected) {
                 d3.select(this.parentNode).selectAll(".cell")
-                    .style("fill", function(d) {
-                      return highlightColor(d, 0.2);
-                    });
-                }
-/*
-                  .attr("x", function(d) { return x(d) + strokeWidth / 2; })
-                  .attr("y", strokeWidth)
-                  .attr("width", function(d) { return width(d) - strokeWidth})
-                  .attr("height", yScale.bandwidth() - strokeWidth * 2)
-                  .style("stroke-width", strokeWidth * 2);
-*/
+                  .attr("x", function(d) { return x(d) + w / 2; })
+                  .attr("y", strokeWidth / 2 + w / 2)
+                  .attr("width", function(d) { return width(d) - w})
+                  .attr("height", yScale.bandwidth() - strokeWidth - w)
+                  .style("stroke-width", strokeWidth + w);
+              }
             })
             .on("mouseout", function () {
               var selected = activeIndex === rowIndex.toString();
 
               if (!selected) {
                 d3.select(this.parentNode).selectAll(".cell")
-                    .style("fill", "white");
-                }
-/*
                   .attr("x", x)
                   .attr("y", strokeWidth / 2)
                   .attr("width", width)
                   .attr("height", yScale.bandwidth() - strokeWidth)
                   .style("stroke-width", strokeWidth);
-*/
+              }
             })
             .on("click", function() {
               var selected = activeIndex === rowIndex.toString();

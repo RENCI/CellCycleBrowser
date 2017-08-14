@@ -118,7 +118,8 @@ var MapVisualizationContainer = React.createClass ({
     this.linearNetworkMap
         .width(props.width)
         .height(props.width * this.state.model.phases.length * 0.5)
-        .phaseColorScale(state.phaseColorScale);
+        .phaseColorScale(state.phaseColorScale)
+        .selectPhase(state.phase);
 
     d3.select(ReactDOM.findDOMNode(this))
         .datum(state.model)

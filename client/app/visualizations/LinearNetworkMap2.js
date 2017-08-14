@@ -12,6 +12,7 @@ module.exports = function() {
       data,
       nodes,
       links,
+      currentPhase,
 
       // Layout
       // XXX: Would be nice to use a separate simualtion for each phases,
@@ -218,8 +219,7 @@ module.exports = function() {
             .attr("class", "phase");
 
         phaseEnter.append("rect")
-            .style("fill", "white")
-            .style("stroke", phaseColor)
+            .style("fill-opacity", 0.4)
             .style("stroke-width", 2);
 
         phaseEnter.append("text")
@@ -233,6 +233,8 @@ module.exports = function() {
             .attr("transform", transform);
 
         phaseUpdate.select("rect")
+            .style("fill", fill)
+            .style("stroke", phaseColor)
             .attr("width", phaseWidth)
             .attr("height", yScale.bandwidth())
             .attr("rx", phaseWidth / 2)
@@ -261,6 +263,10 @@ module.exports = function() {
 
         function phaseColor(d) {
           return phaseColorScale(d.name);
+        }
+
+        function fill(d) {
+          return d.name === currentPhase ? phaseColor(d) : "white";
         }
 
         function transform(d, i) {
@@ -617,7 +623,7 @@ module.exports = function() {
     if (data) {
       var index = data.phases.map(function(d) { return d.name; }).indexOf(_);
 
-      currentPhase = index !== -1 ? data.phases[index] : null;
+      currentPhase = index !== -1 ? _ : null;
 
       draw();
     }
