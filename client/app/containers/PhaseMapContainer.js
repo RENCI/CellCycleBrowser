@@ -69,8 +69,8 @@ var PhaseMapContainer = React.createClass({
     return ReactDOM.findDOMNode(this);
   },
   handleSelectTrajectory: function(trajectory) {
-    if (trajectory.id && this.props.isAverage) {
-      trajectory.id = "average";
+    if (trajectory && this.props.isAverage) {
+      trajectory = "average";
     }
 
     ViewActionCreators.selectTrajectory(trajectory);

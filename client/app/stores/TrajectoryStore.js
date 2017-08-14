@@ -6,10 +6,7 @@ var Constants = require("../constants/Constants");
 var CHANGE_EVENT = "change";
 
 // Trajectory
-var trajectory = {
-  id: null,
-  phases: []
-};
+var trajectory = null;
 
 var TrajectoryStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
@@ -34,10 +31,7 @@ AppDispatcher.register(function (action) {
       break;
 
     case Constants.RECEIVE_SIMULATION_OUTPUT:
-      trajectory = {
-        id: null,
-        phases: []
-      };
+      trajectory = null;
       TrajectoryStore.emitChange();
       break;
   }

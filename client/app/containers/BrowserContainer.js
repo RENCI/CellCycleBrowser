@@ -99,6 +99,11 @@ var BrowserContainer = React.createClass({
 
     if (tracks.length < 1) return null;
 
+    var phases = !this.state.activeTrajectory ? [] :
+             this.state.activeTrajectory === "average" ?
+             this.state.data.phaseAverage :
+             this.state.data.phases[this.state.activeTrajectory];
+
     // Create GUI components for each track
     var trackComponents = tracks.map(function(track, i) {
       return (
@@ -110,7 +115,7 @@ var BrowserContainer = React.createClass({
             phases={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}
             phaseAverage={this.state.showPhaseOverlay ? this.state.data.phaseAverage: []}
             timeExtent={this.state.data.timeExtent}
-            activePhases={this.state.showPhaseOverlay ? this.state.activeTrajectory.phases : []}
+            activePhases={phases}
             phaseColorScale={this.state.phaseColorScale}
             phaseOverlayOpacity={this.state.phaseOverlayOpacity} />
         </div>

@@ -32,7 +32,7 @@ PhaseTrack.propTypes = {
   phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   phaseAverage: PropTypes.arrayOf(PropTypes.object).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
-  activeTrajectory: PropTypes.object.isRequired,
+  activeTrajectory: PropTypes.string,
   colorScale: PropTypes.func.isRequired
 };
 

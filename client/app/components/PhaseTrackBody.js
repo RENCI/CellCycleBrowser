@@ -31,7 +31,7 @@ var collapseColumnStyle = {
   borderLeft: "1px solid #ccc"
 };
 
-function PhaseTrack(props) {
+function PhaseTrackBody(props) {
   var collapseId = "phaseTrackCollapse";
 
   var averageHeight = 32;
@@ -47,7 +47,7 @@ function PhaseTrack(props) {
           <PhaseMapContainer
             data={[props.phaseAverage]}
             timeExtent={props.timeExtent}
-            activeIndex={props.activeTrajectory.id === "average" ? "0" : "-1"}
+            activeIndex={props.activeTrajectory === "average" ? "0" : "-1"}
             colorScale={props.colorScale}
             height={averageHeight}
             isAverage={true} />
@@ -58,8 +58,8 @@ function PhaseTrack(props) {
           <PhaseMapContainer
             data={props.phases}
             timeExtent={props.timeExtent}
-            activeIndex={props.activeTrajectory.id && props.activeTrajectory !== "average" ?
-                         props.activeTrajectory.id : "-1"}
+            activeIndex={props.activeTrajectory && props.activeTrajectory !== "average" ?
+                         props.activeTrajectory : "-1"}
             colorScale={props.colorScale}
             height={props.phases.length * trackHeight} />
         </div>
@@ -68,12 +68,12 @@ function PhaseTrack(props) {
   );
 }
 
-PhaseTrack.propTypes = {
+PhaseTrackBody.propTypes = {
   phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
   phaseAverage: PropTypes.arrayOf(PropTypes.object).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
-  activeTrajectory: PropTypes.object.isRequired,
+  activeTrajectory: PropTypes.string,
   colorScale: PropTypes.func.isRequired
 };
 
-module.exports = PhaseTrack;
+module.exports = PhaseTrackBody;

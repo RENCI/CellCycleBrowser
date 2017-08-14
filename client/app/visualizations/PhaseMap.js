@@ -133,10 +133,7 @@ module.exports = function () {
               var selected = activeIndex === rowIndex.toString();
 
               // Select or unselect
-              dispatcher.call("selectTrajectory", this, {
-                id: selected ? null : rowIndex.toString(),
-                phases: selected ? [] : d3.select(this.parentNode).datum()
-              });
+              dispatcher.call("selectTrajectory", this, selected ? null : rowIndex.toString());
             })
           .merge(cell)
             .attr("x", x)
