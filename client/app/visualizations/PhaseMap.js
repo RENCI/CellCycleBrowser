@@ -105,20 +105,36 @@ module.exports = function () {
             .style("rx", yScale.bandwidth() / 4)
             .style("ry", yScale.bandwidth() / 4)
             .on("mouseover", function() {
-              d3.select(this.parentNode).selectAll(".cell")
+              var selected = activeIndex === rowIndex.toString();
+
+              if (!selected) {
+                d3.select(this.parentNode).selectAll(".cell")
+                    .style("fill", function(d) {
+                      return highlightColor(d, 0.2);
+                    });
+                }
+/*
                   .attr("x", function(d) { return x(d) + strokeWidth / 2; })
                   .attr("y", strokeWidth)
                   .attr("width", function(d) { return width(d) - strokeWidth})
                   .attr("height", yScale.bandwidth() - strokeWidth * 2)
                   .style("stroke-width", strokeWidth * 2);
+*/
             })
             .on("mouseout", function () {
-              d3.select(this.parentNode).selectAll(".cell")
+              var selected = activeIndex === rowIndex.toString();
+
+              if (!selected) {
+                d3.select(this.parentNode).selectAll(".cell")
+                    .style("fill", "white");
+                }
+/*
                   .attr("x", x)
                   .attr("y", strokeWidth / 2)
                   .attr("width", width)
                   .attr("height", yScale.bandwidth() - strokeWidth)
                   .style("stroke-width", strokeWidth);
+*/
             })
             .on("click", function() {
               var selected = activeIndex === rowIndex.toString();
@@ -136,9 +152,8 @@ module.exports = function () {
             .attr("height", yScale.bandwidth() - strokeWidth)
             .attr("data-original-title", label)
             .style("fill", function(d) {
-              return rowSelected ? colorScale(d.name) : "white";
+              return rowSelected ? highlightColor(d, 0.4) : "white";
             })
-            .style("fill-opacity", rowSelected ? 0.25 : 1)
             .style("stroke", function(d) {
               return colorScale(d.name);
             });
@@ -180,6 +195,14 @@ module.exports = function () {
 
         function label(d) {
           return d.name + ": " + format(d.stop - d.start) + "h";
+        }
+
+        function highlightColor(d, x) {
+          var highlightScale = d3.scaleLinear()
+              .domain([0, 1])
+              .range(["white", colorScale(d.name)]);
+
+          return highlightScale(x);
         }
       }
     }
