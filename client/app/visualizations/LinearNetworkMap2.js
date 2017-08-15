@@ -98,7 +98,7 @@ module.exports = function() {
 
     var phaseSpacing = yScale.step() - yScale.bandwidth(),
         phaseWidth = 20,
-        axisY = (yScale.bandwidth() + phaseSpacing / 2);
+        transitionY = (yScale.bandwidth() + phaseSpacing / 2);
 
     var xScale = d3.scaleLinear()
         .domain([-10, 10])
@@ -130,6 +130,12 @@ module.exports = function() {
           .style("stroke-width", function(d) {
             return d === phase ? 4 : 2;
           });
+    }
+
+    function highlightTransitions(phase) {
+      // Highlight transition lines
+      svg.select(".phases").selectAll(".transition")
+          .style("stroke-width", phase ? 2 : 1);
 
       // Highlight all nodes linked to any phase
       phaseNodes = [];
@@ -189,15 +195,6 @@ module.exports = function() {
       // Enter + update
       phase.enter().append("g")
           .attr("class", "phaseGroup")
-          .on("click", function(d, i) {
-            dispatcher.call("selectPhase", this, d.name);
-          })
-          .on("mouseover", function(d) {
-            highlightPhase(d);
-          })
-          .on("mouseout", function(d) {
-            highlightPhase();
-          })
         .merge(phase)
           .attr("transform", function(d) {
             return "translate(0," + yScale(d.name) + ")";
@@ -220,7 +217,16 @@ module.exports = function() {
 
         phaseEnter.append("rect")
             .style("fill-opacity", 0.4)
-            .style("stroke-width", 2);
+            .style("stroke-width", 2)
+            .on("click", function(d, i) {
+              dispatcher.call("selectPhase", this, d.name);
+            })
+            .on("mouseover", function(d) {
+              highlightPhase(d);
+            })
+            .on("mouseout", function(d) {
+              highlightPhase();
+            });
 
         phaseEnter.append("text")
             .attr("alignment-baseline", "middle")
@@ -246,20 +252,42 @@ module.exports = function() {
             .attr("x", phaseWidth / 2)
             .attr("y", yScale.bandwidth() / 2);
 
-        // Draw axis line
-        var axis = g.selectAll(".axis")
+        // Draw transition background line
+        var transitionBackground = g.selectAll(".transitionBackground")
             .data([d]);
 
         // Enter + update
-        axis.enter().append("line")
-            .attr("class", "axis")
+        transitionBackground.enter().append("rect")
+            .attr("class", "transitionBackground")
+            .style("visibility", "hidden")
+            .style("pointer-events", "all")
+            .on("mouseover", function(d) {
+              highlightTransitions(d);
+            })
+            .on("mouseout", function(d) {
+              highlightTransitions();
+            })
+          .merge(transitionBackground)
+            .attr("x", phaseWidth / 2)
+            .attr("y", yScale.bandwidth())
+            .attr("width", innerWidth() - phaseWidth)
+            .attr("height", phaseSpacing);
+
+        // Draw transition line
+        var transition = g.selectAll(".transition")
+            .data([d]);
+
+        // Enter + update
+        transition.enter().append("line")
+            .attr("class", "transition")
             .style("stroke", "#999")
             .style("stroke-dasharray", "5 5")
-          .merge(axis)
+            .style("pointer-events", "none")
+          .merge(transition)
             .attr("x1", phaseWidth / 2)
-            .attr("y1", axisY)
+            .attr("y1", transitionY)
             .attr("x2", innerWidth() - phaseWidth / 2)
-            .attr("y2", axisY);
+            .attr("y2", transitionY);
 
         function phaseColor(d) {
           return phaseColorScale(d.name);
@@ -554,7 +582,7 @@ module.exports = function() {
             var phase = data.phases[j],
                 node = nodes[j][i],
                 x = node.x,
-                y = yScale(phase.name) + axisY;
+                y = yScale(phase.name) + transitionY;
 
             links.push({
               source: node,
