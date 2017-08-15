@@ -133,64 +133,96 @@ module.exports = function() {
     }
 
     function highlightTransitions(phase) {
-      // Get all linked nodes/phases
-      var linked = [];
       if (phase) {
-        links.forEach(function(d) {
-          if (!d.target.species) {
-            linked.push(d.source);
-            linked.push(d.target.name);
-          }
+        var transitionLinks = links.filter(function(d) {
+          return !d.source.species || !d.target.species;
         });
+
+        highlight(transitionLinks);
       }
-
-      // Highlight transition lines
-      svg.select(".phases").selectAll(".transition")
-          .style("stroke-width", function(d) {
-            return linked.indexOf(d.name) !== -1 ? 2 : null;
-          });
-
-      // Highlight nodes
-      svg.select(".nodes").selectAll(".node")
-          .style("stroke-width", function(d) {
-            return linked.indexOf(d) !== -1 ? 2 : null;
-          });
-
-      // Highlight links
-      svg.select(".links").selectAll(".link")
-          .style("visibility", function(d) {
-            return !phase || (!d.target.species) ? null : "hidden";
-          });
+      else {
+        highlight();
+      }
     }
 
     function highlightSpecies(species) {
-      svg.select(".nodes").selectAll(".node")
-          .style("stroke-width", function(d) {
-            return d.species === species ? 2 : null;
-          });
+      if (species) {
+        var speciesLinks = links.filter(function(d) {
+          return d.source.species === species || d.target.species === species;
+        });
 
-      svg.select(".links").selectAll(".link")
-          .style("visibility", function(d) {
-            return !species || (d.source.species === species || d.target.species === species) ? null : "hidden";
-          });
+        highlight(speciesLinks, species);
+      }
+      else {
+        highlight();
+      }
     }
 
     function highlightLink(link) {
-      svg.select(".links").selectAll(".link")
-          .style("visibility", function(d) {
-            return !link ||
-                  (d.source.species === link.source.species && d.target.species === link.target.species) ||
-                  (d.source.species === link.target.species && d.target.species === link.source.species) ?
-                  null : "hidden";
-          });
+      if (link) {
+        var matchedLinks = links.filter(function(d) {
+          return (d.source.species === link.source.species && d.target.species === link.target.species) ||
+                 (d.source.species === link.target.species && d.target.species === link.source.species);
+        });
 
-      svg.select(".nodes").selectAll(".node")
-          .style("stroke-width", function(d) {
-            return link &&
-                   (d.species === link.source.species ||
-                   d.species === link.target.species) ?
-                   2 : null;
-          });
+        highlight(matchedLinks);
+      }
+      else {
+        highlight();
+      }
+    }
+
+    function highlight(links, highlightSpecies) {
+      if (links) {
+        var highlightNodes = nodes.filter(function(d) {
+          return d.species === highlightSpecies;
+        });
+
+        var linkNodes = d3.merge(links.map(function(d) {
+          return [d.source, d.target];
+        })).concat(highlightNodes);
+
+        var linkTransitions = linkNodes.filter(function(d) {
+          return !d.species;
+        }).map(function(d) {
+          return d.name;
+        });
+
+        // Do highlighting
+        svg.select(".nodes").selectAll(".node")
+            .style("stroke-width", function(d) {
+              return highlightNodes.indexOf(d) !== -1 ? 2 : null;
+            })
+            .style("fill-opacity", function(d) {
+              return linkNodes.indexOf(d) === -1 ? 0.1 : null;
+            })
+            .style("stroke-opacity", function(d) {
+              return linkNodes.indexOf(d) === -1 ? 0.1 : null;
+            });
+
+        svg.select(".phases").selectAll(".transition")
+            .style("stroke-width", function(d) {
+              return linkTransitions.indexOf(d.name) !== -1 ? 2 : null;
+            })
+
+        svg.select(".links").selectAll(".link")
+            .style("visibility", function(d) {
+              return links.indexOf(d) === -1 ? "hidden" : null;
+            });
+      }
+      else {
+        // Clear highlighting
+        svg.select(".nodes").selectAll(".node")
+            .style("stroke-width", null)
+            .style("fill-opacity", null)
+            .style("stroke-opacity", null);
+
+        svg.select(".phases").selectAll(".transition")
+            .style("stroke-width", null);
+
+        svg.select(".links").selectAll(".link")
+            .style("visibility", null);
+      }
     }
 
     function drawPhases() {
@@ -328,9 +360,6 @@ module.exports = function() {
           })
         .merge(node)
           .attr("data-original-title", nodeTooltip)
-          .attr("data-placement", function(d) {
-            return d.x < innerWidth() / 2 ? "left" : "right";
-          })
           .attr("cx", function(d) { return d.x; })
           .attr("cy", function(d) { return d.y; })
           .attr("r", function(d) {
