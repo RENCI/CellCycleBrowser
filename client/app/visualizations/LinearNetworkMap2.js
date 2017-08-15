@@ -509,7 +509,7 @@ module.exports = function() {
       link.exit().remove();
 
       function linkTooltip(d) {
-        return d.name + ": " + toString(d.value);
+        return d.source.name + "→" + d.target.name + ": " + toString(d.value);
 
         function toString(d) {
           var s = d.toString();
