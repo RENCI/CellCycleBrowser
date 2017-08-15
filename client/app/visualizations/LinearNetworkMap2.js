@@ -133,24 +133,30 @@ module.exports = function() {
     }
 
     function highlightTransitions(phase) {
-      // Highlight transition lines
-      svg.select(".phases").selectAll(".transition")
-          .style("stroke-width", phase ? 2 : 1);
-
-      // Highlight all nodes linked to any phase
-      phaseNodes = [];
+      // Get all linked nodes/phases
+      var linked = [];
       if (phase) {
         links.forEach(function(d) {
-          if (!d.target.species) phaseNodes.push(d.source);
+          if (!d.target.species) {
+            linked.push(d.source);
+            linked.push(d.target.name);
+          }
         });
       }
 
-      svg.select(".nodes").selectAll(".node")
+      // Highlight transition lines
+      svg.select(".phases").selectAll(".transition")
           .style("stroke-width", function(d) {
-            return phaseNodes.indexOf(d) !== -1 ? 2 : null;
+            return linked.indexOf(d.name) !== -1 ? 2 : null;
           });
 
-      // Highlight all links connected to any phase
+      // Highlight nodes
+      svg.select(".nodes").selectAll(".node")
+          .style("stroke-width", function(d) {
+            return linked.indexOf(d) !== -1 ? 2 : null;
+          });
+
+      // Highlight links
       svg.select(".links").selectAll(".link")
           .style("visibility", function(d) {
             return !phase || (!d.target.species) ? null : "hidden";
