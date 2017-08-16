@@ -101,8 +101,8 @@ var BrowserContainer = React.createClass({
 
     var phases = !this.state.showPhaseOverlay || !this.state.activeTrajectory ? [] :
              this.state.activeTrajectory === "average" ?
-             this.state.data.phaseAverage :
-             this.state.data.phases[this.state.activeTrajectory];
+             this.state.data.phaseTracks[0].average :
+             this.state.data.phaseTracks[0].traces[this.state.activeTrajectory];
 
     // Create GUI components for each track
     var trackComponents = tracks.map(function(track, i) {
@@ -112,8 +112,8 @@ var BrowserContainer = React.createClass({
             index={track.index} />
           <Track
             track={track}
-            phases={this.state.showPhaseOverlay ? this.state.data.phases : [[]]}
-            phaseAverage={this.state.showPhaseOverlay ? this.state.data.phaseAverage: []}
+            phases={this.state.showPhaseOverlay ? this.state.data.phaseTracks[0].traces : [[]]}
+            phaseAverage={this.state.showPhaseOverlay ? this.state.data.phaseTracks[0].average: []}
             timeExtent={this.state.data.timeExtent}
             activePhases={phases}
             phaseColorScale={this.state.phaseColorScale}
@@ -131,13 +131,15 @@ var BrowserContainer = React.createClass({
         <TimeScaleArea
           timeExtent={this.state.data.timeExtent}
           alignment={this.state.alignment} />
-        <PhaseTrack
-          phases={this.state.data.phases}
-          phaseAverage={this.state.data.phaseAverage}
-          timeExtent={this.state.data.timeExtent}
-          activeTrajectory={this.state.activeTrajectory}
-          activePhase={this.state.activePhase}
-          colorScale={this.state.phaseColorScale} />
+        {this.state.data.phaseTracks.length > 0 ?
+          <PhaseTrack
+            phases={this.state.data.phaseTracks[0].traces}
+            phaseAverage={this.state.data.phaseTracks[0].average}
+            timeExtent={this.state.data.timeExtent}
+            activeTrajectory={this.state.activeTrajectory}
+            activePhase={this.state.activePhase}
+            colorScale={this.state.phaseColorScale} />
+          : null}
         <TrackSort />
         {trackComponents}
         <TrackDividerContainer

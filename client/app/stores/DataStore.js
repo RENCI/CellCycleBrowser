@@ -17,8 +17,7 @@ var alignment = AlignmentStore.getAlignment();
 // Output data
 var data = {
   tracks: [],
-  phases: [],
-  phaseAverage: [],
+  phaseTracks: [],
   timeExtent: []
 };
 
@@ -36,15 +35,16 @@ function updateData() {
   data.timeExtent = computeTimeExtent(data.tracks);
 
   // Average traces
-  averageTraces(data.tracks, data.timeExtent, alignment);
+  averageTraces(data.tracks);
 
   // Align data
   alignData(data.tracks, data.timeExtent, alignment);
 
-  // Map phase time steps to actual time
-  data.phases = mapPhases(simulationOutput, data.timeExtent, alignment);
+  // Create phase tracks
+  data.phaseTracks = createPhaseTracks(data.phaseTracks, datasets, simulationOutput);
 
-  data.phaseAverage = averagePhases(data.phases);
+  // Align phases
+  alignPhases(data.phaseTracks, data.timeExtent, alignment);
 
   // Apply selected traces
   applySelectedTraces(data.tracks, selectedTraces);
@@ -162,6 +162,9 @@ function updateData() {
           dataset.features.filter(function(d) {
             return d.active;
           }).forEach(function (feature) {
+            // Ignore phases
+            if (feature.name.indexOf("phase") !== -1) return;
+
             var traces = [];
             species.cells.forEach(function (cell) {
               var featureIndex = cell.features.map(function (d) {
@@ -170,14 +173,14 @@ function updateData() {
 
               if (featureIndex === -1) return;
 
-              var values = cell.features[featureIndex].values.map(function (d, i, a) {
+              var values = cell.features[featureIndex].values.filter(function (d) {
+                return !isNaN(d.value);
+              }).map(function (d, i, a) {
                 return {
                   start: d.time,
                   stop: i < a.length - 1 ? a[i + 1].time : d.time + (d.time - a[i - 1].time),
                   value: d.value
                 };
-              }).filter(function (d) {
-                return !isNaN(d.value);
               });
 
               traces.push({
@@ -334,7 +337,7 @@ function updateData() {
     }
   }
 
-  function averageTraces(tracks, timeExtent, alignment) {
+  function averageTraces(tracks, timeExtent) {
     tracks.forEach(function (track) {
       track.average = average(track.traces.map(function (trace) {
         return trace.values;
@@ -427,78 +430,181 @@ function updateData() {
     }
   }
 
-  function mapPhases(simulationOutput, timeExtent, alignment) {
-    return simulationOutput.map(function(trace) {
-      var timeSteps = trace.timeSteps;
+  function createPhaseTracks(phaseTracks, datasets, simulationOutput) {
+    phaseTracks = datasetPhaseTracks(datasets);
 
-      // XXX: Return a closure to save state
-      function align(x) {
-        if (alignment === "left") {
-          var shift = timeExtent[0] - timeSteps[0];
+    if (simulationOutput.length > 0) phaseTracks.push(simulationPhaseTrack(simulationOutput));
 
-          return x + shift;
-        }
-        else if (alignment === "right") {
-          var shift = timeExtent[1] - timeSteps[timeSteps.length - 1];
+    return phaseTracks;
 
-          return x + shift;
-        }
-        else if (alignment === "justify") {
-          // Domain and range
-          var d0 = timeSteps[0];
-          var dw = timeSteps[timeSteps.length - 1] - d0;
-          var r0 = timeExtent[0];
-          var rw = timeExtent[1] - r0;
+    function datasetPhaseTracks(datasets) {
+      // Create empty array
+      var tracks = [];
 
-          return r0 + (x - d0) / dw * rw
-        }
-      }
+      datasets.filter(function(d) {
+        return d.active;
+      }).forEach(function (dataset) {
+        dataset.species.forEach(function (species) {
+          dataset.features.filter(function(d) {
+            return d.active;
+          }).forEach(function (feature) {
+            // Ignore non-phases
+            if (feature.name.indexOf("phase") === -1) return;
 
-      return trace.phases.map(function(phase) {
-        return {
-          name: phase.name,
-          start: align(timeSteps[phase.start]),
-          stop: align(timeSteps[phase.stop]),
-          subPhases: phase.subPhases.map(function(subPhase) {
+            var traces = [];
+            species.cells.forEach(function (cell) {
+              var featureIndex = cell.features.map(function (d) {
+                return d.name;
+              }).indexOf(feature.name);
+
+              if (featureIndex === -1) return;
+
+              var phaseNames = ["G1", "S", "G2"];
+
+              var values = cell.features[featureIndex].values.filter(function(d) {
+                return !isNaN(d.value);
+              });
+
+              var tStop = values[values.length - 1].time + (values[values.length - 1].time - values[values.length - 2].time);
+
+              var transitions = values.filter(function(d, i, a) {
+                return i === 0 || i === a.length - 1 || d.value !== a[i - 1].value;
+              });
+
+              var phases = [];
+              for (var i = 0; i < transitions.length - 1; i++) {
+                phases.push({
+                  name: phaseNames[i],
+                  start: transitions[i].time,
+                  stop: i === transitions.length - 2 ? tStop : transitions[i + 1].time,
+                  subPhases: []
+                });
+              }
+
+              traces.push(phases);
+            });
+
+            if (traces.length > 0) {
+              tracks.push({
+                species: species.name,
+                feature: feature.name,
+                source: dataset.name,
+                traces: traces,
+                average: averagePhases(traces)
+              });
+            }
+          });
+        });
+      });
+
+      return tracks;
+    }
+
+    function simulationPhaseTrack(simulationOutput) {
+      var traces = mapPhases(simulationOutput);
+
+      return {
+        species: "Phases",
+        feature: "",
+        source: "Simulation",
+        traces: traces,
+        average: averagePhases(traces)
+      };
+
+      function mapPhases(simulationOutput) {
+        return simulationOutput.map(function(trace) {
+          var timeSteps = trace.timeSteps;
+
+          return trace.phases.map(function(phase) {
             return {
-              name: subPhase.name,
-              start: align(timeSteps[subPhase.start]),
-              stop: align(timeSteps[subPhase.stop])
+              name: phase.name,
+              start: timeSteps[phase.start],
+              stop: timeSteps[phase.stop],
+              subPhases: phase.subPhases.map(function(subPhase) {
+                return {
+                  name: subPhase.name,
+                  start: timeSteps[subPhase.start],
+                  stop: timeSteps[subPhase.stop]
+                };
+              }).sort(function(a, b) {
+                return a.start - b.start;
+              })
             };
           }).sort(function(a, b) {
             return a.start - b.start;
-          })
-        };
-      }).sort(function(a, b) {
-        return a.start - b.start;
+          });
+        });
+      }
+    }
+
+    function averagePhases(phases) {
+      var average = [];
+
+      phases.forEach(function (trace, i) {
+        trace.forEach(function (phase, j) {
+          if (i === 0) {
+            average.push({
+              name: phase.name,
+              start: 0,
+              stop: 0
+            });
+          }
+
+          average[j].start += phase.start;
+          average[j].stop += phase.stop;
+        });
       });
-    });
+
+      average.forEach(function (phase) {
+        phase.start /= phases.length;
+        phase.stop /= phases.length;
+      });
+
+      return average;
+    }
   }
 
-  function averagePhases(phases) {
-    var average = [];
+  function alignPhases(phaseTracks, timeExtent, alignment) {
+    phaseTracks.forEach(function(track) {
+      track.traces.concat([track.average]).forEach(function(trace) {
+        var tStart = trace[0].start;
+        var tStop = trace[trace.length - 1].stop;
 
-    phases.forEach(function (trace, i) {
-      trace.forEach(function (phase, j) {
-        if (i === 0) {
-          average.push({
-            name: phase.name,
-            start: 0,
-            stop: 0
-          });
+        trace.forEach(function(phase) {
+          phase.start = align(phase.start);
+          phase.stop = align(phase.stop);
+
+          if (phase.subPhases) {
+            phase.subPhases.forEach(function(sub){
+              sub.start = align(sub.start);
+              sub.stop = align(sub.stop);
+            });
+          }
+        });
+
+        function align(x) {
+          if (alignment === "left") {
+            var shift = timeExtent[0] - tStart;
+
+            return x + shift;
+          }
+          else if (alignment === "right") {
+            var shift = timeExtent[1] - tStop;
+
+            return x + shift;
+          }
+          else if (alignment === "justify") {
+            // Domain and range
+            var d0 = tStart;
+            var dw = tStop - d0;
+            var r0 = timeExtent[0];
+            var rw = timeExtent[1] - r0;
+
+            return r0 + (x - d0) / dw * rw
+          }
         }
-
-        average[j].start += phase.start;
-        average[j].stop += phase.stop;
       });
     });
-
-    average.forEach(function (phase) {
-      phase.start /= phases.length;
-      phase.stop /= phases.length;
-    });
-
-    return average;
   }
 }
 
