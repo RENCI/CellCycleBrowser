@@ -29,7 +29,8 @@ AppDispatcher.register(function (action) {
     case Constants.RECEIVE_MODEL:
     case Constants.SELECT_MODEL:
       AppDispatcher.waitFor([ModelStore.dispatchToken]);
-      phase = ModelStore.hasModel() ? ModelStore.getModel().phases[0].name : "";
+      var model = ModelStore.getModel();
+      phase = model.phases ? model.phases[0].name : "";
       PhaseStore.emitChange();
       break;
 
