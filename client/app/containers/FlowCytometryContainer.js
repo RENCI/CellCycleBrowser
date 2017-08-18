@@ -1,23 +1,26 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
-var ModelStore = require("../stores/ModelStore");
-var d3 = require("d3");
 var FlowCytometry = require("../visualizations/FlowCytometry");
+var ModelStore = require("../stores/ModelStore");
+var NucleiDistributionStore = require("../stores/NucleiDistributionStore");
+var DataUtils = require("../utils/DataUtils");
+var d3 = require("d3");
 
 var refName = "ref";
 
 function getStateFromStore() {
   return {
-    cells: createCells(ModelStore.getModel().reactions)
+    cells: createCells(ModelStore.getModel().reactions,
+                       NucleiDistributionStore.getDistributions())
   };
 }
 
-function createCells(reactions) {
-  if (!reactions || reactions.length === 0) return [];
+function createCells(reactions, distributions) {
+  if (!reactions || reactions.length === 0 || !distributions) return [];
 
   // Number of cells
-  var n = 5000;
+  var n = 5246;
 
   // Normalized random distribution function
   var randn = d3.randomNormal();
@@ -60,42 +63,15 @@ function createCells(reactions) {
       }
     }
 
-    // Position the cell based on phase
-    var name = cell.phase.name;
+    var index = cell.phase.name.indexOf("_");
+    if (index !== -1) cell.phase.name = cell.phase.name.slice(0, index);
 
-    if (name.indexOf("G1") !== -1) {
-      cell.x = 1;
-      cell.y = 1;
+//    var distribution = distributions[cell.phase.name];
+var distribution = distributions["All"];
 
-      // Random offset
-      cell.x += 0.05 * randn();
-      cell.y += 0.05 * randn();
-    }
-    else if (name.indexOf("G2") !== -1) {
-      cell.x = 2;
-      cell.y = 1;
-
-      // Random offset
-      cell.x += 0.05 * randn();
-      cell.y += 0.05 * randn();
-    }
-    else if (name.indexOf("S") !== -1) {
-      // Get S subphase index
-      var sIndex = +name.substr(name.indexOf("_") + 1) - 1;
-
-//        cell.x = 1 + 0.25 + sIndex / numS;
-      cell.x = 1.5;
-      cell.y = 2;
-
-      // Random offset
-      var r = 0.25 * randn();
-      cell.x += r;
-      cell.y += -Math.abs(r) + 0.25 * randn();
-    }
-    else {
-      console.log("Phase not handled");
-      cell.x = cell.y = 0;
-    }
+    // XXX: Can generate negative values...
+    cell.x = Math.abs(distribution.x(1)[0]);
+    cell.y = Math.abs(distribution.y(1)[0]);
 
     return cell;
   });
@@ -109,35 +85,39 @@ var FlowCytometryContainer = React.createClass ({
   },
   getInitialState: function () {
     // Create visualization function
-    this.distribution = FlowCytometry();
+    this.flowCytometry = FlowCytometry();
 
     return getStateFromStore();
   },
   componentDidMount: function () {
-    ModelStore.addChangeListener(this.onModelChange);
+    ModelStore.addChangeListener(this.onStoreChange);
+    NucleiDistributionStore.addChangeListener(this.onStoreChange);
   },
   componentWillUnmount: function () {
-    ModelStore.removeChangeListener(this.onModelChange);
+    ModelStore.removeChangeListener(this.onStoreChange);
+    NucleiDistributionStore.removeChangeListener(this.onStoreChange);
   },
   componentWillUpdate: function (props, state) {
     this.drawVisualization(props, state);
 
     return false;
   },
-  onModelChange: function () {
+  onStoreChange: function () {
     // Use a ref to see if we are still mounted, as the model change listener
     // can still be fired after unmounting due to an asynchronous ajax request
     if (this.refs[refName]) {
       this.setState(getStateFromStore());
     }
+
+    this.setState(getStateFromStore());
   },
   drawVisualization: function (props, state) {
-    this.distribution
+    this.flowCytometry
         .width(props.width);
 
     d3.select(ReactDOM.findDOMNode(this))
         .datum(state.cells)
-        .call(this.distribution);
+        .call(this.flowCytometry);
   },
   render: function () {
     return <div ref={refName}></div>

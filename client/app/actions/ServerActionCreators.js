@@ -47,5 +47,11 @@ module.exports = {
       output: output,
       error: error
     });
+  },
+  receiveNuclei: function(nuclei) {
+    AppDispatcher.dispatch({
+      actionType: Constants.RECEIVE_NUCLEI,
+      nuclei: nuclei
+    });
   }
 };

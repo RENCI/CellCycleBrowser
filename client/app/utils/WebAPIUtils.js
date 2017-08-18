@@ -374,6 +374,17 @@ function pollSimulation() {
   });
 }
 
+function getNuclei() {
+  d3.csv("/static/cc_core/nuclei/nuclei.csv", function(error, nuclei) {
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    ServerActionCreators.receiveNuclei(nuclei);
+  });
+}
+
 module.exports = {
   getWorkspaceList: getWorkspaceList,
   getModelList: getModelList,
@@ -382,5 +393,6 @@ module.exports = {
   getDataset: getDataset,
   getWorkspace: getWorkspace,
   runSimulation: runSimulation,
-  cancelSimulation: cancelSimulation
+  cancelSimulation: cancelSimulation,
+  getNuclei: getNuclei
 };

@@ -46,6 +46,7 @@ var AppContainer = React.createClass({
     WebAPIUtils.getWorkspaceList();
     WebAPIUtils.getModelList();
     WebAPIUtils.getDatasetList();
+    WebAPIUtils.getNuclei();
 
     this.enableTooltips();
   },

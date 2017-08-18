@@ -16,10 +16,8 @@ module.exports = function() {
       contours = [],
 
       // Scales
-      xScale = d3.scaleLinear()
-          .domain([0.5, 2.5]),
-      yScale = d3.scaleLinear()
-          .domain([0, 4]),
+      xScale = d3.scaleLinear(),
+      yScale = d3.scaleLinear(),
 
       // Start with empty selection
       svg = d3.select();
@@ -62,9 +60,15 @@ module.exports = function() {
         .attr("height", height);
 
     // Update scales
-    xScale.range([0, innerWidth()]);
+    xScale
+//        .domain(d3.extent(data.map(function(d) { return d.x; })))
+    .domain([0, 50])
+        .range([0, innerWidth()]);
 
-    yScale.range([innerHeight(), 0]);
+    yScale
+//        .domain(d3.extent(data.map(function(d) { return d.y; })))
+    .domain([0, 80])
+        .range([innerHeight(), 0]);
 
     // Create contours, must be done after scales are updated
     createContours();
@@ -72,7 +76,7 @@ module.exports = function() {
     drawTitle();
     drawAxes();
     drawPoints();
-    drawContours();
+//    drawContours();
 
     function createContours() {
       // Create contours
@@ -138,12 +142,12 @@ module.exports = function() {
           .style("text-anchor", "middle");
 
       gAxes.select(".yLabel")
-          .attr("transform", "translate(0," + (innerHeight() / 2) + ")rotate(-90)")
+          .attr("transform", "translate(0," + (innerHeight() / 2) + ")rotate(-90)");
     }
 
     function drawPoints() {
       // Create color scale from density contours
-      var colorScale = d3.scaleSequential(d3ScaleChromatic.interpolateYlOrBr)
+      var colorScale = d3.scaleSequential(d3ScaleChromatic.interpolateOrRd)
           .domain(d3.extent(contours, function(d) { return d.value; }));
 
       // Bind cell data
