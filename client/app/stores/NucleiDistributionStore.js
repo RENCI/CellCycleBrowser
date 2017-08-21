@@ -22,30 +22,26 @@ function createDistributions(nuclei) {
   // Zones for phases
   var zones = [
     {
-      phase: "All"
-    },
-    {
       phase: "G1",
-      xMin: 8,
       xMax: 20,
       yMax: 2
     },
     {
       phase: "S",
-      xMin: 8,
-      xMax: 40,
-      yMin: 4
+      yMin: 3
     },
     {
       phase: "G2",
       xMin: 20,
-      xMax: 40,
       yMax: 3
     }
   ];
 
   // Create distributions per phase/zone
   distributions = {};
+
+  var xExtent = d3.extent(nucleiLocations, function(d) { return d.x; });
+  var yExtent = d3.extent(nucleiLocations, function(d) { return d.y; });
 
   zones.forEach(function(zone) {
     // Get nuclei for this zone
@@ -54,10 +50,10 @@ function createDistributions(nuclei) {
     });
 
     // Create distributions using kde
-    distributions[zone.phase] = {
-      x: kdeSampler().sample(n.map(function(d) { return d.x; })),
-      y: kdeSampler().sample(n.map(function(d) { return d.y; }))
-    };
+    distributions[zone.phase] = kdeSampler()
+        .sample(n)
+        .xExtent(xExtent)
+        .yExtent(yExtent);
   });
 
   function inZone(nucleus, zone) {
@@ -70,42 +66,67 @@ function createDistributions(nuclei) {
 
 // Based on kde in science.js
 var kdeSampler = function() {
-  var kernel = science.stats.kernel.gaussian,
-      sample = [],
-      bandwidth = science.stats.bandwidth.nrd;
+  var sample = [],
+      bandwidth = science.stats.bandwidth.nrd,
+      gx,
+      gy,
+      xExtent = [0, 1],
+      yExtent = [0, 1];
 
   function kde(n) {
     // Random input point sampler
     var randomPoint = d3.randomUniform(sample.length);
 
-    // Get bandwidth for kernel
-    var bw = bandwidth.call(this, sample);
-
-    // Random Gaussian kernel sampler
-    var rGaussian = d3.randomNormal(0, bw);
-
     // Return n values
     return d3.range(n).map(function() {
       // Generate new sample
-      return sample[Math.floor(randomPoint())];// + rGaussian();
+      var p = sample[Math.floor(randomPoint())];
+
+      var x = p.x + gx();
+      while (x < xExtent[0] || x > xExtent[1]) {
+        x = p.x + gx();
+      }
+
+      var y = p.y + gy();
+      while (y < yExtent[0] || y > yExtent[1]) {
+        y = p.y + gy();
+      }
+
+      return {
+        x: x,
+        y: y
+      };
     });
   }
 
-  kde.kernel = function(x) {
-    if (!arguments.length) return kernel;
-    kernel = x;
-    return kde;
+  function updateKernels() {
+    // Get bandwidths for kernel
+    var bwx = bandwidth.call(this, sample.map(function(d) { return d.x; }));
+    var bwy = bandwidth.call(this, sample.map(function(d) { return d.y; }));
+
+    // Random Gaussian kernel samplers
+    gx = d3.randomNormal(0, bwx);
+    gy = d3.randomNormal(0, bwy);
   };
 
   kde.sample = function(x) {
     if (!arguments.length) return sample;
     sample = x;
+    minX = d3.min(sample, function(d) { return d.x; });
+    minY = d3.min(sample, function(d) { return d.y; });
+    updateKernels();
     return kde;
   };
 
-  kde.bandwidth = function(x) {
-    if (!arguments.length) return bandwidth;
-    bandwidth = science.functor(x);
+  kde.xExtent = function(x) {
+    if (!arguments.length) return xExtent;
+    xExtent = x;
+    return kde;
+  };
+
+  kde.yExtent = function(x) {
+    if (!arguments.length) return yExtent;
+    yExtent = x;
     return kde;
   };
 

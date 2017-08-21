@@ -16,8 +16,10 @@ module.exports = function() {
       contours = [],
 
       // Scales
-      xScale = d3.scaleLinear(),
-      yScale = d3.scaleLinear(),
+      xScale = d3.scaleLog(),
+      yScale = d3.scaleLog(),
+      xContourScale = d3.scaleLinear(),
+      yContourScale = d3.scaleLinear(),
 
       // Start with empty selection
       svg = d3.select();
@@ -61,14 +63,20 @@ module.exports = function() {
 
     // Update scales
     xScale
-//        .domain(d3.extent(data.map(function(d) { return d.x; })))
-    .domain([0, 50])
+        .domain(d3.extent(data.map(function(d) { return d.x; })))
         .range([0, innerWidth()]);
 
     yScale
-//        .domain(d3.extent(data.map(function(d) { return d.y; })))
-    .domain([0, 80])
+        .domain(d3.extent(data.map(function(d) { return d.y; })))
         .range([innerHeight(), 0]);
+
+    xContourScale
+        .domain(xScale.domain())
+        .range(xScale.range());
+
+    yContourScale
+        .domain(yScale.domain())
+        .range(yScale.range());
 
     // Create contours, must be done after scales are updated
     createContours();
@@ -81,8 +89,8 @@ module.exports = function() {
     function createContours() {
       // Create contours
       contours = d3Contour.contourDensity()
-        .x(function(d) { return xScale(d.x); })
-        .y(function(d) { return yScale(d.y); })
+        .x(function(d) { return xContourScale(d.x); })
+        .y(function(d) { return yContourScale(d.y); })
         .size([innerWidth(), innerHeight()])
     //      .bandwidth(40)
         (data);
@@ -97,10 +105,13 @@ module.exports = function() {
     }
 
     function drawAxes() {
+      var format = ",.1s";
+
       var gAxes = svg.select(".axes");
 
       // X axis
-      var xAxis = d3.axisBottom(xScale);
+      var xAxis = d3.axisBottom(xScale)
+          .ticks(8, format)
 
       gAxes.selectAll(".xAxis")
           .data([0])
@@ -123,7 +134,8 @@ module.exports = function() {
           .attr("transform", "translate(" + (innerWidth() / 2) + "," + innerHeight() + ")");
 
       // Y axis
-      var yAxis = d3.axisLeft(yScale);
+      var yAxis = d3.axisLeft(yScale)
+          .ticks(8, format);
 
       gAxes.selectAll(".yAxis")
           .data([0])
@@ -146,13 +158,18 @@ module.exports = function() {
     }
 
     function drawPoints() {
-      // Create color scale from density contours
-      var colorScale = d3.scaleSequential(d3ScaleChromatic.interpolateOrRd)
-          .domain(d3.extent(contours, function(d) { return d.value; }));
+      // Create color scale from contour contours
+//      var colorScale = d3.scaleSequential(d3.interpolateViridis)
+      var contourExtent = d3.extent(contours, function(d) { return d.value; }),
+          colorScale = d3.scaleLinear()
+              .domain(contourExtent)
+              .range(["dodgerblue", "darkblue"]);
 
       // Bind cell data
       var point = svg.select(".points").selectAll(".point")
           .data(data);
+
+      var rnorm = d3.randomNormal(0, 2);
 
       // Enter + update
       point.enter().append("circle")
@@ -161,7 +178,8 @@ module.exports = function() {
         .merge(point)
           .attr("cx", function(d) { return xScale(d.x); })
           .attr("cy", function(d) { return yScale(d.y); })
-          .style("fill", color);
+          .style("fill", color)
+      .style("fill-opacity", 0.5);
 
       // Exit
       point.exit().remove();
@@ -170,8 +188,10 @@ module.exports = function() {
         for (var i = contours.length - 1; i >= 0; i--) {
           var c = contours[i];
 
-          if (d3.polygonContains(c.coordinates[0][0], [xScale(d.x), yScale(d.y)])) {
-            return colorScale(c.value);
+          for (var j = 0; j < c.coordinates.length; j++) {
+            if (d3.polygonContains(c.coordinates[j][0], [xContourScale(d.x), yContourScale(d.y)])) {
+              return colorScale(c.value);
+            }
           }
         }
 
@@ -182,7 +202,7 @@ module.exports = function() {
     function drawContours() {
       // Bind contours
       var contour = svg.select(".contours").selectAll(".contour")
-          .data(contours);
+          .data([contours[contours.length - 1]]);
 
       // Enter + update
       contour.enter().append("path")

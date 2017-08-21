@@ -19,25 +19,51 @@ function getStateFromStore() {
 function createCells(reactions, distributions) {
   if (!reactions || reactions.length === 0 || !distributions) return [];
 
+/*
+  return distributions["All"].x.sample().map(function(d, i) {
+    return {
+      x: d,
+      y: distributions["All"].y.sample()[i]
+    };
+  });
+*/
+/*
+var g1 = distributions["G1"].x.sample().map(function(d, i) {
+  return {
+    x: d,
+    y: distributions["G1"].y.sample()[i]
+  };
+});
+
+var s = distributions["S"].x.sample().map(function(d, i) {
+  return {
+    x: d,
+    y: distributions["S"].y.sample()[i]
+  };
+});
+
+var g2 = distributions["G2"].x.sample().map(function(d, i) {
+  return {
+    x: d,
+    y: distributions["G2"].y.sample()[i]
+  };
+});
+
+return g1.concat(s).concat(g2);
+*/
+
   // Number of cells
-  var n = 5246;
+  var n = 5000;
 
   // Normalized random distribution function
   var randn = d3.randomNormal();
 
   // Create phase objects with probabilities
-  var phases = reactions.map(function(d) {
-    return {
-      name: d.reactant.replace("_end", ""),
-      kf: d.kf,
-      p: 1 / d.kf
-    };
-  });
-
-  // Number of S subphases
-  var numS = phases.filter(function(d) {
-    return d.name.indexOf("S") !== - 1;
-  }).length;
+  var phases = [
+    { name: "G1", p: 0.1 },
+    { name: "S", p: 0.8 },
+    { name: "G2", p: 0.1 }
+  ];
 
   // Normalize probabilities
   var pSum = d3.sum(phases, function(d) { return d.p; });
@@ -63,15 +89,11 @@ function createCells(reactions, distributions) {
       }
     }
 
-    var index = cell.phase.name.indexOf("_");
-    if (index !== -1) cell.phase.name = cell.phase.name.slice(0, index);
-
-//    var distribution = distributions[cell.phase.name];
-var distribution = distributions["All"];
+    var p = distributions[cell.phase.name](1)[0];
 
     // XXX: Can generate negative values...
-    cell.x = Math.abs(distribution.x(1)[0]);
-    cell.y = Math.abs(distribution.y(1)[0]);
+    cell.x = Math.abs(p.x);
+    cell.y = Math.abs(p.y);
 
     return cell;
   });
