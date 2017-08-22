@@ -2,7 +2,7 @@ var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
 var FlowCytometry = require("../visualizations/FlowCytometry");
-var ModelStore = require("../stores/ModelStore");
+var DataStore = require("../stores/DataStore");
 var NucleiDistributionStore = require("../stores/NucleiDistributionStore");
 var DataUtils = require("../utils/DataUtils");
 var d3 = require("d3");
@@ -11,46 +11,13 @@ var refName = "ref";
 
 function getStateFromStore() {
   return {
-    cells: createCells(ModelStore.getModel().reactions,
+    cells: createCells(DataStore.getData().phaseTracks,
                        NucleiDistributionStore.getDistributions())
   };
 }
 
-function createCells(reactions, distributions) {
-  if (!reactions || reactions.length === 0 || !distributions) return [];
-
-/*
-  return distributions["All"].x.sample().map(function(d, i) {
-    return {
-      x: d,
-      y: distributions["All"].y.sample()[i]
-    };
-  });
-*/
-/*
-var g1 = distributions["G1"].x.sample().map(function(d, i) {
-  return {
-    x: d,
-    y: distributions["G1"].y.sample()[i]
-  };
-});
-
-var s = distributions["S"].x.sample().map(function(d, i) {
-  return {
-    x: d,
-    y: distributions["S"].y.sample()[i]
-  };
-});
-
-var g2 = distributions["G2"].x.sample().map(function(d, i) {
-  return {
-    x: d,
-    y: distributions["G2"].y.sample()[i]
-  };
-});
-
-return g1.concat(s).concat(g2);
-*/
+function createCells(phaseTracks, distributions) {
+  if (phaseTracks.length === 0 || !distributions) return [];
 
   // Number of cells
   var n = 5000;
@@ -59,18 +26,22 @@ return g1.concat(s).concat(g2);
   var randn = d3.randomNormal();
 
   // Create phase objects with probabilities
-  var phases = [
-    { name: "G1", p: 0.1 },
-    { name: "S", p: 0.8 },
-    { name: "G2", p: 0.1 }
-  ];
-
-  // Normalize probabilities
-  var pSum = d3.sum(phases, function(d) { return d.p; });
-
-  phases.forEach(function(d) {
-    d.p /= pSum;
+  var average = phaseTracks[0].average;
+  var averageLength = average[average.length - 1].stop - average[0].start;
+  var phases = average.map(function(d) {
+    return {
+      name: d.name,
+      tau: (d.stop - d.start) / averageLength
+    };
   });
+
+  var g1 = phases[0];
+  var s = phases[1];
+  var g2 = phases[2];
+
+  g1.p = 2 * (1 - Math.pow(2, -g1.tau));
+  g2.p = Math.pow(2, g2.tau) - 1;
+  s.p = 1 - (g1.p + g2.p);
 
   // Create cumulative probabilities for sampling
   phases.reduce(function(p, c) {
@@ -89,11 +60,10 @@ return g1.concat(s).concat(g2);
       }
     }
 
-    var p = distributions[cell.phase.name](1)[0];
+    var point = distributions[cell.phase.name]();
 
-    // XXX: Can generate negative values...
-    cell.x = Math.abs(p.x);
-    cell.y = Math.abs(p.y);
+    cell.x = point.x;
+    cell.y = point.y;
 
     return cell;
   });
@@ -112,11 +82,11 @@ var FlowCytometryContainer = React.createClass ({
     return getStateFromStore();
   },
   componentDidMount: function () {
-    ModelStore.addChangeListener(this.onStoreChange);
+    DataStore.addChangeListener(this.onStoreChange);
     NucleiDistributionStore.addChangeListener(this.onStoreChange);
   },
   componentWillUnmount: function () {
-    ModelStore.removeChangeListener(this.onStoreChange);
+    DataStore.removeChangeListener(this.onStoreChange);
     NucleiDistributionStore.removeChangeListener(this.onStoreChange);
   },
   componentWillUpdate: function (props, state) {
@@ -125,13 +95,11 @@ var FlowCytometryContainer = React.createClass ({
     return false;
   },
   onStoreChange: function () {
-    // Use a ref to see if we are still mounted, as the model change listener
+    // Use a ref to see if we are still mounted, as the change listener
     // can still be fired after unmounting due to an asynchronous ajax request
     if (this.refs[refName]) {
       this.setState(getStateFromStore());
     }
-
-    this.setState(getStateFromStore());
   },
   drawVisualization: function (props, state) {
     this.flowCytometry

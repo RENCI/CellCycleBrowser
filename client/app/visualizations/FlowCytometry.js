@@ -47,6 +47,7 @@ module.exports = function() {
       g.append("g").attr("class", "axes");
       g.append("g").attr("class", "contours");
       g.append("g").attr("class", "points");
+      g.append("g").attr("class", "labels");
 
       svg = svgEnter.merge(svg);
 
@@ -84,6 +85,7 @@ module.exports = function() {
     drawTitle();
     drawAxes();
     drawPoints();
+    drawLabels();
 //    drawContours();
 
     function createContours() {
@@ -178,8 +180,7 @@ module.exports = function() {
         .merge(point)
           .attr("cx", function(d) { return xScale(d.x); })
           .attr("cy", function(d) { return yScale(d.y); })
-          .style("fill", color)
-      .style("fill-opacity", 0.5);
+          .style("fill", color);
 
       // Exit
       point.exit().remove();
@@ -197,6 +198,46 @@ module.exports = function() {
 
         return colorScale(contours[0].value);
       }
+    }
+
+    function drawLabels() {
+      // Group cells by phase
+      var phases = d3.nest()
+          .key(function(d) { return d.phase.name; })
+          .entries(data);
+
+      // Bind data
+      var label = svg.select(".labels").selectAll(".label")
+          .data(phases, function(d) { return d.key; });
+
+      // Enter
+      var labelEnter = label.enter().append("g")
+          .attr("class", "label")
+          .attr("dy", "-.5em")
+          .style("font-size", "x-small")
+          .style("text-anchor", "middle");
+
+      labelEnter.append("text")
+          .style("fill", "white")
+          .style("stroke", "white")
+          .style("stroke-width", 2);
+
+      labelEnter.append("text")
+          .style("fill", "black");
+
+      // Label update
+      labelEnter.merge(label)
+          .attr("transform", function(d) {
+            var x = d3.mean(d.values, function(d) { return d.x; }),
+                y = d3.mean(d.values, function(d) { return d.y; });
+
+            return "translate(" + xScale(x) + "," + yScale(y) + ")";
+          })
+        .selectAll("text")
+          .text(function(d) { return d.key; });
+
+      // Exit
+      label.exit().remove();
     }
 
     function drawContours() {

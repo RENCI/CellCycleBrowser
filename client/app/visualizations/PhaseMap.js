@@ -102,6 +102,18 @@ module.exports = function () {
             .attr("shape-rendering", "crispEdges")
             .attr("data-toggle", "tooltip")
             .style("stroke-width", strokeWidth)
+          .merge(cell)
+            .attr("x", x)
+            .attr("y", strokeWidth / 2)
+            .attr("width", width)
+            .attr("height", yScale.bandwidth() - strokeWidth)
+            .attr("data-original-title", label)
+            .style("fill", function(d) {
+              return rowSelected ? highlightColor(d, 0.4) : "white";
+            })
+            .style("stroke", function(d) {
+              return colorScale(d.name);
+            })
             .style("rx", yScale.bandwidth() / 4)
             .style("ry", yScale.bandwidth() / 4)
             .on("mouseover", function() {
@@ -112,7 +124,7 @@ module.exports = function () {
                 d3.select(this.parentNode).selectAll(".cell")
                   .attr("x", function(d) { return x(d) + w / 2; })
                   .attr("y", strokeWidth / 2 + w / 2)
-                  .attr("width", function(d) { return width(d) - w})
+                  .attr("width", function(d) { return Math.max(width(d) - w, 0); })
                   .attr("height", yScale.bandwidth() - strokeWidth - w)
                   .style("stroke-width", strokeWidth + w);
               }
@@ -134,18 +146,6 @@ module.exports = function () {
 
               // Select or unselect
               dispatcher.call("selectTrajectory", this, selected ? null : rowIndex.toString());
-            })
-          .merge(cell)
-            .attr("x", x)
-            .attr("y", strokeWidth / 2)
-            .attr("width", width)
-            .attr("height", yScale.bandwidth() - strokeWidth)
-            .attr("data-original-title", label)
-            .style("fill", function(d) {
-              return rowSelected ? highlightColor(d, 0.4) : "white";
-            })
-            .style("stroke", function(d) {
-              return colorScale(d.name);
             });
 
         // Exit
@@ -180,7 +180,7 @@ module.exports = function () {
         }
 
         function width(d) {
-          return xScale(d.stop) - xScale(d.start) - strokeWidth;
+          return Math.max(xScale(d.stop) - xScale(d.start) - strokeWidth, 0);
         }
 
         function label(d) {

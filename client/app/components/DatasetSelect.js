@@ -13,7 +13,9 @@ var labelStyle = {
 function DatasetSelect(props) {
   function option(option, i) {
     var features = option.features ?
-      option.features.map(function (feature, i) {
+      option.features.filter(function (feature) {
+        return feature.name !== "SphaseClassification";
+      }).map(function (feature, i) {
         return {
           name: feature.name,
           value: feature.name + ":" + option.id,

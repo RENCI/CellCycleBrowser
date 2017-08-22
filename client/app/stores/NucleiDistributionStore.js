@@ -67,40 +67,35 @@ function createDistributions(nuclei) {
 // Based on kde in science.js
 var kdeSampler = function() {
   var sample = [],
-      bandwidth = science.stats.bandwidth.nrd,
+      pointSampler,
       gx,
       gy,
       xExtent = [0, 1],
       yExtent = [0, 1];
 
-  function kde(n) {
-    // Random input point sampler
-    var randomPoint = d3.randomUniform(sample.length);
+  function kde() {
+    // Generate new sample
+    var p = sample[Math.floor(pointSampler())];
 
-    // Return n values
-    return d3.range(n).map(function() {
-      // Generate new sample
-      var p = sample[Math.floor(randomPoint())];
+    var x = p.x + gx();
+    while (x < xExtent[0] || x > xExtent[1]) {
+      x = p.x + gx();
+    }
 
-      var x = p.x + gx();
-      while (x < xExtent[0] || x > xExtent[1]) {
-        x = p.x + gx();
-      }
+    var y = p.y + gy();
+    while (y < yExtent[0] || y > yExtent[1]) {
+      y = p.y + gy();
+    }
 
-      var y = p.y + gy();
-      while (y < yExtent[0] || y > yExtent[1]) {
-        y = p.y + gy();
-      }
-
-      return {
-        x: x,
-        y: y
-      };
-    });
+    return {
+      x: x,
+      y: y
+    };
   }
 
   function updateKernels() {
     // Get bandwidths for kernel
+    var bandwidth = science.stats.bandwidth.nrd;
     var bwx = bandwidth.call(this, sample.map(function(d) { return d.x; }));
     var bwy = bandwidth.call(this, sample.map(function(d) { return d.y; }));
 
@@ -112,6 +107,7 @@ var kdeSampler = function() {
   kde.sample = function(x) {
     if (!arguments.length) return sample;
     sample = x;
+    pointSampler = d3.randomUniform(sample.length);
     minX = d3.min(sample, function(d) { return d.x; });
     minY = d3.min(sample, function(d) { return d.y; });
     updateKernels();

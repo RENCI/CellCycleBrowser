@@ -7,7 +7,6 @@ var DataUtils = require("../utils/DataUtils");
 var TimeSeriesArea = require("../components/TimeSeriesArea");
 var GrowthCurveArea = require("../components/GrowthCurveArea");
 var FlowCytometryArea = require("../components/FlowCytometryArea");
-var ModelStore = require("./ModelStore");
 var DataStore = require("./DataStore");
 
 var CHANGE_EVENT = "change";
@@ -35,18 +34,18 @@ var plots = [
     component: <FlowCytometryArea />,
     selected: true,
     hasInput: function () {
-      return hasModel();
+      return hasPhaseTracks();
     }
   }
 ];
 
 // State of input data
-function hasModel() {
-  return ModelStore.getModel().name !== undefined;
-}
-
 function hasTracks() {
   return DataStore.getData().tracks.length > 0;
+}
+
+function hasPhaseTracks() {
+  return DataStore.getData().phaseTracks.length > 0;
 }
 
 function selectPlot(plot) {
@@ -84,15 +83,7 @@ var AnalysisPlotStore = assign({}, EventEmitter.prototype, {
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_WORKSPACE:
-      AppDispatcher.waitFor([ModelStore.dispatchToken,
-                             DataStore.dispatchToken]);
-      checkAvailability();
-      AnalysisPlotStore.emitChange();
-      break;
-
-    case Constants.RECEIVE_MODEL:
-    case Constants.SELECT_MODEL:
-      AppDispatcher.waitFor([ModelStore.dispatchToken]);
+      AppDispatcher.waitFor([DataStore.dispatchToken]);
       checkAvailability();
       AnalysisPlotStore.emitChange();
       break;

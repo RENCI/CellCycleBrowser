@@ -399,6 +399,8 @@ module.exports = function() {
       // Label enter
       var labelEnter = label.enter().append("g")
           .attr("class", "nodeLabel")
+          .attr("dy", "-.5em")
+          .style("text-anchor", "middle")
           .on("mouseover", function(d) {
             highlightSpecies(d.species);
           })
@@ -407,16 +409,12 @@ module.exports = function() {
           });
 
       labelEnter.append("text")
-          .attr("dy", "-.5em")
           .style("fill", "white")
           .style("stroke", "white")
-          .style("stroke-width", 2)
-          .style("text-anchor", "middle");
+          .style("stroke-width", 2);
 
       labelEnter.append("text")
-          .attr("dy", "-.5em")
-          .style("fill", "black")
-          .style("text-anchor", "middle");
+          .style("fill", "black");
 
       // Label update
       labelEnter.merge(label)
