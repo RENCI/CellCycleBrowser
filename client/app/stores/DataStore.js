@@ -52,6 +52,9 @@ function updateData() {
   // Apply rescale traces
   applyRescaleTraces(data.tracks, rescaleTraces);
 
+  // Match tracks to phase tracks
+  matchPhases(data.tracks, data.phaseTracks);
+
   // XXX: Switch to generating ids and using that for matching via a selected store?
   function trackId(track) {
     return track.source + ":" + track.species + ":" + track.feature;
@@ -105,6 +108,19 @@ function updateData() {
       track.rescaleTraces = typeof rescaleTraces[id] !== "undefined" ?
                             rescaleTraces[id] : false;
     });
+  }
+
+  function matchPhases(tracks, phaseTracks) {
+    tracks.forEach(function (track) {
+      track.phaseAverage = [];
+      track.phases = [];
+      phaseTracks.forEach(function (phaseTrack) {
+        if (track.source === phaseTrack.source) {
+          track.phaseAverage = phaseTrack.average;
+          track.phases = phaseTrack.traces;
+        }
+      });
+    })
   }
 
   function createTracks(tracks, datasets, simulationOutput) {

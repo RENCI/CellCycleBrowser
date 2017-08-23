@@ -64,6 +64,9 @@ function TrackBody(props) {
     averagePhases = [props.activePhases];
   }
 
+  var phaseAverage = props.showPhaseOverlay ? props.track.phaseAverage : [];
+  var phases = props.showPhaseOverlay ? props.track.phases : [];
+
   var averageExtent = !props.track.rescaleTraces ? [props.track.dataExtent] :
     [extent(props.track.average.values.map(function(v) { return v.value; }))];
 
@@ -96,7 +99,7 @@ function TrackBody(props) {
             <HeatMapContainer
               data={[props.track.average.values]}
               dataExtent={averageExtent}
-              phases={averagePhases}
+              phases={[phaseAverage]}
               timeExtent={props.timeExtent}
               phaseColorScale={props.phaseColorScale}
               phaseOverlayOpacity={props.phaseOverlayOpacity}
@@ -129,12 +132,10 @@ function TrackBody(props) {
 
 TrackBody.propTypes = {
   track: PropTypes.object.isRequired,
-  phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
-  phaseAverage: PropTypes.arrayOf(PropTypes.object).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
-  activePhases: PropTypes.arrayOf(PropTypes.object).isRequired,
   phaseColorScale: PropTypes.func.isRequired,
-  phaseOverlayOpacity: PropTypes.number.isRequired
+  phaseOverlayOpacity: PropTypes.number.isRequired,
+  showPhaseOverlay: PropTypes.bool.isRequired
 };
 
 module.exports = TrackBody;

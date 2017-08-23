@@ -115,31 +115,25 @@ module.exports = function () {
               return colorScale(d.name);
             })
             .style("rx", yScale.bandwidth() / 4)
-            .style("ry", yScale.bandwidth() / 4)
+            .style("ry", yScale.bandwidth() / 4);
+/*
             .on("mouseover", function() {
-              var selected = activeIndex === rowIndex.toString(),
-                  w = 1;
+              var w = 1;
 
-              if (!selected) {
-                d3.select(this.parentNode).selectAll(".cell")
-                  .attr("x", function(d) { return x(d) + w / 2; })
-                  .attr("y", strokeWidth / 2 + w / 2)
-                  .attr("width", function(d) { return Math.max(width(d) - w, 0); })
-                  .attr("height", yScale.bandwidth() - strokeWidth - w)
-                  .style("stroke-width", strokeWidth + w);
-              }
+              d3.select(this.parentNode).selectAll(".cell")
+                .attr("x", function(d) { return x(d) + w / 2; })
+                .attr("y", strokeWidth / 2 + w / 2)
+                .attr("width", function(d) { return Math.max(width(d) - w, 0); })
+                .attr("height", yScale.bandwidth() - strokeWidth - w)
+                .style("stroke-width", strokeWidth + w);
             })
             .on("mouseout", function () {
-              var selected = activeIndex === rowIndex.toString();
-
-              if (!selected) {
-                d3.select(this.parentNode).selectAll(".cell")
-                  .attr("x", x)
-                  .attr("y", strokeWidth / 2)
-                  .attr("width", width)
-                  .attr("height", yScale.bandwidth() - strokeWidth)
-                  .style("stroke-width", strokeWidth);
-              }
+              d3.select(this.parentNode).selectAll(".cell")
+                .attr("x", x)
+                .attr("y", strokeWidth / 2)
+                .attr("width", width)
+                .attr("height", yScale.bandwidth() - strokeWidth)
+                .style("stroke-width", strokeWidth);
             })
             .on("click", function() {
               var selected = activeIndex === rowIndex.toString();
@@ -147,6 +141,7 @@ module.exports = function () {
               // Select or unselect
               dispatcher.call("selectTrajectory", this, selected ? null : rowIndex.toString());
             });
+*/
 
         // Exit
         cell.exit().remove();

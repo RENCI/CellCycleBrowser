@@ -96,29 +96,37 @@ var BrowserContainer = React.createClass({
   },
   render: function() {
     var tracks = this.state.data.tracks;
+    var phaseTracks = this.state.data.phaseTracks;
 
     if (tracks.length < 1) return null;
 
-    var phases = !this.state.showPhaseOverlay || !this.state.activeTrajectory ? [] :
-             this.state.activeTrajectory === "average" ?
-             this.state.data.phaseTracks[0].average :
-             this.state.data.phaseTracks[0].traces[this.state.activeTrajectory];
-
     // Create GUI components for each track
-    var trackComponents = tracks.map(function(track, i) {
+    var trackComponents = tracks.map(function (track, i) {
       return (
         <div key={i}>
           <TrackDividerContainer
             index={track.index} />
           <Track
             track={track}
-            phases={this.state.showPhaseOverlay ? this.state.data.phaseTracks[0].traces : [[]]}
-            phaseAverage={this.state.showPhaseOverlay ? this.state.data.phaseTracks[0].average: []}
             timeExtent={this.state.data.timeExtent}
-            activePhases={phases}
             phaseColorScale={this.state.phaseColorScale}
-            phaseOverlayOpacity={this.state.phaseOverlayOpacity} />
+            phaseOverlayOpacity={this.state.phaseOverlayOpacity}
+            showPhaseOverlay={this.state.showPhaseOverlay} />
         </div>
+      );
+    }.bind(this));
+
+    // Create GUI components for each phase track
+    var phaseTrackComponents = phaseTracks.map(function (track, i) {
+      return (
+        <PhaseTrack
+          key={i}
+          track={track}
+          timeExtent={this.state.data.timeExtent}
+          activeTrajectory={this.state.activeTrajectory}
+          activePhase={this.state.activePhase}
+          colorScale={this.state.phaseColorScale}
+          showPhaseOverlay={this.state.showPhaseOverlay} />
       );
     }.bind(this));
 
@@ -131,15 +139,7 @@ var BrowserContainer = React.createClass({
         <TimeScaleArea
           timeExtent={this.state.data.timeExtent}
           alignment={this.state.alignment} />
-        {this.state.data.phaseTracks.length > 0 ?
-          <PhaseTrack
-            phases={this.state.data.phaseTracks[0].traces}
-            phaseAverage={this.state.data.phaseTracks[0].average}
-            timeExtent={this.state.data.timeExtent}
-            activeTrajectory={this.state.activeTrajectory}
-            activePhase={this.state.activePhase}
-            colorScale={this.state.phaseColorScale} />
-          : null}
+        {phaseTrackComponents}
         <TrackSort />
         {trackComponents}
         <TrackDividerContainer

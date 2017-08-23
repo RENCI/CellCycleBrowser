@@ -26,46 +26,48 @@ function createCells(phaseTracks, distributions) {
   var randn = d3.randomNormal();
 
   // Create phase objects with probabilities
-  var average = phaseTracks[0].average;
-  var averageLength = average[average.length - 1].stop - average[0].start;
-  var phases = average.map(function(d) {
-    return {
-      name: d.name,
-      tau: (d.stop - d.start) / averageLength
-    };
-  });
+  return phaseTracks.map(function (track) {
+    var average = track.average;
+    var averageLength = average[average.length - 1].stop - average[0].start;
+    var phases = average.map(function(d) {
+      return {
+        name: d.name,
+        tau: (d.stop - d.start) / averageLength
+      };
+    });
 
-  var g1 = phases[0];
-  var s = phases[1];
-  var g2 = phases[2];
+    var g1 = phases[0];
+    var s = phases[1];
+    var g2 = phases[2];
 
-  g1.p = 2 * (1 - Math.pow(2, -g1.tau));
-  g2.p = Math.pow(2, g2.tau) - 1;
-  s.p = 1 - (g1.p + g2.p);
+    g1.p = 2 * (1 - Math.pow(2, -g1.tau));
+    g2.p = Math.pow(2, g2.tau) - 1;
+    s.p = 1 - (g1.p + g2.p);
 
-  // Create cumulative probabilities for sampling
-  phases.reduce(function(p, c) {
-    return c.cumP = c.p + p;
-  }, 0);
+    // Create cumulative probabilities for sampling
+    phases.reduce(function(p, c) {
+      return c.cumP = c.p + p;
+    }, 0);
 
-  return d3.range(0, n).map(function() {
-    var cell = {},
-        p = Math.random();
+    return d3.range(0, n).map(function() {
+      var cell = {},
+          p = Math.random();
 
-    // Determine phase for cell
-    for (var i = 0; i < phases.length; i++) {
-      if (p < phases[i].cumP) {
-        cell.phase = phases[i];
-        break;
+      // Determine phase for cell
+      for (var i = 0; i < phases.length; i++) {
+        if (p < phases[i].cumP) {
+          cell.phase = phases[i];
+          break;
+        }
       }
-    }
 
-    var point = distributions[cell.phase.name]();
+      var point = distributions[cell.phase.name]();
 
-    cell.x = point.x;
-    cell.y = point.y;
+      cell.x = point.x;
+      cell.y = point.y;
 
-    return cell;
+      return cell;
+    });
   });
 }
 
@@ -105,9 +107,13 @@ var FlowCytometryContainer = React.createClass ({
     this.flowCytometry
         .width(props.width);
 
-    d3.select(ReactDOM.findDOMNode(this))
-        .datum(state.cells)
+    var plot = d3.select(ReactDOM.findDOMNode(this)).selectAll("div")
+        .data(state.cells);
+
+    plot.enter().append("div").merge(plot)
         .call(this.flowCytometry);
+
+    plot.exit().remove();
   },
   render: function () {
     return <div ref={refName}></div>

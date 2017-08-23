@@ -16,24 +16,22 @@ var outerStyle = {
 };
 
 function PhaseTrack(props) {
-  if (props.phases.length === 0) {
-    return null;
-  }
-
   return (
     <div className="text-left" style={outerStyle}>
-      <PhaseTrackHeader />
+      <PhaseTrackHeader
+        track={props.track}
+        showPhaseOverlay={props.showPhaseOverlay} />
       <PhaseTrackBody {...props} />
     </div>
   );
 }
 
 PhaseTrack.propTypes = {
-  phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
-  phaseAverage: PropTypes.arrayOf(PropTypes.object).isRequired,
+  track: PropTypes.object.isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   activeTrajectory: PropTypes.string,
-  colorScale: PropTypes.func.isRequired
+  colorScale: PropTypes.func.isRequired,
+  showPhaseOverlay: PropTypes.bool.isRequired
 };
 
 module.exports = PhaseTrack;

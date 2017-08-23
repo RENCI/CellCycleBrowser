@@ -24,12 +24,10 @@ function Track(props) {
 
 Track.propTypes = {
   track: PropTypes.object.isRequired,
-  phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
-  phaseAverage: PropTypes.arrayOf(PropTypes.object).isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
-  activePhases: PropTypes.arrayOf(PropTypes.object).isRequired,
   phaseColorScale: PropTypes.func.isRequired,
-  phaseOverlayOpacity: PropTypes.number.isRequired
+  phaseOverlayOpacity: PropTypes.number.isRequired,
+  showPhaseOverlay: PropTypes.bool.isRequired
 };
 
 module.exports = Track;
