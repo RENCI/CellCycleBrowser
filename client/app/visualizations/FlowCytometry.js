@@ -4,7 +4,7 @@ var d3ScaleChromatic = require("d3-scale-chromatic");
 
 module.exports = function() {
       // Size
-  var titleHeight = 40,
+  var titleHeight = 45,
       margin = { top: titleHeight, left: 50, bottom: 40, right: 20 },
       width = 200,
       height = 200,
@@ -14,6 +14,7 @@ module.exports = function() {
       // Data
       data = [],
       contours = [],
+      source = "",
 
       // Scales
       xScale = d3.scaleLog(),
@@ -38,7 +39,9 @@ module.exports = function() {
             d3.event.preventDefault();
           });
 
-      svgEnter.append("text").attr("class", "title");
+      var title = svgEnter.append("g").attr("class", "title");
+      title.append("text").attr("class", "main");
+      title.append("text").attr("class", "source");
 
       var g = svgEnter.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -99,11 +102,20 @@ module.exports = function() {
     }
 
     function drawTitle() {
-      svg.select(".title")
+      var title = svg.select(".title")
+          .attr("transform", "translate(" + (width / 2) + ",0)");
+
+      title.select(".main")
           .text("Cell Cycle Analysis")
           .attr("dy", "1.5em")
+          .style("text-anchor", "middle");
+
+      title.select(".source")
+          .text(source)
+          .attr("y", 20)
+          .attr("dy", "1.5em")
           .style("text-anchor", "middle")
-          .attr("x", width / 2);
+          .style("font-size", "x-small");
     }
 
     function drawAxes() {
@@ -263,6 +275,12 @@ module.exports = function() {
   flowCytometry.width = function(_) {
     if (!arguments.length) return width;
     width = _;
+    return flowCytometry;
+  };
+
+  flowCytometry.source = function(_) {
+    if (!arguments.length) return source;
+    source = _;
     return flowCytometry;
   };
 

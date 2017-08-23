@@ -9,10 +9,15 @@ var d3 = require("d3");
 
 var refName = "ref";
 
-function getStateFromStore() {
+function getStateFromDataStore() {
   return {
-    cells: createCells(DataStore.getData().phaseTracks,
-                       NucleiDistributionStore.getDistributions())
+    tracks: DataStore.getData().phaseTracks
+  };
+}
+
+function getStateFromNucleiDistributionStore() {
+  return {
+    nucleiDistributions: NucleiDistributionStore.getDistributions()
   };
 }
 
@@ -81,37 +86,52 @@ var FlowCytometryContainer = React.createClass ({
     // Create visualization function
     this.flowCytometry = FlowCytometry();
 
-    return getStateFromStore();
+    return {
+      tracks: DataStore.getData().phaseTracks,
+      nucleiDistributions: NucleiDistributionStore.getDistributions()
+    };
   },
   componentDidMount: function () {
-    DataStore.addChangeListener(this.onStoreChange);
-    NucleiDistributionStore.addChangeListener(this.onStoreChange);
+    DataStore.addChangeListener(this.onDataStoreChange);
+    NucleiDistributionStore.addChangeListener(this.onNucleiDistributionStoreChange);
   },
   componentWillUnmount: function () {
-    DataStore.removeChangeListener(this.onStoreChange);
-    NucleiDistributionStore.removeChangeListener(this.onStoreChange);
+    DataStore.removeChangeListener(this.onDataStoreChange);
+    NucleiDistributionStore.removeChangeListener(this.onNucleiDistributionStoreChange);
   },
   componentWillUpdate: function (props, state) {
     this.drawVisualization(props, state);
 
     return false;
   },
-  onStoreChange: function () {
+  onDataStoreChange: function () {
     // Use a ref to see if we are still mounted, as the change listener
     // can still be fired after unmounting due to an asynchronous ajax request
     if (this.refs[refName]) {
-      this.setState(getStateFromStore());
+      this.setState(getStateFromDataStore());
+    }
+  },
+  onNucleiDistributionStoreChange: function () {
+    // Use a ref to see if we are still mounted, as the change listener
+    // can still be fired after unmounting due to an asynchronous ajax request
+    if (this.refs[refName]) {
+      this.setState(getStateFromNucleiDistributionStoreStore());
     }
   },
   drawVisualization: function (props, state) {
-    this.flowCytometry
+    var cells = createCells(state.tracks, state.nucleiDistributions);
+
+    var vis = this.flowCytometry
         .width(props.width);
 
     var plot = d3.select(ReactDOM.findDOMNode(this)).selectAll("div")
-        .data(state.cells);
+        .data(cells);
 
     plot.enter().append("div").merge(plot)
-        .call(this.flowCytometry);
+        .each(function(d, i) {
+          vis.source(state.tracks[i].source);
+          d3.select(this).call(vis);
+        });
 
     plot.exit().remove();
   },
