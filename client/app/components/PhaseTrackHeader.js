@@ -1,5 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
+var TrackColorIcon = require("./TrackColorIcon");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
 var nameStyle = {
@@ -14,19 +15,11 @@ var featureStyle = {
   fontWeight: "normal"
 };
 
-var checkboxStyle = {
-  flex: 1,
-  marginTop: 4
-};
-
 var sourceStyle = {
+  flex: 1,
   marginTop: 5,
-  marginRight: 30
+  marginRight: 5
 };
-
-function handleShowPhaseOverlayChange(e) {
-  ViewActionCreators.changeShowPhaseOverlay(e.currentTarget.checked);
-}
 
 function PhaseTrackHeader(props) {
   var featureSpan = props.track.feature ?
@@ -39,26 +32,17 @@ function PhaseTrackHeader(props) {
           {props.track.species}
           {featureSpan}
         </div>
-        <div className="text-center" style={checkboxStyle}>
-          <label className="checkbox-inline">
-            <input
-              type="checkbox"
-              checked={props.showPhaseOverlay}
-              onChange={handleShowPhaseOverlayChange} />
-            Show overlay
-          </label>
-        </div>
         <div className="text-right" style={sourceStyle}>
           {props.track.source}
         </div>
+        <TrackColorIcon track={props.track} />
       </div>
     </div>
   );
 }
 
 PhaseTrackHeader.propTypes = {
-  track: PropTypes.object.isRequired,
-  showPhaseOverlay: PropTypes.bool.isRequired
+  track: PropTypes.object.isRequired
 };
 
 module.exports = PhaseTrackHeader;

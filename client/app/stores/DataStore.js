@@ -22,11 +22,8 @@ var data = {
 };
 
 function updateData() {
-  // Keep track of selected traces
-  var selectedTraces = saveSelectedTraces(data.tracks);
-
-  // Kep track of rescale traces
-  var rescaleTraces = saveRescaleTraces(data.tracks);
+  // Kep track of state
+  var state = saveState(data.tracks);
 
   // Create tracks
   data.tracks = createTracks(data.tracks, datasets, simulationOutput);
@@ -46,67 +43,62 @@ function updateData() {
   // Align phases
   alignPhases(data.phaseTracks, data.timeExtent, alignment);
 
-  // Apply selected traces
-  applySelectedTraces(data.tracks, selectedTraces);
-
-  // Apply rescale traces
-  applyRescaleTraces(data.tracks, rescaleTraces);
+  // Apply state
+  applyState(data.tracks, state);
 
   // Match tracks to phase tracks
   matchPhases(data.tracks, data.phaseTracks);
+
+  // Update track indeces
+  updateTrackIndeces(data.tracks);
 
   // XXX: Switch to generating ids and using that for matching via a selected store?
   function trackId(track) {
     return track.source + ":" + track.species + ":" + track.feature;
   }
 
-  function saveSelectedTraces(tracks) {
-    var selectedTraces = {};
+  function saveState(tracks) {
+    var state = {};
 
     tracks.forEach(function (track) {
       var id = trackId(track);
 
-      selectedTraces[id] = {};
+      var s = {};
+
+      s.selectedTraces = {};
+      [track.average].concat(track.traces).forEach(function (trace) {
+        s.selectedTraces[trace.name] = trace.selected;
+      });
+
+      s.showPhaseOverlay = typeof track.showPhaseOverlay !== "undefined" ?
+                           track.showPhaseOverlay : false;
+
+      s.rescaleTraces = typeof track.rescaleTraces !== "undefined" ?
+                        track.rescaleTraces : false;
+
+      state[id] = s;
+    });
+
+    return state;
+  }
+
+  function applyState(tracks, state) {
+    tracks.forEach(function (track) {
+      var id = trackId(track);
+
+      var s = state[id];
+
+      if (!s) return;
 
       [track.average].concat(track.traces).forEach(function (trace) {
-        selectedTraces[id][trace.name] = trace.selected;
+        trace.selected = s.selectedTraces[trace.name] === true;
       });
-    });
 
-    return selectedTraces;
-  }
+      track.showPhaseOverlay = typeof s.showPhaseOverlay !== "undefined" ?
+                               s.showPhaseOverlay : false;
 
-  function saveRescaleTraces(tracks) {
-    var rescaleTraces = {};
-
-    tracks.forEach(function (track) {
-      var id = trackId(track);
-
-      rescaleTraces[id] = typeof track.rescaleTraces !== "undefined" ?
-                          track.rescaleTraces : false;
-    });
-
-    return rescaleTraces;
-  }
-
-  function applySelectedTraces(tracks, selectedTraces) {
-    tracks.forEach(function (track) {
-      var id = trackId(track);
-
-      [track.average].concat(track.traces).forEach(function (trace) {
-        if (selectedTraces[id]) {
-          trace.selected = selectedTraces[id][trace.name] === true;
-        }
-      });
-    });
-  }
-
-  function applyRescaleTraces(tracks, rescaleTraces) {
-    tracks.forEach(function (track) {
-      var id = trackId(track);
-
-      track.rescaleTraces = typeof rescaleTraces[id] !== "undefined" ?
-                            rescaleTraces[id] : false;
+      track.rescaleTraces = typeof s.rescaleTraces !== "undefined" ?
+                            s.rescaleTraces : false;
     });
   }
 
@@ -162,8 +154,6 @@ function updateData() {
              bi === undefined ? -1 :
              ai - bi;
     });
-
-    updateTrackIndeces(tracks);
 
     return tracks;
 
@@ -659,17 +649,17 @@ function updateTrackIndeces(tracks) {
   });
 
   // Update colors
-  setTrackColors(tracks);
+  setTrackColors();
 }
 
-function setTrackColors(tracks) {
+function setTrackColors() {
   var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
   // Use a nest to group by source
   d3.nest()
       .key(function (track) { return track.source; })
-      .entries(tracks).forEach(function (source) {
-        source.values.forEach( function(track, i, a) {
+      .entries(data.tracks).forEach(function (source) {
+        source.values.forEach(function(track, i, a) {
           // Use array index to change color shade for track
           var fraction = a.length === 1 ? 0 : i / (a.length - 1);
 
@@ -677,10 +667,19 @@ function setTrackColors(tracks) {
           track.color = d3.hsl(track.sourceColor).brighter(fraction);
         });
       });
+
+  // Update phase track color
+  data.phaseTracks.forEach(function (track) {
+    track.sourceColor = colorScale(track.source);
+  });
 }
 
 function selectTrace(trace, selected) {
   trace.selected = selected;
+}
+
+function showPhaseOverlay(track) {
+  track.showPhaseOverlay = !track.showPhaseOverlay;
 }
 
 function rescaleTraces(track) {
@@ -759,6 +758,11 @@ DataStore.dispatchToken = AppDispatcher.register(function (action) {
 
     case Constants.SELECT_TRACE:
       selectTrace(action.trace, action.selected);
+      DataStore.emitChange();
+      break;
+
+    case Constants.SHOW_PHASE_OVERLAY:
+      showPhaseOverlay(action.track);
       DataStore.emitChange();
       break;
 

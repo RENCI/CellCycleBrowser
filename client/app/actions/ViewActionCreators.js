@@ -69,6 +69,12 @@ module.exports = {
       selected: selected
     });
   },
+  showPhaseOverlay: function (track) {
+    AppDispatcher.dispatch({
+      actionType: Constants.SHOW_PHASE_OVERLAY,
+      track: track
+    });
+  },
   rescaleTraces: function (track) {
     AppDispatcher.dispatch({
       actionType: Constants.RESCALE_TRACES,

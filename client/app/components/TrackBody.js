@@ -49,23 +49,8 @@ function TrackBody(props) {
   var averageHeight = 32;
   var traceHeight = 20;
 
-  var phases;
-  var averagePhases;
-
-  if (props.track.source === "Simulation") {
-    phases = props.phases;
-    averagePhases = [props.phaseAverage];
-  }
-  else {
-    phases = props.track.traces.map(function () {
-      return props.activePhases;
-    });
-
-    averagePhases = [props.activePhases];
-  }
-
-  var phaseAverage = props.showPhaseOverlay ? props.track.phaseAverage : [];
-  var phases = props.showPhaseOverlay ? props.track.phases : [];
+  var phaseAverage = props.track.showPhaseOverlay ? props.track.phaseAverage : [];
+  var phases = props.track.showPhaseOverlay ? props.track.phases : [];
 
   var averageExtent = !props.track.rescaleTraces ? [props.track.dataExtent] :
     [extent(props.track.average.values.map(function(v) { return v.value; }))];
