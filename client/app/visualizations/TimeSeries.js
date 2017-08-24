@@ -138,7 +138,7 @@ module.exports = function() {
     function drawAxes() {
       var gAxes = svg.select(".axes");
 
-      // Add rectangle to clip lines past axis
+      // Add rectangle to clip lines past y axis
       var clipWidth = margin.left;
 
       var clip = gAxes.selectAll(".axisClip")
