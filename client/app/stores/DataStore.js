@@ -628,7 +628,7 @@ function sortTracks(sortMethod) {
     return ascending(va, vb);
   });
 
-  updateTrackIndeces(data.tracks);
+  updateTrackIndeces();
 
   function ascending(a, b) {
     return !a && !b ? 0 : !a ? -1 : !b ? 1 : a < b ? -1 : a > b ? 1 : 0;
@@ -640,12 +640,27 @@ function insertTrack(oldIndex, newIndex) {
 
   data.tracks.splice(newIndex, 0, data.tracks.splice(oldIndex, 1)[0]);
 
-  updateTrackIndeces(data.tracks);
+  updateTrackIndeces();
 }
 
-function updateTrackIndeces(tracks) {
-  tracks.forEach(function (d, i) {
+function updateTrackIndeces() {
+  data.tracks.forEach(function (d, i) {
     d.index = i;
+  });
+
+  // Sort phase tracks based on tracks
+  var sources = data.tracks.map(function (track) {
+    return track.source;
+  });
+
+  data.phaseTracks.sort(function (a, b) {
+    var ai = sources.indexOf(a.source);
+    var bi = sources.indexOf(b.source);
+
+    if (ai === -1) ai = sources.length;
+    if (bi === -1) bi = sources.length;
+
+    return d3.ascending(ai, bi);
   });
 
   // Update colors
