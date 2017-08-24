@@ -37,9 +37,9 @@ module.exports = function() {
       var g = svgEnter.append("g").attr("class", "chart");
 
       // Groups for layout
-      g.append("g").attr("class", "axes");
       g.append("g").attr("class", "curves");
       g.append("g").attr("class", "averageCurves");
+      g.append("g").attr("class", "axes");
 
       svg = svgEnter.merge(svg);
 
@@ -137,6 +137,21 @@ module.exports = function() {
 
     function drawAxes() {
       var gAxes = svg.select(".axes");
+
+      // Add rectangle to clip lines past axis
+      var clipWidth = margin.left;
+
+      var clip = gAxes.selectAll(".axisClip")
+          .data([0]);
+
+      clip.enter().append("rect")
+          .attr("class", "axisClip")
+          .style("fill", "white")
+        .merge(clip)
+          .attr("x", -clipWidth)
+          .attr("y", 0)
+          .attr("width", clipWidth)
+          .attr("height", innerHeight());
 
       // X axis
       var xAxisScale = d3.scaleLinear()
