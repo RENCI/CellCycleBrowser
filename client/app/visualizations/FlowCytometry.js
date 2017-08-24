@@ -14,7 +14,10 @@ module.exports = function() {
       // Data
       data = [],
       contours = [],
+
+      // Appearance
       source = "",
+      color = "darkblue",
 
       // Scales
       xScale = d3.scaleLog(),
@@ -173,11 +176,14 @@ module.exports = function() {
 
     function drawPoints() {
       // Create color scale from contour contours
-//      var colorScale = d3.scaleSequential(d3.interpolateViridis)
+      var c1 = d3.hsl(color);
+      c1.s *= 0.2;
+      c1.l *= 0.2;
+
       var contourExtent = d3.extent(contours, function(d) { return d.value; }),
           colorScale = d3.scaleLinear()
               .domain(contourExtent)
-              .range(["dodgerblue", "darkblue"]);
+              .range([c1, color]);
 
       // Bind cell data
       var point = svg.select(".points").selectAll(".point")
@@ -192,12 +198,12 @@ module.exports = function() {
         .merge(point)
           .attr("cx", function(d) { return xScale(d.x); })
           .attr("cy", function(d) { return yScale(d.y); })
-          .style("fill", color);
+          .style("fill", fill);
 
       // Exit
       point.exit().remove();
 
-      function color(d) {
+      function fill(d) {
         for (var i = contours.length - 1; i >= 0; i--) {
           var c = contours[i];
 
@@ -281,6 +287,12 @@ module.exports = function() {
   flowCytometry.source = function(_) {
     if (!arguments.length) return source;
     source = _;
+    return flowCytometry;
+  };
+
+  flowCytometry.color = function(_) {
+    if (!arguments.length) return color;
+    color = _;
     return flowCytometry;
   };
 

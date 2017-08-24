@@ -129,7 +129,8 @@ var FlowCytometryContainer = React.createClass ({
 
     plot.enter().append("div").merge(plot)
         .each(function(d, i) {
-          vis.source(state.tracks[i].source);
+          var track = state.tracks[i];
+          vis.source(track.source).color(track.sourceColor);
           d3.select(this).call(vis);
         });
 
