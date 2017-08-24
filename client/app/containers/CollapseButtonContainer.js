@@ -10,7 +10,7 @@ var CollapseButtonContainer = React.createClass ({
   },
   getInitialState: function () {
     return {
-      collapse: true
+      collapse: false
     };
   },
   handleClick: function (e) {
