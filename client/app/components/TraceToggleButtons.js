@@ -1,12 +1,12 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
-var ToggleButton = require("./ToggleButton");
+var ToggleButtonContainer = require("../containers/ToggleButtonContainer");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
-function TraceToggleButtons(props) {
+function TraceToggleButtonContainers(props) {
   var style = {
     width: props.width,
-    height: props.height
+    height: props.height,
   };
 
   var buttons = props.traces.map(function (trace, i) {
@@ -16,7 +16,7 @@ function TraceToggleButtons(props) {
 
     return (
       <div key={i} style={style}>
-        <ToggleButton
+        <ToggleButtonContainer
           selected={trace.selected}
           onClick={handleClick} />
       </div>
@@ -30,10 +30,10 @@ function TraceToggleButtons(props) {
   );
 }
 
-TraceToggleButtons.propTypes = {
+TraceToggleButtonContainers.propTypes = {
   traces: PropTypes.arrayOf(PropTypes.object).isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired
 };
 
-module.exports = TraceToggleButtons;
+module.exports = TraceToggleButtonContainers;
