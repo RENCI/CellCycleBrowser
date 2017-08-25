@@ -68,9 +68,6 @@ function TrackBody(props) {
     return [Math.min.apply(null, values), Math.max.apply(null, values)];
   }
 
-//  var collapseClasses = "row collapse" + (props.track.collapse ? "" : " in");
-  var collapseClasses = "row collapse in";
-
   return (
       <div>
         <div className="row" style={rowStyle}>
@@ -96,7 +93,7 @@ function TrackBody(props) {
               height={averageHeight} />
           </div>
         </div>
-        <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
+        <div className="row collapse in" id={collapseId} style={collapseRowStyle}>
           <div className="col-xs-2" style={traceButtonColumnStyle}>
             <div style={{float:"right"}}>
               <TraceToggleButtons
