@@ -23,7 +23,7 @@ var data = {
 
 function updateData() {
   // Kep track of state
-  var state = saveState(data.tracks);
+  var state = saveState(data.tracks, data.phaseTracks);
 
   // Create tracks
   data.tracks = createTracks(data.tracks, datasets, simulationOutput);
@@ -44,7 +44,7 @@ function updateData() {
   alignPhases(data.phaseTracks, data.timeExtent, alignment);
 
   // Apply state
-  applyState(data.tracks, state);
+  applyState(data.tracks, data.phaseTracks, state);
 
   // Match tracks to phase tracks
   matchPhases(data.tracks, data.phaseTracks);
@@ -57,7 +57,7 @@ function updateData() {
     return track.source + ":" + track.species + ":" + track.feature;
   }
 
-  function saveState(tracks) {
+  function saveState(tracks, phaseTracks) {
     var state = {};
 
     tracks.forEach(function (track) {
@@ -70,11 +70,19 @@ function updateData() {
         s.selectedTraces[trace.name] = trace.selected;
       });
 
-      s.showPhaseOverlay = typeof track.showPhaseOverlay !== "undefined" ?
-                           track.showPhaseOverlay : false;
+      s.collapse = track.collapse;
+      s.showPhaseOverlay = track.showPhaseOverlay;
+      s.rescaleTraces = track.rescaleTraces;
 
-      s.rescaleTraces = typeof track.rescaleTraces !== "undefined" ?
-                        track.rescaleTraces : false;
+      state[id] = s;
+    });
+
+    phaseTracks.forEach(function (track) {
+      var id = trackId(track);
+
+      var s = {};
+
+      s.collapse = track.collapse;
 
       state[id] = s;
     });
@@ -82,23 +90,35 @@ function updateData() {
     return state;
   }
 
-  function applyState(tracks, state) {
+  function applyState(tracks, phaseTracks, state) {
     tracks.forEach(function (track) {
       var id = trackId(track);
 
       var s = state[id];
 
-      if (!s) return;
+      if (s) {
+        [track.average].concat(track.traces).forEach(function (trace) {
+          trace.selected = s.selectedTraces[trace.name] === true;
+        });
+      }
 
-      [track.average].concat(track.traces).forEach(function (trace) {
-        trace.selected = s.selectedTraces[trace.name] === true;
-      });
+      track.collapse = !s || typeof s.collapse === "undefined" ?
+                       false : s.collapse;
 
-      track.showPhaseOverlay = typeof s.showPhaseOverlay !== "undefined" ?
-                               s.showPhaseOverlay : false;
+      track.showPhaseOverlay = !s || typeof s.showPhaseOverlay === "undefined"?
+                               false : s.showPhaseOverlay;
 
-      track.rescaleTraces = typeof s.rescaleTraces !== "undefined" ?
-                            s.rescaleTraces : false;
+      track.rescaleTraces = !s || typeof s.rescaleTraces === "undefined" ?
+                            false : s.rescaleTraces;
+    });
+
+    phaseTracks.forEach(function (track) {
+      var id = trackId(track);
+
+      var s = state[id];
+
+      track.collapse = !s || typeof s.collapse === "undefined" ?
+                       false : s.collapse;
     });
   }
 
@@ -687,6 +707,10 @@ function setTrackColors() {
   data.phaseTracks.forEach(function (track) {
     track.sourceColor = colorScale(track.source);
   });
+}
+
+function collapseTrack(track) {
+  track.collapse = !track.collapse;
 }
 
 function selectTrace(trace, selected) {

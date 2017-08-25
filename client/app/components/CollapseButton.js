@@ -15,17 +15,17 @@ function CollapseButton(props) {
     <button
       type="button"
       className="btn btn-default text-center"
-      data-toggle="collapse"
-      data-target={"#" + props.targetId}
       style={buttonStyle}
       onClick={props.onClick}>
-        {props.children}
+        {props.collapse ?
+          <span className="glyphicon glyphicon-plus" /> :
+          <span className="glyphicon glyphicon-minus" />}
     </button>
   );
 }
 
 CollapseButton.propTypes = {
-  targetId: PropTypes.string.isRequired,
+  collapse: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired
 };
 

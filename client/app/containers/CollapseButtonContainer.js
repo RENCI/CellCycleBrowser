@@ -1,32 +1,37 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButton = require("../components/CollapseButton");
-var ViewActionCreators = require("../actions/ViewActionCreators");
 var AlignmentStore = require("../stores/AlignmentStore");
 
 var CollapseButtonContainer = React.createClass ({
   propTypes: {
-    targetId: PropTypes.string.isRequired
+    targetId: PropTypes.string.isRequired,
+    track: PropTypes.object.isRequired,
   },
   getInitialState: function () {
     return {
-      collapse: false
+      toggle: false
     };
   },
-  handleClick: function (e) {
+  componentDidUpdate: function () {
+    // Use jquery to hid/show collapsed area
+    $("#" + this.props.targetId).collapse(this.props.track.collapse ? "hide" : "show");
+  },
+  handleClick: function () {
+    // Store collapse with track. No need to go through DataStore, as no other
+    // component cares about this
+    this.props.track.collapse = !this.props.track.collapse;
+
+    // Trigger a re-rendering
     this.setState({
-      collapse: !this.state.collapse
+      toggle: !this.state.collapse
     });
   },
   render: function () {
     return (
       <CollapseButton
-        targetId={this.props.targetId}
-        onClick={this.handleClick}>
-          {this.state.collapse ?
-            <span className="glyphicon glyphicon-plus" /> :
-            <span className="glyphicon glyphicon-minus" />}
-      </CollapseButton>
+        collapse={this.props.track.collapse}
+        onClick={this.handleClick} />
     );
   }
 });

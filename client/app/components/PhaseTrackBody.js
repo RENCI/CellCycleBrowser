@@ -47,7 +47,9 @@ function PhaseTrackBody(props) {
     <div>
       <div className="row" style={rowStyle}>
         <div className="col-xs-2 text-left" style={buttonColumnStyle}>
-          <CollapseButtonContainer targetId={collapseId} />
+          <CollapseButtonContainer
+            targetId={collapseId}
+            track={props.track} />
         </div>
         <div className="col-xs-10" style={visColumnStyle}>
           <PhaseMapContainer
@@ -59,7 +61,7 @@ function PhaseTrackBody(props) {
             isAverage={true} />
         </div>
       </div>
-      <div className="row in" id={collapseId} style={collapseRowStyle}>
+      <div className="row collapse in" id={collapseId} style={collapseRowStyle}>
         <div className="col-xs-10 col-xs-offset-2" style={collapseColumnStyle}>
           <PhaseMapContainer
             data={props.track.traces}
