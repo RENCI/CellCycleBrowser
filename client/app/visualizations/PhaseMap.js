@@ -115,12 +115,11 @@ module.exports = function () {
               return colorScale(d.name);
             })
             .style("rx", yScale.bandwidth() / 4)
-            .style("ry", yScale.bandwidth() / 4);
-/*
+            .style("ry", yScale.bandwidth() / 4)
             .on("mouseover", function() {
               var w = 1;
 
-              d3.select(this.parentNode).selectAll(".cell")
+              d3.select(this)
                 .attr("x", function(d) { return x(d) + w / 2; })
                 .attr("y", strokeWidth / 2 + w / 2)
                 .attr("width", function(d) { return Math.max(width(d) - w, 0); })
@@ -128,13 +127,14 @@ module.exports = function () {
                 .style("stroke-width", strokeWidth + w);
             })
             .on("mouseout", function () {
-              d3.select(this.parentNode).selectAll(".cell")
+              d3.select(this)
                 .attr("x", x)
                 .attr("y", strokeWidth / 2)
                 .attr("width", width)
                 .attr("height", yScale.bandwidth() - strokeWidth)
                 .style("stroke-width", strokeWidth);
-            })
+            });
+/*
             .on("click", function() {
               var selected = activeIndex === rowIndex.toString();
 
