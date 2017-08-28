@@ -29,6 +29,9 @@ function SpeciesPhaseSliders(props) {
   var colorScale = d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
       .domain(props.phases);
 
+  var colorBlendScale = d3.scaleLinear()
+      .domain([0, 1]);
+
   // TODO: Move to global settings somewhere
   var epsilon = Number.EPSILON;
   var linkColorScale = d3.scaleLinear()
@@ -77,6 +80,9 @@ function SpeciesPhaseSliders(props) {
                  (i === activeIndex) ||
                  phase === props.activePhase;
 
+    var color = colorScale(phase);
+    colorBlendScale.range(["white", color]);
+
     function onClick() {
       if (props.activePhase === "" || !isNaN(activeIndex)) {
         ViewActionCreators.selectPhase(i + "");
@@ -95,13 +101,20 @@ function SpeciesPhaseSliders(props) {
             <a
               href={"#" + tabId}
               data-toggle="tab"
-              style={{backgroundColor: colorScale(phase), color: "black"}}>
+              style={{
+                borderLeft: "2px solid " + color,
+                borderTop: "2px solid " + color,
+                borderRight: "2px solid " + color,
+                backgroundColor: active ? colorBlendScale(0.5) : "white",
+                color: "black"
+              }}>
                 {phase}
             </a>
         </li>
       ),
       content: (
         <div
+          key={i}
           id={tabId}
           className={"tab-pane fade" + (active ? " in active" : "")}
           style={{
@@ -114,8 +127,7 @@ function SpeciesPhaseSliders(props) {
             marginBottom: 10,
             borderBottomLeftRadius: 5,
             borderBottomRightRadius: 5
-          }}
-          key={i}>
+          }}>
             {sliders}
         </div>
       )
