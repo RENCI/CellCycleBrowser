@@ -30,7 +30,8 @@ PhaseTrack.propTypes = {
   track: PropTypes.object.isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   activeTrajectory: PropTypes.string,
-  colorScale: PropTypes.func.isRequired
+  colorScale: PropTypes.func.isRequired,
+  alignment: PropTypes.string.isRequired
 };
 
 module.exports = PhaseTrack;

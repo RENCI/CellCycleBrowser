@@ -125,7 +125,8 @@ var BrowserContainer = React.createClass({
           timeExtent={this.state.data.timeExtent}
           activeTrajectory={this.state.activeTrajectory}
           activePhase={this.state.activePhase}
-          colorScale={this.state.phaseColorScale} />
+          colorScale={this.state.phaseColorScale}
+          alignment={this.state.alignment} />
       );
     }.bind(this));
 

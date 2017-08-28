@@ -10,6 +10,7 @@ module.exports = function () {
       timeExtent,
       activeIndex = "",
       drawLabels = false,
+      alignment = "left",
 
       // Scales
       colorScale,
@@ -179,7 +180,12 @@ module.exports = function () {
         }
 
         function label(d) {
-          return d.name + ": " + format(d.stop - d.start) + "h";
+          var length = d.stop - d.start,
+              time = alignment === "justify" ?
+                     format(length / (row[row.length - 1].stop - row[0].start) * 100) + "%" :
+                     format(length) + "h";
+
+          return d.name + ": " + time;
         }
 
         function highlightColor(d, x) {
@@ -226,6 +232,12 @@ module.exports = function () {
   phaseMap.drawLabels = function(_) {
     if (!arguments.length) return drawLabels;
     drawLabels = _;
+    return phaseMap;
+  };
+
+  phaseMap.alignment = function(_) {
+    if (!arguments.length) return alignment;
+    alignment = _;
     return phaseMap;
   };
 

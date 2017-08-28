@@ -58,7 +58,8 @@ function PhaseTrackBody(props) {
             activeIndex={props.activeTrajectory === "average" ? "0" : "-1"}
             colorScale={props.colorScale}
             height={averageHeight}
-            isAverage={true} />
+            isAverage={true}
+            alignment={props.alignment} />
         </div>
       </div>
       <div className="row collapse in" id={collapseId} style={collapseRowStyle}>
@@ -69,7 +70,8 @@ function PhaseTrackBody(props) {
             activeIndex={props.activeTrajectory && props.activeTrajectory !== "average" ?
                          props.activeTrajectory : "-1"}
             colorScale={props.colorScale}
-            height={props.track.traces.length * trackHeight} />
+            height={props.track.traces.length * trackHeight}
+            alignment={props.alignment}  />
         </div>
       </div>
     </div>
@@ -80,7 +82,8 @@ PhaseTrackBody.propTypes = {
   track: PropTypes.object.isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   activeTrajectory: PropTypes.string,
-  colorScale: PropTypes.func.isRequired
+  colorScale: PropTypes.func.isRequired,
+  alignment: PropTypes.string.isRequired
 };
 
 module.exports = PhaseTrackBody;
