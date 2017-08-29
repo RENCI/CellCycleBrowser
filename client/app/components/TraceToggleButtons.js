@@ -6,7 +6,7 @@ var ViewActionCreators = require("../actions/ViewActionCreators");
 function TraceToggleButtonContainers(props) {
   var style = {
     width: props.width,
-    height: props.height,
+    height: props.height
   };
 
   var buttons = props.traces.map(function (trace, i) {
@@ -24,7 +24,7 @@ function TraceToggleButtonContainers(props) {
   });
 
   return (
-    <div>
+    <div style={{marginTop: props.traces.length > 1 ? 1 : 0}}>
       {buttons}
     </div>
   );
