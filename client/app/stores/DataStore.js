@@ -185,11 +185,11 @@ function updateData() {
         return d.active;
       }).forEach(function (dataset) {
         dataset.species.forEach(function (species) {
-          dataset.features.filter(function(d) {
-            return d.active;
+          dataset.features.filter(function (feature) {
+            return feature.active;
           }).forEach(function (feature) {
             // Ignore phases
-            if (feature.name.indexOf("SphaseClassification") === -1) return;
+            if (feature.name.indexOf("SphaseClassification") !== -1) return;
 
             var traces = [];
             species.cells.forEach(function (cell) {
