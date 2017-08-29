@@ -6,7 +6,8 @@ var ViewActionCreators = require("../actions/ViewActionCreators");
 function TraceToggleButtonContainers(props) {
   var style = {
     width: props.width,
-    height: props.height
+    height: props.height,
+    cursor: "pointer"
   };
 
   var buttons = props.traces.map(function (trace, i) {
