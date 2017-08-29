@@ -6,6 +6,7 @@ var SimulationParameterSliders = require("../components/SimulationParameterSlide
 var ExpressionLevelSliders = require("../components/ExpressionLevelSliders");
 var SpeciesPhaseSliders = require("../components/SpeciesPhaseSliders");
 var SpeciesSpeciesSliders = require("../components/SpeciesSpeciesSliders");
+var PhaseColorStore = require("../stores/PhaseColorStore");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var WebAPIUtils = require("../utils/WebAPIUtils");
 
@@ -23,6 +24,12 @@ function getStateFromSimulationControlStore() {
   };
 }
 
+function getStateFromPhaseColorStore() {
+  return {
+    phaseColorScale: PhaseColorStore.getColorScale()
+  };
+}
+
 function getStateFromPhaseStore() {
   return {
     activePhase: PhaseStore.getPhase()
@@ -33,22 +40,28 @@ var ControlsContainer = React.createClass ({
   getInitialState: function () {
     return {
       controls: SimulationControlStore.getControls(),
+      phaseColorScale: PhaseColorStore.getColorScale(),
       activePhase: PhaseStore.getPhase(),
       collapseToggle: false
     };
   },
   componentDidMount: function () {
-    SimulationControlStore.addChangeListener(this.onSimulationControlStoreChange);
-    PhaseStore.addChangeListener(this.onPhaseStoreChange);
+    SimulationControlStore.addChangeListener(this.onSimulationControlChange);
+    PhaseColorStore.addChangeListener(this.onPhaseColorChange);
+    PhaseStore.addChangeListener(this.onPhaseChange);
   },
   componentWillUnmount: function () {
-    SimulationControlStore.removeChangeListener(this.onSimulationControlStoreChange);
-    PhaseStore.removeChangeListener(this.onPhaseStoreChange);
+    SimulationControlStore.removeChangeListener(this.onSimulationControlChange);
+    PhaseColorStore.removeChangeListener(this.onPhaseColorChange);
+    PhaseStore.removeChangeListener(this.onPhaseChange);
   },
-  onSimulationControlStoreChange: function () {
+  onSimulationControlChange: function () {
     this.setState(getStateFromSimulationControlStore());
   },
-  onPhaseStoreChange: function () {
+  onPhaseColorChange: function () {
+    this.setState(getStateFromPhaseColorStore());
+  },
+  onPhaseChange: function () {
     this.setState(getStateFromPhaseStore());
   },
   handleCollapse: function () {
@@ -99,6 +112,7 @@ var ControlsContainer = React.createClass ({
           species={this.state.controls.species}
           phases={this.state.controls.phases}
           matrix={this.state.controls.speciesPhaseMatrix}
+          phaseColorScale={this.state.phaseColorScale}
           activePhase={this.state.activePhase}
           onChange={this.handleSpeciesPhaseSliderChange}
           onCollapse={this.handleCollapse} />
@@ -106,6 +120,7 @@ var ControlsContainer = React.createClass ({
           species={this.state.controls.species}
           phases={this.state.controls.phases}
           matrices={this.state.controls.speciesSpeciesMatrices}
+          phaseColorScale={this.state.phaseColorScale}
           activePhase={this.state.activePhase}
           onChange={this.handleSpeciesSpeciesSliderChange}
           onCollapse={this.handleCollapse} />

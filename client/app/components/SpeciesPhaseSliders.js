@@ -66,6 +66,7 @@ function SpeciesPhaseSliders(props) {
       onCollapse={props.onCollapse}>
         <PhaseTabs
           phases={props.phases}
+          phaseColorScale={props.phaseColorScale}
           activePhase={props.activePhase}>
             {sliders}
         </PhaseTabs>
@@ -77,6 +78,7 @@ SpeciesPhaseSliders.propTypes = {
   species: PropTypes.arrayOf(PropTypes.string).isRequired,
   phases: PropTypes.arrayOf(PropTypes.string).isRequired,
   matrix: PropTypes.object.isRequired,
+  phaseColorScale: PropTypes.func.isRequired,
   activePhase: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   onCollapse: PropTypes.func.isRequired

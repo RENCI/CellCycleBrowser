@@ -2,17 +2,12 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var d3 = require("d3");
-var d3ScaleChromatic = require("d3-scale-chromatic");
 
 var tabStyle = {
   marginTop: 5
 };
 
 function PhaseTabs(props) {
-  // TODO: Move to global settings somewhere
-  var colorScale = d3.scaleOrdinal(d3ScaleChromatic.schemeAccent)
-      .domain(props.phases);
-
   var colorBlendScale = d3.scaleLinear()
       .domain([0, 1]);
 
@@ -27,7 +22,7 @@ function PhaseTabs(props) {
                  (i === activeIndex) ||
                  phase === props.activePhase;
 
-    var color = colorScale(phase);
+    var color = props.phaseColorScale(phase);
     colorBlendScale.range(["white", color]);
 
     function onClick() {
@@ -67,7 +62,7 @@ function PhaseTabs(props) {
           style={{
             borderStyle: "solid",
             borderWidth: 2,
-            borderColor: colorScale(phase),
+            borderColor: color,
             paddingLeft: 10,
             paddingRight: 10,
             paddingTop: 10,
