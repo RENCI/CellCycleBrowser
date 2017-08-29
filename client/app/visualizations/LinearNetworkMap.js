@@ -14,7 +14,7 @@ module.exports = function() {
       links,
 
       // Layout
-      // XXX: Would be nice to use a separate simualtion for each phases,
+      // XXX: Would be nice to use a separate simulation for each phases,
       // but it seems that only one simulation can be active at a time
       force = d3.forceSimulation()
           .force("x", d3.forceX(function(d) {
