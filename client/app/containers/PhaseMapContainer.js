@@ -39,9 +39,6 @@ var PhaseMapContainer = React.createClass({
 
     return false;
   },
-  onPhaseColorChange: function () {
-    this.setState(getStateFromPhaseColorStore());
-  },
   onResize: function () {
     this.resize();
   },
