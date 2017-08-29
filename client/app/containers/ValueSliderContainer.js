@@ -5,10 +5,10 @@ var ValueSlider = require("../components/ValueSlider");
 
 var ValueSliderContainer = React.createClass ({
   propTypes: {
-    // initialValue: PropTypes.number XXX: Should have initialValue here
     min: PropTypes.number,
     max: PropTypes.number,
     step: PropTypes.number,
+    initialValue: PropTypes.number,
     value: PropTypes.number,
     handleRadius: PropTypes.number,
     handleColorScale: PropTypes.func,
@@ -19,6 +19,7 @@ var ValueSliderContainer = React.createClass ({
       min: 0,
       max: 1,
       step: 0.1,
+      initialValue: 0.5,
       value: 0.5,
       handleRadius: 8,
       handleColorScale: null
@@ -26,8 +27,6 @@ var ValueSliderContainer = React.createClass ({
   },
   getInitialState: function () {
     return {
-      initialValue: this.props.value,
-      value: this.props.value,
       width: 200
     };
   },
@@ -89,20 +88,12 @@ var ValueSliderContainer = React.createClass ({
 
     var value = this.transformPoint(e);
 
-    this.setState({
-      value: value
-    });
-
     this.props.onChange(value);
   },
   handleMouseMove: function (e) {
     e.stopPropagation();
 
     var value = this.transformPoint(e);
-
-    this.setState({
-      value: value
-    });
 
     this.props.onChange(value);
   },
@@ -113,11 +104,7 @@ var ValueSliderContainer = React.createClass ({
   handleDoubleClick: function (e) {
     e.preventDefault();
 
-    this.setState({
-      value: this.state.initialValue
-    });
-
-    this.props.onChange(this.state.initialValue);
+    this.props.onChange(this.props.initialValue);
   },
   registerMouseCallbacks: function () {
     document.addEventListener("mousemove", this.handleMouseMove);
@@ -131,18 +118,18 @@ var ValueSliderContainer = React.createClass ({
     var handleColor = initialValueColor = "white";
 
     if (this.props.handleColorScale) {
-      handleColor = this.props.handleColorScale(this.state.value);
-      initialValueColor = this.props.handleColorScale(this.state.initialValue);
+      handleColor = this.props.handleColorScale(this.props.value);
+      initialValueColor = this.props.handleColorScale(this.props.initialValue);
     }
 
     return (
       <div ref="wrapper">
         <ValueSlider
-          initialValue={this.state.initialValue}
           min={this.props.min}
           max={this.props.max}
           step={this.props.step}
-          value={this.state.value}
+          initialValue={this.props.initialValue}
+          value={this.props.value}
           width={this.state.width}
           handleRadius={this.props.handleRadius}
           handleColor={handleColor}

@@ -72,10 +72,13 @@ function createControls(model) {
   controls.species.forEach(function (species, i) {
     controls.speciesPhaseMatrix[species] = {};
     controls.phases.forEach(function (phase, j) {
+      var value = model.speciesPhaseMatrix[i][j];
+
       controls.speciesPhaseMatrix[species][phase] = {
         min: -10,
         max: 10,
-        value: model.speciesPhaseMatrix[i][j]
+        initialValue: value,
+        value: value
       };
     });
   });
@@ -89,10 +92,13 @@ function createControls(model) {
       controls.species.forEach(function (downstream, k) {
         if (j === k) return;
 
+        var value = model.speciesMatrices[i][j][k];
+
         controls.speciesSpeciesMatrices[phase][upstream][downstream] = {
           min: -10,
           max: 10,
-          value: model.speciesMatrices[i][j][k]
+          initialValue: value,
+          value: value
         };
       });
     });

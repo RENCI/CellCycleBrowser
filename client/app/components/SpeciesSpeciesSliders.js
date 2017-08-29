@@ -30,7 +30,7 @@ function valueLabel(value) {
 function SpeciesSpeciesSliders(props) {
   if (props.species.length <= 1) return null;
 
-  var sliders = props.phases.map(function (phase, i) {
+  var phaseSliders = props.phases.map(function (phase, i) {
     var sliders = [];
     props.species.forEach(function (upstream, j) {
       props.species.forEach(function (downstream, k) {
@@ -68,6 +68,7 @@ function SpeciesSpeciesSliders(props) {
               <ValueSliderContainer
                 min={value.min}
                 max={value.max}
+                initialValue={value.initialValue}
                 value={value.value}
                 handleColorScale={interactionColorScale}
                 onChange={handleChange} />
@@ -104,7 +105,7 @@ function SpeciesSpeciesSliders(props) {
           phases={props.phases}
           phaseColorScale={props.phaseColorScale}
           activePhase={props.activePhase}>
-            {sliders}
+            {phaseSliders}
         </PhaseTabs>
     </Collapsible>
   );

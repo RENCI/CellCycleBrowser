@@ -44,6 +44,7 @@ function SpeciesPhaseSliders(props) {
             <ValueSliderContainer
               min={value.min}
               max={value.max}
+              initialValue={value.initialValue}
               value={value.value}
               handleColorScale={interactionColorScale}
               onChange={handleChange} />

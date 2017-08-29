@@ -52,6 +52,7 @@ function ExpressionLevelSliders(props) {
           <ValueSliderContainer
             min={value.min}
             max={value.max}
+            initialValue={0}
             value={value.exponent}
             onChange={handleChange} />
         </div>
