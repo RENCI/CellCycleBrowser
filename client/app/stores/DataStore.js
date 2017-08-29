@@ -189,7 +189,7 @@ function updateData() {
             return d.active;
           }).forEach(function (feature) {
             // Ignore phases
-            if (feature.name.indexOf("phase") !== -1) return;
+            if (feature.name.indexOf("SphaseClassification") === -1) return;
 
             var traces = [];
             species.cells.forEach(function (cell) {
@@ -475,7 +475,7 @@ function updateData() {
             return d.active;
           }).forEach(function (feature) {
             // Ignore non-phases
-            if (feature.name.indexOf("phase") === -1) return;
+            if (feature.name.indexOf("SphaseClassification") === -1) return;
 
             var traces = [];
             species.cells.forEach(function (cell) {
