@@ -12,7 +12,8 @@ var PhaseMapContainer = React.createClass({
     activeIndex: PropTypes.string.isRequired,
     colorScale: PropTypes.func.isRequired,
     height: PropTypes.number.isRequired,
-    isAverage: PropTypes.bool
+    isAverage: PropTypes.bool,
+    alignment: PropTypes.string.isRequired
   },
   getDefautProps: {
     isAverage: false
@@ -52,6 +53,7 @@ var PhaseMapContainer = React.createClass({
         .timeExtent(props.timeExtent)
         .activeIndex(props.activeIndex)
         .drawLabels(props.isAverage)
+        .alignment(props.alignment);
 
     // Draw phase map
     d3.select(this.getNode())
