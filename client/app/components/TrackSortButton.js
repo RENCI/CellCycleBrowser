@@ -19,7 +19,7 @@ function TrackSortButton(props) {
       title={props.toolTip}
       onClick={props.onClick}>
         <span
-          className="glyphicon glyphicon-arrow-down"
+          className="glyphicon glyphicon-sort-by-attributes"
           style={iconStyle} />
     </label>
   );
