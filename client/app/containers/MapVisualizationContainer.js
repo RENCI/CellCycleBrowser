@@ -3,11 +3,14 @@ var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
 var SimulationControlStore = require("../stores/SimulationControlStore");
 var PhaseColorStore = require("../stores/PhaseColorStore");
+var InteractionColorStore = require("../stores/InteractionColorStore");
 var PhaseStore = require("../stores/PhaseStore");
 var d3 = require("d3");
 //var NetworkMap = require("../visualizations/NetworkMap");
 var LinearNetworkMap2 = require("../visualizations/LinearNetworkMap2");
 var ViewActionCreators = require("../actions/ViewActionCreators");
+
+var interactionColorScale = InteractionColorStore.getColorScale();
 
 function createModel(controls) {
   // Convert controls to model
@@ -119,6 +122,7 @@ var MapVisualizationContainer = React.createClass ({
         .width(props.width)
         .height(props.width * this.state.model.phases.length * 0.5)
         .phaseColorScale(state.phaseColorScale)
+        .interactionColorScale(interactionColorScale)
         .selectPhase(state.phase);
 
     d3.select(ReactDOM.findDOMNode(this))

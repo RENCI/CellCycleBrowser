@@ -26,9 +26,7 @@ module.exports = function() {
       // Scales
       // TODO: Move color scales to global settings somewhere
       phaseColorScale = d3.scaleOrdinal(),
-      interactionColorScale = d3.scaleLinear()
-          .domain([-10, -Number.EPSILON, 0, Number.EPSILON, 10])
-          .range(["#00d", "#bbd", "#ccc", "#dbb", "#d00"]),
+      interactionColorScale = d3.scaleLinear(),
       nodeRadiusScale = d3.scaleLinear()
           .range([1, 12]),
 
@@ -670,6 +668,12 @@ module.exports = function() {
   linearNetworkMap.phaseColorScale = function(_) {
     if (!arguments.length) return phaseColorScale;
     phaseColorScale = _;
+    return linearNetworkMap;
+  };
+
+  linearNetworkMap.interactionColorScale = function(_) {
+    if (!arguments.length) return interactionColorScale;
+    interactionColorScale = _;
     return linearNetworkMap;
   };
 

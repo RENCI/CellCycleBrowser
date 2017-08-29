@@ -3,6 +3,7 @@ var PropTypes = React.PropTypes;
 var Collapsible = require("../components/Collapsible");
 var PhaseTabs = require("../components/PhaseTabs");
 var ValueSliderContainer = require("../containers/ValueSliderContainer");
+var InteractionColorStore = require("../stores/InteractionColorStore");
 var d3 = require("d3");
 
 var hrStyle = {
@@ -20,18 +21,14 @@ var valueStyle = {
   marginLeft: 5
 };
 
+var interactionColorScale = InteractionColorStore.getColorScale();
+
 function valueLabel(value) {
   return Math.round(value.value);
 }
 
 function SpeciesSpeciesSliders(props) {
   if (props.species.length <= 1) return null;
-
-  // TODO: Move to global settings somewhere
-  var epsilon = Number.EPSILON;
-  var linkColorScale = d3.scaleLinear()
-      .domain([-10, -epsilon, 0, epsilon, 10])
-      .range(["#00d", "#bbd", "#ccc", "#dbb", "#d00"]);
 
   var sliders = props.phases.map(function (phase, i) {
     var sliders = [];
@@ -72,7 +69,7 @@ function SpeciesSpeciesSliders(props) {
                 min={value.min}
                 max={value.max}
                 value={value.value}
-                handleColorScale={linkColorScale}
+                handleColorScale={interactionColorScale}
                 onChange={handleChange} />
             </div>
             <div className="text-left" style={labelStyle}>
