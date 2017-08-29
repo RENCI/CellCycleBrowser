@@ -27,6 +27,8 @@ var DatasetSelectContainer = React.createClass ({
   },
   componentWillUnmount: function () {
     DatasetStore.removeChangeListener(this.onDatasetChange);
+
+    document.removeEventListener("click", this.handleDocumentClick);
   },
   componentDidUpdate: function () {
     // Do some jQuery to get popovers working
@@ -115,8 +117,30 @@ var DatasetSelectContainer = React.createClass ({
     this.setState(getStateFromStore);
   },
   handleClick: function () {
+    if (!this.state.popoverActive){
+      document.addEventListener("click", this.handleDocumentClick);
+    }
+    else {
+      document.removeEventListener("click", this.handleDocumentClick);
+    }
+
     this.setState({
       popoverActive: !this.state.popoverActive
+    });
+  },
+  handleDocumentClick: function (e) {
+    for (var i = 0; i < e.path.length; i++) {
+      if (e.path[i].className === "popover-content") {
+        // Should be child of the DatasetSelect, so ignore
+        return;
+      }
+    };
+
+    // Clicked outside of DatasetSelect
+    document.removeEventListener("click", this.handleDocumentClick);
+
+    this.setState({
+      popoverActive: false
     });
   },
   render: function () {
