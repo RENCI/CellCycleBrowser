@@ -15,8 +15,6 @@ module.exports = function() {
       currentPhase,
 
       // Layout
-      // XXX: Would be nice to use a separate simualtion for each phases,
-      // but it seems that only one simulation can be active at a time
       nodePathLine = d3.line()
           .curve(d3.curveCardinal)
           .x(function(d) { return d.x; })
