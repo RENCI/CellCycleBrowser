@@ -95,6 +95,12 @@ var ValueSliderContainer = React.createClass ({
 
     var value = this.transformPoint(e);
 
+    // Make sure it is possible to select zero
+    if ((this.props.value > 0 && value < 0) ||
+        (this.props.value < 0 && value > 0)) {
+      value = 0;
+    }
+
     this.props.onChange(value);
   },
   handleMouseUp: function () {
