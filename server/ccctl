@@ -32,7 +32,9 @@ cd $HOME_DIR
 display_usage() {
     echo "*** CellCycleBrowser Control Script ***"
     echo "usage: $0 deploy_dev_nodb    # build and deploy from scratch without loading an existing database for local development environment"
-    echo "usage: $0 deploy_nodb        # build and deploy from scratch without loading an existing database for production environment"
+    echo "usage: $0 deploy_prod_nodb        # build and deploy from scratch without loading an existing database for production environment"
+    echo "usage: $0 deploy_dev    # build and deploy from scratch while loading an existing database for local development environment"
+    echo "usage: $0 deploy_prod        # build and deploy from scratch while loading an existing database for production environment"
     echo "usage: $0 start              # attempts to start all containers"
     echo "usage: $0 stop               # stops all running containers"
 }
@@ -325,6 +327,9 @@ case "$1" in
         ;;
     stop_nginx) stop_nginx $1
         ;;
+    *) 
+        display_usage
+        exit 1
 esac
-
+    
 exit 0;
