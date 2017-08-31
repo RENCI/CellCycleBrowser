@@ -617,8 +617,7 @@ module.exports = function() {
             species: species,
             value: data.speciesPhaseMatrix[j][i],
             x: x,
-            y: y,
-            random: Math.random()
+            y: y
           };
         });
       });
@@ -668,6 +667,16 @@ module.exports = function() {
       });
 
       nodes = d3.merge(nodes);
+
+      // Filter out nodes with 0 value, and their links
+      nodes = nodes.filter(function(d) {
+        return d.species.value > d.species.min;
+      });
+
+      links = links.filter(function(d) {
+        return (!d.source.species || d.source.species.value > d.source.species.min) &&
+               (!d.target.species || d.target.species.value > d.target.species.min);
+      });
     }
   }
 
