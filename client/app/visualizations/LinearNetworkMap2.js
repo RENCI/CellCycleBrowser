@@ -15,10 +15,6 @@ module.exports = function() {
       currentPhase,
 
       // Layout
-      nodePathLine = d3.line()
-          .curve(d3.curveCardinal)
-          .x(function(d) { return d.x; })
-          .y(function(d) { return d.y; }),
       markerSize = 15,
 
       // Scales
@@ -106,7 +102,7 @@ module.exports = function() {
     drawPhases();
     drawLinks();
     drawNodes();
-//    drawNodeLabels();
+    drawNodeLabels();
 
     // Update tooltips
     $(".linearNetworkMap .node").tooltip({
@@ -196,6 +192,17 @@ module.exports = function() {
               return linkNodes.indexOf(d) === -1 ? 0.1 : null;
             });
 
+        svg.select(".nodeLabels").selectAll(".nodeLabel").selectAll("text")
+            .style("font-weight", function(d) {
+              return highlightNodes.indexOf(d) !== -1 ? "bold" : null;
+            })
+            .style("fill-opacity", function(d) {
+              return linkNodes.indexOf(d) === -1 ? 0.1 : null;
+            })
+            .style("stroke-opacity", function(d) {
+              return linkNodes.indexOf(d) === -1 ? 0.1 : null;
+            });
+
         svg.select(".phases").selectAll(".transition")
             .style("stroke-width", function(d) {
               return linkTransitions.indexOf(d.name) !== -1 ? 2 : null;
@@ -210,6 +217,11 @@ module.exports = function() {
         // Clear highlighting
         svg.select(".nodes").selectAll(".node")
             .style("stroke-width", null)
+            .style("fill-opacity", null)
+            .style("stroke-opacity", null);
+
+        svg.select(".nodeLabels").selectAll(".nodeLabel").selectAll("text")
+            .style("font-weight", null)
             .style("fill-opacity", null)
             .style("stroke-opacity", null);
 
@@ -345,7 +357,7 @@ module.exports = function() {
       // Node enter + update
       node.enter().append("circle")
           .attr("class", "node")
-          .attr("data-toggle", "tooltip")
+//          .attr("data-toggle", "tooltip")
           .style("fill", "#ddd")
           .style("stroke", "black")
           .on("mouseover", function(d) {
@@ -355,7 +367,7 @@ module.exports = function() {
             highlightSpecies();
           })
         .merge(node)
-          .attr("data-original-title", nodeTooltip)
+//          .attr("data-original-title", nodeTooltip)
           .attr("cx", function(d) { return d.x; })
           .attr("cy", function(d) { return d.y; })
           .attr("r", function(d) {
@@ -379,14 +391,13 @@ module.exports = function() {
     }
 
     function drawNodeLabels() {
-      var nodeLabels = nodes.filter(function(d) {
-        return d.phase === data.phases[0];
-      });
+      // Vertical offset for text
+      var dy = "-.5em";
 
-      var labelXScale = d3.scalePoint()
-          .domain(d3.range(nodeLabels.length))
-          .range([0, innerWidth()])
-          .padding(0.5);
+      // Filter nodes by current phase
+      var nodeLabels = nodes.filter(function(d) {
+        return d.phase.name === currentPhase;
+      });
 
       // Bind species data
       var label = svg.select(".nodeLabels").selectAll(".nodeLabel")
@@ -395,29 +406,37 @@ module.exports = function() {
       // Label enter
       var labelEnter = label.enter().append("g")
           .attr("class", "nodeLabel")
-          .attr("dy", "-.5em")
           .style("text-anchor", "middle")
+          .style("font-size", "small")
           .on("mouseover", function(d) {
             highlightSpecies(d.species);
           })
           .on("mouseout", function() {
             highlightSpecies();
-          });
+          })
 
       labelEnter.append("text")
+          .attr("class", "background")
+          .attr("dy", dy)
           .style("fill", "white")
           .style("stroke", "white")
           .style("stroke-width", 2);
 
       labelEnter.append("text")
+          .attr("class", "foreground")
+          .attr("dy", dy)
           .style("fill", "black");
 
       // Label update
-      labelEnter.merge(label)
+      var labelUpdate = labelEnter.merge(label)
           .attr("transform", function(d, i) {
-            return "translate(" + labelXScale(i) + "," + yScale.bandwidth() / 2 + ")";
-          })
-        .selectAll("text")
+            return "translate(" + d.x + "," + (d.y - nodeRadiusScale(d.species.value)) + ")";
+          });
+
+      labelUpdate.select(".background")
+          .text(function(d) { return d.species.name; });
+
+      labelUpdate.select(".foreground")
           .text(function(d) { return d.species.name; });
 
       // Label exit
@@ -598,7 +617,8 @@ module.exports = function() {
             species: species,
             value: data.speciesPhaseMatrix[j][i],
             x: x,
-            y: y
+            y: y,
+            random: Math.random()
           };
         });
       });
