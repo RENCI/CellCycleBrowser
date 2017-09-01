@@ -42,9 +42,16 @@ module.exports = function() {
             d3.event.preventDefault();
           });
 
+      // Add gradient for color scale legend
+      svgEnter.append("defs").append("linearGradient")
+          .attr("id", "colorGradient")
+          .attr("x1", 0).attr("x2", 0).attr("y1", 1).attr("y2", 0);
+
       var title = svgEnter.append("g").attr("class", "title");
       title.append("text").attr("class", "main");
       title.append("text").attr("class", "source");
+
+      svgEnter.append("g").attr("class", "legend");
 
       var g = svgEnter.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -88,11 +95,22 @@ module.exports = function() {
     // Create contours, must be done after scales are updated
     createContours();
 
+    // Create color scale from contour contours
+    var c1 = d3.hsl(color);
+    c1.s *= 0.2;
+    c1.l *= 0.2;
+
+    var contourExtent = d3.extent(contours, function(d) { return d.value; }),
+        colorScale = d3.scaleLinear()
+            .domain(contourExtent)
+            .range([c1, color]);
+
     drawTitle();
     drawAxes();
     drawPoints();
     drawLabels();
 //    drawContours();
+    drawLegend();
 
     function createContours() {
       // Create contours
@@ -175,16 +193,6 @@ module.exports = function() {
     }
 
     function drawPoints() {
-      // Create color scale from contour contours
-      var c1 = d3.hsl(color);
-      c1.s *= 0.2;
-      c1.l *= 0.2;
-
-      var contourExtent = d3.extent(contours, function(d) { return d.value; }),
-          colorScale = d3.scaleLinear()
-              .domain(contourExtent)
-              .range([c1, color]);
-
       // Bind cell data
       var point = svg.select(".points").selectAll(".point")
           .data(data);
@@ -275,6 +283,52 @@ module.exports = function() {
 
       // Exit
       contour.exit().remove();
+    }
+
+    function drawLegend() {
+      var w = 10,
+          h = 40,
+          m = 15,
+          x = width - w - m,
+          y = m;
+
+      // Update gradient
+      var stop = svg.select("linearGradient").selectAll("stop")
+          .data(colorScale.range());
+
+      stop.enter().append("stop").merge(stop)
+          .attr("offset", function(d, i) { return i; })
+          .attr("stop-color", function(d) { return d; });
+
+      stop.exit().remove();
+
+      // Draw legend
+      var g = svg.select(".legend").selectAll("g")
+          .data([0]);
+
+      // Enter
+      var gEnter = g.enter().append("g");
+
+      gEnter.append("rect");
+
+      gEnter.selectAll("text")
+          .data(["max", "min"])
+        .enter().append("text")
+          .text(function(d) { return d; })
+          .attr("dx", "-.5em")
+          .attr("y", function(d, i) { return i === 0 ? 0 : h; })
+          .style("text-anchor", "end")
+          .style("alignment-baseline", "middle")
+          .style("font-size", "x-small");
+
+      // Update
+      gEnter.merge(g)
+          .attr("transform", "translate(" + x + "," + y + ")")
+        .select("rect")
+          .attr("width", w)
+          .attr("height", h)
+          .attr("fill", "url(#colorGradient)")
+          .attr("stroke", "black");
     }
   };
 
