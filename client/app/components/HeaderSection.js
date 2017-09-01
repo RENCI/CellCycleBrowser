@@ -14,8 +14,7 @@ function HeaderSection() {
         <div className="col-sm-6 text-center">
           <Header header="Cell Cycle Browser" />
           <a style={{marginRight: 20}} href="/about/" target="_blank">About</a>
-          <a style={{marginRight: 20}} href="/team/" target="_blank">Team</a>
-          <a href="/help/" target="_blank">Help</a>
+          <a href="/help/" target="_blank">Tutorial</a>
         </div>
         <div className="col-sm-3 text-center">
           <div>
