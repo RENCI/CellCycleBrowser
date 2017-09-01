@@ -44,7 +44,6 @@ module.exports = function() {
 
       // Add gradient for color scale legend
       svgEnter.append("defs").append("linearGradient")
-          .attr("id", "colorGradient")
           .attr("x1", 0).attr("x2", 0).attr("y1", 1).attr("y2", 0);
 
       var title = svgEnter.append("g").attr("class", "title");
@@ -292,8 +291,14 @@ module.exports = function() {
           x = width - w - m,
           y = m;
 
+      // Remove non "word" characters
+      // XXX: Move this to utils
+      var id = source.replace(/\W/g, "") + "Gradient";
+
       // Update gradient
-      var stop = svg.select("linearGradient").selectAll("stop")
+      var stop = svg.select("linearGradient")
+          .attr("id", id)
+        .selectAll("stop")
           .data(colorScale.range());
 
       stop.enter().append("stop").merge(stop)
@@ -327,7 +332,7 @@ module.exports = function() {
         .select("rect")
           .attr("width", w)
           .attr("height", h)
-          .attr("fill", "url(#colorGradient)")
+          .attr("fill", "url(#" + id + ")")
           .attr("stroke", "black");
     }
   };
