@@ -35,6 +35,7 @@ var PhaseColorStore = assign({}, EventEmitter.prototype, {
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_WORKSPACE:
+    case Constants.RECEIVE_MODEL:
     case Constants.SELECT_MODEL:
       AppDispatcher.waitFor([ModelStore.dispatchToken]);
       colorScale.domain(phases(ModelStore.getModel()));
