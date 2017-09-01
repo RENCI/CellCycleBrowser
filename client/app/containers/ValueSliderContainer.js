@@ -26,6 +26,8 @@ var ValueSliderContainer = React.createClass ({
     };
   },
   getInitialState: function () {
+    this.trackClick = true;
+
     return {
       width: 200
     };
@@ -82,13 +84,19 @@ var ValueSliderContainer = React.createClass ({
 
     // Register to receive mouse events on the whole document
     this.registerMouseCallbacks();
+
+    this.trackClick = false;
   },
   handleClick: function (e, sliderMin, sliderMax) {
-    this.updateSVG(e, sliderMin, sliderMax);
+    if (this.trackClick) {
+      this.updateSVG(e, sliderMin, sliderMax);
 
-    var value = this.transformPoint(e);
+      var value = this.transformPoint(e);
 
-    this.props.onChange(value);
+      this.props.onChange(value);
+    }
+
+    this.trackClick = true;
   },
   handleMouseMove: function (e) {
     e.stopPropagation();
