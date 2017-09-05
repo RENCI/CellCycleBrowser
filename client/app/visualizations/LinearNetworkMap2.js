@@ -540,10 +540,12 @@ module.exports = function() {
       }
 
       function linkPath(d) {
+        // Calculate length reduction based on target node radius
         var reduction = d.target.species ? nodeRadiusScale(d.target.species.value) : 0;
 //          reduction += +d3.select(this).style("stroke-width").slice(0, -2) * 3 / 2;
         reduction += d.value < 0 ? markerSize * 0.8 / 2 : markerSize / 2;
 
+        // Get perpendicual vector
         var vx = d.target.x - d.source.x,
             vy = d.target.y - d.source.y,
             mag = Math.sqrt(vx * vx + vy * vy);
@@ -551,16 +553,17 @@ module.exports = function() {
         vx /= mag;
         vy /= mag;
 
-        var temp = vx;
-        vx = -vy;
-        vy = temp;
+        var temp = vy;
+        vy = -vx;
+        vx = temp;
 
-        var s = d.target.species ? -0.25 : 0,
+        // Offset middle of curve for species->species links
+        var offset = d.target.species ? 0.25 : 0,
             x = (d.source.x + d.target.x) / 2,
             y =  (d.source.y + d.target.y) / 2,
             middle = {
-              x: x + vx * mag * s,
-              y: y + vy * mag * s
+              x: x + vx * mag * offset,
+              y: y + vy * mag * offset
             };
 
         middle = adjustDistance(d.target, middle, -reduction);
