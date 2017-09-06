@@ -27,7 +27,6 @@ urlpatterns = [
     url(r'^delete_profile_from_server/$', views.delete_profile_from_server,
         name='delete_profile_from_server'),
     url(r'^about/$', views.about, name='about'),
-    url(r'^team/$', views.team, name='team'),
     url(r'^help/$', views.help, name='help'),
     url(r'^cell_data_meta/(?P<filename>[A-z0-9_.]+)/$', views.cell_data_meta, name='cell_data_meta'),
     url(r'^create_sbml_model/$', views.create_sbml_model, name='create_sbml_model'),

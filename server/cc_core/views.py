@@ -40,12 +40,6 @@ def about(request):
     return HttpResponse(template.render(context, request))
 
 
-def team(request):
-    template = loader.get_template('cc_core/team.html')
-    context = {}
-    return HttpResponse(template.render(context, request))
-
-
 def help(request):
     template = loader.get_template('cc_core/help.html')
     context = {}
