@@ -67,7 +67,7 @@ function DatasetSelect(props) {
               style ={iconStyle}
               href={'/cell_data_meta/' + option.fileName + '/'}
               target="_blank">
-              <span className="glyphicon glyphicon-question-sign"></span>
+              <span className="glyphicon glyphicon-question-sign" title="metadata"></span>
             </a>
           : null}
         </td>
@@ -76,7 +76,7 @@ function DatasetSelect(props) {
             <a
               style ={iconStyle}
               href={'/download/' + option.fileName + '/'}>
-              <span className="glyphicon glyphicon-download-alt"></span>
+              <span className="glyphicon glyphicon-download-alt" title="download"></span>
             </a>
           : null}
         </td>
