@@ -65,6 +65,14 @@ function DatasetSelect(props) {
             </a>
           : null}
         </td>
+        <td style={tdStyle}>
+          {option.active ?
+            <a
+              href={'/download/' + option.fileName + '/'}>
+              download
+            </a>
+          : null}
+        </td>
       </tr>
     );
   }

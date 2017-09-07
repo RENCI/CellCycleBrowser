@@ -3,8 +3,10 @@ import os
 import shutil
 import logging
 import csv
+import mimetypes
 
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import HttpResponse, JsonResponse,FileResponse, \
+    HttpResponseRedirect
 from django.template import loader
 from django.conf import settings
 from django.shortcuts import render
@@ -15,6 +17,7 @@ from django.contrib import messages
 from . import utils
 from .tasks import run_model_task
 from .models import CellMetadata
+
 
 logger = logging.getLogger('django')
 
@@ -57,6 +60,32 @@ def cell_data_meta(request, filename):
     context = {'metadata_dict': mdict}
     template = loader.get_template('cc_core/cell_meta.html')
     return HttpResponse(template.render(context, request))
+
+
+def download(request, filename):
+    _, ext = os.path.splitext(filename)
+    if ext == '.csv':
+        file_full_path = os.path.join(settings.CELL_DATA_PATH, filename)
+    elif ext == '.xml':
+        file_full_path = os.path.join(settings.MODEL_INPUT_PATH, filename)
+    else:
+        messages.error(request, "Only dataset file in csv format and model file in xml format can be downloaded")
+        return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+    # obtain mime_type to set content_type
+    mtype = 'application-x/octet-stream'
+    mime_type = mimetypes.guess_type(filename)
+    if mime_type[0] is not None:
+        mtype = mime_type[0]
+
+    # obtain file size
+    stat_info = os.stat(file_full_path)
+    flen = stat_info.st_size
+    f = open(file_full_path, 'r')
+    response = FileResponse(f, content_type=mtype)
+    response['Content-Disposition'] = 'attachment; filename="{name}"'.format(name=filename)
+    response['Content-Lengtsh'] = flen
+    return response
 
 
 def serve_config_data(request, filename):

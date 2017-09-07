@@ -19,6 +19,7 @@ function modelOption(model) {
     value: model.id,
     name: model.name,
     description: model.description,
+    fileName: model.fileName,
     starred: model.default
   };
 }
