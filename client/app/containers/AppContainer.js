@@ -81,7 +81,8 @@ var AppContainer = React.createClass({
         <HeaderSection />
         {hasWorkspace ?
           <DataSelectionSection
-            workspace={this.state.workspace} />
+            workspace={this.state.workspace}
+            model={this.state.model} />
           : null }
         {hasWorkspace ?
           <MainSection

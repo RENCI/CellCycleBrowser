@@ -22,13 +22,6 @@ function ItemSelect(props) {
             {option.starred === undefined ? null :
               <span className="glyphicon glyphicon-star" style={starStyle} />}
             {option.name + (description ? ": " : "")} {description}
-            {option.name === 'None' ? '' :
-              <span style={{marginLeft: 5}}>
-                <a
-                  href={'/download/' + option.fileName + '/'}>
-                  download
-                </a>
-              </span>}
         </a>
       </li>
     );

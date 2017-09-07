@@ -32,7 +32,15 @@ function DataSelectionSection(props) {
       <hr style={hrStyle}/>
       <div className="row">
         <div className="col-sm-3 text-center" style={selectStyle}>
-          <ModelSelectContainer />
+          <div style={{display: "inline-block"}}>
+            <ModelSelectContainer />
+          </div>
+          <div style={{display: "inline-block", marginLeft: 10}}>
+            <a
+              href={'/download/' + props.model.fileName + '/'}>
+              <span className="glyphicon glyphicon-download-alt"></span>
+            </a>
+          </div>
         </div>
         <div className="col-sm-6 text-center" style={selectStyle}>
           <DatasetSelectContainer />
@@ -46,7 +54,8 @@ function DataSelectionSection(props) {
 }
 
 DataSelectionSection.propTypes = {
-  workspace: PropTypes.object.isRequired
+  workspace: PropTypes.object.isRequired,
+  model: PropTypes.object.isRequired
 };
 
 module.exports = DataSelectionSection;

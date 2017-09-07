@@ -10,6 +10,11 @@ var labelStyle = {
   fontWeight: "normal !important"
 };
 
+var iconStyle={
+  marginLeft: 5,
+  marginRight: 5
+};
+
 function DatasetSelect(props) {
   function option(option, i) {
     var features = option.features ?
@@ -59,17 +64,19 @@ function DatasetSelect(props) {
         <td style={tdStyle}>
           {option.active ?
             <a
+              style ={iconStyle}
               href={'/cell_data_meta/' + option.fileName + '/'}
               target="_blank">
-              metadata
+              <span className="glyphicon glyphicon-question-sign"></span>
             </a>
           : null}
         </td>
         <td style={tdStyle}>
           {option.active ?
             <a
+              style ={iconStyle}
               href={'/download/' + option.fileName + '/'}>
-              download
+              <span className="glyphicon glyphicon-download-alt"></span>
             </a>
           : null}
         </td>
