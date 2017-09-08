@@ -36,10 +36,18 @@ function DataSelectionSection(props) {
             <ModelSelectContainer />
           </div>
           <div style={{display: "inline-block", marginLeft: 5}}>
-            <a
-              href={'/download/' + props.model.fileName + '/'}>
-              <span className="glyphicon glyphicon-download-alt" title="download"></span>
-            </a>
+            {props.model.fileName ?
+              <a
+                href={'/download/' + props.model.fileName + '/'}>
+                <span
+                  className="glyphicon glyphicon-download-alt"
+                  data-toggle="tooltip"
+                  data-container="body"
+                  data-placement="auto top"
+                  title="Download model">
+                </span>
+              </a>
+            : null}
           </div>
         </div>
         <div className="col-sm-6 text-center" style={selectStyle}>

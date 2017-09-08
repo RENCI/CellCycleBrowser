@@ -103,6 +103,9 @@ var DatasetSelectContainer = React.createClass ({
             }
           });
 
+      // Enable tooltips
+      this.popover.find("[data-toggle='tooltip']").tooltip();
+
       // This is an ugly hack to get dynamically loaded feature checkboxes to be checked/unchecked correctly
       // by always rendering twice on an update.
       // I think it might be an issue with how React is handling defaultChecked, but not sure.
