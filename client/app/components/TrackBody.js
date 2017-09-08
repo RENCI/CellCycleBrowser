@@ -72,14 +72,17 @@ function TrackBody(props) {
       <div>
         <div className="row" style={rowStyle}>
           <div className="col-xs-2" style={buttonColumnStyle}>
-            <CollapseButtonContainer
-              targetId={collapseId}
-              track={props.track} />
-            <div style={{float:"right"}}>
-              <TraceToggleButtons
-                traces={[props.track.average]}
-                width={traceHeight}
-                height={averageHeight} />
+            <div style={{display: "flex", justifyContent: "space-between"}}>
+              <div style={{flex: 1}}>
+                <CollapseButtonContainer
+                  targetId={collapseId}
+                  track={props.track} />
+                </div>
+              <div style={{flex: "0 1 auto", width: traceHeight}}>
+                <TraceToggleButtons
+                  traces={[props.track.average]}
+                  height={averageHeight} />
+                </div>
             </div>
           </div>
           <div className="col-xs-10" style={visColumnStyle}>
@@ -95,11 +98,13 @@ function TrackBody(props) {
         </div>
         <div className="row collapse in" id={collapseId} style={collapseRowStyle}>
           <div className="col-xs-2" style={traceButtonColumnStyle}>
-            <div style={{float:"right"}}>
-              <TraceToggleButtons
-                traces={props.track.traces}
-                width={traceHeight}
-                height={traceHeight} />
+            <div style={{display: "flex"}}>
+              <div style={{flex: 1}} />
+              <div style={{flex: "0 1 auto", width: traceHeight}}>
+                <TraceToggleButtons
+                  traces={props.track.traces}
+                  height={traceHeight} />
+              </div>
             </div>
           </div>
           <div className="col-xs-10" style={collapseColumnStyle}>
