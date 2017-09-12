@@ -9,12 +9,10 @@ var refName = "ref";
 
 function getStateFromStore() {
   return {
-    data: DataStore.getData()
+    tracks: DataStore.getData().tracks.filter(function (track) {
+      return !track.phaseTrack;
+    })
   };
-}
-
-function hasData(data) {
-  return data.tracks.length > 0;
 }
 
 var GrowthCurveContainer = React.createClass ({
@@ -36,7 +34,7 @@ var GrowthCurveContainer = React.createClass ({
     DataStore.removeChangeListener(this.onDataChange);
   },
   componentWillUpdate: function (props, state) {
-    if (hasData(state.data)) {
+    if (state.tracks.length > 0) {
       this.drawVisualization(props, state);
     };
 
@@ -55,7 +53,7 @@ var GrowthCurveContainer = React.createClass ({
         .width(props.width);
 
     d3.select(ReactDOM.findDOMNode(this))
-        .datum(state.data)
+        .datum(state.tracks)
         .call(this.growthCurve);
   },
   render: function () {

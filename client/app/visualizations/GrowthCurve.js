@@ -51,7 +51,7 @@ module.exports = function() {
     // Group tracks by source and create curves
     curves = d3.nest()
         .key(function(d) { return d.source; })
-        .entries(data.tracks).map(function(d) {
+        .entries(data).map(function(d) {
           // Use first track for each source for time span
           var track = d.values[0];
 

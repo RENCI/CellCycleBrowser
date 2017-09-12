@@ -45,7 +45,9 @@ function hasTracks() {
 }
 
 function hasPhaseTracks() {
-  return DataStore.getData().phaseTracks.length > 0;
+  return DataStore.getData().tracks.filter(function (track) {
+    return track.phaseTrack;
+  }).length > 0;
 }
 
 function selectPlot(plot) {

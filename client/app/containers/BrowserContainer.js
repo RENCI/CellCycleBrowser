@@ -96,7 +96,6 @@ var BrowserContainer = React.createClass({
   },
   render: function() {
     var tracks = this.state.data.tracks;
-    var phaseTracks = this.state.data.phaseTracks;
 
     if (tracks.length < 1) return null;
 
@@ -106,27 +105,22 @@ var BrowserContainer = React.createClass({
         <div key={i}>
           <TrackDividerContainer
             index={track.index} />
-          <Track
-            track={track}
-            timeExtent={this.state.data.timeExtent}
-            phaseColorScale={this.state.phaseColorScale}
-            phaseOverlayOpacity={this.state.phaseOverlayOpacity}
-            showPhaseOverlay={this.state.showPhaseOverlay} />
+          {track.phaseTrack ?
+            <PhaseTrack
+              track={track}
+              timeExtent={this.state.data.timeExtent}
+              activeTrajectory={this.state.activeTrajectory}
+              activePhase={this.state.activePhase}
+              colorScale={this.state.phaseColorScale}
+              alignment={this.state.alignment} />
+            :
+            <Track
+              track={track}
+              timeExtent={this.state.data.timeExtent}
+              phaseColorScale={this.state.phaseColorScale}
+              phaseOverlayOpacity={this.state.phaseOverlayOpacity}
+              showPhaseOverlay={this.state.showPhaseOverlay} />}
         </div>
-      );
-    }.bind(this));
-
-    // Create GUI components for each phase track
-    var phaseTrackComponents = phaseTracks.map(function (track, i) {
-      return (
-        <PhaseTrack
-          key={i}
-          track={track}
-          timeExtent={this.state.data.timeExtent}
-          activeTrajectory={this.state.activeTrajectory}
-          activePhase={this.state.activePhase}
-          colorScale={this.state.phaseColorScale}
-          alignment={this.state.alignment} />
       );
     }.bind(this));
 
@@ -139,7 +133,6 @@ var BrowserContainer = React.createClass({
         <TimeScaleArea
           timeExtent={this.state.data.timeExtent}
           alignment={this.state.alignment} />
-        {phaseTrackComponents}
         <TrackSort />
         {trackComponents}
         <TrackDividerContainer

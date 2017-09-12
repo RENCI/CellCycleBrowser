@@ -12,7 +12,9 @@ var refName = "ref";
 
 function getStateFromDataStore() {
   return {
-    tracks: DataStore.getData().phaseTracks
+    tracks: DataStore.getData().tracks.filter(function (track) {
+      return track.phaseTrack;
+    })
   };
 }
 
@@ -93,8 +95,8 @@ var FlowCytometryContainer = React.createClass ({
     this.flowCytometry = FlowCytometry();
 
     return {
-      tracks: DataStore.getData().phaseTracks,
-      nucleiDistributions: NucleiDistributionStore.getDistributions()
+      tracks: getStateFromDataStore().tracks,
+      nucleiDistributions: getStateFromNucleiDistributionStore().nucleiDistributions
     };
   },
   componentDidMount: function () {

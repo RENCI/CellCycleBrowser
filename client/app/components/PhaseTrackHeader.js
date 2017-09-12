@@ -2,6 +2,11 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 var TrackColorIcon = require("./TrackColorIcon");
 var ViewActionCreators = require("../actions/ViewActionCreators");
+var Constants = require("../constants/Constants");
+
+var dragStyle = {
+  cursor: "ns-resize"
+};
 
 var nameStyle = {
   marginTop: 5,
@@ -25,18 +30,27 @@ function PhaseTrackHeader(props) {
   var featureSpan = props.track.feature ?
       <span style={featureStyle}>{" - " + props.track.feature}</span> : null;
 
+  function onDragStart(e) {
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData(Constants.drag_track_type, props.track.index);
+  }
+
   return (
-    <div className="row">
-      <div className="col-xs-12" style={{display: "flex"}}>
-        <div style={nameStyle}>
-          {props.track.species}
-          {featureSpan}
+    <div
+      className="row"
+      style={dragStyle}
+      draggable="true"
+      onDragStart={onDragStart}>
+        <div className="col-xs-12" style={{display: "flex"}}>
+          <div style={nameStyle}>
+            {props.track.species}
+            {featureSpan}
+          </div>
+          <div className="text-right" style={sourceStyle}>
+            {props.track.source}
+          </div>
+          <TrackColorIcon track={props.track} />
         </div>
-        <div className="text-right" style={sourceStyle}>
-          {props.track.source}
-        </div>
-        <TrackColorIcon track={props.track} />
-      </div>
     </div>
   );
 }

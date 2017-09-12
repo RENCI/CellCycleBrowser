@@ -174,7 +174,7 @@ function createDataset(id, dataset) {
       .entries(data).map(function (d) {
         return d.key;
       }).map(function (feature, i) {
-        // All feature active
+        // All features active
         return {
           name: feature,
           active: true

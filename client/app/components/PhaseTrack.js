@@ -10,9 +10,7 @@ var outerStyle = {
   borderWidth: 1,
   borderTopLeftRadius: 5,
   borderTopRightRadius: 5,
-  borderBottomLeftRadius: 5,
-  marginTop: 10,
-  marginBottom: 10
+  borderBottomLeftRadius: 5
 };
 
 function PhaseTrack(props) {
