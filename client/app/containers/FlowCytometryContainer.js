@@ -6,22 +6,13 @@ var DataStore = require("../stores/DataStore");
 var NucleiDistributionStore = require("../stores/NucleiDistributionStore");
 var DataUtils = require("../utils/DataUtils");
 var d3 = require("d3");
+var seedrandom = require("seedrandom");
 
 var refName = "ref";
 
 function getStateFromDataStore() {
   return {
-    // Store data we care about
-    tracks: DataStore.getData().phaseTracks.map(function (track) {
-      return {
-        average: track.average,
-        feature: track.feature,
-        source: track.source,
-        sourceColor: track.sourceColor,
-        species: track.species,
-        traces: track.traces
-      };
-    }),
+    tracks: DataStore.getData().phaseTracks
   };
 }
 
@@ -36,6 +27,11 @@ function createCells(phaseTracks, distributions) {
 
   // Number of cells
   var n = 5000;
+
+  // Use the same seed each time to get same output per input
+  // XXX: This almost works, but still getting some small deviations, maybe due
+  // to floating point error?
+  Math.seedrandom("hello.");
 
   // Normalized random distribution function
   var randn = d3.randomNormal();
@@ -96,9 +92,6 @@ var FlowCytometryContainer = React.createClass ({
     // Create visualization function
     this.flowCytometry = FlowCytometry();
 
-    // Keep track of first render
-    this.hasRendered = false;
-
     return {
       tracks: DataStore.getData().phaseTracks,
       nucleiDistributions: NucleiDistributionStore.getDistributions()
@@ -112,12 +105,6 @@ var FlowCytometryContainer = React.createClass ({
     DataStore.removeChangeListener(this.onDataStoreChange);
     NucleiDistributionStore.removeChangeListener(this.onNucleiDistributionStoreChange);
   },
-  shouldComponentUpdate: function(props, state) {
-    // Check if track data has changed, or if we now have nuclei distributions
-    return !this.hasRendered ||
-           (JSON.stringify(this.state.tracks) !== JSON.stringify(state.tracks)) ||
-           this.state.nucleiDistributions.length !== state.nucleiDistributions.length;
-  },
   componentWillUpdate: function (props, state) {
     this.drawVisualization(props, state);
 
@@ -126,10 +113,6 @@ var FlowCytometryContainer = React.createClass ({
   onDataStoreChange: function () {
     // Use a ref to see if we are still mounted, as the change listener
     // can still be fired after unmounting due to an asynchronous ajax request
-
-console.log(this.state.tracks);
-console.log(getStateFromDataStore().tracks);
-
     if (this.refs[refName]) {
       this.setState(getStateFromDataStore());
     }
@@ -158,8 +141,6 @@ console.log(getStateFromDataStore().tracks);
         });
 
     plot.exit().remove();
-
-    this.hasRendered = true;
   },
   render: function () {
     return <div ref={refName}></div>

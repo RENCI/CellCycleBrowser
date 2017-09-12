@@ -19,7 +19,8 @@
     "object-assign": "^4.1.0",
     "react": "^15.2.0",
     "react-dom": "^15.2.0",
-    "science": "^1.9.3"
+    "science": "^1.9.3",
+    "seedrandom": "^2.4.3"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",
