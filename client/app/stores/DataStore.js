@@ -111,6 +111,11 @@ function updateData() {
       track.collapse = !s || typeof s.collapse === "undefined" ?
                        false : s.collapse;
     });
+
+    // Sort new data (without state) first
+    tracks.sort(function(a, b) {
+      return d3.ascending(state[trackId(a)] ? 1 : 0, state[trackId(b)] ? 1 : 0);
+    });
   }
 
   function matchPhases(tracks) {
@@ -148,8 +153,8 @@ function updateData() {
 
     // Generate data
     tracks = datasetTracks(datasets)
-      .concat(simulationDataTracks(simulationOutput))
-      .concat(simulationPhaseTrack(simulationOutput));
+      .concat(simulationPhaseTrack(simulationOutput))
+      .concat(simulationDataTracks(simulationOutput));
 
     // Match sort order
     tracks.forEach(function (d) {
@@ -183,6 +188,10 @@ function updateData() {
       // Create empty array
       var tracks = [];
 
+      function isPhaseFeature(feature) {
+        return feature.name.indexOf("SphaseClassification") !== -1;
+      }
+
       datasets.filter(function(d) {
         return d.active;
       }).forEach(function (dataset) {
@@ -190,9 +199,7 @@ function updateData() {
           dataset.features.filter(function (feature) {
             return feature.active;
           }).forEach(function (feature) {
-            var isPhaseTrack = feature.name.indexOf("SphaseClassification") !== -1;
-
-            if (isPhaseTrack) {
+            if (isPhaseFeature(feature)) {
               phaseTrack(dataset, species, feature);
             }
             else {
@@ -202,7 +209,10 @@ function updateData() {
         });
       });
 
-      return tracks;
+      // Phase tracks first
+      return tracks.sort(function(a, b) {
+        return d3.ascending(a.phaseTrack ? 0 : 1, b.phaseTrack ? 0 : 1);
+      });
 
       function dataTrack(dataset, species, feature) {
         var traces = [];
