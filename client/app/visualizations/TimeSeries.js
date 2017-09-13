@@ -4,6 +4,7 @@ module.exports = function() {
       // Size
   var titleHeight = 40,
       legendItemHeight = 20,
+      phaseHeight = 10,
       margin = { top: titleHeight, left: 50, bottom: 40, right: 20 },
       width = 200,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -12,7 +13,11 @@ module.exports = function() {
       // Data
       data,
       curves,
+      phases,
       alignment = "left",
+
+      // Scales
+      phaseColorScale = d3.scaleOrdinal(),
 
       // Start with empty selection
       svg = d3.select();
@@ -39,11 +44,13 @@ module.exports = function() {
       // Groups for layout
       g.append("g").attr("class", "curves");
       g.append("g").attr("class", "averageCurves");
+      g.append("g").attr("class", "phases");
       g.append("g").attr("class", "axes");
 
       svg = svgEnter.merge(svg);
 
       createCurves();
+      createPhases();
       draw();
     });
   }
@@ -51,7 +58,9 @@ module.exports = function() {
   function createCurves() {
     curves = [];
 
-    data.tracks.forEach(function(track) {
+    data.tracks.filter(function(track) {
+      return !track.phaseTrack;
+    }).forEach(function(track) {
       track.traces.concat([track.average]).forEach(function(trace) {
         if (trace.selected) {
           curves.push({
@@ -64,6 +73,18 @@ module.exports = function() {
         }
       });
     });
+  }
+
+  function createPhases() {
+    phases = d3.merge(data.tracks.filter(function(track) {
+      return track.phaseTrack;
+    }).map(function(track) {
+      return track.traces.concat([track.average]).filter(function(trace) {
+        return trace.selected;
+      });
+    }));
+
+    if (phases.length > 0) phases = phases[0].phases;
   }
 
   function draw() {
@@ -79,7 +100,7 @@ module.exports = function() {
     }, []);
 
     // Compute margin for title and legend
-    margin.top = titleHeight + legendItemHeight * (activeTracks.length);
+    margin.top = titleHeight + legendItemHeight * (activeTracks.length) + phaseHeight;
 
     // Compute height
     var height = innerHeight() + margin.top + margin.bottom;
@@ -91,11 +112,19 @@ module.exports = function() {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // Update scales
+    var xMin = d3.min(curves, function(d) { return d.curve[0][0]; }),
+        xMax = d3.max(curves, function(d) { return d.curve[d.curve.length - 1][0]; });
+
+    if (phases.length > 0) {
+      phaseMin = phases[0].start;
+      if (phaseMin < xMin) xMin = phaseMin;
+
+      phaseMax = phases[phases.length -1].stop;
+      if (phaseMax > xMax) xMax = phaseMax;
+    }
+
     var xScale = d3.scaleLinear()
-        .domain([
-          d3.min(curves, function(d) { return d.curve[0][0]; }),
-          d3.max(curves, function(d) { return d.curve[d.curve.length - 1][0]; })
-        ])
+        .domain([xMin, xMax])
         .range([0, innerWidth()]);
 
     var yScale = d3.scaleLinear()
@@ -117,6 +146,7 @@ module.exports = function() {
                curves.filter(function(d) {
                  return d.name === "Average";
                }).reverse());
+    drawPhases();
     drawLegend();
 
     // Update tooltips
@@ -291,6 +321,59 @@ module.exports = function() {
       }
     }
 
+    function drawPhases() {
+      var strokeWidth = 2;
+
+      var phase = svg.select(".phases").selectAll(".phase")
+          .data(phases);
+
+      phase.enter().append("rect")
+          .attr("class", "phase")
+          .attr("shape-rendering", "crispEdges")
+          .attr("y", -(phaseHeight + 2))
+          .attr("height", phaseHeight)
+          .style("fill", "white")
+          .style("stroke-width", strokeWidth)
+          .style("rx", phaseHeight / 4)
+          .style("ry", phaseHeight / 4)
+        .merge(phase)
+          .attr("x", x)
+          .attr("width", width)
+          .style("stroke", function(d) {
+            return phaseColorScale(d.name);
+          });
+
+      phase.exit().remove();
+
+      var transition = svg.select(".phases").selectAll(".transition")
+          .data(phases);
+
+      transition.enter().append("line")
+          .attr("class", "transition")
+          .attr("shape-rendering", "crispEdges")
+          .attr("stroke", "black")
+          .attr("stroke-opacity", 0.5)
+          .attr("stroke-dasharray", "5 5")
+        .merge(transition)
+          .attr("x1", tx)
+          .attr("x2", tx)
+          .attr("y2", innerHeight());
+
+      transition.exit().remove();
+
+      function x(d) {
+        return xScale(d.start) + strokeWidth / 2;
+      }
+
+      function width(d) {
+        return Math.max(xScale(d.stop) - xScale(d.start) - strokeWidth, 0);
+      }
+
+      function tx(d) {
+        return xScale(d.stop);
+      }
+    }
+
     function drawLegend() {
       var lineX = -2,
           lineWidth = 20,
@@ -353,6 +436,12 @@ module.exports = function() {
   timeSeries.alignment = function(_) {
     if (!arguments.length) return alignment;
     alignment = _;
+    return timeSeries;
+  };
+
+  timeSeries.phaseColorScale = function(_) {
+    if (!arguments.length) return phaseColorScale;
+    phaseColorScale = _;
     return timeSeries;
   };
 

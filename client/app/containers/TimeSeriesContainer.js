@@ -3,6 +3,7 @@ var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
 var DataStore = require("../stores/DataStore");
 var AlignmentStore = require("../stores/AlignmentStore");
+var PhaseColorStore = require("../stores/PhaseColorStore");
 var d3 = require("d3");
 var TimeSeries = require("../visualizations/TimeSeries");
 
@@ -17,6 +18,12 @@ function getStateFromDataStore() {
 function getStateFromAlignmentStore() {
   return {
     alignment: AlignmentStore.getAlignment()
+  };
+}
+
+function getStateFromPhaseColorStore() {
+  return {
+    phaseColorScale: PhaseColorStore.getColorScale()
   };
 }
 
@@ -36,7 +43,8 @@ var TimeSeriesContainer = React.createClass ({
 
     return {
       data: DataStore.getData(),
-      alignment: AlignmentStore.getAlignment()
+      alignment: AlignmentStore.getAlignment(),
+      phaseColorScale: PhaseColorStore.getColorScale()
     };
   },
   componentDidMount: function() {
@@ -68,7 +76,8 @@ var TimeSeriesContainer = React.createClass ({
   drawVisualization: function (props, state) {
     this.timeSeries
         .width(props.width)
-        .alignment(state.alignment);
+        .alignment(state.alignment)
+        .phaseColorScale(state.phaseColorScale);
 
     d3.select(ReactDOM.findDOMNode(this))
         .datum(state.data)

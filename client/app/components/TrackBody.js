@@ -3,6 +3,7 @@ var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
 var TraceToggleButtons = require("./TraceToggleButtons");
 var HeatMapContainer = require("../containers/HeatMapContainer");
+var ViewActionCreators = require("../actions/ViewActionCreators");
 
 var rowStyle = {
   margin: 0,
@@ -68,6 +69,10 @@ function TrackBody(props) {
     return [Math.min.apply(null, values), Math.max.apply(null, values)];
   }
 
+  function handleTraceButtonClick(trace) {
+    ViewActionCreators.selectTrace(trace, !trace.selected);
+  }
+
   return (
       <div>
         <div className="row" style={rowStyle}>
@@ -81,7 +86,8 @@ function TrackBody(props) {
               <div style={{flex: "0 1 auto", width: traceHeight}}>
                 <TraceToggleButtons
                   traces={[props.track.average]}
-                  height={averageHeight} />
+                  height={averageHeight}
+                  onClick={handleTraceButtonClick} />
                 </div>
             </div>
           </div>
@@ -103,7 +109,8 @@ function TrackBody(props) {
               <div style={{flex: "0 1 auto", width: traceHeight}}>
                 <TraceToggleButtons
                   traces={props.track.traces}
-                  height={traceHeight} />
+                  height={traceHeight}
+                  onClick={handleTraceButtonClick} />
               </div>
             </div>
           </div>

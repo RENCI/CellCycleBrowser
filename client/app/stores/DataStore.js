@@ -70,17 +70,17 @@ function updateData() {
 
       var s = {};
 
-      if (!track.phaseTrack) {
-        s.selectedTraces = {};
-        [track.average].concat(track.traces).forEach(function (trace) {
-          s.selectedTraces[trace.name] = trace.selected;
-        });
+      s.collapse = track.collapse;
 
+      s.selectedTraces = {};
+      [track.average].concat(track.traces).forEach(function (trace) {
+        s.selectedTraces[trace.name] = trace.selected;
+      });
+
+      if (!track.phaseTrack) {
         s.showPhaseOverlay = track.showPhaseOverlay;
         s.rescaleTraces = track.rescaleTraces;
       }
-
-      s.collapse = track.collapse;
 
       state[id] = s;
     });
@@ -94,22 +94,22 @@ function updateData() {
 
       var s = state[id];
 
-      if (!track.phaseTrack) {
-        if (s) {
-          [track.average].concat(track.traces).forEach(function (trace) {
-            trace.selected = s.selectedTraces[trace.name] === true;
-          });
-        }
+      track.collapse = !s || typeof s.collapse === "undefined" ?
+                       false : s.collapse;
 
+      if (s) {
+        [track.average].concat(track.traces).forEach(function (trace) {
+          trace.selected = s.selectedTraces[trace.name] === true;
+        });
+      }
+
+      if (!track.phaseTrack) {
         track.showPhaseOverlay = !s || typeof s.showPhaseOverlay === "undefined" ?
                                  false : s.showPhaseOverlay;
 
         track.rescaleTraces = !s || typeof s.rescaleTraces === "undefined" ?
                               false : s.rescaleTraces;
       }
-
-      track.collapse = !s || typeof s.collapse === "undefined" ?
-                       false : s.collapse;
     });
 
     // Sort new data (without state) first
@@ -119,22 +119,16 @@ function updateData() {
   }
 
   function matchPhases(tracks) {
-    var dataTracks = tracks.filter(function(d) {
-      return !d.phaseTrack;
-    });
-
-    var phaseTracks = tracks.filter(function(d) {
-      return d.phaseTrack;
-    });
-
-    dataTracks.forEach(function (track) {
+    dataTracks(tracks).forEach(function (track) {
       track.phaseAverage = [];
       track.phases = [];
 
-      phaseTracks.forEach(function (phaseTrack) {
+      phaseTracks(tracks).forEach(function (phaseTrack) {
         if (track.source === phaseTrack.source) {
-          track.phaseAverage = phaseTrack.average;
-          track.phases = phaseTrack.traces;
+          track.phaseAverage = phaseTrack.average.phases;
+          track.phases = phaseTrack.traces.map(function (trace) {
+            return trace.phases;
+          });
         }
       });
     })
@@ -284,7 +278,11 @@ function updateData() {
             });
           }
 
-          traces.push(phases);
+          traces.push({
+            name: cell.name,
+            selected: false,
+            phases: phases
+          });
         });
 
         if (traces.length > 0) {
@@ -363,10 +361,10 @@ function updateData() {
       };
 
       function mapPhases(simulationOutput) {
-        return simulationOutput.map(function(trace) {
+        return simulationOutput.map(function(trace, i) {
           var timeSteps = trace.timeSteps;
 
-          return trace.phases.map(function(phase) {
+          var phases = trace.phases.map(function(phase) {
             return {
               name: phase.name,
               start: timeSteps[phase.start],
@@ -384,15 +382,21 @@ function updateData() {
           }).sort(function(a, b) {
             return a.start - b.start;
           });
+
+          return {
+            name: "Trace " + i,
+            selected: false,
+            phases: phases
+          };
         });
       }
     }
 
-    function averagePhases(phases) {
+    function averagePhases(traces) {
       var average = [];
 
-      phases.forEach(function (trace, i) {
-        trace.forEach(function (phase, j) {
+      traces.forEach(function (trace, i) {
+        trace.phases.forEach(function (phase, j) {
           if (i === 0) {
             average.push({
               name: phase.name,
@@ -407,11 +411,15 @@ function updateData() {
       });
 
       average.forEach(function (phase) {
-        phase.start /= phases.length;
-        phase.stop /= phases.length;
+        phase.start /= traces.length;
+        phase.stop /= traces.length;
       });
 
-      return average;
+      return {
+        name: "Average",
+        selected: false,
+        phases: average
+      };
     }
   }
 
@@ -459,8 +467,8 @@ function updateData() {
 
     function alignDataTracks(tracks) {
       tracks.forEach(function (track) {
-        track.traces.concat([track.average]).map(function (d) {
-          return d.values;
+        track.traces.concat([track.average]).map(function (trace) {
+          return trace.values;
         }).forEach(align);
       });
 
@@ -502,7 +510,9 @@ function updateData() {
 
     function alignPhaseTracks(tracks) {
       tracks.forEach(function(track) {
-        track.traces.concat([track.average]).forEach(align);
+        track.traces.concat([track.average]).map(function (trace) {
+          return trace.phases;
+        }).forEach(align);
       });
 
       function align(trace) {
@@ -716,6 +726,16 @@ function selectTrace(trace, selected) {
   trace.selected = selected;
 }
 
+function selectPhaseTrace(trace, selected) {
+  phaseTracks(data.tracks).forEach(function (track) {
+    track.traces.concat([track.average]).forEach(function (trace) {
+      trace.selected = false;
+    });
+  });
+
+  trace.selected = selected;
+}
+
 function showPhaseOverlay(track) {
   track.showPhaseOverlay = !track.showPhaseOverlay;
 }
@@ -796,6 +816,11 @@ DataStore.dispatchToken = AppDispatcher.register(function (action) {
 
     case Constants.SELECT_TRACE:
       selectTrace(action.trace, action.selected);
+      DataStore.emitChange();
+      break;
+
+    case Constants.SELECT_PHASE_TRACE:
+      selectPhaseTrace(action.trace, action.selected);
       DataStore.emitChange();
       break;
 

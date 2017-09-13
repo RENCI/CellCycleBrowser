@@ -40,7 +40,7 @@ function createCells(phaseTracks, distributions) {
 
   // Create phase objects with probabilities
   return phaseTracks.map(function (track) {
-    var average = track.average;
+    var average = track.average.phases;
     var averageLength = average[average.length - 1].stop - average[0].start;
     var phases = average.map(function(d) {
       return {

@@ -18,7 +18,6 @@ module.exports = function() {
       markerSize = 15,
 
       // Scales
-      // TODO: Move color scales to global settings somewhere
       phaseColorScale = d3.scaleOrdinal(),
       interactionColorScale = d3.scaleLinear(),
       nodeRadiusScale = d3.scaleLinear()

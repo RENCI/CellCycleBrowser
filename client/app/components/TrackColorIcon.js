@@ -30,7 +30,7 @@ function TrackColorIcon(props) {
     width: "100%",
     height: h,
     borderRadius: h / 4,
-    visibility: traceSelected ? "visible" : "hidden",
+    visibility: (!props.track.phaseTrack && traceSelected) ? "visible" : "hidden",
     cursor: "default"
   };
 

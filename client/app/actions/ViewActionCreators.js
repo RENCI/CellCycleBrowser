@@ -69,6 +69,13 @@ module.exports = {
       selected: selected
     });
   },
+  selectPhaseTrace: function (trace, selected) {
+    AppDispatcher.dispatch({
+      actionType: Constants.SELECT_PHASE_TRACE,
+      trace: trace,
+      selected: selected
+    });
+  },
   showPhaseOverlay: function (track) {
     AppDispatcher.dispatch({
       actionType: Constants.SHOW_PHASE_OVERLAY,
