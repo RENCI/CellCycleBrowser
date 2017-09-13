@@ -38,6 +38,10 @@ function TrackSort(props) {
       <div className="btn-toolbar" style={toolBarStyle}>
         <div className="btn-group" data-toggle="buttons">
           <TrackSortButton
+            value="type"
+            toolTip="Sort by track type"
+            onClick={handleClick} />
+          <TrackSortButton
             value="species"
             toolTip="Sort by species"
             onClick={handleClick} />

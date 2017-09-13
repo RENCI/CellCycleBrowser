@@ -632,16 +632,29 @@ function updateData() {
 
 function sortTracks(sortMethod) {
   data.tracks.sort(function (a, b) {
-    var va = a[sortMethod];
-    var vb = b[sortMethod];
+    var va, vb;
 
-    // Hack to put simulation first
-    if (sortMethod === "source") {
-      va = va === "Simulation" ? "\0" : va;
-      vb = vb === "Simulation" ? "\0" : vb;
+    if (sortMethod === "type") {
+      // Put phase tracks first
+      va = a.phaseTrack ? 0 : 1;
+      vb = b.phaseTrack ? 0 : 1;
+    }
+    else {
+      va = a[sortMethod];
+      vb = b[sortMethod];
+
+      // Hack to put simulation before other sources
+      if (sortMethod === "source") {
+        va = va === "Simulation" ? "\0" : va;
+        vb = vb === "Simulation" ? "\0" : vb;
+      }
     }
 
-    return ascending(va, vb);
+    // Get sort value
+    var v = ascending(va, vb);
+
+    // If no difference, sort by current order
+    return v !== 0 ? v : ascending(a.index, b.index);
   });
 
   updateTrackIndeces(data.tracks);
