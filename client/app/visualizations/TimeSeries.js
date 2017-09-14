@@ -112,8 +112,8 @@ module.exports = function() {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // Update scales
-    var xMin = d3.min(curves, function(d) { return d.curve[0][0]; }),
-        xMax = d3.max(curves, function(d) { return d.curve[d.curve.length - 1][0]; });
+    var xMin = curves.length > 0 ? d3.min(curves, function(d) { return d.curve[0][0]; }) : 0,
+        xMax = curves.length > 0 ? d3.max(curves, function(d) { return d.curve[d.curve.length - 1][0]; }) : 0;
 
     if (phases.length > 0) {
       phaseMin = phases[0].start;
