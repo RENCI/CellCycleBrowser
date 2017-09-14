@@ -204,8 +204,9 @@ function createDataset(id, dataset) {
             return {
               name: d.key,
               values: timeKeys.map(function (key) {
+                var v = d.values[0][key].trim();
                 return {
-                  value: +d.values[0][key],
+                  value: v === "" ? Number.NaN : +v,
                   time: +key / 60
                 };
               })
