@@ -17,10 +17,11 @@ function InformationHover(props) {
     <div className="text-left" style={divStyle}>
       <label
         className="text-left"
-        data-toggle="tooltip"
+        data-toggle="popover"
         data-container="body"
+        data-html="true"
         data-placement="auto right"
-        data-html="true">
+        data-trigger="hover">
           <span
             className="glyphicon glyphicon-info-sign"
             style={iconStyle} />

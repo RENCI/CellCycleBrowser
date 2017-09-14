@@ -6,11 +6,11 @@ var InformationHover = require("../components/InformationHover");
 var InformationHoverContainer = React.createClass ({
   componentDidMount: function () {
     // Activate information hover
-    var trigger = $(ReactDOM.findDOMNode(this)).find("[data-toggle='tooltip']").first();
+    var trigger = $(ReactDOM.findDOMNode(this)).find("[data-toggle='popover']").first();
     var content = trigger.next().first();
 
-    trigger.tooltip({
-       title: content.html()
+    trigger.popover({
+       content: content.html()
     });
   },
   render: function () {
