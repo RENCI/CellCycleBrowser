@@ -583,7 +583,7 @@ function updateData() {
       var stop = timeSpan;
 
       var timeSteps = [];
-      var n = (stop - start) / delta;
+      var n = (stop - start) / delta - 1;
       for (var i = 0; i < n; i++) {
         var t = start + i * delta;
 
