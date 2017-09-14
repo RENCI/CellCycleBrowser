@@ -42,6 +42,8 @@ function PhaseTrackBody(props) {
   // Id for collapse button/content
   var collapseId = props.track.id + "_Collapse";
 
+  var collapseClasses = "row collapse" + (props.track.collapse ? "" : " in");
+
   var averageHeight = 32;
   var traceHeight = 20;
 
@@ -78,7 +80,7 @@ function PhaseTrackBody(props) {
             alignment={props.alignment} />
         </div>
       </div>
-      <div className="row collapse in" id={collapseId} style={collapseRowStyle}>
+      <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
         <div className="col-xs-2" style={traceButtonColumnStyle}>
           <div style={{display: "flex"}}>
             <div style={{flex: 1}} />

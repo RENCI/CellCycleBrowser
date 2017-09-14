@@ -13,16 +13,6 @@ var CollapseButtonContainer = React.createClass ({
       toggle: false
     };
   },
-  componentDidMount: function () {
-    this.updateCollapse();
-  },
-  componentDidUpdate: function () {
-    this.updateCollapse();
-  },
-  updateCollapse: function () {
-    // Use jquery to hide/show collapsed area
-    $("#" + this.props.targetId).collapse(this.props.track.collapse ? "hide" : "show")
-  },
   handleClick: function () {
     // Store collapse with track. No need to go through DataStore, as no other
     // component cares about this
@@ -36,6 +26,7 @@ var CollapseButtonContainer = React.createClass ({
   render: function () {
     return (
       <CollapseButton
+        targetId={this.props.targetId}
         collapse={this.props.track.collapse}
         onClick={this.handleClick} />
     );

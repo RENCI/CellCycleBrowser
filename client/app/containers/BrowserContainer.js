@@ -102,7 +102,7 @@ var BrowserContainer = React.createClass({
     // Create GUI components for each track
     var trackComponents = tracks.map(function (track, i) {
       return (
-        <div key={i}>
+        <div key={track.id}>
           <TrackDividerContainer
             index={track.index} />
           {track.phaseTrack ?

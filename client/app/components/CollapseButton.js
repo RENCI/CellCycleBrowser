@@ -15,6 +15,8 @@ function CollapseButton(props) {
     <button
       type="button"
       className="btn btn-default text-center"
+      data-toggle="collapse"
+      href={"#" + props.targetId}
       style={buttonStyle}
       onClick={props.onClick}>
         {props.collapse ?
@@ -25,6 +27,7 @@ function CollapseButton(props) {
 }
 
 CollapseButton.propTypes = {
+  targetId: PropTypes.string.isRequired,
   collapse: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired
 };
