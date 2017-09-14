@@ -102,12 +102,8 @@ module.exports = function () {
     drawHeatMap();
     drawPhaseLines();
 
-    // Update toltips
-    $(".heatMap .cell").tooltip({
-      container: "body",
-      placement: "auto top",
-      animation: false
-    });
+    // Update tooltips
+    $(".heatMap .cell").tooltip();
 
     function drawBorders() {
       // Borders
@@ -157,6 +153,9 @@ module.exports = function () {
             .attr("class", "cell")
             .attr("shape-rendering", "crispEdges")
             .attr("data-toggle", "tooltip")
+            .attr("data-container", "body")
+            .attr("data-placement", "auto top")
+            .attr("data-animation", false)
             .style("stroke-width", 2)
             .on("mouseover", function(d, i) {
               var rect = d3.select(this);

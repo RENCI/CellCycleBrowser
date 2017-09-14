@@ -19,6 +19,7 @@ function ToggleButton(props) {
       data-toggle="tooltip"
       data-container="body"
       data-placement="auto top"
+      data-animation="false"
       title="Toggle time series display"
       onMouseOver={props.onMouseOver}
       onMouseOut={props.onMouseOut}
