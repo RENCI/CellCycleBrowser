@@ -1,4 +1,4 @@
-function find(array, key, value) {
+module.exports.find = function (array, key, value) {
  for (var i = 0; i < array.length; i++) {
    if (array[i][key] === value) return array[i];
  }
@@ -6,6 +6,7 @@ function find(array, key, value) {
  return null;
 }
 
-module.exports = {
-  find: find
+// Remove non "word" characters
+module.exports.removeNonWord = function (s) {
+  return s.replace(/\W/g, "");
 }

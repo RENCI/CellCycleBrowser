@@ -5,6 +5,7 @@ var Constants = require("../constants/Constants");
 var DatasetStore = require("./DatasetStore");
 var SimulationOutputStore = require("./SimulationOutputStore");
 var AlignmentStore = require("./AlignmentStore");
+var DataUtils = require("../utils/DataUtils");
 var d3 = require("d3");
 
 var CHANGE_EVENT = "change";
@@ -33,7 +34,7 @@ function phaseTracks(tracks) {
 }
 
 function updateData() {
-  // Kep track of state
+  // Keep track of state
   var state = saveState(data.tracks);
 
   // Create tracks
@@ -57,17 +58,22 @@ function updateData() {
   // Update track indeces
   updateTrackIndeces(data.tracks);
 
+  // Set track ids
+  setTrackIds(data.tracks);
+
   // XXX: Switch to generating ids and using that for matching via a selected store?
   function trackId(track) {
-    return track.source + ":" + track.species + ":" + track.feature;
+    return DataUtils.removeNonWord(
+      track.source + "_" +
+      track.species + "_" +
+      track.feature
+    );
   }
 
   function saveState(tracks) {
     var state = {};
 
     tracks.forEach(function (track) {
-      var id = trackId(track);
-
       var s = {};
 
       s.collapse = track.collapse;
@@ -82,7 +88,7 @@ function updateData() {
         s.rescaleTraces = track.rescaleTraces;
       }
 
-      state[id] = s;
+      state[track.id] = s;
     });
 
     return state;
@@ -90,9 +96,7 @@ function updateData() {
 
   function applyState(tracks, state) {
     tracks.forEach(function (track) {
-      var id = trackId(track);
-
-      var s = state[id];
+      var s = state[trackId(track)];
 
       track.collapse = !s || typeof s.collapse === "undefined" ?
                        false : s.collapse;
@@ -647,6 +651,12 @@ function updateData() {
         timeSpan: timeSpan
       };
     }
+  }
+
+  function setTrackIds(tracks) {
+    tracks.forEach(function (track) {
+      track.id = trackId(track);
+    });
   }
 }
 

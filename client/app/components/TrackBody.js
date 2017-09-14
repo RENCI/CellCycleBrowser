@@ -39,13 +39,8 @@ var collapseColumnStyle = {
 };
 
 function TrackBody(props) {
-  // Generate unique id for track
-  var collapseId = props.track.species + "_" +
-                   props.track.feature + "_" +
-                   props.track.source + "_Collapse";
-
-  // Remove non "word" characters
-  collapseId = collapseId.replace(/\W/g, "");
+  // Id for collapse button/content
+  var collapseId = props.track.id + "_Collapse";
 
   var averageHeight = 32;
   var traceHeight = 20;

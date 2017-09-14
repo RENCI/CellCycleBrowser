@@ -1,3 +1,4 @@
+var DataUtils = require("../utils/DataUtils");
 var d3 = require("d3");
 var d3Contour = require("d3-contour");
 var d3ScaleChromatic = require("d3-scale-chromatic");
@@ -292,8 +293,7 @@ module.exports = function() {
           y = m;
 
       // Remove non "word" characters
-      // XXX: Move this to utils
-      var id = source.replace(/\W/g, "") + "Gradient";
+      var id = DataUtils.removeNonWord(source) + "_Gradient";
 
       // Update gradient
       var stop = svg.select("linearGradient")
