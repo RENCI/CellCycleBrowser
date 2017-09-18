@@ -13,8 +13,9 @@ function HeaderSection() {
         </div>
         <div className="col-sm-6 text-center">
           <Header header="Cell Cycle Browser" />
-          <a style={{marginRight: 20}} href="/about/" target="_blank">About</a>
-          <a href="/help/" target="_blank">Tutorial</a>
+          <a style={{marginRight: 20}} href="https://github.com/RENCI/CellCycleBrowser/wiki/about" target="_blank">About</a>
+          <a style={{marginRight: 20}} href="https://github.com/RENCI/CellCycleBrowser/wiki/tutorial" target="_blank">Tutorial</a>
+          <a href="https://github.com/RENCI/CellCycleBrowser/wiki/contribute" target="_blank">Contribute</a>
         </div>
         <div className="col-sm-3 text-center">
           <div>
