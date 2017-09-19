@@ -4,8 +4,8 @@ var InformationWrapper = require("./InformationWrapper");
 function BrowserInformation() {
   return (
     <InformationWrapper>
-      <h4>Dataset Browser</h4>
-      <p>The dataset browser shows both experimental data and the output of the current simulation run. Multiple experimental datasets can be selected from the <i>Datasets</i> dropdown above.</p>
+      <h4>Data Browser</h4>
+      <p>The data browser shows both experimental data and the output of the current simulation run. Multiple experimental datasets can be selected from the <i>Datasets</i> dropdown above.</p>
       <p>The browser separates data into different <b>tracks</b>, where each track is defined by a data <b>source</b> (the dataset or simulation), a <b>species</b>, and a <b>feature</b> (for experimental data). Each track displays individual cells as separate <b>traces</b>, with the average of all traces for the track shown at the top. You can show only the average for each track by clicking the <i>collapse button</i>.</p>
       <p>There are two types of tracks: <b>data</b> tracks, showing color-mapped values from white (low) to black (high), and <b>phase</b> tracks, showing colored phase bars representing the temporal extent of each phase.</p>
       <p>You can <b>left-align</b>, <b>right-align</b>, or <b>fully-justify</b> the traces with the <i>alignment buttons</i> at the top. The <i>time line</i> below the <i>alignment buttons</i> will update to show the appropriate temporal information.</p>
