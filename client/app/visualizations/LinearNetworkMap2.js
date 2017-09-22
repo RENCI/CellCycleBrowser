@@ -45,7 +45,7 @@ module.exports = function() {
           });
 
       // Defs section for arrow markers
-      var filter = svgEnter.append("defs");
+      svgEnter.append("defs");
 
       var g = svgEnter.append("g")
           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
