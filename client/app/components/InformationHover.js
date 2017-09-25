@@ -4,12 +4,13 @@ var PropTypes = React.PropTypes;
 var divStyle = {
   position: "absolute",
   marginTop: 4,
-  marginLeft: 5
+  marginLeft: 5,
+  pointerEvents: "none"
 };
 
 var iconStyle = {
   color: "#aaa",
-  pointerEvents: "none"
+  pointerEvents: "all"
 };
 
 function InformationHover(props) {
