@@ -339,56 +339,19 @@ def extract_info_from_model(filename):
 
         return_object['speciesPhaseMatrix'] = s_p_matrix
 
-        if filename == 'test_model.xml':
-            s_s_matrix = [
-                [
-                    [0, -0.6],
-                    [0.4, 0]
-                ],
-                [
-                    [0, 0.7],
-                    [-0.4, 0]
-                ],
-                [
-                    [0, -0.2],
-                    [0.5, 0]
-                ]
-            ]
-        elif filename == 'test_model2.xml':
-            s_s_matrix = [
-                [
-                    [0, -0.6, 0.3, -0.1],
-                    [0, -0.6, 0.3, -0.1],
-                    [0.2, -0.3, 0, 0.2],
-                    [0.1, 0.4, 0, 0]
-                ],
-                [
-                    [0, 0.7, 0, 0],
-                    [-0.4, 0, 0.1, 0.5],
-                    [-0.2, 0, 0, -0.3],
-                    [0, 0, 0.4, 0]
-                ],
-                [
-                    [0, -0.2, 0.4, 0.1],
-                    [0.5, 0, 0.1, 0.4],
-                    [0.5, 0.2, 0, -0.4],
-                    [-0.5, 0, -0.1, 0]
-                ]
-            ]
-        else:
-            s_s_matrix = []
-            # TODO: Our current model does not include phase info in species to species interaction, so
-            # replicate same species to species interaction across all phases until we have this info
-            # in the model
-            for phase in phases:
-                p_s_s_matrix = []
-                for s_name, s_value in s_s_dict.iteritems():
-                    s_list = []
-                    for ss_name, ss_value in s_value.iteritems():
-                        s_list.append(ss_value)
-                    p_s_s_matrix.append(s_list)
-                if p_s_s_matrix:
-                    s_s_matrix.append(p_s_s_matrix)
+        s_s_matrix = []
+        # TODO: Our current model does not include phase info in species to species interaction, so
+        # replicate same species to species interaction across all phases until we have this info
+        # in the model
+        for phase in phases:
+            p_s_s_matrix = []
+            for s_name, s_value in s_s_dict.iteritems():
+                s_list = []
+                for ss_name, ss_value in s_value.iteritems():
+                    s_list.append(ss_value)
+                p_s_s_matrix.append(s_list)
+            if p_s_s_matrix:
+                s_s_matrix.append(p_s_s_matrix)
 
         return_object['speciesMatrices'] = s_s_matrix
 
@@ -844,3 +807,4 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
     sbml_to_write = model.toSBML()
     with open(writesbmlfile, 'w') as fw:
         fw.write(sbml_to_write)
+
