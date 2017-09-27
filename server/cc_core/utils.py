@@ -303,8 +303,15 @@ def extract_info_from_model(filename):
         # extract speciesPhaseMatrix and speciesMatrix
         species_name_list = [s['name'] for s in species_list]
         phase_name_list = [p['name'] for p in phases]
+        # species_to_phase
         s_p_dict = OrderedDict()
+        # species_to_species
         s_s_dict = OrderedDict()
+        # species_to_species_over_a_phase
+        p_s_s_dict = OrderedDict()
+
+        species_species_phase_exist = False
+
         # initialize the matrix list
         for sname in species_name_list:
             p_dict = OrderedDict()
@@ -316,6 +323,15 @@ def extract_info_from_model(filename):
                 s_dict[ssname] = 0
             s_s_dict[sname] = s_dict
 
+        for pname in phase_name_list:
+            s_s_dict = OrderedDict()
+            for sname in species_name_list:
+                s_dict = OrderedDict()
+                for ssname in species_name_list:
+                    s_dict[ssname] = 0
+                s_s_dict[sname] = s_dict
+            p_s_s_dict[pname] = s_s_dict
+
         paras = model.getListOfParameters()
         for para in paras:
             pname = para.getName()
@@ -325,10 +341,26 @@ def extract_info_from_model(filename):
             name1 = para_names[1]
             if len(para_names) > 2:
                 name2 = para_names[2]
-                if name1 in species_name_list and name2 in phase_name_list:
-                    s_p_dict[name1][name2] = para.getValue()
-                elif name1 in species_name_list and name2 in species_name_list:
-                    s_s_dict[name1][name2] = para.getValue()
+                if len(para_names) > 3:
+                    name3 = para_names[3]
+                else:
+                    name3 = ''
+                if name3:
+                    # parameter is in format of a_phase_species_species or a_species_species_phase
+                    if name1 in species_name_list and name2 in species_name_list and \
+                                    name3 in phase_name_list:
+                        p_s_s_dict[name3][name1][name2] = para.getValue()
+                        species_species_phase_exist = True
+                    elif name1 in phase_name_list and name2 in species_name_list and \
+                                    name3 in species_name_list:
+                        p_s_s_dict[name1][name2][name3] = para.getValue()
+                        species_species_phase_exist = True
+                else:
+                    # parameter is in format of a_species_phase or a_species_species
+                    if name1 in species_name_list and name2 in phase_name_list:
+                        s_p_dict[name1][name2] = para.getValue()
+                    elif name1 in species_name_list and name2 in species_name_list:
+                        s_s_dict[name1][name2] = para.getValue()
 
         s_p_matrix = []
         for s_name, s_value in s_p_dict.iteritems():
@@ -340,18 +372,28 @@ def extract_info_from_model(filename):
         return_object['speciesPhaseMatrix'] = s_p_matrix
 
         s_s_matrix = []
-        # TODO: Our current model does not include phase info in species to species interaction, so
-        # replicate same species to species interaction across all phases until we have this info
-        # in the model
-        for phase in phases:
-            p_s_s_matrix = []
-            for s_name, s_value in s_s_dict.iteritems():
-                s_list = []
-                for ss_name, ss_value in s_value.iteritems():
-                    s_list.append(ss_value)
-                p_s_s_matrix.append(s_list)
-            if p_s_s_matrix:
-                s_s_matrix.append(p_s_s_matrix)
+        if species_species_phase_exist:
+            for p_name, p_value in p_s_s_dict.iteritems():
+                p_s_s_matrix = []
+                for s_name, s_value in p_value.iteritems():
+                    s_list = []
+                    for ss_name, ss_value in s_value.iteritems():
+                        s_list.append(ss_value)
+                    p_s_s_matrix.append(s_list)
+                if p_s_s_matrix:
+                    s_s_matrix.append(p_s_s_matrix)
+        else:
+            # Model does not include phase info in species to species interaction, so
+            # replicate same species to species interaction across all phases in the model
+            for phase in phases:
+                p_s_s_matrix = []
+                for s_name, s_value in s_s_dict.iteritems():
+                    s_list = []
+                    for ss_name, ss_value in s_value.iteritems():
+                        s_list.append(ss_value)
+                    p_s_s_matrix.append(s_list)
+                if p_s_s_matrix:
+                    s_s_matrix.append(p_s_s_matrix)
 
         return_object['speciesMatrices'] = s_s_matrix
 
@@ -807,4 +849,3 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
     sbml_to_write = model.toSBML()
     with open(writesbmlfile, 'w') as fw:
         fw.write(sbml_to_write)
-
