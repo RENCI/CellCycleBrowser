@@ -53,8 +53,10 @@ SimulationOutputStore.dispatchToken = AppDispatcher.register(function (action) {
       SimulationOutputStore.emitChange();
       break;
 
+    case Constants.SELECT_MODEL:
     case Constants.RECEIVE_MODEL:
       error = null;
+      simulationOutput = [];
       SimulationOutputStore.emitChange();
       break;
   }

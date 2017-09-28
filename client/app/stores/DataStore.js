@@ -804,6 +804,8 @@ DataStore.dispatchToken = AppDispatcher.register(function (action) {
       updateData();
       DatasetStore.emitChange();
 
+    case Constants.SELECT_MODEL:
+    case Constants.RECEIVE_MODEL:
     case Constants.RECEIVE_SIMULATION_OUTPUT:
       AppDispatcher.waitFor([SimulationOutputStore.dispatchToken]);
       simulationOutput = SimulationOutputStore.getSimulationOutput();
