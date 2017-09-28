@@ -9,9 +9,7 @@ var refName = "ref";
 
 function getStateFromStore() {
   return {
-    tracks: DataStore.getData().tracks.filter(function (track) {
-      return !track.phaseTrack;
-    })
+    tracks: DataStore.getData().tracks
   };
 }
 

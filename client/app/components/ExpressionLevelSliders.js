@@ -33,6 +33,8 @@ function valueLabel(value) {
 }
 
 function ExpressionLevelSliders(props) {
+  if (props.species.length <= 1) return null;
+
   var sliders = props.species.map(function (species, i) {
     function handleChange(value) {
       props.onChange({

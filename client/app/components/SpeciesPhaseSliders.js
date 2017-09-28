@@ -23,6 +23,8 @@ function valueLabel(value) {
 }
 
 function SpeciesPhaseSliders(props) {
+  if (props.species.length <= 1) return null;
+
   var sliders = props.phases.map(function(phase, i) {
     return props.species.map(function(species, j) {
       function handleChange(value) {

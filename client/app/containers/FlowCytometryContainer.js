@@ -40,6 +40,11 @@ function createCells(phaseTracks, distributions) {
 
   // Create phase objects with probabilities
   return phaseTracks.map(function (track) {
+    // To handle differences in phase naming
+    var phaseNameMap = d3.scaleOrdinal()
+        .domain(["G1", "S", "G2", "G2M"])
+        .range(["G1", "S", "G2", "G2"]);
+
     var average = track.average.phases;
     var averageLength = average[average.length - 1].stop - average[0].start;
     var phases = average.map(function(d) {
@@ -74,7 +79,7 @@ function createCells(phaseTracks, distributions) {
         }
       }
 
-      var point = distributions[cell.phase.name]();
+      var point = distributions[phaseNameMap(cell.phase.name)]();
 
       cell.x = point.x;
       cell.y = point.y;

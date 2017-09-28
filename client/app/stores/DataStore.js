@@ -285,7 +285,8 @@ function updateData() {
           traces.push({
             name: cell.name,
             selected: false,
-            phases: phases
+            phases: phases,
+            timeSpan: computeTimeSpan(phases)
           });
         });
 
@@ -390,7 +391,8 @@ function updateData() {
           return {
             name: "Trace " + i,
             selected: false,
-            phases: phases
+            phases: phases,
+            timeSpan: computeTimeSpan(phases)
           };
         });
       }
@@ -422,7 +424,8 @@ function updateData() {
       return {
         name: "Average",
         selected: false,
-        phases: average
+        phases: average,
+        timeSpan: computeTimeSpan(average)
       };
     }
   }
@@ -452,11 +455,12 @@ function updateData() {
   function computeTimeExtent(tracks) {
     var timeExtent = [];
 
-    // Just check data tracks
-    dataTracks(tracks).forEach(function (track) {
+    tracks.forEach(function (track) {
       track.traces.forEach(function (trace) {
-        var first = trace.values[0];
-        var last = trace.values[trace.values.length - 1];
+        var v = track.phaseTrack ? trace.phases : trace.values;
+
+        var first = v[0];
+        var last = v[v.length - 1];
 
         timeExtent.push(first.start, last.stop);
       });
