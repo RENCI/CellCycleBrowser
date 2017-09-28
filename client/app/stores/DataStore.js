@@ -718,15 +718,23 @@ function updateTrackIndeces(tracks) {
 function setTrackColors(tracks) {
   var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
-  // Use a nest to group by source
+  // Use a nest to group by source and set source color for all tracks
   d3.nest()
       .key(function (track) { return track.source; })
       .entries(tracks).forEach(function (source) {
-        source.values.forEach(function(track, i, a) {
+        source.values.forEach(function (track) {
+          track.sourceColor = colorScale(track.source);
+        });
+      });
+
+  // Now just data tracks for track color, which is only used for time series
+  d3.nest()
+      .key(function (track) { return track.source; })
+      .entries(dataTracks(tracks)).forEach(function (source) {
+        source.values.forEach(function (track, i, a) {
           // Use array index to change color shade for track
           var fraction = a.length === 1 ? 0 : i / (a.length - 1);
 
-          track.sourceColor = colorScale(track.source);
           track.color = d3.hsl(track.sourceColor).brighter(fraction);
         });
       });
