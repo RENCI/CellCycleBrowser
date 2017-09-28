@@ -323,7 +323,7 @@ module.exports = function() {
           .attr("dx", "-.5em")
           .attr("y", function(d, i) { return i === 0 ? 0 : h; })
           .style("text-anchor", "end")
-          .style("alignment-baseline", "middle")
+          .style("dominant-baseline", "middle")
           .style("font-size", "x-small");
 
       // Update

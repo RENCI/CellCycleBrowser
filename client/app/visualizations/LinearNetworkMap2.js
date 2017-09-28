@@ -274,7 +274,7 @@ module.exports = function() {
             });
 
         phaseEnter.append("text")
-            .attr("alignment-baseline", "middle")
+            .style("dominant-baseline", "middle")
             .style("font-size", "x-small")
             .style("text-anchor", "middle")
             .style("pointer-events", "none");

@@ -100,7 +100,6 @@ module.exports = function () {
         // Enter + update
         cell.enter().append("rect")
             .attr("class", "cell")
-            .attr("shape-rendering", "crispEdges")
             .attr("data-toggle", "tooltip")
             .style("stroke-width", strokeWidth)
           .merge(cell)
@@ -108,6 +107,8 @@ module.exports = function () {
             .attr("y", strokeWidth / 2)
             .attr("width", width)
             .attr("height", yScale.bandwidth() - strokeWidth)
+            .attr("rx", yScale.bandwidth() / 4)
+            .attr("ry", yScale.bandwidth() / 4)
             .attr("data-original-title", label)
             .style("fill", function(d) {
               return rowSelected ? highlightColor(d, 0.4) : "white";
@@ -115,8 +116,6 @@ module.exports = function () {
             .style("stroke", function(d) {
               return colorScale(d.name);
             })
-            .style("rx", yScale.bandwidth() / 4)
-            .style("ry", yScale.bandwidth() / 4)
             .on("mouseover", function() {
               var w = 1;
 
@@ -155,7 +154,7 @@ module.exports = function () {
           // Enter + update
           label.enter().append("text")
               .attr("class", "phaseLabel")
-              .attr("alignment-baseline", "middle")
+              .style("dominant-baseline", "middle")
               .style("font-size", "x-small")
               .style("text-anchor", "middle")
               .style("pointer-events", "none")
