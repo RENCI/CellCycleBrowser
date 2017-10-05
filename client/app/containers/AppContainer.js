@@ -68,6 +68,7 @@ var AppContainer = React.createClass({
     this.setState(getStateFromDataStore());
   },
   enableTooltips: function () {
+    $("[data-toggle='tooltip']").tooltip("hide");
     $("[data-toggle='tooltip']").tooltip();
   },
   render: function () {
