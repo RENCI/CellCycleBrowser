@@ -23,8 +23,10 @@ function TraceToggleButtons(props) {
     );
   });
 
+  var isAverage = props.traces[0].name === "Average";
+
   return (
-    <div style={{marginTop: props.traces.length > 1 ? 1 : 0}}>
+    <div style={{marginTop: isAverage ? 0 : 1}}>
       {buttons}
     </div>
   );
