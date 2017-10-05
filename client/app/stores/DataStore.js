@@ -591,13 +591,15 @@ function updateData() {
       var stop = timeSpan;
 
       var timeSteps = [];
-      var n = (stop - start) / delta - 1;
+      var n = Math.round((stop - start) / delta);
+
       for (var i = 0; i < n; i++) {
-        var t = start + i * delta;
+        var t1 = i === 0 ? start : timeSteps[i - 1].stop;
+        var t2 = i === n - 1 ? stop : (i + 1) / n * timeSpan;
 
         timeSteps.push({
-          start: t,
-          stop: t + delta
+          start: t1,
+          stop: t2
         });
       }
 
@@ -613,7 +615,7 @@ function updateData() {
           return r0 + (x - d0) / dw * rw;
         }
 
-        return timeSeries.map(function(d) {
+        return timeSeries.map(function (d) {
           return {
             value: d.value,
             start: justify(d.start),
@@ -628,18 +630,19 @@ function updateData() {
       });
 
       timeSteps.forEach(function (timeStep) {
+        var mid = (timeStep.stop + timeStep.start) / 2;
         var value = 0;
         var count = 0;
 
         justified.forEach(function (d, i) {
-          // Find overlapping time steps
+          // Find closest overlapping time step
           for (var j = t[i]; j < d.length; j++) {
-            if (d[j].stop >= timeStep.start && d[j].start < timeStep.stop) {
+            if (d[j].start <= mid && d[j].stop >= mid) {
               value += d[j].value;
               count++;
               t[i] = j;
             }
-            else if (d[j].start >= timeStep.stop) {
+            else if (d[j].start > mid) {
               break;
             }
           }
