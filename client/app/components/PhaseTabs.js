@@ -78,7 +78,7 @@ function PhaseTabs(props) {
 
   return (
     <div>
-      <ul className="nav nav-tabs" style={{tabStyle}}>
+      <ul className="nav nav-tabs" style={tabStyle}>
         {tabs.map(function(tab) { return tab.tab; })}
       </ul>
       <div className="tab-content">

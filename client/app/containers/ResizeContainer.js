@@ -16,18 +16,18 @@ var style = {
 };
 
 var ResizeContainer = React.createClass({
-  componentDidMount() {
+  componentDidMount: function () {
     this.refs.frame.contentWindow.addEventListener("resize", this.onResize, false);
   },
-  componentWillUnmount() {
+  componentWillUnmount: function () {
     this.refs.frame.contentWindow.removeEventListener("resize", this.onResize);
   },
-  onResize() {
+  onResize: function () {
     try {
       window.dispatchEvent(new UIEvent("resize"));
     } catch (d) {}
   },
-  render() {
+  render: function () {
     return <iframe ref="frame" style={style} />
   }
 });

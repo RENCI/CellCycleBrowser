@@ -44,7 +44,7 @@ var ValueSliderContainer = React.createClass ({
     // Unregister mouse events
     this.unregisterMouseCallbacks();
   },
-  componentDidUpdate() {
+  componentDidUpdate: function () {
     if (this.state.width !== this.refs.wrapper.clientWidth) {
       this.resize();
     }
