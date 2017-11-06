@@ -1,0 +1,331 @@
+import sys
+import json
+from libsbml import *
+
+
+def create_species(model=None, species_id='', amt=0.0, comp='cell'):
+    if not model or not species_id:
+        return
+
+    s1 = model.createSpecies()
+    s1.setId(species_id)
+    s1.setCompartment(comp)
+    s1.setInitialAmount(amt)
+    s1.setSubstanceUnits(model.getSubstanceUnits())
+    s1.setBoundaryCondition(False)
+    s1.setConstant(False)
+    s1.setHasOnlySubstanceUnits(False)
+    return s1
+
+
+def add_reaction(model, reactants=[], products=[], modifiers=[], expression='', rxn_id=''):
+    if not model:
+        return
+
+    r1 = model.createReaction()
+    if not rxn_id:
+        rxn_id = 'v' + str(model.getNumReactions())
+    r1.setId(rxn_id)
+    r1.setReversible(False)
+    r1.setFast(False)
+
+    for re in reactants:
+        re_split = re.split()
+        if len(re_split) == 1:
+            sto = 1.0
+            re_id = re
+        elif len(re_split) == 2 and re_split[0].isdigit():
+            sto = float(re_split[0])
+            re_id = re_split[1]
+        else:
+            err_msg = 'Error: reactants must be listed in format \'S\' or \'(float)\' S\''
+            raise SystemExit(err_msg)
+        s1 = model.getSpecies(re_id)
+        species_ref1 = r1.createReactant()
+        species_ref1.setSpecies(str(s1)[9:len(str(s1)) - 1])
+        species_ref1.setStoichiometry(sto)
+        species_ref1.setConstant(True)
+
+    for pro in products:
+        pro_split = pro.split()
+        if len(pro_split) == 1:
+            sto = 1.0
+            pro_id = pro
+        elif len(pro_split) == 2:
+            sto = float(pro_split[0])
+            pro_id = pro_split[1]
+        else:
+            err_msg = 'Error: products must be listed in format \'S\' or \'(float)\' S\''
+            raise SystemExit(err_msg)
+        s2 = model.getSpecies(pro_id)
+        species_ref2 = r1.createProduct()
+        species_ref2.setSpecies(str(s2)[9:len(str(s2)) - 1])
+        species_ref2.setStoichiometry(sto)
+        species_ref2.setConstant(True)
+
+    for mod in modifiers:
+            mod_ref = r1.createModifier()
+            s3 = model.getSpecies(mod)
+            mod_ref.setSpecies(str(s3)[9:len(str(s3)) - 1])
+
+    math_ast = parseL3Formula(expression)
+    kinetic_law = r1.createKineticLaw()
+    kinetic_law.setMath(math_ast)
+
+    return r1
+
+
+# This function will output an SBML model with the appropriate number of subphases
+# Follwing a sequential model where each subphase follows over each other
+# X0 is the list of species initial condition values corresponding to species_list
+# P contains an array of nxm species-phase interaction stregths in list,
+# B contains an array of nxm production rates in list,
+# A contains an array of nxm degradation rates in list,
+# Z contains an array of nxnxm species interactions in list,
+# where n is the number of species and m is the number of phases, currently 3, i.e., G1, S, G2M
+def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M, species_list, X0,
+                              P, B, A, Z, writesbmlfile):
+    try:
+        document = SBMLDocument(3, 1)
+    except ValueError:
+        raise SystemExit('Could not create SBMLDocumention object')
+
+    model = document.createModel()
+    model.setTimeUnits('second')
+    model.setExtentUnits('item')
+    model.setSubstanceUnits('item')
+
+    # Create a compartment inside this model, and set the required
+    # attributes for an SBML compartment in SBML Level 3.
+
+    c1 = model.createCompartment()
+    c1.setId('cell')
+    c1.setConstant(True)
+    c1.setSize(1)
+
+    phases = ['G1', 'S', 'G2M']
+    num_phases = [num_G1, num_S, num_G2M]
+    rate_phases = [rate_G1, rate_S, rate_G2M]
+
+    if species_list and X0:
+        if len(species_list) == len(X0):
+            for i in range(len(species_list)):
+                create_species(model=model, species_id=str(species_list[i]), amt=X0[i])
+
+    is_G1_last = False
+    is_S_last = False
+
+    if num_G1 > 0 and num_S <= 0 and num_G2M <= 0:
+        is_G1_last = True
+    elif num_S > 0 and num_G2M <= 0:
+        is_S_last = True
+
+    # Create the first species G1_1 to initialize to 1, if num_G1 > 0
+    if num_G1 > 0:
+        create_species(model=model, species_id='G1', amt=0.0)
+        create_species(model=model, species_id='G1_1', amt=1.0)
+
+        # This will create all the species subphases for G1
+        for i in range(2, num_G1 + 1):
+            name_G1species = 'G1_' + str(i)
+            if is_G1_last and i == num_G1:
+                name_G1species += '_end'
+            create_species(model=model, species_id=name_G1species, amt=0.0)
+
+        # Create assignment rules for G1
+        # If there is more than one sub-phase of G1, then concatenate G1_1 + G1_2 + ... and assign to rule
+        if num_G1 > 1:
+            con_G1 = ''
+            for i in range(1, num_G1):
+                con_G1 = con_G1 + ' G1_' + str(i) + ' +'
+            rule_G1 = con_G1 + 'G1_' + str(num_G1)
+            if is_G1_last:
+                rule_G1 += '_end'
+        # If there is only one sub-phase of G1, then rule is just G1 = G1_1
+        else:
+            rule_G1 = 'G1_1'
+            if is_G1_last:
+                rule_G1 += '_end'
+
+        r = model.createAssignmentRule()
+        r.setVariable('G1')
+        math_ast = parseL3Formula(rule_G1)
+        r.setMath(math_ast)
+
+    # This will create all the species subphases for S, if num_S > 0
+    if num_S > 0:
+        create_species(model=model, species_id='S', amt=0.0)
+
+        # If no G1 subphases present, then first S_1 initialized to 1
+        if num_G1 == 0:
+            create_species(model=model, species_id='S_1', amt=1.0)
+            s_S = 2
+        # If there are G1 subphases present, then no S_1 initialization
+        else:
+            s_S = 1
+        for i in range(s_S, num_S + 1):
+            name_Sspecies = 'S_' + str(i)
+            if is_S_last and i == num_S:
+                name_Sspecies += '_end'
+            create_species(model=model, species_id=name_Sspecies, amt=0.0)
+
+        # Create assignment rules for S
+        # If there is more than one sub-phase of S, then concatenate S_1 + S_2 + ... and assign to rule
+        if num_S > 1:
+            con_S = ''
+            for i in range(1, num_S):
+                con_S = con_S + ' S_' + str(i) + ' +'
+            rule_S = con_S + 'S_' + str(num_S)
+            if is_S_last:
+                rule_S += '_end'
+            # If there is only one sub-phase of S, then rule is just S = S_1
+        else:
+            rule_S = 'S_1'
+            if is_S_last:
+                rule_S += '_end'
+
+        r = model.createAssignmentRule()
+        r.setVariable('S')
+        math_ast = parseL3Formula(rule_S)
+        r.setMath(math_ast)
+
+    # This will create all the species subphases for G2M
+    if num_G2M > 0:
+        create_species(model=model, species_id='G2M', amt=0.0)
+
+        #If no G1 subphases present or S subphases present, first G2M_1 initialized to 1
+        if num_G1 == 0 and num_S == 0:
+            create_species(model=model, species_id='G2M_1', amt=1.0)
+            s_G2M = 2
+        # If there are G1 subphases present or S subphases present, no G2M_1 initialization
+        else:
+            s_G2M = 1
+        for i in range(s_G2M, num_G2M + 1):
+            name_G2Mspecies = 'G2M_' + str(i)
+            if i == num_G2M:
+                # the last sub-phase, append '_end' to signal to stochpy this is the last sub-phase
+                name_G2Mspecies += '_end'
+            create_species(model=model, species_id=name_G2Mspecies, amt=0.0)
+
+        # Create assignment rules for G2M
+        # If there is more than one sub-phase of G2M, then concatenate G2M_1 + G2M_2 + ... and assign to rule
+        if num_G2M > 1:
+            con_G2M = ''
+            for i in range(1, num_G2M):
+                con_G2M = con_G2M + ' G2M_' + str(i) + ' +'
+            rule_G2M = con_G2M + 'G2M_' + str(num_G2M) + '_end'
+        # If there is only one sub-phase of G2M, then rule is just G2M = G2M_1
+        else:
+            rule_G2M = 'G2M_1_end'
+
+        r = model.createAssignmentRule()
+        r.setVariable('G2M')
+        math_ast = parseL3Formula(rule_G2M)
+        r.setMath(math_ast)
+
+    # create species to phase parameters and reactions based on input P
+    for sp_idx in range(len(P)):
+        sp_ph_list = P[sp_idx]
+        for ph_idx in range(len(sp_ph_list)):
+            sp_ph_val = sp_ph_list[ph_idx]
+            pid = 'r_' + species_list[sp_idx] + '_' + phases[ph_idx]
+            k = model.createParameter()
+            k.setId(str(pid))
+            k.setConstant(False)
+            k.setValue(sp_ph_val)
+            k.setUnits('per_second')
+
+            # add reactions for phase transition resulting from this non-zero species-phase interaction
+            # Create reactions going from each subphase of G1 to the next based on input P
+            for i in range(1, num_phases[ph_idx]):
+                r = phases[ph_idx] + '_' + str(i)
+                p = phases[ph_idx] + '_' + str(i + 1)
+                if phases[ph_idx] == 'G2M' and i == num_phases[ph_idx] - 1:
+                    p += '_end'
+                exp = str(rate_phases[ph_idx]) + ' * power(1+' + r + ',' + str(sp_ph_val) + ')'
+                id_for_rxn = r + '_to_' + p
+                r1 = model.createReaction()
+                r1.setId(id_for_rxn)
+
+                r = add_reaction(model=model, reactants=[r], products=[p],
+                                 expression=exp, rxn_id=id_for_rxn)
+                if type(r) is int:
+                    if r != LIBSBML_OPERATION_SUCCESS:
+                        print str(r) + ':' + OperationReturnValue_toString(r).strip()
+                elif not r:
+                    print "Reaction is not created for phase transition from " + r + " to " + p
+
+    # For each species, generate a production reaction based on input B
+    for sp_idx in range(len(B)):
+        sp_ph_list = B[sp_idx]
+        si = species_list[sp_idx]
+        exp = ''
+        for ph_idx in range(len(sp_ph_list)):
+            if exp:
+                exp += ' + '
+            exp += str(sp_ph_list[ph_idx]) + ' * ' + str(phases[ph_idx])
+        id_for_rxn = 'synthesis_' + str(si)
+
+        r = add_reaction(model=model, products=[str(si)], modifiers=phases,
+                         expression=exp, rxn_id=id_for_rxn)
+        if type(r) is int:
+            if r != LIBSBML_OPERATION_SUCCESS:
+                print str(r) + ':' + OperationReturnValue_toString(r).strip()
+        elif not r:
+            print "Reaction is not created for production reaction based on input B"
+
+    # For each species, generate a degradation reaction based on input A
+    for sp_idx in range(len(A)):
+        sp_ph_list = A[sp_idx]
+        si = species_list[sp_idx]
+        exp = ''
+        for ph_idx in range(len(sp_ph_list)):
+            exp = exp + str(sp_ph_list[ph_idx]) + ' * ' + str(phases[ph_idx]) + ' * ' + str(si)
+        id_for_rxn = 'degradation_' + str(si)
+        r = add_reaction(model=model, reactants=[str(si)], modifiers=phases,
+                         expression=exp, rxn_id=id_for_rxn)
+        if type(r) is int:
+            if r != LIBSBML_OPERATION_SUCCESS:
+                print str(r) + ':' + OperationReturnValue_toString(r).strip()
+        elif not r:
+            print "Reaction is not created for degradation reaction based on input A"
+
+
+    # generate species-species interaction over each phase based on input Z
+    for i in range(len(Z)):
+        i_list = Z[i]
+        si = species_list[i]
+        for j in range(len(i_list)):
+            j_list = i_list[j]
+            sj = species_list[j]
+            for k in range(len(j_list)):
+                Zijk = j_list[k]
+                if Zijk > 0:
+                    # create production reaction
+                    exp = str(Zijk) + ' * ' + str(si)
+                    id_for_rxn = 'synthesis_' + str(species_list[i]) + '_' + str(species_list[j]) + '_' + str(phases[k])
+                    add_reaction(model=model, products=[str(sj)], modifiers=[str(si)],
+                                 expression=exp, rxn_id=id_for_rxn)
+                elif Zijk < 0:
+                    # create degration reaction
+                    exp = str(Zijk) + ' * ' + str(si) + ' * ' + str(sj)
+                    id_for_rxn = 'degradation_' + str(species_list[i]) + '_' + \
+                                 str(species_list[j]) + '_' + str(phases[k])
+                    add_reaction(model=model, reactants=[str(sj)], modifiers=[str(si)],
+                                 expression=exp,rxn_id=id_for_rxn)
+
+    # write sbml to a file
+    writeSBML(document, str(writesbmlfile))
+
+
+if len(sys.argv) <= 1:
+    print "An JSON input file name must be passed in as the first parameter."
+    exit(1)
+
+input_file_name = sys.argv[1].strip()
+with open(input_file_name, 'r') as input_file:
+    data = json.load(input_file)
+    createSBMLModel_CC_serial(data['k_G1'], data['lambda_G1'], data['k_S'], data['lambda_S'],
+                              data['k_G2'], data['lambda_G2'], data['Species'], data['X0'],
+                              data['P'], data['B'], data['A'], data['Z'],
+                              data['output_file_name'])
