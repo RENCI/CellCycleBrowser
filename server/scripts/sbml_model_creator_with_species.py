@@ -1,5 +1,6 @@
-# This script creates SBML model for Cell Cycle Browser based on an input JSON file that species
-# various parameters for species and interactions
+# This script creates SBML model for Cell Cycle Browser based on an input JSON file that specifies
+# various parameters for species and interactions. An input.json file is also in the repo for
+# an example input file template that can be modified to create different SBML models
 
 import sys
 import json
