@@ -248,9 +248,6 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
                     p += '_end'
                 exp = str(rate_phases[ph_idx]) + ' * power(1+' + r + ',' + str(sp_ph_val) + ')'
                 id_for_rxn = r + '_to_' + p
-                r1 = model.createReaction()
-                r1.setId(id_for_rxn)
-
                 r = add_reaction(model=model, reactants=[r], products=[p],
                                  expression=exp, rxn_id=id_for_rxn)
                 if type(r) is int:
