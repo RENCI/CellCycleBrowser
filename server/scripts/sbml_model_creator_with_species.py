@@ -22,7 +22,8 @@ def create_species(model=None, species_id='', amt=0.0, comp='cell'):
     return s1
 
 
-def add_reaction(model, reactants=[], products=[], modifiers=[], expression='', rxn_id=''):
+def add_reaction(model, reactants=[], products=[], modifiers=[], expression='', local_para={},
+                 rxn_id=''):
     if not model:
         return
 
@@ -74,6 +75,11 @@ def add_reaction(model, reactants=[], products=[], modifiers=[], expression='', 
 
     math_ast = parseL3Formula(expression)
     kinetic_law = r1.createKineticLaw()
+    for key, val in local_para.iteritems():
+        p = kinetic_law.createLocalParameter()
+        p.setId(key)
+        p.setValue(val)
+
     kinetic_law.setMath(math_ast)
 
     return r1
@@ -232,24 +238,28 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         sp_ph_list = P[sp_idx]
         for ph_idx in range(len(sp_ph_list)):
             sp_ph_val = sp_ph_list[ph_idx]
-            pid = 'r_' + species_list[sp_idx] + '_' + phases[ph_idx]
+            # create parameter for species to phase interaction value
+            pid = 'p_' + species_list[sp_idx] + '_' + phases[ph_idx]
             k = model.createParameter()
             k.setId(str(pid))
             k.setConstant(False)
             k.setValue(sp_ph_val)
             k.setUnits('per_second')
+            # create parameters for rates of the phase
+            rid = 'r_' + species_list[sp_idx] + '_' + phases[ph_idx]
 
-            # add reactions for phase transition resulting from this non-zero species-phase interaction
+            # add reactions for phase transition resulting from this species-phase interaction
             # Create reactions going from each subphase of G1 to the next based on input P
             for i in range(1, num_phases[ph_idx]):
                 r = phases[ph_idx] + '_' + str(i)
                 p = phases[ph_idx] + '_' + str(i + 1)
                 if phases[ph_idx] == 'G2M' and i == num_phases[ph_idx] - 1:
                     p += '_end'
-                exp = str(rate_phases[ph_idx]) + ' * power(1+' + r + ',' + str(sp_ph_val) + ')'
+                exp = rid + ' * power(1+' + r + ',' + pid + ')'
                 id_for_rxn = r + '_to_' + p
                 r = add_reaction(model=model, reactants=[r], products=[p],
-                                 expression=exp, rxn_id=id_for_rxn)
+                                 expression=str(exp), local_para={str(rid): rate_phases[ph_idx]},
+                                 rxn_id=id_for_rxn)
                 if type(r) is int:
                     if r != LIBSBML_OPERATION_SUCCESS:
                         print str(r) + ':' + OperationReturnValue_toString(r).strip()
@@ -261,14 +271,19 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         sp_ph_list = B[sp_idx]
         si = species_list[sp_idx]
         exp = ''
+        para_dict = {}
         for ph_idx in range(len(sp_ph_list)):
+            # create parameter for bij
+            pid = 'b_' + species_list[sp_idx] + '_' + phases[ph_idx]
+            para_dict[str(pid)] = sp_ph_list[ph_idx]
             if exp:
                 exp += ' + '
-            exp += str(sp_ph_list[ph_idx]) + ' * ' + str(phases[ph_idx])
+            exp += pid + ' * ' + str(phases[ph_idx])
         id_for_rxn = 'synthesis_' + str(si)
 
         r = add_reaction(model=model, products=[str(si)], modifiers=phases,
-                         expression=exp, rxn_id=id_for_rxn)
+                         expression=str(exp), local_para=para_dict,
+                         rxn_id=id_for_rxn)
         if type(r) is int:
             if r != LIBSBML_OPERATION_SUCCESS:
                 print str(r) + ':' + OperationReturnValue_toString(r).strip()
@@ -277,14 +292,20 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
 
     # For each species, generate a degradation reaction based on input A
     for sp_idx in range(len(A)):
+        para_dict = {}
         sp_ph_list = A[sp_idx]
         si = species_list[sp_idx]
         exp = ''
         for ph_idx in range(len(sp_ph_list)):
-            exp = exp + str(sp_ph_list[ph_idx]) + ' * ' + str(phases[ph_idx]) + ' * ' + str(si)
+            # create parameter for aij
+            pid = 'a_' + species_list[sp_idx] + '_' + phases[ph_idx]
+            para_dict[str(pid)] = sp_ph_list[ph_idx]
+            if exp:
+                exp += ' + '
+            exp += pid + ' * ' + str(phases[ph_idx]) + ' * ' + str(si)
         id_for_rxn = 'degradation_' + str(si)
         r = add_reaction(model=model, reactants=[str(si)], modifiers=phases,
-                         expression=exp, rxn_id=id_for_rxn)
+                         expression=str(exp), local_para=para_dict, rxn_id=id_for_rxn)
         if type(r) is int:
             if r != LIBSBML_OPERATION_SUCCESS:
                 print str(r) + ':' + OperationReturnValue_toString(r).strip()
@@ -301,19 +322,26 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
             sj = species_list[j]
             for k in range(len(j_list)):
                 Zijk = j_list[k]
+                # create parameter for zijk
+                pid = 'z_' + str(si) + '_' + str(sj) + '_' + str(phases[k])
+                k = model.createParameter()
+                k.setId(str(pid))
+                k.setConstant(False)
+                k.setValue(Zijk)
+                k.setUnits('per_second')
                 if Zijk > 0:
                     # create production reaction
-                    exp = str(Zijk) + ' * ' + str(si)
-                    id_for_rxn = 'synthesis_' + str(species_list[i]) + '_' + str(species_list[j]) + '_' + str(phases[k])
+                    exp = pid + ' * ' + str(si)
+                    id_for_rxn = 'synthesis_' + str(si) + '_' + str(sj) + '_' + str(phases[k])
                     add_reaction(model=model, products=[str(sj)], modifiers=[str(si)],
-                                 expression=exp, rxn_id=id_for_rxn)
+                                 expression=str(exp), rxn_id=id_for_rxn)
                 elif Zijk < 0:
                     # create degration reaction
-                    exp = str(Zijk) + ' * ' + str(si) + ' * ' + str(sj)
-                    id_for_rxn = 'degradation_' + str(species_list[i]) + '_' + \
-                                 str(species_list[j]) + '_' + str(phases[k])
+                    exp = pid + ' * ' + str(si) + ' * ' + str(sj)
+                    id_for_rxn = 'degradation_' + str(si) + '_' + \
+                                 str(sj) + '_' + str(phases[k])
                     add_reaction(model=model, reactants=[str(sj)], modifiers=[str(si)],
-                                 expression=exp,rxn_id=id_for_rxn)
+                                 expression=str(exp),rxn_id=id_for_rxn)
 
     # write sbml to a file
     writeSBML(document, str(writesbmlfile))

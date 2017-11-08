@@ -175,8 +175,6 @@ def extract_info_from_model(filename):
     "species": [
       {
         "name": "53BP1",
-        "min": 0,
-        "max": 5,
         "value": 5
       },
       ...
@@ -234,9 +232,6 @@ def extract_info_from_model(filename):
             species_dict = {}
             species_dict['name'] = name
             species_dict['value'] = sp.getInitialAmount()
-            # TO DO: extract min and max info from the model
-            species_dict['min'] = 0
-            species_dict['max'] = 5
             species_list.append(species_dict)
 
         # extract phases
@@ -296,7 +291,7 @@ def extract_info_from_model(filename):
                     if not pname:
                         pname = param_list[0].getId()
                     react_dict[pname] = param_list[0].getValue()
-                    react_list.append(react_dict)
+                react_list.append(react_dict)
 
         return_object['reactions'] = react_list
 
