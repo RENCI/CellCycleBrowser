@@ -128,7 +128,7 @@ var FlowCytometryContainer = React.createClass ({
     // Use a ref to see if we are still mounted, as the change listener
     // can still be fired after unmounting due to an asynchronous ajax request
     if (this.refs[refName]) {
-      this.setState(getStateFromNucleiDistributionStoreStore());
+      this.setState(getStateFromNucleiDistributionStore());
     }
   },
   drawVisualization: function (props, state) {
