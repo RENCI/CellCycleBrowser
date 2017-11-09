@@ -266,35 +266,6 @@ def extract_info_from_model(filename):
         return_object['species'] = species_list
         return_object['phases'] = phases
 
-        # extract reactions
-        react_list = []
-        reactions = model.getListOfReactions()
-        for react in reactions:
-            reactant = react.getListOfReactants().get(0)
-            if reactant:
-                react_species = species_id_to_names[reactant.getSpecies()]
-            else:
-                continue
-            product = react.getListOfProducts().get(0)
-            if product:
-                product_species = species_id_to_names[product.getSpecies()]
-            else:
-                continue
-            react_dict = OrderedDict()
-            react_dict['reactant'] = react_species
-            react_dict['product'] = product_species
-            kl = react.getKineticLaw()
-            if kl:
-                param_list = kl.getListOfParameters()
-                if param_list:
-                    pname = param_list[0].getName()
-                    if not pname:
-                        pname = param_list[0].getId()
-                    react_dict[pname] = param_list[0].getValue()
-                react_list.append(react_dict)
-
-        return_object['reactions'] = react_list
-
         # extract speciesPhaseMatrix and speciesMatrix
         species_name_list = [s['name'] for s in species_list]
         phase_name_list = [p['name'] for p in phases]
@@ -408,7 +379,6 @@ def load_model_content(filename):
     modelData['phases'] = data['phases']
     modelData['speciesPhaseMatrix'] = data['speciesPhaseMatrix']
     modelData['speciesMatrices'] = data['speciesMatrices']
-    modelData['reactions'] = data['reactions']
 
     return modelData
 
