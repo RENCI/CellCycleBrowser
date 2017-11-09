@@ -6,6 +6,7 @@ import sys
 import json
 from libsbml import *
 
+phases = ['G1', 'S', 'G2M']
 
 def create_species(model=None, species_id='', amt=0.0, comp='cell'):
     if not model or not species_id:
@@ -22,7 +23,7 @@ def create_species(model=None, species_id='', amt=0.0, comp='cell'):
     return s1
 
 
-def add_reaction(model, reactants=[], products=[], modifiers=[], expression='', local_para={},
+def add_reaction(model=None, reactants=[], products=[], modifiers=[], expression='', local_para={},
                  rxn_id=''):
     if not model:
         return
@@ -82,7 +83,40 @@ def add_reaction(model, reactants=[], products=[], modifiers=[], expression='', 
 
     kinetic_law.setMath(math_ast)
 
+    if type(r1) is int:
+        if r1 != LIBSBML_OPERATION_SUCCESS:
+            print str(r1) + ':' + OperationReturnValue_toString(r1).strip()
+    elif not r1:
+        print "Reaction is not created for phase transition from " + r + " to " + p
+
     return r1
+
+
+def add_reaction_from_phase_to_next(model=None, phase='', num_phases=[], exp='', local_para=[]):
+    if not model or not phase or not num_phases or not exp:
+        return
+    phase_idx = -1
+    for i in range(len(phases)):
+        if phase == phases[i]:
+            phase_idx = i
+            break
+    # reaction can only be added for the first two phases going to the next
+    if phase_idx != 0 and phase_idx != 1:
+        return
+    phase_next_idx = phase_idx + 1
+    sub_phase_name = phase + '_' + str(num_phases[phase_idx])
+    next_sub_phase_name = ''
+    if phase_next_idx == 2 and num_phases[phase_next_idx] == 1:
+        next_sub_phase_name = str(phases[phase_next_idx]) + '_1_end'
+    elif num_phases[phase_next_idx] > 0:
+        next_sub_phase_name = str(phases[phase_next_idx]) + '_1'
+    if not next_sub_phase_name:
+        return
+
+    # create last subphase going to next phase subphase
+    add_reaction(model, reactants=[sub_phase_name], products=[next_sub_phase_name],
+                 expression=exp, local_para=local_para,
+                 rxn_id=sub_phase_name+'_to_'+next_sub_phase_name)
 
 
 # This function will output an SBML model with the appropriate number of subphases
@@ -113,7 +147,6 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
     c1.setConstant(True)
     c1.setSize(1)
 
-    phases = ['G1', 'S', 'G2M']
     num_phases = [num_G1, num_S, num_G2M]
     rate_phases = [rate_G1, rate_S, rate_G2M]
 
@@ -257,14 +290,16 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
                     p += '_end'
                 exp = rid + ' * power(1+' + r + ',' + pid + ')'
                 id_for_rxn = r + '_to_' + p
-                r = add_reaction(model=model, reactants=[r], products=[p],
+                add_reaction(model=model, reactants=[r], products=[p],
                                  expression=str(exp), local_para={str(rid): rate_phases[ph_idx]},
                                  rxn_id=id_for_rxn)
-                if type(r) is int:
-                    if r != LIBSBML_OPERATION_SUCCESS:
-                        print str(r) + ':' + OperationReturnValue_toString(r).strip()
-                elif not r:
-                    print "Reaction is not created for phase transition from " + r + " to " + p
+
+            if ph_idx == 0 or ph_idx == 1:
+                r = phases[ph_idx] + '_' + str(num_phases[ph_idx])
+                exp = rid + ' * power(1+' + r + ',' + pid + ')'
+                add_reaction_from_phase_to_next(model=model, phase=phases[ph_idx],
+                                                num_phases=num_phases, exp=str(exp),
+                                                local_para={str(rid): rate_phases[ph_idx]})
 
     # For each species, generate a production reaction based on input B
     for sp_idx in range(len(B)):
