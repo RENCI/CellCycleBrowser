@@ -11,11 +11,27 @@ var CHANGE_EVENT = "change";
 // Phase color scale
 var colorScale = d3.scaleOrdinal(d3ScaleChromatic.schemeAccent);
 
+// Exract the phases from a model
 function phases(model) {
   return model.phases ? model.phases.map((function (phase) {
     return phase.name;
   })) : [];
 }
+
+// Use a wrapper to map try to match phase
+function wrapper(d) {
+  var phase = d;
+
+  if (colorScale.domain().indexOf(d) === -1) {
+    if (d === "G2") phase = "G2M";
+    else if (d === "G2M") phase = "G2";
+  }
+
+  return colorScale(phase);
+}
+
+wrapper.domain = colorScale.domain;
+wrapper.range = colorScale.range;
 
 var PhaseColorStore = assign({}, EventEmitter.prototype, {
   emitChange: function () {
@@ -28,7 +44,7 @@ var PhaseColorStore = assign({}, EventEmitter.prototype, {
     this.removeListener(CHANGE_EVENT, callback);
   },
   getColorScale: function () {
-    return colorScale;
+    return wrapper;
   }
 });
 
