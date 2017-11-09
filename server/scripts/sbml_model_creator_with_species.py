@@ -288,15 +288,15 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
                 p = phases[ph_idx] + '_' + str(i + 1)
                 if phases[ph_idx] == 'G2M' and i == num_phases[ph_idx] - 1:
                     p += '_end'
-                exp = rid + ' * power(1+' + r + ',' + pid + ')'
-                id_for_rxn = r + '_to_' + p
+                exp = rid + ' * ' + r + ' * power(1+' + str(species_list[sp_idx]) + ',' + pid + ')'
+                id_for_rxn = r + '_to_' + p + '_' + str(species_list[sp_idx])
                 add_reaction(model=model, reactants=[r], products=[p],
                                  expression=str(exp), local_para={str(rid): rate_phases[ph_idx]},
                                  rxn_id=id_for_rxn)
 
             if ph_idx == 0 or ph_idx == 1:
                 r = phases[ph_idx] + '_' + str(num_phases[ph_idx])
-                exp = rid + ' * power(1+' + r + ',' + pid + ')'
+                exp = rid + ' * ' + r + ' * power(1+' + str(species_list[sp_idx]) + ',' + pid + ')'
                 add_reaction_from_phase_to_next(model=model, phase=phases[ph_idx],
                                                 num_phases=num_phases, exp=str(exp),
                                                 local_para={str(rid): rate_phases[ph_idx]})
