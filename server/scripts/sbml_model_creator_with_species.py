@@ -272,7 +272,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         for ph_idx in range(len(sp_ph_list)):
             sp_ph_val = sp_ph_list[ph_idx]
             # create parameter for species to phase interaction value
-            pid = 'p_' + species_list[sp_idx] + '_' + phases[ph_idx]
+            pid = 'a_' + species_list[sp_idx] + '_' + phases[ph_idx]
             k = model.createParameter()
             k.setId(str(pid))
             k.setConstant(False)
@@ -300,6 +300,14 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
                 add_reaction_from_phase_to_next(model=model, phase=phases[ph_idx],
                                                 num_phases=num_phases, exp=str(exp),
                                                 local_para={str(rid): rate_phases[ph_idx]})
+            elif ph_idx == 2:
+                # create reaction from the last subphase to null to end the whole cell cycle
+                last_phase_id = phases[ph_idx] + '_' + str(num_phases[ph_idx]) + '_end'
+                exp = rid + ' * ' + last_phase_id + ' * power(1+' + str(species_list[sp_idx]) + ',' + pid + ')'
+                id_for_rxn = last_phase_id + '_to_end_' + str(species_list[sp_idx])
+                add_reaction(model=model, reactants=[last_phase_id], products=[], expression=str(exp),
+                             local_para={str(rid): rate_phases[ph_idx]},
+                             rxn_id=id_for_rxn)
 
     # For each species, generate a production reaction based on input B
     for sp_idx in range(len(B)):
@@ -358,7 +366,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
             for k in range(len(j_list)):
                 Zijk = j_list[k]
                 # create parameter for zijk
-                pid = 'z_' + str(si) + '_' + str(sj) + '_' + str(phases[k])
+                pid = 'a_' + str(si) + '_' + str(sj) + '_' + str(phases[k])
                 k = model.createParameter()
                 k.setId(str(pid))
                 k.setConstant(False)
