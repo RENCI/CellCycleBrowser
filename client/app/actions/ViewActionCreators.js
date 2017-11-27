@@ -140,6 +140,13 @@ module.exports = {
       value: value
     });
   },
+  changeSpeciesDegradation: function (species, value) {
+    AppDispatcher.dispatch({
+      actionType: Constants.CHANGE_SPECIES_DEGRADATION,
+      species: species,
+      value: value
+    });
+  },
   changeSpeciesPhaseInteraction: function (species, phase, value) {
     AppDispatcher.dispatch({
       actionType: Constants.CHANGE_SPECIES_PHASE_INTERACTION,

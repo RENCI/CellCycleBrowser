@@ -233,9 +233,13 @@ function simulationParameters() {
     var e = controls.speciesExpressionLevels[species],
         v = e.exponent > e.min ? e.initialValue * Math.pow(2, e.exponent) : 0;
 
+    var d = controls.speciesDegradations[species],
+        dv = Math.pow(2, d.exponent);
+
     return {
       species: species,
-      value: v
+      value: v,
+      degradation: dv
     };
   });
 

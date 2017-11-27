@@ -24,11 +24,19 @@ function createModel(controls) {
   });
 
   model.species = controls.species.map(function(d) {
+/*
     return {
       name: d,
       min: controls.speciesExpressionLevels[d].min,
       max: controls.speciesExpressionLevels[d].max,
       value: controls.speciesExpressionLevels[d].exponent
+    };
+*/
+    return {
+      name: d,
+      min: controls.speciesDegradations[d].min,
+      max: controls.speciesDegradations[d].max,
+      value: controls.speciesDegradations[d].exponent
     };
   });
 

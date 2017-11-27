@@ -3,7 +3,8 @@ var SimulationControlStore = require("../stores/SimulationControlStore");
 var PhaseStore = require("../stores/PhaseStore");
 var RunSimulationButtonContainer = require("../containers/RunSimulationButtonContainer");
 var SimulationParameterSliders = require("../components/SimulationParameterSliders");
-var ExpressionLevelSliders = require("../components/ExpressionLevelSliders");
+//var ExpressionLevelSliders = require("../components/ExpressionLevelSliders");
+var DegradationSliders = require("../components/DegradationSliders");
 var SpeciesPhaseSliders = require("../components/SpeciesPhaseSliders");
 var SpeciesSpeciesSliders = require("../components/SpeciesSpeciesSliders");
 var PhaseColorStore = require("../stores/PhaseColorStore");
@@ -74,8 +75,15 @@ var ControlsContainer = React.createClass ({
       data.parameter, data.value
     );
   },
+/*
   handleExpressionLevelSliderChange: function (data) {
     ViewActionCreators.changeSpeciesExpressionLevel(
+      data.species, data.value
+    );
+  },
+*/
+  handleDegradationSliderChange: function (data) {
+    ViewActionCreators.changeSpeciesDegradation(
       data.species, data.value
     );
   },
@@ -103,10 +111,10 @@ var ControlsContainer = React.createClass ({
         <SimulationParameterSliders
           parameters={this.state.controls.parameters}
           onChange={this.handleSimulationParameterChange} />
-        <ExpressionLevelSliders
+        <DegradationSliders
           species={this.state.controls.species}
-          values={this.state.controls.speciesExpressionLevels}
-          onChange={this.handleExpressionLevelSliderChange}
+          values={this.state.controls.speciesDegradations}
+          onChange={this.handleDegradationSliderChange}
           onCollapse={this.handleCollapse} />
         <SpeciesPhaseSliders
           species={this.state.controls.species}

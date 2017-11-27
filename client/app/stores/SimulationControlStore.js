@@ -21,6 +21,7 @@ var controls = {
   species: [],
   phases: [],
   speciesExpressionLevels: {},
+  speciesDegradations: {},
   speciesPhaseMatrix: {},
   speciesSpeciesMatrices: {}
 };
@@ -64,6 +65,16 @@ function createControls(model) {
       max: 5,
       exponent: 0,
       initialValue: model.species[i].value
+    };
+  });
+
+  // Create species degradation object
+  controls.speciesDegradations = {};
+  model.species.forEach(function (species, i) {
+    controls.speciesDegradations[species.name] = {
+      min: -5,
+      max: 5,
+      exponent: 0
     };
   });
 
@@ -125,6 +136,11 @@ AppDispatcher.register(function (action) {
 
     case Constants.CHANGE_SPECIES_EXPRESSION_LEVEL:
       controls.speciesExpressionLevels[action.species].exponent = action.value;
+      SimulationControlStore.emitChange();
+      break;
+
+    case Constants.CHANGE_SPECIES_DEGRADATION:
+      controls.speciesDegradations[action.species].exponent = action.value;
       SimulationControlStore.emitChange();
       break;
 

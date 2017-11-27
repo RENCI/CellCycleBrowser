@@ -76,7 +76,8 @@ module.exports = function() {
     });
 
     nodeRadiusScale
-        .domain([minValue, maxValue]);
+//        .domain([minValue, maxnValue]);
+        .domain([maxValue, minValue]);
 
     var maxRadius = nodeRadiusScale.range()[1];
 
@@ -669,7 +670,7 @@ module.exports = function() {
       });
 
       nodes = d3.merge(nodes);
-
+/*
       // Filter out nodes with 0 value, and their links
       nodes = nodes.filter(function(d) {
         return d.species.value > d.species.min;
@@ -679,6 +680,7 @@ module.exports = function() {
         return (!d.source.species || d.source.species.value > d.source.species.min) &&
                (!d.target.species || d.target.species.value > d.target.species.min);
       });
+*/
     }
   }
 
