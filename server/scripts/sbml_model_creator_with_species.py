@@ -267,9 +267,9 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         r.setMath(math_ast)
 
     # create species to phase parameters and reactions based on input P
-    for sp_idx in range(len(P)):
-        sp_ph_list = P[sp_idx]
-        for ph_idx in range(len(sp_ph_list)):
+    for ph_idx in range(len(phases)):
+        for sp_idx in range(len(P)):
+            sp_ph_list = P[sp_idx]
             sp_ph_val = sp_ph_list[ph_idx]
             # create parameter for species to phase interaction value
             pid = 'a_' + species_list[sp_idx] + '_' + phases[ph_idx]
@@ -278,36 +278,46 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
             k.setConstant(False)
             k.setValue(sp_ph_val)
             k.setUnits('per_second')
-            # create parameters for rates of the phase
-            rid = 'r_' + species_list[sp_idx] + '_' + phases[ph_idx]
 
-            # add reactions for phase transition resulting from this species-phase interaction
-            # Create reactions going from each subphase of G1 to the next based on input P
-            for i in range(1, num_phases[ph_idx]):
-                r = phases[ph_idx] + '_' + str(i)
-                p = phases[ph_idx] + '_' + str(i + 1)
-                if phases[ph_idx] == 'G2M' and i == num_phases[ph_idx] - 1:
-                    p += '_end'
-                exp = rid + ' * ' + r + ' * power(1+' + str(species_list[sp_idx]) + ',' + pid + ')'
-                id_for_rxn = r + '_to_' + p + '_' + str(species_list[sp_idx])
-                add_reaction(model=model, reactants=[r], products=[p],
-                                 expression=str(exp), local_para={str(rid): rate_phases[ph_idx]},
-                                 rxn_id=id_for_rxn)
+        # create parameters for rates of the phase
+        rid = 'r_' + phases[ph_idx]
+        # add reactions for phase transition resulting from this species-phase interaction
+        # Create reactions going from each subphase of G1 to the next based on input P
+        for i in range(1, num_phases[ph_idx]):
+            r = phases[ph_idx] + '_' + str(i)
+            p = phases[ph_idx] + '_' + str(i + 1)
+            if phases[ph_idx] == 'G2M' and i == num_phases[ph_idx] - 1:
+                p += '_end'
 
-            if ph_idx == 0 or ph_idx == 1:
-                r = phases[ph_idx] + '_' + str(num_phases[ph_idx])
-                exp = rid + ' * ' + r + ' * power(1+' + str(species_list[sp_idx]) + ',' + pid + ')'
-                add_reaction_from_phase_to_next(model=model, phase=phases[ph_idx],
-                                                num_phases=num_phases, exp=str(exp),
-                                                local_para={str(rid): rate_phases[ph_idx]})
-            elif ph_idx == 2:
-                # create reaction from the last subphase to null to end the whole cell cycle
-                last_phase_id = phases[ph_idx] + '_' + str(num_phases[ph_idx]) + '_end'
-                exp = rid + ' * ' + last_phase_id + ' * power(1+' + str(species_list[sp_idx]) + ',' + pid + ')'
-                id_for_rxn = last_phase_id + '_to_end_' + str(species_list[sp_idx])
-                add_reaction(model=model, reactants=[last_phase_id], products=[], expression=str(exp),
-                             local_para={str(rid): rate_phases[ph_idx]},
+            exp = rid + ' * ' + r
+            for sp_idx in range(len(P)):
+                pid = 'a_' + species_list[sp_idx] + '_' + phases[ph_idx]
+                exp += ' * power(1+' + str(species_list[sp_idx]) + ',' + pid + ')'
+            id_for_rxn = r + '_to_' + p
+            add_reaction(model=model, reactants=[r], products=[p],
+                             expression=str(exp), local_para={str(rid): rate_phases[ph_idx]},
                              rxn_id=id_for_rxn)
+
+        if ph_idx == 0 or ph_idx == 1:
+            r = phases[ph_idx] + '_' + str(num_phases[ph_idx])
+            exp = rid + ' * ' + r
+            for sp_idx in range(len(P)):
+                pid = 'a_' + species_list[sp_idx] + '_' + phases[ph_idx]
+                exp += ' * power(1+' + str(species_list[sp_idx]) + ',' + pid + ')'
+            add_reaction_from_phase_to_next(model=model, phase=phases[ph_idx],
+                                            num_phases=num_phases, exp=str(exp),
+                                            local_para={str(rid): rate_phases[ph_idx]})
+        elif ph_idx == 2:
+            # create reaction from the last subphase to null to end the whole cell cycle
+            last_phase_id = phases[ph_idx] + '_' + str(num_phases[ph_idx]) + '_end'
+            exp = rid + ' * ' + last_phase_id
+            for sp_idx in range(len(P)):
+                pid = 'a_' + species_list[sp_idx] + '_' + phases[ph_idx]
+                exp += ' * power(1+' + str(species_list[sp_idx]) + ',' + pid + ')'
+            id_for_rxn = last_phase_id + '_to_end_cycle'
+            add_reaction(model=model, reactants=[last_phase_id], products=[], expression=str(exp),
+                         local_para={str(rid): rate_phases[ph_idx]},
+                         rxn_id=id_for_rxn)
 
     # For each species, generate a production reaction based on input B
     for sp_idx in range(len(B)):
@@ -321,7 +331,14 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
             para_dict[str(pid)] = sp_ph_list[ph_idx]
             if exp:
                 exp += ' + '
-            exp += pid + ' * ' + str(phases[ph_idx])
+            if phases[ph_idx] == 'G1':
+                exp += pid + ' * ' + '(' + rule_G1 + ')'
+            elif phases[ph_idx] == 'S':
+                exp += pid + ' * ' + '(' + rule_S + ')'
+            elif phases[ph_idx] == 'G2M':
+                exp += pid + ' * ' + '(' + rule_G2M + ')'
+            else:
+                exp += pid + ' * ' + str(phases[ph_idx])
         id_for_rxn = 'synthesis_' + str(si)
 
         r = add_reaction(model=model, products=[str(si)], modifiers=phases,
@@ -345,7 +362,14 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
             para_dict[str(pid)] = sp_ph_list[ph_idx]
             if exp:
                 exp += ' + '
-            exp += pid + ' * ' + str(phases[ph_idx]) + ' * ' + str(si)
+            if phases[ph_idx] == 'G1':
+                exp += pid + ' * ' + '(' + rule_G1 + ')' + ' * ' + str(si)
+            elif phases[ph_idx] == 'S':
+                exp += pid + ' * ' + '(' + rule_S + ')' + ' * ' + str(si)
+            elif phases[ph_idx] == 'G2M':
+                exp += pid + ' * ' + '(' + rule_G2M + ')' + ' * ' + str(si)
+            else:
+                exp += pid + ' * ' + str(phases[ph_idx]) + ' * ' + str(si)
         id_for_rxn = 'degradation_' + str(si)
         r = add_reaction(model=model, reactants=[str(si)], modifiers=phases,
                          expression=str(exp), local_para=para_dict, rxn_id=id_for_rxn)
@@ -361,6 +385,9 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         i_list = Z[i]
         si = species_list[i]
         for j in range(len(i_list)):
+            # do not need to handle interaction between a species to itself
+            if j == i:
+                continue
             j_list = i_list[j]
             sj = species_list[j]
             for k in range(len(j_list)):
