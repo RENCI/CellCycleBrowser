@@ -68,7 +68,7 @@ function DegradationSliders(props) {
   return (
     <Collapsible
       id="DegradationSliders"
-      label="Species degradations"
+      label="Expression levels"
       onCollapse={props.onCollapse}>
         <div style={divStyle}>
           {sliders}
