@@ -463,12 +463,7 @@ def run_model(request, filename=''):
         else:
             sp_name_infl_para_list = json.loads(request.POST['parameters'])
 
-        sp_id_to_val_dict = {}
-        for item in sp_name_to_val_list:
-            sp_name = item['species']
-            sp_val = item['value']
-            sp_id = name_to_ids[sp_name]
-            sp_id_to_val_dict[sp_id] = sp_val
+        pid_list = utils.extract_parameter_ids(filename)
 
         sp_id_infl_para_dict = {}
         for p_dict_item in sp_name_infl_para_list:
@@ -476,18 +471,33 @@ def run_model(request, filename=''):
             name1 = p_dict_item['upstream'] # species name which is an influencer
             name2 = p_dict_item['downstream'] # species or phase name which is an influencee
             val = p_dict_item['value']
+            pid2 = 'p_' + name1 + '_' + name2
             if phase:
-                # special handling to make a_53BP1_p16 phase independent species-species interaction
-                # to work as set up in the initial SBML model. This will not be needed after we
-                # address the SBML model creation that handles all potential interactions in a
-                # systematic way
-                if phase == 'G1' and name1 == '53BP1' and name2 == 'p16':
-                    para_id = 'a_' + name1 + '_' + name2
+                pid1 = 'z_' + name1 + '_' + name2 + '_' + phase
+                if pid1 in pid_list:
+                    para_id = pid1
+                elif pid2 in pid_list:
+                    para_id = pid2
                 else:
-                    para_id = 'a_' + phase + '_' + name1 + '_' + name2
+                    para_id = ''
+            elif pid2 in pid_list:
+                para_id = 'p_' + name1 + '_' + name2
             else:
-                para_id = 'a_' + name1 + '_' + name2
-            sp_id_infl_para_dict[para_id] = val
+                para_id = ''
+            if para_id:
+                sp_id_infl_para_dict[para_id] = val
+
+        sp_id_to_val_dict = {}
+        for item in sp_name_to_val_list:
+            sp_name = item['species']
+            sp_id = name_to_ids[sp_name]
+            sp_id_to_val_dict[sp_id] = item['value']
+            if 'degradation' in item:
+                sp_deg = item['degradation']
+                for ph in phases:
+                    para_id = 'a_' + sp_name + '_' + ph
+                    if para_id in pid_list:
+                        sp_id_infl_para_dict[para_id] = sp_deg
 
         task = run_model_task.apply_async((filename, id_to_names, species, phases, traj,
                                            sp_id_to_val_dict, sp_id_infl_para_dict),

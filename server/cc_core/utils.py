@@ -541,6 +541,28 @@ def get_phase_start_stop(data):
     return phase_start_idx, phase_stop_idx
 
 
+def extract_parameter_ids(filename):
+    model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
+    reader = SBMLReader()
+    document = reader.readSBMLFromFile(model_file)
+    if document.getNumErrors() > 0:
+        raise Exception("readSBMLFromFile() exception: " + document.printErrors())
+    model = document.getModel()
+    id_to_names = {}
+    species = model.getListOfSpecies()
+    for sp in species:
+        name = sp.getName()
+        id = sp.getId()
+        if not name:
+            name = id
+        id_to_names[id] = name
+    paras = model.getListOfParameters()
+    para_ids_list = []
+    for para in paras:
+        para_ids_list.append(para.getId())
+    return para_ids_list
+
+
 def extract_parameters(filename):
     model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
     reader = SBMLReader()

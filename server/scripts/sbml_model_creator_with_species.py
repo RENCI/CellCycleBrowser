@@ -272,7 +272,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
             sp_ph_list = P[sp_idx]
             sp_ph_val = sp_ph_list[ph_idx]
             # create parameter for species to phase interaction value
-            pid = 'a_' + species_list[sp_idx] + '_' + phases[ph_idx]
+            pid = 'p_' + species_list[sp_idx] + '_' + phases[ph_idx]
             k = model.createParameter()
             k.setId(str(pid))
             k.setConstant(False)
@@ -291,7 +291,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
 
             exp = rid + ' * ' + r
             for sp_idx in range(len(P)):
-                pid = 'a_' + species_list[sp_idx] + '_' + phases[ph_idx]
+                pid = 'p_' + species_list[sp_idx] + '_' + phases[ph_idx]
                 exp += ' * power(1+' + str(species_list[sp_idx]) + ',' + pid + ')'
             id_for_rxn = r + '_to_' + p
             add_reaction(model=model, reactants=[r], products=[p],
@@ -302,7 +302,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
             r = phases[ph_idx] + '_' + str(num_phases[ph_idx])
             exp = rid + ' * ' + r
             for sp_idx in range(len(P)):
-                pid = 'a_' + species_list[sp_idx] + '_' + phases[ph_idx]
+                pid = 'p_' + species_list[sp_idx] + '_' + phases[ph_idx]
                 exp += ' * power(1+' + str(species_list[sp_idx]) + ',' + pid + ')'
             add_reaction_from_phase_to_next(model=model, phase=phases[ph_idx],
                                             num_phases=num_phases, exp=str(exp),
@@ -312,7 +312,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
             last_phase_id = phases[ph_idx] + '_' + str(num_phases[ph_idx]) + '_end'
             exp = rid + ' * ' + last_phase_id
             for sp_idx in range(len(P)):
-                pid = 'a_' + species_list[sp_idx] + '_' + phases[ph_idx]
+                pid = 'p_' + species_list[sp_idx] + '_' + phases[ph_idx]
                 exp += ' * power(1+' + str(species_list[sp_idx]) + ',' + pid + ')'
             id_for_rxn = last_phase_id + '_to_end_cycle'
             add_reaction(model=model, reactants=[last_phase_id], products=[], expression=str(exp),
@@ -328,7 +328,11 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         for ph_idx in range(len(sp_ph_list)):
             # create parameter for bij
             pid = 'b_' + species_list[sp_idx] + '_' + phases[ph_idx]
-            para_dict[str(pid)] = sp_ph_list[ph_idx]
+            k = model.createParameter()
+            k.setId(str(pid))
+            k.setConstant(False)
+            k.setValue(sp_ph_list[ph_idx])
+            k.setUnits('per_second')
             if exp:
                 exp += ' + '
             if phases[ph_idx] == 'G1':
@@ -342,8 +346,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         id_for_rxn = 'synthesis_' + str(si)
 
         r = add_reaction(model=model, products=[str(si)], modifiers=phases,
-                         expression=str(exp), local_para=para_dict,
-                         rxn_id=id_for_rxn)
+                         expression=str(exp), rxn_id=id_for_rxn)
         if type(r) is int:
             if r != LIBSBML_OPERATION_SUCCESS:
                 print str(r) + ':' + OperationReturnValue_toString(r).strip()
@@ -359,7 +362,11 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
         for ph_idx in range(len(sp_ph_list)):
             # create parameter for aij
             pid = 'a_' + species_list[sp_idx] + '_' + phases[ph_idx]
-            para_dict[str(pid)] = sp_ph_list[ph_idx]
+            k = model.createParameter()
+            k.setId(str(pid))
+            k.setConstant(False)
+            k.setValue(sp_ph_list[ph_idx])
+            k.setUnits('per_second')
             if exp:
                 exp += ' + '
             if phases[ph_idx] == 'G1':
@@ -372,7 +379,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
                 exp += pid + ' * ' + str(phases[ph_idx]) + ' * ' + str(si)
         id_for_rxn = 'degradation_' + str(si)
         r = add_reaction(model=model, reactants=[str(si)], modifiers=phases,
-                         expression=str(exp), local_para=para_dict, rxn_id=id_for_rxn)
+                         expression=str(exp), rxn_id=id_for_rxn)
         if type(r) is int:
             if r != LIBSBML_OPERATION_SUCCESS:
                 print str(r) + ':' + OperationReturnValue_toString(r).strip()
@@ -393,7 +400,7 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
             for k in range(len(j_list)):
                 Zijk = j_list[k]
                 # create parameter for zijk
-                pid = 'a_' + str(si) + '_' + str(sj) + '_' + str(phases[k])
+                pid = 'z_' + str(si) + '_' + str(sj) + '_' + str(phases[k])
                 k = model.createParameter()
                 k.setId(str(pid))
                 k.setConstant(False)
