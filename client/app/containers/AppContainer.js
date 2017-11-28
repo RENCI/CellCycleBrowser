@@ -77,7 +77,7 @@ var AppContainer = React.createClass({
     var hasTracks = this.state.data.tracks.length > 0;
 
     return (
-      <div>
+      <div className="container-fluid">
         <ResizeContainer />
         <HeaderSection />
         {hasWorkspace ?
