@@ -304,6 +304,7 @@ def extract_info_from_model(filename):
             if not pname:
                 pname = para.getId()
             para_names = pname.split('_')
+            name0 = para_names[0].lower()
             name1 = para_names[1]
             if len(para_names) > 2:
                 name2 = para_names[2]
@@ -311,22 +312,18 @@ def extract_info_from_model(filename):
                     name3 = para_names[3]
                 else:
                     name3 = ''
-                if name3:
-                    # parameter is in format of a_phase_species_species or a_species_species_phase
-                    if name1 in species_name_list and name2 in species_name_list and \
+                if name0=='z':
+                    # parameter is in format of z_species_species_phase
+                    if name1 in species_name_list and \
+                                    name2 in species_name_list and \
                                     name3 in phase_name_list:
                         p_s_s_dict[name3][name1][name2] = para.getValue()
                         species_species_phase_exist = True
-                    elif name1 in phase_name_list and name2 in species_name_list and \
-                                    name3 in species_name_list:
-                        p_s_s_dict[name1][name2][name3] = para.getValue()
-                        species_species_phase_exist = True
-                else:
-                    # parameter is in format of a_species_phase or a_species_species
+
+                elif name0=='p':
+                    # parameter is in format of p_species_phase
                     if name1 in species_name_list and name2 in phase_name_list:
                         s_p_dict[name1][name2] = para.getValue()
-                    elif name1 in species_name_list and name2 in species_name_list:
-                        s_s_dict[name1][name2] = para.getValue()
 
         s_p_matrix = []
         for s_name, s_value in s_p_dict.iteritems():
@@ -348,18 +345,6 @@ def extract_info_from_model(filename):
                     p_s_s_matrix.append(s_list)
                 if p_s_s_matrix:
                     s_s_matrix.append(p_s_s_matrix)
-        else:
-            # Model does not include phase info in species to species interaction, so
-            # replicate same species to species interaction across all phases in the model
-            for phase in phases:
-                p_s_s_matrix = []
-                for s_name, s_value in s_s_dict.iteritems():
-                    s_list = []
-                    for ss_name, ss_value in s_value.iteritems():
-                        s_list.append(ss_value)
-                    p_s_s_matrix.append(s_list)
-                if p_s_s_matrix:
-                    s_s_matrix.append(p_s_s_matrix)
 
         return_object['speciesMatrices'] = s_s_matrix
 
@@ -369,7 +354,7 @@ def extract_info_from_model(filename):
     except Exception as ex:
         return_object['error'] = ex.message
         jsondump = json.dumps(return_object)
-        return jsondump
+        return jsondumps
 
 
 def load_model_content(filename):
