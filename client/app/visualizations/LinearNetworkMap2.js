@@ -76,8 +76,7 @@ module.exports = function() {
     });
 
     nodeRadiusScale
-//        .domain([minValue, maxnValue]);
-        .domain([maxValue, minValue]);
+        .domain([minValue, maxValue]);;
 
     var maxRadius = nodeRadiusScale.range()[1];
 

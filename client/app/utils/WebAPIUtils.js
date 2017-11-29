@@ -233,8 +233,12 @@ function simulationParameters() {
     var e = controls.speciesExpressionLevels[species],
         v = e.exponent > e.min ? e.initialValue * Math.pow(2, e.exponent) : 0;
 
+    // Take the negative of the degradation exponent to convert to degradation,
+    // since we are displaying as expression level to the user
     var d = controls.speciesDegradations[species],
-        dv = Math.pow(2, d.exponent);
+        dv = Math.pow(2, -d.exponent);
+
+        console.log(dv);
 
     return {
       species: species,
