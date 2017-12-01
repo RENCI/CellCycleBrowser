@@ -401,11 +401,11 @@ def createSBMLModel_CC_serial(num_G1, rate_G1, num_S, rate_S, num_G2M, rate_G2M,
                 Zijk = j_list[k]
                 # create parameter for zijk
                 pid = 'z_' + str(si) + '_' + str(sj) + '_' + str(phases[k])
-                k = model.createParameter()
-                k.setId(str(pid))
-                k.setConstant(False)
-                k.setValue(Zijk)
-                k.setUnits('per_second')
+                pk = model.createParameter()
+                pk.setId(str(pid))
+                pk.setConstant(False)
+                pk.setValue(Zijk)
+                pk.setUnits('per_second')
                 if Zijk > 0:
                     # create production reaction
                     exp = pid + ' * ' + str(si)
