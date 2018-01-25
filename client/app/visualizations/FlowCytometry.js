@@ -84,14 +84,6 @@ module.exports = function() {
         .domain(d3.extent(data.map(function(d) { return d.y; })))
         .range([innerHeight(), 0]);
 
-    xContourScale
-        .domain(xScale.domain())
-        .range(xScale.range());
-
-    yContourScale
-        .domain(yScale.domain())
-        .range(yScale.range());
-
     // Create contours, must be done after scales are updated
     createContours();
 
@@ -115,10 +107,10 @@ module.exports = function() {
     function createContours() {
       // Create contours
       contours = d3Contour.contourDensity()
-        .x(function(d) { return xContourScale(d.x); })
-        .y(function(d) { return yContourScale(d.y); })
+        .x(function(d) { return xScale(d.x); })
+        .y(function(d) { return yScale(d.y); })
         .size([innerWidth(), innerHeight()])
-    //      .bandwidth(40)
+        .bandwidth(10)
         (data);
     }
 
@@ -197,8 +189,6 @@ module.exports = function() {
       var point = svg.select(".points").selectAll(".point")
           .data(data);
 
-      var rnorm = d3.randomNormal(0, 2);
-
       // Enter + update
       point.enter().append("circle")
           .attr("class", "point")
@@ -216,7 +206,7 @@ module.exports = function() {
           var c = contours[i];
 
           for (var j = 0; j < c.coordinates.length; j++) {
-            if (d3.polygonContains(c.coordinates[j][0], [xContourScale(d.x), yContourScale(d.y)])) {
+            if (d3.polygonContains(c.coordinates[j][0], [xScale(d.x), yScale(d.y)])) {
               return colorScale(c.value);
             }
           }
@@ -246,7 +236,9 @@ module.exports = function() {
       labelEnter.append("text")
           .style("fill", "white")
           .style("stroke", "white")
-          .style("stroke-width", 2);
+          .style("stroke-width", 2)
+          .style("fill-opacity", 0.75)
+          .style("stroke-opacity", 0.75);
 
       labelEnter.append("text")
           .style("fill", "black");
@@ -269,7 +261,7 @@ module.exports = function() {
     function drawContours() {
       // Bind contours
       var contour = svg.select(".contours").selectAll(".contour")
-          .data([contours[contours.length - 1]]);
+          .data(contours);
 
       // Enter + update
       contour.enter().append("path")
