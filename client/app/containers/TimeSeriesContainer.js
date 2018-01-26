@@ -60,6 +60,21 @@ var TimeSeriesContainer = React.createClass ({
       this.drawVisualization(props, state);
     };
 
+/*
+    var svgElement = d3.select(".timeSeries");
+
+    var pdf = new jsPDF("p", "pt", [svgElement.attr("width"), svgElement.attr("height")]);
+
+    // render the svg element
+    svg2pdf(svgElement.node(), pdf, {
+    	xOffset: 0,
+    	yOffset: 0,
+    	scale: 1
+    });
+
+    pdf.save("myPDF.pdf");
+*/
+
     return false;
   },
   onDataChange: function () {
