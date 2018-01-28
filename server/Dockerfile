@@ -2,9 +2,9 @@ FROM cc_base
 MAINTAINER Hong Yi <hongyi@renci.org>
 
 # install StochPy
-RUN pip install scipy
-RUN pip install python-libsbml
-RUN pip install simplesbml
+RUN pip install scipy==1.0.0
+RUN pip install python-libsbml==5.15.0
+RUN pip install simplesbml==1.2.2
 WORKDIR /usr/src
 # RUN wget https://sourceforge.net/projects/stochpy/files/StochPy-2.3/StochPy-2.3.zip
 RUN wget http://distribution.hydroshare.org/hongyi/StochPy-2.3.zip
