@@ -89,13 +89,18 @@ module.exports = function() {
 
     // Create color scale from contour contours
     var c1 = d3.hsl(color);
-    c1.s *= 0.2;
-    c1.l *= 0.2;
+    c1.l = 0.2;
+
+    var c2 = d3.hsl(color);
+    c2.l = 0.5;
+
+    var c3 = d3.hsl(color);
+    c3.l = 0.8;
 
     var contourExtent = d3.extent(contours, function(d) { return d.value; }),
         colorScale = d3.scaleLinear()
-            .domain(contourExtent)
-            .range([c1, color]);
+            .domain([contourExtent[0], d3.mean(contourExtent), contourExtent[1]])
+            .range([c1, c2, c3]);
 
     drawTitle();
     drawAxes();
@@ -288,14 +293,19 @@ module.exports = function() {
       var id = DataUtils.removeNonWord(source) + "_Gradient";
 
       // Update gradient
+      var values = colorScale.domain(),
+          stopScale = d3.scaleLinear()
+              .domain(d3.extent(values))
+              .range([0, 1]);
+
       var stop = svg.select("linearGradient")
           .attr("id", id)
         .selectAll("stop")
-          .data(colorScale.range());
+          .data(values);
 
       stop.enter().append("stop").merge(stop)
-          .attr("offset", function(d, i) { return i; })
-          .attr("stop-color", function(d) { return d; });
+          .attr("offset", function(d) { return stopScale(d); })
+          .attr("stop-color", function(d) { return colorScale(d); });
 
       stop.exit().remove();
 
