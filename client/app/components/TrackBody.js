@@ -1,6 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
+var TraceLabels = require("./TraceLabels");
 var TraceToggleButtons = require("./TraceToggleButtons");
 var HeatMapContainer = require("../containers/HeatMapContainer");
 var ViewActionCreators = require("../actions/ViewActionCreators");
@@ -102,7 +103,11 @@ function TrackBody(props) {
         <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
           <div className="col-xs-2" style={traceButtonColumnStyle}>
             <div style={{display: "flex"}}>
-              <div style={{flex: 1}} />
+              <div style={{flex: 1}}>
+                <TraceLabels
+                  traces={props.track.traces}
+                  height={traceHeight} />
+              </div>
               <div style={{flex: "0 1 auto", width: traceHeight}}>
                 <TraceToggleButtons
                   traces={props.track.traces}
