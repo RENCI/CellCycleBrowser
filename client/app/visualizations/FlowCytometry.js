@@ -287,7 +287,7 @@ module.exports = function() {
           h = 40,
           m = 15,
           x = width - w - m,
-          y = m;
+          y = 32;
 
       // Remove non "word" characters
       var id = DataUtils.removeNonWord(source) + "_Gradient";

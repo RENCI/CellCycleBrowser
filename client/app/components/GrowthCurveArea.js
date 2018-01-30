@@ -2,6 +2,7 @@ var React = require("react");
 var VisualizationContainer = require("../containers/VisualizationContainer");
 var GrowthCurveContainer = require("../containers/GrowthCurveContainer");
 var InformationHoverContainer = require("../containers/InformationHoverContainer");
+var SaveSvgButtonContainer = require("../containers/SaveSvgButtonContainer");
 var GrowthCurveInformation = require("./GrowthCurveInformation");
 
 function GrowthCurveArea(props) {
@@ -10,6 +11,7 @@ function GrowthCurveArea(props) {
       <InformationHoverContainer>
         <GrowthCurveInformation />
       </InformationHoverContainer>
+      <SaveSvgButtonContainer />
       <VisualizationContainer>
         <GrowthCurveContainer />
       </VisualizationContainer>

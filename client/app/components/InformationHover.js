@@ -3,7 +3,7 @@ var PropTypes = React.PropTypes;
 
 var divStyle = {
   position: "absolute",
-  top: 4,
+  marginTop: 4,
   left: 20,
   pointerEvents: "none"
 };
