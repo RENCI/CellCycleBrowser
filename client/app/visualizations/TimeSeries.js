@@ -258,15 +258,16 @@ module.exports = function() {
           .attr("class", "curve")
           .attr("data-toggle", "tooltip")
           .on("mouseover", function(d) {
-            svg.selectAll(".curve").each(function(e) {
-              if (e !== d) {
-                d3.select(this).selectAll("path")
-                    .style("stroke-opacity", 0.2);
-              }
-            });
+            svg.selectAll(".curve")
+                .style("stroke-opacity", function(e) {
+                  return e === d ? 1 :
+                         e.track.source === d.track.source &&
+                         e.name === d.name ? 0.5 :
+                         0.1;
+                });
           })
           .on("mouseout", function(d) {
-            svg.selectAll(".curve").selectAll("path")
+            svg.selectAll(".curve")
                 .style("stroke-opacity", null);
           })
         .merge(curve)
