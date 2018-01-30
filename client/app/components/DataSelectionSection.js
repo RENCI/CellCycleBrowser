@@ -38,7 +38,7 @@ function DataSelectionSection(props) {
           <div style={{display: "inline-block", marginLeft: 5}}>
             {props.model.fileName ?
               <a
-                href={'/download/' + props.model.fileName + '/'}>
+                href={"/download/" + props.model.fileName + "/"}>
                 <span
                   className="glyphicon glyphicon-download-alt"
                   data-toggle="tooltip"
