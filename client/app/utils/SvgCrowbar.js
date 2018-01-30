@@ -16,7 +16,8 @@ module.exports = function(element) {
   initialize();
 
   function initialize() {
-    var styles = getStyles(window.document),
+    // Getting styles causes a security error on Firefox, and we aren't currenlty using any external styles
+    var styles = "",
         SVGSources = getSources(element, styles);
 
     if (SVGSources.length > 1) {
