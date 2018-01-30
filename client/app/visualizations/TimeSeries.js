@@ -263,7 +263,7 @@ module.exports = function() {
                   return e === d ? 1 :
                          e.track.source === d.track.source &&
                          e.name === d.name ? 0.5 :
-                         0.1;
+                         0.05;
                 });
           })
           .on("mouseout", function(d) {
