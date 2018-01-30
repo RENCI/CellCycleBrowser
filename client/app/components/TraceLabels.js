@@ -6,8 +6,6 @@ var divStyle = {
 };
 
 function TraceLabels(props) {
-  console.log(props.traces);
-
   var labels = props.traces.map(function (trace, i) {
     var style = {
       marginRight: 5,
