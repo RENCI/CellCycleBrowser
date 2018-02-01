@@ -14,7 +14,6 @@ var Track = require("../components/Track");
 var TrackDividerContainer = require("../containers/TrackDividerContainer");
 var InformationHoverContainer = require("./InformationHoverContainer");
 var BrowserInformation = require("../components/BrowserInformation");
-var d3 = require("d3");
 
 var refName = "ref";
 

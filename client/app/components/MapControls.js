@@ -1,4 +1,4 @@
-var React = require("react");
+//var React = require("react");
 
 function MapControls(props) {
   return null;

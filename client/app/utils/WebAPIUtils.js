@@ -1,7 +1,6 @@
 var ServerActionCreators = require("../actions/ServerActionCreators");
 var ModelStore = require("../stores/ModelStore");
 var SimulationControlStore = require("../stores/SimulationControlStore");
-var DatasetStore = require("../stores/DatasetStore");
 var d3 = require("d3");
 
 // Get a cookie for cross site request forgery (CSRF) protection
@@ -221,7 +220,6 @@ function createDataset(id, dataset) {
 }
 
 function simulationParameters() {
-  var model = ModelStore.getModel();
   var controls = SimulationControlStore.getControls();
 
   var trajectories = controls.parameters[controls.parameters.map(function (parameter) {

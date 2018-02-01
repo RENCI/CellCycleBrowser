@@ -220,7 +220,7 @@ module.exports = function() {
           .attr("transform", "translate(" + x + "," + y + ")");
 
       // Bind curve data
-      var curve = svg.select(".legend").selectAll(".item")
+      var curve = legend.selectAll(".item")
           .data(curves);
 
       // Enter

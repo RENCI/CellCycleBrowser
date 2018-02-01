@@ -4,9 +4,8 @@ var PropTypes = React.PropTypes;
 var FlowCytometry = require("../visualizations/FlowCytometry");
 var DataStore = require("../stores/DataStore");
 var NucleiDistributionStore = require("../stores/NucleiDistributionStore");
-var DataUtils = require("../utils/DataUtils");
 var d3 = require("d3");
-var seedrandom = require("seedrandom");
+require("seedrandom");
 
 var refName = "ref";
 
@@ -34,9 +33,6 @@ function createCells(phaseTracks, distributions) {
   // XXX: This almost works, but still getting some small deviations, maybe due
   // to floating point error?
   Math.seedrandom("hello.");
-
-  // Normalized random distribution function
-  var randn = d3.randomNormal();
 
   // Create phase objects with probabilities
   return phaseTracks.map(function (track) {

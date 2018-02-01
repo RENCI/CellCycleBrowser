@@ -76,9 +76,7 @@ module.exports = function() {
     });
 
     nodeRadiusScale
-        .domain([minValue, maxValue]);;
-
-    var maxRadius = nodeRadiusScale.range()[1];
+        .domain([minValue, maxValue]);
 
     var yScale = d3.scaleBand()
         .domain(data.phases.map(function(d) {
@@ -90,11 +88,6 @@ module.exports = function() {
     var phaseSpacing = yScale.step() - yScale.bandwidth(),
         phaseWidth = 20,
         transitionY = (yScale.bandwidth() + phaseSpacing / 2);
-
-    var xScale = d3.scaleLinear()
-        .domain([-10, 10])
-        .range([phaseWidth * 1.5 + maxRadius,
-                innerWidth() - phaseWidth * 1.5 - maxRadius]);
 
     // Draw the visualization
     processData();
@@ -617,7 +610,7 @@ module.exports = function() {
             name: species.name,
             phase: phase,
             species: species,
-            value: data.speciesPhaseMatrix[j][i],
+            value: value,
             x: x,
             y: y
           };

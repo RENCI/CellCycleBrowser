@@ -1,6 +1,5 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
-var ReactDOM = require("react-dom");
 var ValueSlider = require("../components/ValueSlider");
 
 var ValueSliderContainer = React.createClass ({

@@ -1,5 +1,4 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
 var ReactDOM = require("react-dom");
 
 var divStyle = {

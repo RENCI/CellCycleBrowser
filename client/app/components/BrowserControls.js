@@ -1,8 +1,8 @@
-var React = require("react");
-var PropTypes = React.PropTypes;
-var SliderContainer = require("../containers/SliderContainer");
-var ViewActionCreators = require("../actions/ViewActionCreators");
+//var React = require("react");
+//var SliderContainer = require("../containers/SliderContainer");
+//var ViewActionCreators = require("../actions/ViewActionCreators");
 
+/*
 function handleShowPhaseOverlayChange(event) {
   ViewActionCreators.changeShowPhaseOverlay(event.target.checked);
 }
@@ -10,6 +10,7 @@ function handleShowPhaseOverlayChange(event) {
 function handlePhaseOverlayOpacityChange(value) {
   ViewActionCreators.changePhaseOverlayOpacity(value);
 }
+*/
 
 function BrowserControls(props) {
   return null;

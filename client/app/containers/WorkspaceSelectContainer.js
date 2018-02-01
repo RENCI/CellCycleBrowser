@@ -2,7 +2,6 @@ var React = require("react");
 var WorkspaceStore = require("../stores/WorkspaceStore");
 var ItemSelect = require("../components/ItemSelect");
 var ViewActionCreators = require("../actions/ViewActionCreators");
-var WebAPIUtils = require("../utils/WebAPIUtils");
 
 // Retrieve the current state from the store
 function getStateFromStore() {

@@ -6,10 +6,6 @@ var tdStyle = {
   verticalAlign: "middle"
 };
 
-var labelStyle = {
-  fontWeight: "normal !important"
-};
-
 var iconStyle={
   marginLeft: 5,
   marginRight: 5

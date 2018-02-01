@@ -4,7 +4,6 @@ var Collapsible = require("../components/Collapsible");
 var PhaseTabs = require("../components/PhaseTabs");
 var ValueSliderContainer = require("../containers/ValueSliderContainer");
 var InteractionColorStore = require("../stores/InteractionColorStore");
-var d3 = require("d3");
 
 var labelStyle = {
   width: 80,

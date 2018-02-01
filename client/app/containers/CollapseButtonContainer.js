@@ -1,7 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButton = require("../components/CollapseButton");
-var AlignmentStore = require("../stores/AlignmentStore");
 
 var CollapseButtonContainer = React.createClass ({
   propTypes: {

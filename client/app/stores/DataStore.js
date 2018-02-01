@@ -743,10 +743,6 @@ function setTrackColors(tracks) {
       });
 }
 
-function collapseTrack(track) {
-  track.collapse = !track.collapse;
-}
-
 function selectTrace(trace, selected) {
   trace.selected = selected;
 }

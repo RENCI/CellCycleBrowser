@@ -1,7 +1,6 @@
 var DataUtils = require("../utils/DataUtils");
 var d3 = require("d3");
 var d3Contour = require("d3-contour");
-var d3ScaleChromatic = require("d3-scale-chromatic");
 
 module.exports = function() {
       // Size
@@ -23,8 +22,6 @@ module.exports = function() {
       // Scales
       xScale = d3.scaleLog(),
       yScale = d3.scaleLog(),
-      xContourScale = d3.scaleLinear(),
-      yContourScale = d3.scaleLinear(),
 
       // Start with empty selection
       svg = d3.select();
@@ -69,7 +66,7 @@ module.exports = function() {
   }
 
   function draw() {
-    var height = innerHeight() + margin.top + margin.bottom;
+    height = innerHeight() + margin.top + margin.bottom;
 
     // Update svg size
     svg .attr("width", width)

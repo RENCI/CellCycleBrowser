@@ -134,8 +134,6 @@ module.exports = function() {
       return d.track.color;
     }
 
-    var circleRadius = 3;
-
     drawTitle();
     drawAxes();
     drawCurves(svg.select(".curves"),
@@ -388,7 +386,7 @@ module.exports = function() {
           .attr("transform", "translate(" + x + "," + y + ")");
 
       // Bind one curve for each track
-      var curve = svg.select(".legend").selectAll(".item")
+      var curve = legend.selectAll(".item")
           .data(activeTracks);
 
       // Enter

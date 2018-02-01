@@ -1,7 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var TrackColorIcon = require("./TrackColorIcon");
-var ViewActionCreators = require("../actions/ViewActionCreators");
 var Constants = require("../constants/Constants");
 
 var dragStyle = {

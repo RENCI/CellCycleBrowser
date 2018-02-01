@@ -1,7 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var ToggleButton = require("../components/ToggleButton");
-var AlignmentStore = require("../stores/AlignmentStore");
 
 var ToggleButtonContainer = React.createClass ({
   propTypes: {

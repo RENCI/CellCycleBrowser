@@ -21,12 +21,6 @@ function getStateFromAlignmentStore() {
   };
 }
 
-function getStateFromPhaseColorStore() {
-  return {
-    phaseColorScale: PhaseColorStore.getColorScale()
-  };
-}
-
 function hasData(data) {
   return data.tracks.length > 0;
 }
