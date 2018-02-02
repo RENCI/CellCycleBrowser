@@ -236,8 +236,6 @@ function simulationParameters() {
     var d = controls.speciesDegradations[species],
         dv = Math.pow(2, -d.exponent);
 
-        console.log(dv);
-
     return {
       species: species,
       value: v,
