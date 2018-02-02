@@ -13,8 +13,8 @@ from . import utils
 
 logger = logging.getLogger('django')
 
-@shared_task
-def run_model_task(filename, id_to_names, species, phases, traj='', species_val_dict={},
+@shared_task(bind=True)
+def run_model_task(self, filename, id_to_names, species, phases, traj='', species_val_dict={},
                    sp_infl_para_dict={}):
     if traj:
         num_traj = int(traj)
@@ -23,7 +23,6 @@ def run_model_task(filename, id_to_names, species, phases, traj='', species_val_
 
     plot_output_fname = os.path.splitext(filename)[0] + "_SpeciesTimeSeries_" + traj + ".json"
     plot_output_path_fname = os.path.join(settings.MODEL_OUTPUT_PATH, plot_output_fname)
-
     smod = stochpy.SSA(IsInteractive=False)
     smod.Model(filename, settings.MODEL_INPUT_PATH)
     for sp_id, sp_val in species_val_dict.iteritems():
@@ -38,8 +37,14 @@ def run_model_task(filename, id_to_names, species, phases, traj='', species_val_
         # call a custom simulation method by setting cellcycle to True which automatically detects
         # when the last phase ends without requiring end time input. Setting end to int type max
         # but simulation will break out of the loop after the cell cycle ends
-        smod.DoStochSim(mode="time", trajectories=num_traj, end=sys.maxint, cellcycle=True)
+        smod.DoStochSim(mode="time", trajectories=num_traj, end=sys.maxint, cellcycle=True, task_id=self.request.id)
     except Exception as ex:
+        # delete progress file if exist
+        pfilename = os.path.join(settings.MODEL_OUTPUT_PATH, 'progress' + self.request.id + '.txt')
+        try:
+            os.remove(pfilename)
+        except OSError:
+            pass
         raise Exception(ex.message)
 
     max_traj = smod.data_stochsim.simulation_trajectory
@@ -112,5 +117,12 @@ def run_model_task(filename, id_to_names, species, phases, traj='', species_val_
 
     with open(plot_output_path_fname, 'w') as json_file:
         json.dump(output_data_dict, json_file,  indent=2)
+
+    # delete progress file if exist
+    pfilename = os.path.join(settings.MODEL_OUTPUT_PATH, 'progress' + self.request.id + '.txt')
+    try:
+        os.remove(pfilename)
+    except OSError:
+        pass
 
     return plot_output_fname
