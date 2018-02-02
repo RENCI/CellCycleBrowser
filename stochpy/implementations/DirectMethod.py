@@ -209,7 +209,6 @@ class DirectMethod(StochPySSA_Shared):
             if sp_id != self.current_sp_id:
                 # simulation gets to a new phase or sub-phase, needs to reco    rd it to a progress file
                 self.current_sp_id = sp_id
-                print("current state the simulation is in: " + sp_id + ', trajectory is ' + str(trajectory))
                 if task_id:
                     pfname = 'data/models/output/progress' + task_id +'.txt'
                 else:
