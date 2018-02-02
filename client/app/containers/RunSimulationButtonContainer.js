@@ -2,13 +2,15 @@ var React = require("react");
 var SimulationOutputStore = require("../stores/SimulationOutputStore");
 var RunSimulationButton = require("../components/RunSimulationButton");
 var SimulationError = require("../components/SimulationError");
+var SimulationProgress = require("../components/SimulationProgress");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var Constants = require("../constants/Constants");
 
 function getStateFromStore() {
   return {
     outputState: SimulationOutputStore.getState(),
-    error: SimulationOutputStore.getError()
+    error: SimulationOutputStore.getError(),
+    progress: SimulationOutputStore.getProgress(),
   };
 }
 
@@ -19,7 +21,8 @@ var RunSimulationButtonContainer = React.createClass ({
     return {
       label: defaultLabel,
       outputState: SimulationOutputStore.getState(),
-      error: SimulationOutputStore.getError()
+      error: SimulationOutputStore.getError(),
+      progress: SimulationOutputStore.getProgress()
     }
   },
   componentDidMount: function () {
@@ -62,7 +65,6 @@ var RunSimulationButtonContainer = React.createClass ({
   },
   render: function () {
     var disabled = this.state.outputState === Constants.SIMULATION_OUTPUT_INVALID;
-
     return (
       <div>
         <RunSimulationButton
@@ -73,6 +75,9 @@ var RunSimulationButtonContainer = React.createClass ({
         {this.state.error === null ? null :
           <SimulationError
             error={this.state.error} />}
+        {this.state.progress === null || !disabled ? null :
+          <SimulationProgress
+            progress={this.state.progress} />}
       </div>
     );
   }

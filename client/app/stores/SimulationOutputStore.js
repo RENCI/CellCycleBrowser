@@ -8,6 +8,7 @@ var CHANGE_EVENT = "change";
 // Simulation output data
 var state = Constants.SIMULATION_OUTPUT_NONE;
 var error = null;
+var progress = null;
 var simulationOutput = [];
 
 var SimulationOutputStore = assign({}, EventEmitter.prototype, {
@@ -26,6 +27,9 @@ var SimulationOutputStore = assign({}, EventEmitter.prototype, {
   getSimulationOutput: function () {
     return simulationOutput;
   },
+  getProgress: function () {
+    return progress;
+  },
   getError: function () {
     return error;
   }
@@ -43,6 +47,12 @@ SimulationOutputStore.dispatchToken = AppDispatcher.register(function (action) {
     case Constants.RUN_SIMULATION:
       state = Constants.SIMULATION_OUTPUT_INVALID;
       error = null;
+      SimulationOutputStore.emitChange();
+      break;
+
+    case Constants.RECEIVE_SIMULATION_PROGRESS:
+      state = Constants.SIMULATION_OUTPUT_INVALID;
+      progress = action.progress;
       SimulationOutputStore.emitChange();
       break;
 

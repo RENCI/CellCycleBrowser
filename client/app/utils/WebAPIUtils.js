@@ -365,6 +365,12 @@ function pollSimulation() {
 
         requestSimulationOutput("/get_model_result/" + data.result);
       }
+      else if (data.progress) {
+        ServerActionCreators.receiveSimulationProgress(data.progress);
+        timeOutStatusId = setTimeout(function () {
+          pollSimulation(taskId);
+        }, 1000);
+      }
       else {
         timeOutStatusId = setTimeout(function () {
           pollSimulation(taskId);

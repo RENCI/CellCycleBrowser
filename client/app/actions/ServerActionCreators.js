@@ -47,6 +47,14 @@ module.exports = {
       error: error
     });
   },
+  receiveSimulationProgress: function(progress) {
+    if (typeof(progress) === "undefined") progress = null;
+
+    AppDispatcher.dispatch({
+      actionType: Constants.RECEIVE_SIMULATION_PROGRESS,
+      progress: progress
+    });
+  },
   receiveNuclei: function(nuclei) {
     AppDispatcher.dispatch({
       actionType: Constants.RECEIVE_NUCLEI,
