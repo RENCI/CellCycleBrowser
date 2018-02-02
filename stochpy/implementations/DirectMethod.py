@@ -131,15 +131,24 @@ class DirectMethod(StochPySSA_Shared):
         for i, s_id in enumerate(self.parse.species):
             # last phase of the cell cycle is signified by an species id that ends with '_end'
             if s_id.endswith('_end'):
-                if not self.last_phase_started and self.X_matrix[i] == 1:
+                if self.last_phase_started:
+                    if self.X_matrix[i] == 0:
+                        print("In isLastPhaseComplete: setting last phase complete to true, s_id=" + s_id)
+                        return True, s_id
+                    else:
+                        # simulation is still in last phase, it has not completed yet
+                        return False, s_id
+                elif self.X_matrix[i] == 1:
                     self.last_phase_started = True
                     print("In isLastPhaseComplete: setting last_phase_started to true, s_id=" + s_id)
-                    return False
-                if self.last_phase_started and self.X_matrix[i] == 0:
-                    print("In isLastPhaseComplete: setting last phase complete to true, s_id=" + s_id)
-                    return True
+                    return False, s_id
 
-    def ExecuteWholeCellCycle(self, settings, IsStatusBar=False):
+            elif self.X_matrix[i] == 1:
+                return False, s_id
+        print("This should not happen, at least one phase or species should be set to 1 during simulation")
+        return False, '' 
+
+    def ExecuteWholeCellCycle(self, settings, IsStatusBar=False, trajectory=1, task_id=''):
         """
         Generates a trajectory of the Markov jump process. This is a customized method that runs
         through until the entire cell cycle is complete meaning the last phase of the cell cycle
@@ -159,6 +168,7 @@ class DirectMethod(StochPySSA_Shared):
         self.sim_t = copy.copy(settings.starttime)
         self.X_matrix = copy.deepcopy(settings.X_matrix)
         self.fixed_species_amount = copy.deepcopy(self.parse.fixed_species_amount)
+        self.current_sp_id = ''
 
         try:
             self.volume_code = settings.volume_code
@@ -190,10 +200,22 @@ class DirectMethod(StochPySSA_Shared):
                 settings.endtime = 10 ** 50
                 break
 
-            if self.isLastPhaseComplete():
+            lp_complete, sp_id = self.isLastPhaseComplete()
+            if lp_complete:
                 settings.endtime = 10 ** 50
                 print("Last phase completed, time step: " + str(self.sim_t))
                 break
+            
+            if sp_id != self.current_sp_id:
+                # simulation gets to a new phase or sub-phase, needs to reco    rd it to a progress file
+                self.current_sp_id = sp_id
+                print("current state the simulation is in: " + sp_id + ', trajectory is ' + str(trajectory))
+                if task_id:
+                    pfname = 'data/models/output/progress' + task_id +'.txt'
+                else:
+                    pfname = 'data/models/output/progress.txt'
+                with open(pfname, 'w') as pf:
+                    pf.write(sp_id+','+str(trajectory))
 
             self.RunExactTimestep()  # Run direct SSA
             self.HandleEvents()

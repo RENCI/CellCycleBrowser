@@ -654,7 +654,7 @@ class SSA(PlottingFunctions,PrintingFunctions):
                    IsTrackPropensities=False, rate_selection = None, species_selection = None,
                    IsOnlyLastTimepoint = False,critical_reactions=[],reaction_orders = False,
                    species_HORs = False,species_max_influence = False,
-                   cellcycle=False, quiet = False):
+                   cellcycle=False, task_id='', quiet = False):
         """
         Run a stochastic simulation for until `end` is reached. This can be either time steps or end time (which could be a *HUGE* number of steps).
 
@@ -674,6 +674,7 @@ class SSA(PlottingFunctions,PrintingFunctions):
          - *species_max_influence* [default = []]  (list) ONLY for the tau-leaping method
          - *cellcycle* [default=False] (boolean) If true, do a stochastic simulation for the whole
             cell cycle until the last phase of the cell cycle
+         - *task_id* [default is empty] (string) If not empty, it passes the calling celery task id that can be used to identify the unique simulation run session in order to communicate simulation progress back to the calling task via a uniquely formed progress file name
          - *quiet* [default = False] suppress print statements
         """
         if self._IsQuiet:
@@ -774,7 +775,7 @@ class SSA(PlottingFunctions,PrintingFunctions):
             if self.sim_method_name.lower() == "tauleaping":    
                 self.SSA.Execute(self.settings,IsStatusBar,epsilon,critical_reactions)
             elif cellcycle:
-                self.SSA.ExecuteWholeCellCycle(self.settings, IsStatusBar)
+                self.SSA.ExecuteWholeCellCycle(self.settings, IsStatusBar, self._current_trajectory, task_id)
             else:
                 self.SSA.Execute(self.settings,IsStatusBar)
 
