@@ -560,7 +560,7 @@ def check_task_status(request):
                 if len(pinfos) == 2:
                     cur_phase = pinfos[0]
                     cur_traj = int(pinfos[1])+1
-                    pstr = "Simulating...in phase " + cur_phase + " for cells " + str(cur_traj)
+                    pstr = cur_phase + "," + str(cur_traj)
         if pstr:
             return HttpResponse(json.dumps({"result": None, "error": None, "progress": pstr}),
                                 content_type="application/json")
