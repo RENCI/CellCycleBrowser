@@ -4,7 +4,7 @@
 {% block content %}
   <div class="container">
     <div class="row">
-      <h2>Create a new workspace for cell cycle browser</h2>
+      <h2>Create a new{% if guest_session %} guest {% endif %} workspace for cell cycle browser</h2>
       <ul>
         <li>Select existing or upload new dataset and model data to be included in the new workspace.</li>
         <li>Input name and description for each dataset and model data included in the new workspace.</li>
@@ -12,6 +12,7 @@
       </ul>
       <form class="form-horizontal" role="form" action="/add_profile_to_server/" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
+        <input type="hidden" name="guest_session" id="guest_session" {% if guest_session %} value='true'/> {% else %} value='false'/> {% endif %}
         <div class="form-group">
             <label for="id_pname">Workspace Name: *</label>
             <input id="pname" class="form-control" name="pname" placeholder="Workspace name" value="" type="text" required/>
@@ -43,7 +44,7 @@
         </div>
         <div class="form-group">
             <label for="id_cddesc">Dataset Description:</label>
-            <input id="cddesc" class="form-control" name="cddesc" placeholder="cell_data_file_name:cell_data_description;;another_file_name:another_description" value="" type="text" />
+            <input id="cddesc" class="form-control" name="cddesc" placeholder="cell_data_file_name:cell_data_description;another_file_name:another_description" value="" type="text" />
             <p class="help-block">The input must be in the format of cell_data_file_name:cell_data_description separated by semicolon for multiple datasets.</p>
         </div>
         <hr>
@@ -81,7 +82,7 @@
         </div>
         <div class="form-group">
           <div class="col-sm-offset-6 col-sm-6">
-            <button type="submit" class="btn btn-primary btn-lg btn-block">Create New Workspace</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Create New {% if guest_session %}guest {% endif %}Workspace</button>
           </div>
           {% if messages %}
             <ul class="messages">

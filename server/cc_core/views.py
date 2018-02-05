@@ -65,9 +65,9 @@ def cell_data_meta(request, filename):
 def download(request, filename):
     _, ext = os.path.splitext(filename)
     if ext == '.csv':
-        file_full_path = os.path.join(settings.CELL_DATA_PATH, filename)
+        file_full_path = os.path.join(settings.WORKSPACE_PATH, settings.CELL_DATA_PATH, filename)
     elif ext == '.xml':
-        file_full_path = os.path.join(settings.MODEL_INPUT_PATH, filename)
+        file_full_path = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, filename)
     else:
         messages.error(request, "Only dataset file in csv format and model file in xml format can be downloaded")
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
@@ -86,13 +86,6 @@ def download(request, filename):
     response['Content-Disposition'] = 'attachment; filename="{name}"'.format(name=filename)
     response['Content-Lengtsh'] = flen
     return response
-
-
-def serve_config_data(request, filename):
-    config_file = os.path.join('data', 'config', filename)
-    with open(config_file, 'r') as fp:
-        data = json.load(fp)
-    return HttpResponse(json.dumps(data), content_type='application/json')
 
 
 def get_profile_list(request):
@@ -121,6 +114,19 @@ def get_profile(request):
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
+def add_user_workspace(request):
+    profiles = utils.get_profile_list()
+    cell_data_names, model_data_names = utils.get_all_cell_and_model_file_names(
+        profiles=profiles)
+    context = {
+        'guest_session': True,
+        'cell_data_names': cell_data_names,
+        'model_data_names': model_data_names
+    }
+    return render(request, 'cc_core/add-profile.html', context)
+
+
+
 @login_required()
 def add_or_delete_profile_request(request):
     profiles = utils.get_profile_list()
@@ -145,6 +151,7 @@ def add_or_delete_profile_request(request):
         cell_data_names, model_data_names = utils.get_all_cell_and_model_file_names(
             profiles=profiles)
         context = {
+            'guest_session': False,
             'cell_data_names': cell_data_names,
             'model_data_names': model_data_names
         }
@@ -182,6 +189,8 @@ def delete_profile_from_server(request):
 def add_profile_to_server(request):
     # create profile data to write to profile json file
     data = {}
+    guest_sess = True if request.POST.get('guest_session') == 'true' else False
+
     try:
         data['name'] = request.POST.get('pname')
         if not data['name']:
@@ -207,7 +216,7 @@ def add_profile_to_server(request):
         idx = 0
         for cdfile in cdfiles:
             source = cdfile.file.name
-            target = os.path.join(settings.CELL_DATA_PATH, cdfile.name)
+            target = os.path.join(settings.WORKSPACE_PATH, settings.CELL_DATA_PATH, cdfile.name)
             # check to make sure the uploaded new file names don't have conflict with existing files
             if os.path.isfile(target):
                 # file with the same file name already exists - raise validation error and ask user
@@ -275,7 +284,7 @@ def add_profile_to_server(request):
         mdfiles = request.FILES.getlist('model_files')
         for mdfile in mdfiles:
             source = mdfile.file.name
-            target = os.path.join(settings.MODEL_INPUT_PATH, mdfile.name)
+            target = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, mdfile.name)
             if os.path.isfile(target):
                 # file with the same file name already exists - raise validation error and ask user
                 # to change file name to avoid file conflict
@@ -339,14 +348,18 @@ def add_profile_to_server(request):
         pname_list = data['name'].split()
         profile_file_name = '_'.join(pname_list)
         profile_file_name = profile_file_name + '.json'
-        profile_file_full_path = os.path.join('data', 'config', profile_file_name)
+        ws_path = settings.GUEST_WORKSPACE_PATH if guest_sess else settings.WORKSPACE_PATH
+        profile_file_full_path = os.path.join(ws_path, settings.WORKSPACE_CONFIG_PATH, profile_file_name)
         with open(profile_file_full_path, 'w') as out:
             out.write(json.dumps(data, indent=4))
 
-        # update profile_list.json
-        profile_list_name = os.path.join('data', 'config', 'profile_list.json')
-        with open(profile_list_name, 'r') as f:
-            json_profile_data = json.load(f)
+        # update configuration json file
+        profile_list_name = os.path.join(ws_path, settings.WORKSPACE_CONFIG_PATH, settings.WORKSPACE_CONFIG_FILENAME)
+        if os.path.isfile(profile_list_name):
+            with open(profile_list_name, 'r') as f:
+                json_profile_data = json.load(f)
+        else:
+            json_profile_data = {}
 
         json_profile_data.append({'fileName': profile_file_full_path,
                                   'group': 1})
@@ -355,10 +368,17 @@ def add_profile_to_server(request):
             f.write(json.dumps(json_profile_data, indent=4))
 
         template = loader.get_template('cc_core/index.html')
-        context = {
-            'SITE_TITLE': settings.SITE_TITLE,
-            'status_msg': 'Congratulations! The new profile has been added successfully.'
-        }
+        if guest_sess:
+            context = {
+                'SITE_TITLE': settings.SITE_TITLE,
+                'status_msg': 'Congratulations! The new guest workspace has been added successfully serving as your '
+                              'temporary playground and will be deleted nightly.'
+            }
+        else:
+            context = {
+                'SITE_TITLE': settings.SITE_TITLE,
+                'status_msg': 'Congratulations! The new workspace has been added successfully.'
+            }
         return HttpResponse(template.render(context, request))
     except Exception as ex:
         messages.error(request, ex.message)
@@ -405,7 +425,7 @@ def create_sbml_model(request):
             utils.createSBMLModel_CC_serial(int(num_g1), float(rate_g1),
                                             int(num_s), float(rate_s),
                                             int(num_g2m), float(rate_g2m),
-                                            os.path.join(settings.MODEL_INPUT_PATH, sbml_fname))
+                                            os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, sbml_fname))
         except Exception as ex:
             response_data["error"] = ex.message + ' for creating SBML model'
             return HttpResponse(json.dumps(response_data), content_type='application/json')
@@ -421,7 +441,7 @@ def create_sbml_model(request):
 
 def delete_sbml_model(request, filename):
     response_data = {}
-    full_fname = os.path.join(settings.MODEL_INPUT_PATH, filename)
+    full_fname = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, filename)
     try:
         if os.path.isfile(full_fname):
             # delete this model file
@@ -514,7 +534,7 @@ def run_model(request, filename=''):
 
 
 def get_model_result(request, filename):
-    file_full_path = os.path.join(settings.MODEL_OUTPUT_PATH, filename)
+    file_full_path = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_OUTPUT_PATH, filename)
     with open(file_full_path, 'rb') as model_output_file:
         model_result_json = json.load(model_output_file)
         response = JsonResponse(model_result_json)
@@ -552,7 +572,7 @@ def check_task_status(request):
     else:
         # read progress generated by simulation
         pstr = ''
-        pfilename = os.path.join(settings.MODEL_OUTPUT_PATH, 'progress' + task_id + '.txt')
+        pfilename = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_OUTPUT_PATH, 'progress' + task_id + '.txt')
         if os.path.isfile(pfilename):
             with open(pfilename, 'r') as pf:
                 pline = pf.readline()

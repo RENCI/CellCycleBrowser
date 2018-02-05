@@ -199,9 +199,16 @@ CRISPY_TEMPLATE_PACK = 'bootstrap'
 LOGIN_REDIRECT_URL = '/add_or_delete_a_profile_request/'
 
 # input data and model path
-MODEL_INPUT_PATH = 'data/models/input'
-MODEL_OUTPUT_PATH = 'data/models/output'
-CELL_DATA_PATH = 'data/cellData'
+WORKSPACE_PATH = 'data'
+GUEST_WORKSPACE_PATH = 'guest_data'
+
+MODEL_INPUT_PATH = 'models/input'
+MODEL_OUTPUT_PATH = 'models/output'
+CELL_DATA_PATH = 'cellData'
+WORKSPACE_CONFIG_PATH = 'config'
+
+WORKSPACE_CONFIG_FILENAME = 'profile_list.json'
+DATASET_CONFIG_NAME = 'dataset_config.json'
 
 ####################
 # LOGGING SETTINGS #

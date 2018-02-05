@@ -66,7 +66,7 @@ def read_metadata_from_csv_data(file_base_name, csv_data, required_md_elems=[]):
 
 def load_cell_data_csv_content(filename):
     data_str = ''
-    cell_data_filename = os.path.join(settings.CELL_DATA_PATH, filename)
+    cell_data_filename = os.path.join(settings.WORKSPACE_PATH, settings.CELL_DATA_PATH, filename)
     if os.path.isfile(cell_data_filename):
         with open(cell_data_filename, 'r') as fp:
             # do data transpose before serving csv data to client
@@ -124,7 +124,7 @@ def extract_species_and_phases_from_model(filename):
              phases is a dict that has phases ids as keys and corresponding subphases ids list
              as values
     """
-    model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
+    model_file = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
     reader = SBMLReader()
     document = reader.readSBMLFromFile(model_file)
     if document.getNumErrors() > 0:
@@ -211,7 +211,7 @@ def extract_info_from_model(filename):
 
     return_object = {}
     try:
-        model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
+        model_file = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
         reader = SBMLReader()
         document = reader.readSBMLFromFile(model_file)
         if document.getNumErrors() > 0:
@@ -382,7 +382,7 @@ def load_model(model):
 
 
 def get_profile_list():
-    profile_config_name = "data/config/profile_list.json"
+    profile_config_name = os.path.join(settings.WORKSPACE_PATH, settings.WORKSPACE_CONFIG_PATH, settings.WORKSPACE_CONFIG_FILENAME)
     data = []
     with open(profile_config_name, 'r') as profile_config_file:
         config_data = json.load(profile_config_file)
@@ -396,7 +396,7 @@ def get_profile_list():
 
 
 def get_required_metadata_elements():
-    dataset_config_name = "data/config/dataset_config.json"
+    dataset_config_name = os.path.join(settings.WORKSPACE_CONFIG_PATH, settings.DATASET_CONFIG_NAME)
     data = []
     with open(dataset_config_name, 'r') as md_config_file:
         config_data = json.load(md_config_file)
@@ -464,7 +464,7 @@ def get_model_list(profiles=None):
 
 
 def delete_profile(pname):
-    profile_config_name = "data/config/profile_list.json"
+    profile_config_name = os.path.join(settings.WORKSPACE_PATH, settings.WORKSPACE_CONFIG_PATH, settings.WORKSPACE_CONFIG_FILENAME)
     incl_cell_names = set()
     incl_model_names = set()
     with open(profile_config_name, 'r') as profile_config_file:
@@ -494,11 +494,11 @@ def delete_profile(pname):
     cell_data_names, model_data_names = get_all_cell_and_model_file_names()
     for cd in incl_cell_names:
         if cd not in cell_data_names:
-            cd_filename = os.path.join(settings.CELL_DATA_PATH, cd)
+            cd_filename = os.path.join(settings.WORKSPACE_PATH, settings.CELL_DATA_PATH, cd)
             os.remove(cd_filename)
     for md in incl_model_names:
         if md not in model_data_names:
-            md_filename = os.path.join(settings.MODEL_INPUT_PATH, md)
+            md_filename = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, md)
             os.remove(md_filename)
 
 
@@ -531,7 +531,7 @@ def get_phase_start_stop(data):
 
 
 def extract_parameter_ids(filename):
-    model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
+    model_file = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
     reader = SBMLReader()
     document = reader.readSBMLFromFile(model_file)
     if document.getNumErrors() > 0:
@@ -553,7 +553,7 @@ def extract_parameter_ids(filename):
 
 
 def extract_parameters(filename):
-    model_file = os.path.join(settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
+    model_file = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
     reader = SBMLReader()
     document = reader.readSBMLFromFile(model_file)
     if document.getNumErrors() > 0:

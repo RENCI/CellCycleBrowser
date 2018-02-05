@@ -8,10 +8,24 @@ import json
 import stochpy
 
 from celery import shared_task
+from celery.task import periodic_task
+from celery.schedules import crontab
 from django.conf import settings
 from . import utils
 
 logger = logging.getLogger('django')
+
+
+#@periodic_task(ignore_result=True, run_every=crontab(minute=0, hour=0))
+@periodic_task(ignore_result=True, run_every=crontab(minute='*/1'))
+def delete_guest_workspaces():
+    for dirName, subdirList, fileList in os.walk(settings.GUEST_WORKSPACE_PATH):
+        logger.debug(dirName)
+        logger.debug(subdirList)
+        logger.debug(fileList)
+        for fname in fileList:
+            os.remove(os.path.join(dirName, fname))
+
 
 @shared_task(bind=True)
 def run_model_task(self, filename, id_to_names, species, phases, traj='', species_val_dict={},
@@ -22,9 +36,10 @@ def run_model_task(self, filename, id_to_names, species, phases, traj='', specie
         num_traj = 1
 
     plot_output_fname = os.path.splitext(filename)[0] + "_SpeciesTimeSeries_" + traj + ".json"
-    plot_output_path_fname = os.path.join(settings.MODEL_OUTPUT_PATH, plot_output_fname)
+    plot_output_path_fname = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_OUTPUT_PATH, plot_output_fname)
     smod = stochpy.SSA(IsInteractive=False)
-    smod.Model(filename, settings.MODEL_INPUT_PATH)
+    m_path = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH)
+    smod.Model(filename, m_path)
     for sp_id, sp_val in species_val_dict.iteritems():
         logger.debug('changing ' + str(sp_id) + ' amount ' + str(sp_val))
         smod.ChangeInitialSpeciesCopyNumber(str(sp_id), float(sp_val))
@@ -40,7 +55,7 @@ def run_model_task(self, filename, id_to_names, species, phases, traj='', specie
         smod.DoStochSim(mode="time", trajectories=num_traj, end=sys.maxint, cellcycle=True, task_id=self.request.id)
     except Exception as ex:
         # delete progress file if exist
-        pfilename = os.path.join(settings.MODEL_OUTPUT_PATH, 'progress' + self.request.id + '.txt')
+        pfilename = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_OUTPUT_PATH, 'progress' + self.request.id + '.txt')
         try:
             os.remove(pfilename)
         except OSError:
@@ -119,7 +134,7 @@ def run_model_task(self, filename, id_to_names, species, phases, traj='', specie
         json.dump(output_data_dict, json_file,  indent=2)
 
     # delete progress file if exist
-    pfilename = os.path.join(settings.MODEL_OUTPUT_PATH, 'progress' + self.request.id + '.txt')
+    pfilename = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_OUTPUT_PATH, 'progress' + self.request.id + '.txt')
     try:
         os.remove(pfilename)
     except OSError:

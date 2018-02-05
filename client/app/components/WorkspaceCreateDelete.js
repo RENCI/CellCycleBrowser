@@ -13,9 +13,20 @@ function WorkspaceCreateDelete(props) {
         data-toggle="tooltip"
         data-container="body"
         data-placement="auto top"
-        title="Create workspace">
+        title="Create system workspace">
           <span
             className="glyphicon glyphicon-plus-sign"
+            style={iconStyle} />
+      </a>
+      <a
+        href="/add_user_workspace/"
+        className="btn btn-default"
+        data-toggle="tooltip"
+        data-container="body"
+        data-placement="auto top"
+        title="Create guest playground workspace">
+          <span
+            className="glyphicon glyphicon-user"
             style={iconStyle} />
       </a>
       <a

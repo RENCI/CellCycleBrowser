@@ -39,9 +39,19 @@ display_usage() {
     echo "usage: $0 stop               # stops all running containers"
 }
 
+delete_celerybeat_scheduler() {
+    file1="celerybeat.pid"
+    file2="celery/*"
+    if [ -f ${file1} ] ; then
+        echo "DELETE CELERYBEAT:"
+        rm -f ${file1} ${file2};
+    fi
+}
+
 stop_cc() {
     echo "*** STOP ***"
     docker-compose stop
+    delete_celerybeat_scheduler
 }
 
 start_cc() {
@@ -87,6 +97,7 @@ stop_nginx() {
 restart_cc() {
     echo "*** RESTART ***"
     stop_cc
+    delete_celerybeat_scheduler
     preflight_cc
     start_cc
     start_nginx
@@ -117,6 +128,22 @@ preflight_cc() {
         sed -i 's/'"${PROD_SERVER}"'/'"${DEV_SERVER}"'/g' ${CC_PATH}/init
         # enable SSH server for debugging purposes
         sed -i 's!'"# REMOVED SSH COMPONENT"'!'"/usr/sbin/sshd"'!g' ${CC_PATH}/init
+    fi
+    # Create log directory if it does not exist
+    if [[ ! -d ${CC_LOG_FILES} ]]; then
+        mkdir -p ${CC_LOG_FILES}
+        touch ${CC_LOG_FILES}/access.log
+        touch ${CC_LOG_FILES}/django.log
+        touch ${CC_LOG_FILES}/error.log
+        touch ${CC_LOG_FILES}/gunicorn.log
+        touch ${CC_LOG_FILES}/cellcycle.log
+        touch ${CC_LOG_FILES}/system.log;
+    fi
+    # Create celery directory if it does not exist
+    if [[ ! -f ${CC_PATH}/celery/readme.txt ]]; then
+        mkdir -p ${CC_PATH}/celery
+        echo "This directory is used for celery beat scheduler to write celerybeat-schedule file for \
+            scheduling purposes." > ${CC_PATH}/celery/readme.txt;
     fi
 }
 
