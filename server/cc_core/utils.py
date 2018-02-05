@@ -243,13 +243,17 @@ def extract_info_from_model(filename):
             var_id = rule.getVariable()
             if var_id:
                 phase['name'] = species_id_to_names[var_id]
-                phases.append(phase)
+                p_sub_phases = []
                 formula_str = rule.getFormula().strip()
                 if formula_str:
                     formula_strs = formula_str.split('+')
                     for fstr in formula_strs:
                         fstr = fstr.strip()
-                        sub_phases.append(species_id_to_names[fstr])
+                        sub_ph_name = species_id_to_names[fstr]
+                        sub_phases.append(sub_ph_name)
+                        p_sub_phases.append(sub_ph_name)
+                phase['subphases'] = p_sub_phases
+                phases.append(phase)
 
         # remove phases and sub-phases from species_list
         for ph in phases:
