@@ -16,13 +16,9 @@ from . import utils
 logger = logging.getLogger('django')
 
 
-#@periodic_task(ignore_result=True, run_every=crontab(minute=0, hour=0))
-@periodic_task(ignore_result=True, run_every=crontab(minute='*/1'))
+@periodic_task(ignore_result=True, run_every=crontab(minute=0, hour=0))
 def delete_guest_workspaces():
     for dirName, subdirList, fileList in os.walk(settings.GUEST_WORKSPACE_PATH):
-        logger.debug(dirName)
-        logger.debug(subdirList)
-        logger.debug(fileList)
         for fname in fileList:
             os.remove(os.path.join(dirName, fname))
 
