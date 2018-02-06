@@ -578,7 +578,7 @@ def check_task_status(request):
                 pline = pf.readline()
                 pinfos = pline.split(',')
                 if len(pinfos) == 2:
-                    pstr = pinfos
+                    pstr = pline
         if pstr:
             return HttpResponse(json.dumps({"result": None, "error": None, "progress": pstr}),
                                 content_type="application/json")
