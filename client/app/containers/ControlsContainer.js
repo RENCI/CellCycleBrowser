@@ -10,6 +10,7 @@ var SpeciesSpeciesSliders = require("../components/SpeciesSpeciesSliders");
 var PhaseColorStore = require("../stores/PhaseColorStore");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var WebAPIUtils = require("../utils/WebAPIUtils");
+var DataUtils = require("../utils/DataUtils");
 
 var style = {
   marginTop: 10
@@ -103,11 +104,14 @@ var ControlsContainer = React.createClass ({
   render: function () {
     if (!this.state.controls) return null;
 
+    var numCells = DataUtils.find(this.state.controls.parameters, "name", "numCells").value;
+
     return (
       <div className="panel panel-default" style={style}>
         <div style={runSimulationStyle}>
           <RunSimulationButtonContainer
-            subphases={this.state.controls.subphases} />
+            subphases={this.state.controls.subphases}
+            numTrajectories={numCells} />
         </div>
         <SimulationParameterSliders
           parameters={this.state.controls.parameters}
