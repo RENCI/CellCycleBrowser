@@ -10,13 +10,13 @@ var iconStyle = {
 };
 
 function SimulationProgress(props) {
+  console.log(props.subphases);
+  console.log(props.progress);
+
   return (
     // Wrap in outer div so React doesn't complain about unmounting after being closed
     <div>
-      <div className="alert alert-info alert-dismissible" style={divStyle}>
-        <button type="button" className="close" data-dismiss="alert">
-          <span>&times;</span>
-        </button>
+      <div className="alert alert-info" style={divStyle}>
         {props.progress}
       </div>
     </div>
@@ -24,6 +24,7 @@ function SimulationProgress(props) {
 }
 
 SimulationProgress.propTypes = {
+  subphases: PropTypes.arrayOf(PropTypes.object).isRequired,
   progress: PropTypes.string.isRequired
 };
 

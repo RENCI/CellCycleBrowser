@@ -1,4 +1,5 @@
 var React = require("react");
+var PropTypes = React.PropTypes;
 var SimulationOutputStore = require("../stores/SimulationOutputStore");
 var RunSimulationButton = require("../components/RunSimulationButton");
 var SimulationError = require("../components/SimulationError");
@@ -17,6 +18,9 @@ function getStateFromStore() {
 var defaultLabel = "Run simulation";
 
 var RunSimulationButtonContainer = React.createClass ({
+  propTypes: {
+    subphases: PropTypes.arrayOf(PropTypes.object).isRequired
+  },
   getInitialState: function () {
     return {
       label: defaultLabel,
@@ -65,6 +69,7 @@ var RunSimulationButtonContainer = React.createClass ({
   },
   render: function () {
     var disabled = this.state.outputState === Constants.SIMULATION_OUTPUT_INVALID;
+
     return (
       <div>
         <RunSimulationButton
@@ -77,6 +82,7 @@ var RunSimulationButtonContainer = React.createClass ({
             error={this.state.error} />}
         {this.state.progress === null || !disabled ? null :
           <SimulationProgress
+            subphases={this.props.subphases}
             progress={this.state.progress} />}
       </div>
     );

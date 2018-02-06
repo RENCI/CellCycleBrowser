@@ -106,7 +106,8 @@ var ControlsContainer = React.createClass ({
     return (
       <div className="panel panel-default" style={style}>
         <div style={runSimulationStyle}>
-          <RunSimulationButtonContainer />
+          <RunSimulationButtonContainer
+            subphases={this.state.controls.subphases} />
         </div>
         <SimulationParameterSliders
           parameters={this.state.controls.parameters}

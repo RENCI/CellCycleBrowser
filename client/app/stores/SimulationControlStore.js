@@ -20,6 +20,7 @@ var controls = {
   ],
   species: [],
   phases: [],
+  subphases: [],
   speciesExpressionLevels: {},
   speciesDegradations: {},
   speciesPhaseMatrix: {},
@@ -55,6 +56,14 @@ function createControls(model) {
 
   controls.phases = model.phases.map(function (phase) {
     return phase.name;
+  });
+
+  // Create subphases
+  controls.subphases = model.phases.map(function (phase) {
+    return {
+      phase: phase.name,
+      subphases: phase.subphases.slice()
+    };
   });
 
   // Create species expression levels object
