@@ -4,7 +4,6 @@ FQDN_OR_IP: localhost
 ### Application configuration ###
 CC_PATH: /home/ccbuild/CellCycleBrowser/server
 CC_DATABASE: cellcycle_db.sql
-CC_LOG_FILES: /home/ccbuild/CellCycleBrowser/server/log
 CC_MEDIA_FILES: media.cc-testing.tar.gz
 HOST_USER_UID: 1000
 HOST_USER_GID: 1000
