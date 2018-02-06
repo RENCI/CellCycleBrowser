@@ -1,2 +1,3 @@
+/server/ccctl eol=lf
 *.sh eol=lf
 /server/init* eol=lf
