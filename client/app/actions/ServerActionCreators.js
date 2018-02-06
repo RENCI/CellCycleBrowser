@@ -38,7 +38,7 @@ module.exports = {
       dataset: dataset
     });
   },
-  receiveSimulationOutput: function(output, error) {
+  receiveSimulationOutput: function (output, error) {
     if (typeof(error) === "undefined") error = null;
 
     AppDispatcher.dispatch({
@@ -47,7 +47,7 @@ module.exports = {
       error: error
     });
   },
-  receiveSimulationProgress: function(progress) {
+  receiveSimulationProgress: function (progress) {
     if (typeof(progress) === "undefined") progress = null;
 
     AppDispatcher.dispatch({
@@ -55,7 +55,7 @@ module.exports = {
       progress: progress
     });
   },
-  receiveNuclei: function(nuclei) {
+  receiveNuclei: function (nuclei) {
     AppDispatcher.dispatch({
       actionType: Constants.RECEIVE_NUCLEI,
       nuclei: nuclei
