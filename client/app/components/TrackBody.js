@@ -1,8 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
-var TraceLabels = require("./TraceLabels");
-var TraceToggleButtons = require("./TraceToggleButtons");
+var TraceControls = require("./TraceControls");
 var HeatMapContainer = require("../containers/HeatMapContainer");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
@@ -81,12 +80,11 @@ function TrackBody(props) {
                   targetId={collapseId}
                   track={props.track} />
                 </div>
-              <div style={{flex: "0 1 auto", width: traceHeight}}>
-                <TraceToggleButtons
+                <TraceControls
                   traces={[props.track.average]}
+                  width={traceHeight}
                   height={averageHeight}
                   onClick={handleTraceButtonClick} />
-                </div>
             </div>
           </div>
           <div className="col-xs-10" style={visColumnStyle}>
@@ -102,19 +100,11 @@ function TrackBody(props) {
         </div>
         <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
           <div className="col-xs-2" style={traceButtonColumnStyle}>
-            <div style={{display: "flex"}}>
-              <div style={{flex: 1}}>
-                <TraceLabels
-                  traces={props.track.traces}
-                  height={traceHeight} />
-              </div>
-              <div style={{flex: "0 1 auto", width: traceHeight}}>
-                <TraceToggleButtons
-                  traces={props.track.traces}
-                  height={traceHeight}
-                  onClick={handleTraceButtonClick} />
-              </div>
-            </div>
+            <TraceControls
+              traces={props.track.traces}
+              width={traceHeight}
+              height={traceHeight}
+              onClick={handleTraceButtonClick} />
           </div>
           <div className="col-xs-10" style={collapseColumnStyle}>
             <HeatMapContainer
