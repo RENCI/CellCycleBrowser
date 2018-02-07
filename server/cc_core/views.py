@@ -4,6 +4,7 @@ import shutil
 import logging
 import csv
 import mimetypes
+from uuid import uuid4
 
 from django.http import HttpResponse, JsonResponse,FileResponse, \
     HttpResponseRedirect
@@ -20,19 +21,54 @@ from .models import CellMetadata
 
 
 logger = logging.getLogger('django')
+guest_sess_prefix_str = 'guest_session:'
+
+
+def get_guest_session(request):
+    storage = messages.get_messages(request)
+
+    for message in storage:
+        if message.tags == 'info':
+            if message.message.startswith(guest_sess_prefix_str):
+                s_len = len(guest_sess_prefix_str)
+                sess_str = message.message[s_len:]
+                storage.used = False
+                return sess_str
+
+    return ''
 
 
 # Create your views here.
-def index(request):
+def index(request, session=''):
     #import sys
     #sys.path.append("/home/docker/pycharm-debug")
     #import pydevd
     #pydevd.settrace('172.17.0.1', port=21000, suspend=False)
 
+    storage = messages.get_messages(request)
+    storage.used = True
+    # make sure session messages and species messages are removed
+    for message in storage:
+        if message.tags == 'info':
+            # consume it so as to clear it
+            temp_str = message.message
+
+    if session:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, session)
+        if os.path.isdir(ws_path):
+            messages.info(request, guest_sess_prefix_str + session)
+            status_msg = 'You are in your temporary guest playground where you can explore your own data in conjunction ' \
+                         'with system-provided data as specified in the guest workspace you created. The guest data will ' \
+                         'be cleaned up nightly from the system.'
+        else:
+            status_msg = ''
+    else:
+        status_msg = ''
+
     template = loader.get_template('cc_core/index.html')
     context = {
         'SITE_TITLE': settings.SITE_TITLE,
-        'status_msg': ''
+        'status_msg': status_msg
     }
     return HttpResponse(template.render(context, request))
 
@@ -64,10 +100,15 @@ def cell_data_meta(request, filename):
 
 def download(request, filename):
     _, ext = os.path.splitext(filename)
+    sess_str = get_guest_session(request)
+    if sess_str:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+    else:
+        ws_path = settings.WORKSPACE_PATH
     if ext == '.csv':
-        file_full_path = os.path.join(settings.WORKSPACE_PATH, settings.CELL_DATA_PATH, filename)
+        file_full_path = os.path.join(ws_path, settings.CELL_DATA_PATH, filename)
     elif ext == '.xml':
-        file_full_path = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, filename)
+        file_full_path = os.path.join(ws_path, settings.MODEL_INPUT_PATH, filename)
     else:
         messages.error(request, "Only dataset file in csv format and model file in xml format can be downloaded")
         return HttpResponseRedirect(request.META['HTTP_REFERER'])
@@ -92,14 +133,28 @@ def get_profile_list(request):
     """
     It is invoked by an AJAX call, so it returns json object that holds data set list
     """
-    profile_list = utils.get_profile_list()
+    sess_str = get_guest_session(request)
+    if sess_str:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+    else:
+        ws_path = settings.WORKSPACE_PATH
+    profile_config_name = os.path.join(ws_path, settings.WORKSPACE_CONFIG_PATH,
+                                       settings.WORKSPACE_CONFIG_FILENAME)
+    profile_list = utils.get_profile_list(profile_config_name)
 
     return HttpResponse(json.dumps(profile_list), content_type='application/json')
 
 
 def get_profile(request):
     index = int(request.POST['index'])
-    profile = utils.get_profile_list()[index]
+    sess_str = get_guest_session(request)
+    if sess_str:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+    else:
+        ws_path = settings.WORKSPACE_PATH
+    profile_config_name = os.path.join(ws_path, settings.WORKSPACE_CONFIG_PATH,
+                                       settings.WORKSPACE_CONFIG_FILENAME)
+    profile = utils.get_profile_list(profile_config_name)[index]
     data = {}
 
     data['name'] = profile['name']
@@ -124,7 +179,6 @@ def add_user_workspace(request):
         'model_data_names': model_data_names
     }
     return render(request, 'cc_core/add-profile.html', context)
-
 
 
 @login_required()
@@ -190,6 +244,18 @@ def add_profile_to_server(request):
     # create profile data to write to profile json file
     data = {}
     guest_sess = True if request.POST.get('guest_session') == 'true' else False
+    sess_id = ''
+    if guest_sess:
+        # create a guest session id
+        sess_id = uuid4().hex
+        messages.info(request, guest_sess_prefix_str + sess_id)
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_id)
+        os.makedirs(os.path.join(ws_path, settings.CELL_DATA_PATH))
+        os.makedirs(os.path.join(ws_path, settings.MODEL_INPUT_PATH))
+        os.makedirs(os.path.join(ws_path, settings.MODEL_OUTPUT_PATH))
+        os.makedirs(os.path.join(ws_path, settings.WORKSPACE_CONFIG_PATH))
+    else:
+        ws_path = settings.WORKSPACE_PATH
 
     try:
         data['name'] = request.POST.get('pname')
@@ -216,7 +282,7 @@ def add_profile_to_server(request):
         idx = 0
         for cdfile in cdfiles:
             source = cdfile.file.name
-            target = os.path.join(settings.WORKSPACE_PATH, settings.CELL_DATA_PATH, cdfile.name)
+            target = os.path.join(ws_path, settings.CELL_DATA_PATH, cdfile.name)
             # check to make sure the uploaded new file names don't have conflict with existing files
             if os.path.isfile(target):
                 # file with the same file name already exists - raise validation error and ask user
@@ -247,6 +313,10 @@ def add_profile_to_server(request):
 
         for cdselname in cdselnames:
             cell_data_list.append({'fileName': cdselname})
+            # copy the selected data set from system workspace to guest workspace
+            source = os.path.join(settings.WORKSPACE_PATH, settings.CELL_DATA_PATH, cdselname)
+            target = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_id, settings.CELL_DATA_PATH, cdselname)
+            shutil.copy(source, target)
             filename_to_idx[cdselname] = idx
             idx += 1
 
@@ -284,7 +354,8 @@ def add_profile_to_server(request):
         mdfiles = request.FILES.getlist('model_files')
         for mdfile in mdfiles:
             source = mdfile.file.name
-            target = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, mdfile.name)
+            target = os.path.join(ws_path, settings.MODEL_INPUT_PATH, mdfile.name)
+
             if os.path.isfile(target):
                 # file with the same file name already exists - raise validation error and ask user
                 # to change file name to avoid file conflict
@@ -302,6 +373,10 @@ def add_profile_to_server(request):
         mdselnames = request.POST.getlist('model_sel_names')
         for mdselname in mdselnames:
             model_data_list.append({'fileName': mdselname})
+            # copy the selected model from system workspace to guest workspace
+            source = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, mdselname)
+            target = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_id, settings.MODEL_INPUT_PATH, mdselname)
+            shutil.copy(source, target)
             filename_to_idx[mdselname] = idx
             idx += 1
 
@@ -348,7 +423,6 @@ def add_profile_to_server(request):
         pname_list = data['name'].split()
         profile_file_name = '_'.join(pname_list)
         profile_file_name = profile_file_name + '.json'
-        ws_path = settings.GUEST_WORKSPACE_PATH if guest_sess else settings.WORKSPACE_PATH
         profile_file_full_path = os.path.join(ws_path, settings.WORKSPACE_CONFIG_PATH, profile_file_name)
         with open(profile_file_full_path, 'w') as out:
             out.write(json.dumps(data, indent=4))
@@ -359,7 +433,7 @@ def add_profile_to_server(request):
             with open(profile_list_name, 'r') as f:
                 json_profile_data = json.load(f)
         else:
-            json_profile_data = {}
+            json_profile_data = []
 
         json_profile_data.append({'fileName': profile_file_full_path,
                                   'group': 1})
@@ -367,19 +441,15 @@ def add_profile_to_server(request):
         with open(profile_list_name, 'w') as f:
             f.write(json.dumps(json_profile_data, indent=4))
 
-        template = loader.get_template('cc_core/index.html')
-        if guest_sess:
-            context = {
-                'SITE_TITLE': settings.SITE_TITLE,
-                'status_msg': 'Congratulations! The new guest workspace has been added successfully serving as your '
-                              'temporary playground and will be deleted nightly.'
-            }
+        if sess_id:
+            return HttpResponseRedirect('/guest/' + sess_id)
         else:
+            template = loader.get_template('cc_core/index.html')
             context = {
                 'SITE_TITLE': settings.SITE_TITLE,
                 'status_msg': 'Congratulations! The new workspace has been added successfully.'
             }
-        return HttpResponse(template.render(context, request))
+            return HttpResponse(template.render(context, request))
     except Exception as ex:
         messages.error(request, ex.message)
         messages.info(request, 'AddProfile')
@@ -387,25 +457,52 @@ def add_profile_to_server(request):
 
 
 def get_dataset_list(request):
-    ds_list = utils.get_dataset_list()
+    sess_str = get_guest_session(request)
+    if sess_str:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+    else:
+        ws_path = settings.WORKSPACE_PATH
+
+    prof_conf_name = os.path.join(ws_path, settings.WORKSPACE_CONFIG_PATH, settings.WORKSPACE_CONFIG_FILENAME)
+    profs = utils.get_profile_list(prof_conf_name)
+    ds_list = utils.get_dataset_list(profs)
     return HttpResponse(json.dumps(ds_list), content_type='application/json')
 
 
 def get_dataset(request, id):
     filename = id
-    _, csv_str = utils.load_cell_data_csv_content(filename)
+    sess_str = get_guest_session(request)
+    if sess_str:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+    else:
+        ws_path = settings.WORKSPACE_PATH
+    cell_data_filename = os.path.join(ws_path, settings.CELL_DATA_PATH, filename)
+    _, csv_str = utils.load_cell_data_csv_content(cell_data_filename)
     return JsonResponse({'csv': csv_str})
 
 
 def get_model_list(request):
-    md_list = utils.get_model_list()
+    sess_str = get_guest_session(request)
+    if sess_str:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+    else:
+        ws_path = settings.WORKSPACE_PATH
+
+    prof_conf_name = os.path.join(ws_path, settings.WORKSPACE_CONFIG_PATH, settings.WORKSPACE_CONFIG_FILENAME)
+    profs = utils.get_profile_list(prof_conf_name)
+    md_list = utils.get_model_list(profs)
     return HttpResponse(json.dumps(md_list), content_type='application/json')
 
 
 def get_model(request, id):
     filename = id
-
-    return JsonResponse(utils.load_model_content(filename))
+    sess_str = get_guest_session(request)
+    if sess_str:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+    else:
+        ws_path = settings.WORKSPACE_PATH
+    model_file = os.path.join(ws_path, settings.MODEL_INPUT_PATH, filename)
+    return JsonResponse(utils.load_model_content(model_file))
 
 
 def create_sbml_model(request):
@@ -418,6 +515,12 @@ def create_sbml_model(request):
     rate_g2m = request.POST.get('rate_G2M', None)
     sbml_fname = request.POST.get('sbml_file_name', '')
 
+    sess_str = get_guest_session(request)
+    if sess_str:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+    else:
+        ws_path = settings.WORKSPACE_PATH
+
     response_data = {}
 
     if num_g1 and rate_g1 and num_s and rate_s and num_g2m and rate_g2m and sbml_fname:
@@ -425,7 +528,7 @@ def create_sbml_model(request):
             utils.createSBMLModel_CC_serial(int(num_g1), float(rate_g1),
                                             int(num_s), float(rate_s),
                                             int(num_g2m), float(rate_g2m),
-                                            os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, sbml_fname))
+                                            os.path.join(ws_path, settings.MODEL_INPUT_PATH, sbml_fname))
         except Exception as ex:
             response_data["error"] = ex.message + ' for creating SBML model'
             return HttpResponse(json.dumps(response_data), content_type='application/json')
@@ -441,7 +544,14 @@ def create_sbml_model(request):
 
 def delete_sbml_model(request, filename):
     response_data = {}
-    full_fname = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, filename)
+
+    sess_str = get_guest_session(request)
+    if sess_str:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+    else:
+        ws_path = settings.WORKSPACE_PATH
+
+    full_fname = os.path.join(ws_path, settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
     try:
         if os.path.isfile(full_fname):
             # delete this model file
@@ -466,14 +576,18 @@ def send_parameter(request):
 
 
 def run_model(request, filename=''):
+    sess_str = get_guest_session(request)
+    if sess_str:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+    else:
+        ws_path = settings.WORKSPACE_PATH
+
     if filename:
+        full_fname = os.path.join(ws_path, settings.MODEL_INPUT_PATH, filename)
         id_to_names, name_to_ids, species, phases = \
-            utils.extract_species_and_phases_from_model(filename)
+            utils.extract_species_and_phases_from_model(full_fname)
 
         # put species into session messages so that species can be filtered out in simulation progress return
-        # clear out messages before adding new one
-        storage = messages.get_messages(request)
-        storage.used = True
         messages.info(request, 'species:' + ','.join(species))
 
         traj = request.POST.get('trajectories', 1)
@@ -489,7 +603,7 @@ def run_model(request, filename=''):
         else:
             sp_name_infl_para_list = json.loads(request.POST['parameters'])
 
-        pid_list = utils.extract_parameter_ids(filename)
+        pid_list = utils.extract_parameter_ids(full_fname)
 
         sp_id_infl_para_dict = {}
         for p_dict_item in sp_name_infl_para_list:
@@ -525,7 +639,7 @@ def run_model(request, filename=''):
                     if para_id in pid_list:
                         sp_id_infl_para_dict[para_id] = sp_deg
 
-        task = run_model_task.apply_async((filename, id_to_names, species, phases, traj,
+        task = run_model_task.apply_async((ws_path, filename, id_to_names, species, phases, traj,
                                            sp_id_to_val_dict, sp_id_infl_para_dict),
                                           countdown=1)
         context = {
@@ -540,7 +654,12 @@ def run_model(request, filename=''):
 
 
 def get_model_result(request, filename):
-    file_full_path = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_OUTPUT_PATH, filename)
+    sess_str = get_guest_session(request)
+    if sess_str:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+    else:
+        ws_path = settings.WORKSPACE_PATH
+    file_full_path = os.path.join(ws_path, settings.MODEL_OUTPUT_PATH, filename)
     with open(file_full_path, 'rb') as model_output_file:
         model_result_json = json.load(model_output_file)
         response = JsonResponse(model_result_json)
@@ -582,8 +701,10 @@ def check_task_status(request):
         storage = messages.get_messages(request)
         for message in storage:
             if message.tags == 'info':
-                if message.message.startswith('species:'):
-                    sp_list = message.message[8:].split(',')
+                prefix_str = 'species:'
+                if message.message.startswith(prefix_str):
+                    p_len = len(prefix_str)
+                    sp_list = message.message[p_len:].split(',')
                     storage.used = False
                     break
         pfilename = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_OUTPUT_PATH, 'progress' + task_id + '.txt')
@@ -631,8 +752,14 @@ def extract_parameters(request, filename):
     """
 
     return_object = {}
+    sess_str = get_guest_session(request)
+    if sess_str:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+    else:
+        ws_path = settings.WORKSPACE_PATH
     try:
-        paras_list = utils.extract_parameters(filename)
+        model_file = os.path.join(ws_path, settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
+        paras_list = utils.extract_parameters(model_file)
         return_object['parameters'] = paras_list
         jsondump = json.dumps(return_object)
         response = HttpResponse(jsondump, content_type='text/json')

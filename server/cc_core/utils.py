@@ -64,9 +64,10 @@ def read_metadata_from_csv_data(file_base_name, csv_data, required_md_elems=[]):
     return first_data_row, mdict
 
 
-def load_cell_data_csv_content(filename):
+# cell_data_filename input has to be the full path that can be directly opened by the server
+def load_cell_data_csv_content(cell_data_filename):
     data_str = ''
-    cell_data_filename = os.path.join(settings.WORKSPACE_PATH, settings.CELL_DATA_PATH, filename)
+    cell_data_filename = cell_data_filename.encode('utf-8')
     if os.path.isfile(cell_data_filename):
         with open(cell_data_filename, 'r') as fp:
             # do data transpose before serving csv data to client
@@ -100,21 +101,6 @@ def load_cell_data_csv_content(filename):
     return file_base_name, data_str
 
 
-def load_cell_data_csv(cell_data):
-    file_base_name, csv_data_str = load_cell_data_csv_content(cell_data['fileName'].encode("utf-8"))
-    data = {}
-    data['fileName'] = file_base_name
-    data['name'] = cell_data['name']
-    data['description'] = cell_data['description']
-    if 'timeUnit' in cell_data:
-        data['timeUnit'] = cell_data['timeUnit']
-    else:
-        data['timeUnit'] = 'second'
-    data['csv'] = csv_data_str
-
-    return data
-
-
 def extract_species_and_phases_from_model(filename):
     """
     :param filename: the SBML model input file name
@@ -124,7 +110,7 @@ def extract_species_and_phases_from_model(filename):
              phases is a dict that has phases ids as keys and corresponding subphases ids list
              as values
     """
-    model_file = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
+    model_file = filename.encode('utf-8')
     reader = SBMLReader()
     document = reader.readSBMLFromFile(model_file)
     if document.getNumErrors() > 0:
@@ -168,6 +154,7 @@ def extract_species_and_phases_from_model(filename):
     return id_to_names, name_to_ids, species, phases
 
 
+# filename input parameter has to be full path so that it can be opened and read from the server
 def extract_info_from_model(filename):
     """
     extract species, phases, speciesPhaseMatrix, and speciesMatrices info from the model file and
@@ -211,7 +198,7 @@ def extract_info_from_model(filename):
 
     return_object = {}
     try:
-        model_file = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
+        model_file = filename.encode('utf-8')
         reader = SBMLReader()
         document = reader.readSBMLFromFile(model_file)
         if document.getNumErrors() > 0:
@@ -381,8 +368,10 @@ def load_model(model):
     return modelData
 
 
-def get_profile_list():
-    profile_config_name = os.path.join(settings.WORKSPACE_PATH, settings.WORKSPACE_CONFIG_PATH, settings.WORKSPACE_CONFIG_FILENAME)
+def get_profile_list(profile_config_name=None):
+    if not profile_config_name:
+        profile_config_name = os.path.join(settings.WORKSPACE_PATH, settings.WORKSPACE_CONFIG_PATH,
+                                           settings.WORKSPACE_CONFIG_FILENAME)
     data = []
     with open(profile_config_name, 'r') as profile_config_file:
         config_data = json.load(profile_config_file)
@@ -396,7 +385,8 @@ def get_profile_list():
 
 
 def get_required_metadata_elements():
-    dataset_config_name = os.path.join(settings.WORKSPACE_CONFIG_PATH, settings.DATASET_CONFIG_NAME)
+    dataset_config_name = os.path.join(settings.WORKSPACE_PATH, settings.WORKSPACE_CONFIG_PATH,
+                                       settings.DATASET_CONFIG_NAME)
     data = []
     with open(dataset_config_name, 'r') as md_config_file:
         config_data = json.load(md_config_file)
@@ -531,7 +521,7 @@ def get_phase_start_stop(data):
 
 
 def extract_parameter_ids(filename):
-    model_file = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
+    model_file = filename.encode("utf-8")
     reader = SBMLReader()
     document = reader.readSBMLFromFile(model_file)
     if document.getNumErrors() > 0:
@@ -553,7 +543,7 @@ def extract_parameter_ids(filename):
 
 
 def extract_parameters(filename):
-    model_file = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, filename.encode("utf-8"))
+    model_file = filename
     reader = SBMLReader()
     document = reader.readSBMLFromFile(model_file)
     if document.getNumErrors() > 0:

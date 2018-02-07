@@ -24,7 +24,7 @@ def delete_guest_workspaces():
 
 
 @shared_task(bind=True)
-def run_model_task(self, filename, id_to_names, species, phases, traj='', species_val_dict={},
+def run_model_task(self, ws_path, filename, id_to_names, species, phases, traj='', species_val_dict={},
                    sp_infl_para_dict={}):
     if traj:
         num_traj = int(traj)
@@ -32,9 +32,9 @@ def run_model_task(self, filename, id_to_names, species, phases, traj='', specie
         num_traj = 1
 
     plot_output_fname = os.path.splitext(filename)[0] + "_SpeciesTimeSeries_" + traj + ".json"
-    plot_output_path_fname = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_OUTPUT_PATH, plot_output_fname)
+    plot_output_path_fname = os.path.join(ws_path, settings.MODEL_OUTPUT_PATH, plot_output_fname)
     smod = stochpy.SSA(IsInteractive=False)
-    m_path = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH)
+    m_path = os.path.join(ws_path, settings.MODEL_INPUT_PATH)
     smod.Model(filename, m_path)
     for sp_id, sp_val in species_val_dict.iteritems():
         logger.debug('changing ' + str(sp_id) + ' amount ' + str(sp_val))
@@ -51,7 +51,7 @@ def run_model_task(self, filename, id_to_names, species, phases, traj='', specie
         smod.DoStochSim(mode="time", trajectories=num_traj, end=sys.maxint, cellcycle=True, task_id=self.request.id)
     except Exception as ex:
         # delete progress file if exist
-        pfilename = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_OUTPUT_PATH, 'progress' + self.request.id + '.txt')
+        pfilename = os.path.join(ws_path, settings.MODEL_OUTPUT_PATH, 'progress' + self.request.id + '.txt')
         try:
             os.remove(pfilename)
         except OSError:
