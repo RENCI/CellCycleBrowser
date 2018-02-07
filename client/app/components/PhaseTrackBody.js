@@ -57,17 +57,9 @@ function PhaseTrackBody(props) {
       <div className="row" style={rowStyle}>
         <div className="col-xs-2" style={buttonColumnStyle}>
           <div style={{display: "flex", justifyContent: "space-between"}}>
-            <div style={{flex: 1}}>
-              <CollapseButtonContainer
-                targetId={collapseId}
-                track={props.track} />
-              </div>
-            <div style={{flex: "0 1 auto", width: traceHeight}}>
-              <TraceToggleButtons
-                traces={[props.track.average]}
-                height={averageHeight}
-                onClick={handleTraceButtonClick} />
-              </div>
+            <CollapseButtonContainer
+              targetId={collapseId}
+              track={props.track} />
           </div>
         </div>
         <div className="col-xs-10" style={visColumnStyle}>
@@ -84,17 +76,9 @@ function PhaseTrackBody(props) {
       <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
         <div className="col-xs-2" style={traceButtonColumnStyle}>
           <div style={{display: "flex"}}>
-            <div style={{flex: 1}}>
-              <TraceLabels
-                traces={props.track.traces}
-                height={traceHeight} />
-            </div>
-            <div style={{flex: "0 1 auto", width: traceHeight}}>
-              <TraceToggleButtons
-                traces={props.track.traces}
-                height={traceHeight}
-                onClick={handleTraceButtonClick} />
-            </div>
+            <TraceLabels
+              traces={props.track.traces}
+              height={traceHeight} />
           </div>
         </div>
         <div className="col-xs-10" style={collapseColumnStyle}>

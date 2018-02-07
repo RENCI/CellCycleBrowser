@@ -1,16 +1,21 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var ToggleButton = require("../components/ToggleButton");
+var SelectAllButton = require("../components/SelectAllButton");
+var UnselectAllButton = require("../components/UnselectAllButton");
+
+var divStyle = {
+  width: "100%",
+  height: "100%"
+};
 
 var ToggleButtonContainer = React.createClass ({
   propTypes: {
-    height: PropTypes.number,
     selected: PropTypes.bool,
     onClick: PropTypes.func
   },
   getDefaultProps: function () {
     return {
-      height: 20,
       selected: false,
       onClick: null
     }
@@ -44,10 +49,9 @@ var ToggleButtonContainer = React.createClass ({
   render: function () {
     return (
       <ToggleButton
-        height={this.props.height}
+        selected={this.props.selected}
         mouseOver={this.state.mouseOver}
         mouseDown={this.state.mouseDown}
-        selected={this.props.selected}
         onMouseOver={this.handleMouseOver}
         onMouseOut={this.handleMouseOut}
         onMouseDown={this.handleMouseDown}

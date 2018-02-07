@@ -31,7 +31,6 @@ function ToggleButton(props) {
 }
 
 ToggleButton.propTypes = {
-  height: PropTypes.number,
   selected: PropTypes.bool.isRequired,
   mouseOver: PropTypes.bool.isRequired,
   mouseDown: PropTypes.bool.isRequired,
