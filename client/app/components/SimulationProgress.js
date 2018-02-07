@@ -2,7 +2,8 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 
 var divStyle = {
-  margin: 0
+  margin: 0,
+  paddingBottom: 0
 };
 
 function SimulationProgress(props) {
