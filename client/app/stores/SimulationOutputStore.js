@@ -5,10 +5,12 @@ var Constants = require("../constants/Constants");
 
 var CHANGE_EVENT = "change";
 
+var progressStart = "G1_1,1";
+
 // Simulation output data
 var state = Constants.SIMULATION_OUTPUT_NONE;
 var error = null;
-var progress = null;
+var progress = progressStart;
 var simulationOutput = [];
 
 var SimulationOutputStore = assign({}, EventEmitter.prototype, {
@@ -47,6 +49,7 @@ SimulationOutputStore.dispatchToken = AppDispatcher.register(function (action) {
     case Constants.RUN_SIMULATION:
       state = Constants.SIMULATION_OUTPUT_INVALID;
       error = null;
+      progress = progressStart;
       SimulationOutputStore.emitChange();
       break;
 

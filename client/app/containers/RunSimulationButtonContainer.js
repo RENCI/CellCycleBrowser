@@ -20,7 +20,8 @@ var defaultLabel = "Run simulation";
 var RunSimulationButtonContainer = React.createClass ({
   propTypes: {
     subphases: PropTypes.arrayOf(PropTypes.object).isRequired,
-    numTrajectories: PropTypes.number.isRequired
+    numTrajectories: PropTypes.number.isRequired,
+    phaseColorScale: PropTypes.func.isRequired
   },
   getInitialState: function () {
     return {
@@ -85,7 +86,8 @@ var RunSimulationButtonContainer = React.createClass ({
           <SimulationProgress
             subphases={this.props.subphases}
             numTrajectories={this.props.numTrajectories}
-            progress={this.state.progress} />}
+            progress={this.state.progress}
+            phaseColorScale={this.props.phaseColorScale} />}
       </div>
     );
   }

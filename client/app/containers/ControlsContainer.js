@@ -111,7 +111,8 @@ var ControlsContainer = React.createClass ({
         <div style={runSimulationStyle}>
           <RunSimulationButtonContainer
             subphases={this.state.controls.subphases}
-            numTrajectories={numCells} />
+            numTrajectories={numCells}
+            phaseColorScale={this.state.phaseColorScale} />
         </div>
         <SimulationParameterSliders
           parameters={this.state.controls.parameters}
