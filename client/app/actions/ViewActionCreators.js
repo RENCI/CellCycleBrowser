@@ -69,6 +69,12 @@ module.exports = {
       selected: selected
     });
   },
+  highlightTrace: function (trace) {
+    AppDispatcher.dispatch({
+      actionType: Constants.HIGHLIGHT_TRACE,
+      trace: trace
+    });
+  },
   selectAllTraces: function (trace, selected, selectPhase) {
     if (typeof selectPhase === "undefined") selectPhase = false;
 

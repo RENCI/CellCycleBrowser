@@ -6,6 +6,7 @@ var AlignmentStore = require("../stores/AlignmentStore");
 var PhaseColorStore = require("../stores/PhaseColorStore");
 var d3 = require("d3");
 var TimeSeries = require("../visualizations/TimeSeries");
+var ViewActionCreators = require("../actions/ViewActionCreators");
 
 var refName = "ref";
 
@@ -33,14 +34,15 @@ var TimeSeriesContainer = React.createClass ({
   },
   getInitialState: function () {
     // Create visualization function
-    this.timeSeries = TimeSeries();
+    this.timeSeries = TimeSeries()
+        .on("highlightTrace", this.handleHighlightTrace);
 
     return {
       data: DataStore.getData(),
       alignment: AlignmentStore.getAlignment(),
       phaseColorScale: PhaseColorStore.getColorScale()
     };
-  },
+  },  
   componentDidMount: function() {
     DataStore.addChangeListener(this.onDataChange);
     AlignmentStore.addChangeListener(this.onAlignmentChange);
@@ -91,6 +93,9 @@ var TimeSeriesContainer = React.createClass ({
     d3.select(ReactDOM.findDOMNode(this))
         .datum(state.data)
         .call(this.timeSeries);
+  },
+  handleHighlightTrace: function (trace) {
+    ViewActionCreators.highlightTrace(trace);
   },
   render: function () {
     return <div ref={refName}></div>

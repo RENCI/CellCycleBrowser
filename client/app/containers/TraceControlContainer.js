@@ -47,7 +47,7 @@ var TraceControlContainer = React.createClass ({
   },
   render: function () {
     var trace = this.props.trace;
-    var isPhase = trace.phases !== null;
+    var isPhase = trace.hasOwnProperty("phases");
     var hasPhase = !isPhase && trace.track.phases.length > 0;
     var handleSAAP = hasPhase ? this.handleSelectAllAndPhase : null;
 

@@ -20,7 +20,10 @@ module.exports = function() {
       phaseColorScale = d3.scaleOrdinal(),
 
       // Start with empty selection
-      svg = d3.select();
+      svg = d3.select()
+
+      // Event dispatcher
+      dispatcher = d3.dispatch("highlightTrace");
 
   function timeSeries(selection) {
     selection.each(function(d) {
@@ -64,8 +67,7 @@ module.exports = function() {
       track.traces.concat([track.average]).forEach(function(trace) {
         if (trace.selected) {
           curves.push({
-            name: trace.name,
-            track: track,
+            trace: trace,
             curve: trace.values.map(function(d) {
               return [d.start, d.value];
             })
@@ -131,18 +133,18 @@ module.exports = function() {
         .range([innerHeight(), 0]);
 
     function curveColor(d) {
-      return d.track.color;
+      return d.trace.track.color;
     }
 
     drawTitle();
     drawAxes();
     drawCurves(svg.select(".curves"),
                curves.filter(function(d) {
-                 return d.name !== "Average";
+                 return d.trace.name !== "Average";
                }).reverse());
     drawCurves(svg.select(".averageCurves"),
                curves.filter(function(d) {
-                 return d.name === "Average";
+                 return d.trace.name === "Average";
                }).reverse());
     drawPhases();
     drawLegend();
@@ -153,6 +155,12 @@ module.exports = function() {
       placement: "auto left",
       animation: false,
       html: true
+    });
+
+    svg.selectAll(".curve").filter(function(d) {
+      return d.trace.highlight === "primary";
+    }).each(function() {
+      $(this).tooltip("show");
     });
 
     function drawTitle() {
@@ -247,6 +255,10 @@ module.exports = function() {
     }
 
     function drawCurves(selection, data) {
+      var doHighlight = data.reduce(function(p, c) {
+        return p || c.trace.highlight !== null;
+      }, false);
+
       // Bind curve data
       var curve = selection.selectAll(".curve")
           .data(data);
@@ -259,16 +271,40 @@ module.exports = function() {
             svg.selectAll(".curve")
                 .style("stroke-opacity", function(e) {
                   return e === d ? 1 :
-                         e.track.source === d.track.source &&
-                         e.name === d.name ? 0.5 :
+                         e.trace.track.source === d.trace.track.source &&
+                         e.trace.name === d.trace.name ? 0.5 :
                          0.05;
                 });
+
+            // Use setTimout to enable above highlighting code to complete
+            // before updating elsewhere
+            // XXX: Experimental
+            window.setTimeout(function() {
+              dispatcher.call("highlightTrace", this, d.trace);
+            });
           })
-          .on("mouseout", function(d) {
+          .on("mouseout", function() {
             svg.selectAll(".curve")
                 .style("stroke-opacity", null);
+
+            // Use setTimout to enable above highlighting code to complete
+            // before updating elsewhere
+            // XXX: Experimental
+            window.setTimeout(function() {
+              dispatcher.call("highlightTrace", this, null);
+            });
           })
         .merge(curve)
+          .style("stroke-opacity", function(d) {
+            if (doHighlight) {
+              return d.trace.highlight === "primary" ? 1 :
+                     d.trace.highlight === "secondary" ? 0.5 :
+                     0.05;
+            }
+            else {
+              return null;
+            }
+          })
           .each(drawCurve);
 
       // Exit
@@ -277,15 +313,15 @@ module.exports = function() {
       function drawCurve(d) {
         var g = d3.select(this)
             .attr("data-original-title",
-              d.track.source + ": " +
-              d.track.species +
-              (d.track.feature ? " - " + d.track.feature : "") + "<br>" +
-              d.name);
+              d.trace.track.source + ": " +
+              d.trace.track.species +
+              (d.trace.track.feature ? " - " + d.trace.track.feature : "") + "<br>" +
+              d.trace.name);
 
         // Set y scale to extent for this trace, or this track
-        yScale.domain(d.track.rescaleTraces ?
+        yScale.domain(d.trace.track.rescaleTraces ?
             d3.extent(d.curve.map(function(d) { return d[1]; })) :
-            d.track.dataExtent);
+            d.trace.track.dataExtent);
 
         var line = d3.line()
             .curve(d3.curveLinear)
@@ -293,7 +329,7 @@ module.exports = function() {
             .y(function(d) { return yScale(d[1]); });
 
         // Curve background
-        if (d.name === "Average") {
+        if (d.trace.name === "Average") {
           var curve = g.selectAll(".background")
               .data([d.curve]);
 
@@ -316,7 +352,7 @@ module.exports = function() {
           .merge(curve)
             .attr("d", line)
             .style("stroke", curveColor(d))
-            .style("stroke-width", d.name === "Average" ? 2 : 1);
+            .style("stroke-width", d.trace.name === "Average" ? 2 : 1);
       }
     }
 
@@ -338,7 +374,7 @@ module.exports = function() {
           .attr("x", x)
           .attr("width", width)
           .style("stroke", function(d) {
-            return phaseColorScale(d.name);
+            return phaseColorScale(d.trace.name);
           });
 
       phase.exit().remove();
@@ -412,9 +448,9 @@ module.exports = function() {
 
       curveUpdate.select("text")
           .text(function(d) {
-            return d.track.source + ": " +
-                   d.track.species +
-                   (d.track.feature ? " - " + d.track.feature : "");
+            return d.trace.track.source + ": " +
+                   d.trace.track.species +
+                   (d.trace.track.feature ? " - " + d.trace.track.feature : "");
           });
 
       curveUpdate.select("line")
@@ -441,6 +477,12 @@ module.exports = function() {
     if (!arguments.length) return phaseColorScale;
     phaseColorScale = _;
     return timeSeries;
+  };
+
+  // For registering event callbacks
+  timeSeries.on = function() {
+    var value = dispatcher.on.apply(dispatcher, arguments);
+    return value === dispatcher ? timeSeries : value;
   };
 
   return timeSeries;

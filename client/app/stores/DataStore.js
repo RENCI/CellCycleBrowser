@@ -237,6 +237,7 @@ function updateData() {
           traces.push({
             name: cell.name,
             selected: false,
+            highlight: null,
             values: values,
             timeSpan: computeTimeSpan(values)
           });
@@ -288,6 +289,7 @@ function updateData() {
           traces.push({
             name: cell.name,
             selected: false,
+            highlight: null,
             phases: phases,
             timeSpan: computeTimeSpan(phases)
           });
@@ -338,6 +340,7 @@ function updateData() {
             traces.push({
               name: "Trace " + traces.length + 1,
               selected: false,
+              highlight: null,
               values: values,
               timeSpan: computeTimeSpan(values)
             });
@@ -394,6 +397,7 @@ function updateData() {
           return {
             name: "Trace " + i,
             selected: false,
+            highlight: null,
             phases: phases,
             timeSpan: computeTimeSpan(phases)
           };
@@ -427,6 +431,7 @@ function updateData() {
       return {
         name: "Average",
         selected: false,
+        highlight: null,
         phases: average,
         timeSpan: computeTimeSpan(average)
       };
@@ -657,6 +662,7 @@ function updateData() {
       return {
         name: "Average",
         selected: true,
+        highlight: null,
         values: timeSteps,
         timeSpan: timeSpan
       };
@@ -758,6 +764,20 @@ function setTrackColors(tracks) {
 
 function selectTrace(trace, selected) {
   trace.selected = selected;
+}
+
+function highlightTrace(trace) {
+  var name = trace ? trace.name : null;
+  var source = trace ? trace.track.source : null;
+
+  data.tracks.forEach(function (track) {
+    track.traces.concat([track.average]).forEach(function (trace) {
+      trace.highlight = trace.track.source === source &&
+                        trace.name === name ? "secondary" : null;
+    });
+  });
+
+  if (trace) trace.highlight = "primary";
 }
 
 function selectAllTraces(trace, selected, selectPhase) {
@@ -884,6 +904,11 @@ DataStore.dispatchToken = AppDispatcher.register(function (action) {
 
     case Constants.SELECT_TRACE:
       selectTrace(action.trace, action.selected);
+      DataStore.emitChange();
+      break;
+
+    case Constants.HIGHLIGHT_TRACE:
+      highlightTrace(action.trace);
       DataStore.emitChange();
       break;
 
