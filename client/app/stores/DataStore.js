@@ -7,6 +7,7 @@ var SimulationOutputStore = require("./SimulationOutputStore");
 var AlignmentStore = require("./AlignmentStore");
 var DataUtils = require("../utils/DataUtils");
 var d3 = require("d3");
+var hclusterjs = require("hclusterjs");
 
 var CHANGE_EVENT = "change";
 
@@ -888,6 +889,8 @@ function clusterTraces(track) {
   });
 
   console.log(matrix);
+
+  var cluster = hclusterjs();
 }
 
 function showPhaseOverlay(track) {
