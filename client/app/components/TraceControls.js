@@ -1,6 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var TraceControlContainer = require("../containers/TraceControlContainer");
+var ViewActionCreators = require("../actions/ViewActionCreators");
 
 function TraceControls(props) {
 
@@ -28,15 +29,27 @@ function TraceControls(props) {
                        null
     };
 
+    function handleMouseOver() {
+      ViewActionCreators.highlightTrace(trace);
+    }
+
+    function handleMouseLeave() {
+      ViewActionCreators.highlightTrace(null);
+    }
+
     return (
-      <div key={i} style={divStyle}>
-        <div className="text-right small" style={labelStyle}>
-          {isAverage ? "" : trace.name}
-        </div>
-        <div style={controlStyle}>
-          <TraceControlContainer
-            trace={trace} />
-        </div>
+      <div
+        key={i}
+        style={divStyle}
+        onMouseOver={trace.selected ? handleMouseOver : null}
+        onMouseLeave={trace.selected ? handleMouseLeave : null}>
+          <div className="text-right small" style={labelStyle}>
+            {isAverage ? "" : trace.name}
+          </div>
+          <div style={controlStyle}>
+            <TraceControlContainer
+              trace={trace} />
+          </div>
       </div>
     );
   });
