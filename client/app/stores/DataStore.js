@@ -783,7 +783,7 @@ function highlightTrace(trace) {
 function selectAllTraces(trace, selected, selectPhase) {
   var name = trace.name;
   var source = trace.track.source;
-  var isPhase = trace.phases !== null;
+  var isPhase = trace.hasOwnProperty("phases");
 
   if (selectPhase && selected) {
     // Clear phases
