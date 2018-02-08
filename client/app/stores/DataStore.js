@@ -760,11 +760,22 @@ function selectTrace(trace, selected) {
   trace.selected = selected;
 }
 
-function selectAllTraces(trace, selected) {
+function selectAllTraces(trace, selected, selectPhase) {
   var name = trace.name;
   var source = trace.track.source;
 
-  data.tracks.filter(function (track) {
+  if (selectPhase && selected) {
+    // Clear phases
+    phaseTracks(data.tracks).forEach(function (track) {
+      track.traces.concat([track.average]).forEach(function (trace) {
+        trace.selected = false;
+      });
+    });
+  }
+
+  var tracks = selectPhase || !selected ? data.tracks : dataTracks(data.tracks);
+
+  tracks.filter(function (track) {
     return track.source === source;
   }).forEach(function (track) {
     if (name === "Average") {
@@ -876,7 +887,7 @@ DataStore.dispatchToken = AppDispatcher.register(function (action) {
       break;
 
     case Constants.SELECT_ALL_TRACES:
-      selectAllTraces(action.trace, action.selected);
+      selectAllTraces(action.trace, action.selected, action.selectPhase);
       DataStore.emitChange();
       break;
 

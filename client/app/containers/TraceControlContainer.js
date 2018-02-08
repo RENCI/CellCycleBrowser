@@ -42,7 +42,13 @@ var TraceControlContainer = React.createClass ({
   handleUnselectAll: function () {
     ViewActionCreators.selectAllTraces(this.props.trace, false);
   },
+  handleSelectAllAndPhase: function () {
+    ViewActionCreators.selectAllTraces(this.props.trace, true, true);
+  },
   render: function () {
+    var hasPhase = this.props.trace.track.phases.length > 0;
+    var handleSAAP = hasPhase ? this.handleSelectAllAndPhase : null;
+
     return (
       <div
         style={divStyle}
@@ -54,7 +60,8 @@ var TraceControlContainer = React.createClass ({
           {this.state.mouseOver ?
             <TraceControlPopup
               onSelectAll={this.handleSelectAll}
-              onUnselectAll={this.handleUnselectAll} />
+              onUnselectAll={this.handleUnselectAll}
+              onSelectAllAndPhase={hasPhase ? this.handleSelectAllAndPhase : null} />
             : null}
       </div>
     );
