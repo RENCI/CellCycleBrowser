@@ -4,6 +4,7 @@ import os
 import sys
 import logging
 import json
+import shutil
 
 import stochpy
 
@@ -19,6 +20,8 @@ logger = logging.getLogger('django')
 @periodic_task(ignore_result=True, run_every=crontab(minute=0, hour=0))
 def delete_guest_workspaces():
     for dirName, subdirList, fileList in os.walk(settings.GUEST_WORKSPACE_PATH):
+        for sdn in subdirList:
+            shutil.rmtree(os.path.join(dirName, sdn))
         for fname in fileList:
             os.remove(os.path.join(dirName, fname))
 
