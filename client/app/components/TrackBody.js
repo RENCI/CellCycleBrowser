@@ -74,11 +74,11 @@ function TrackBody(props) {
                 <CollapseButtonContainer
                   targetId={collapseId}
                   track={props.track} />
-                </div>
-                <TraceControls
-                  traces={[props.track.average]}
-                  width={traceHeight}
-                  height={averageHeight} />
+              </div>
+              <TraceControls
+                traces={[props.track.average]}
+                width={traceHeight}
+                height={averageHeight} />
             </div>
           </div>
           <div className="col-xs-10" style={visColumnStyle}>

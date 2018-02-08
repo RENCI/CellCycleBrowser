@@ -9,6 +9,7 @@ module.exports = keyMirror({
   SORT_TRACKS: null,
   INSERT_TRACK: null,
   SELECT_TRACE: null,
+  SELECT_ALL_TRACES: null,
   SELECT_PHASE_TRACE: null,
   SHOW_PHASES: null,
   RESCALE_TRACES: null,

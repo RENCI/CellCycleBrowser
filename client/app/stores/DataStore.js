@@ -61,6 +61,9 @@ function updateData() {
   // Set track ids
   setTrackIds(data.tracks);
 
+  // Link tracks to traces
+  linkTracks(data.tracks);
+
   // XXX: Switch to generating ids and using that for matching via a selected store?
   function trackId(track) {
     return DataUtils.removeNonWord(
@@ -665,6 +668,16 @@ function updateData() {
       track.id = trackId(track);
     });
   }
+
+  function linkTracks(tracks) {
+    tracks.forEach(function (track) {
+      track.average.track = track;
+
+      track.traces.forEach(function (trace) {
+        trace.track = track;
+      });
+    });
+  }
 }
 
 function sortTracks(sortMethod) {
@@ -745,6 +758,38 @@ function setTrackColors(tracks) {
 
 function selectTrace(trace, selected) {
   trace.selected = selected;
+}
+
+function selectAllTraces(trace, selected, selectPhase) {
+  var name = trace.name;
+  var source = trace.track.source;
+  var isPhase = trace.phases !== null;
+
+  if (selectPhase && selected) {
+    // Clear phases
+    phaseTracks(data.tracks).forEach(function (track) {
+      track.traces.concat([track.average]).forEach(function (trace) {
+        trace.selected = false;
+      });
+    });
+  }
+
+  var tracks = selectPhase || !selected || isPhase ? data.tracks : dataTracks(data.tracks);
+
+  tracks.filter(function (track) {
+    return track.source === source;
+  }).forEach(function (track) {
+    if (name === "Average") {
+      track.average.selected = selected;
+    }
+    else {
+      track.traces.forEach(function (trace) {
+        if (trace.name === name) {
+          trace.selected = selected;
+        }
+      });
+    }
+  });
 }
 
 function selectPhaseTrace(trace, selected) {
@@ -839,6 +884,11 @@ DataStore.dispatchToken = AppDispatcher.register(function (action) {
 
     case Constants.SELECT_TRACE:
       selectTrace(action.trace, action.selected);
+      DataStore.emitChange();
+      break;
+
+    case Constants.SELECT_ALL_TRACES:
+      selectAllTraces(action.trace, action.selected, action.selectPhase);
       DataStore.emitChange();
       break;
 

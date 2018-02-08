@@ -6,24 +6,24 @@ var style = {
   pointerEvents: "all"
 };
 
-function UnselectAllButton(props) {
+function SelectAllAndPhaseButton(props) {
   return (
     <button
-      className="btn btn-xs btn-danger"
+      className="btn btn-xs btn-success"
       style={style}
       data-toggle="tooltip"
       data-container="body"
       data-placement="auto top"
       data-animation="false"
-      title="Unselect all cell features"
+      title="Select all cell features and phase"
       onClick={props.onClick}>
-        <span className="glyphicon glyphicon-remove"></span>
+        <span className="glyphicon glyphicon-saved"></span>
     </button>
   );
 }
 
-UnselectAllButton.propTypes = {
+SelectAllAndPhaseButton.propTypes = {
   onClick: PropTypes.func.isRequired
 };
 
-module.exports = UnselectAllButton;
+module.exports = SelectAllAndPhaseButton;

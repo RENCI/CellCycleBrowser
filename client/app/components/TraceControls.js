@@ -15,18 +15,6 @@ function TraceControls(props) {
   var isAverage = props.traces[0].name === "Average";
 
   var buttons = props.traces.map(function (trace, i) {
-    function handleToggle() {
-      ViewActionCreators.selectTrace(trace, !trace.selected);
-    }
-
-    function handleSelectAll() {
-      console.log("Select all");
-    }
-
-    function handleUnselectAll() {
-      console.log("Unselect all");
-    }
-
     var labelStyle = {
       marginRight: 5,
       verticalAlign: "middle",

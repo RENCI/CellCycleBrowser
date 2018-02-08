@@ -69,6 +69,16 @@ module.exports = {
       selected: selected
     });
   },
+  selectAllTraces: function (trace, selected, selectPhase) {
+    if (typeof selectPhase === "undefined") selectPhase = false;
+
+    AppDispatcher.dispatch({
+      actionType: Constants.SELECT_ALL_TRACES,
+      trace: trace,
+      selected: selected,
+      selectPhase: selectPhase
+    });
+  },
   selectPhaseTrace: function (trace, selected) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_PHASE_TRACE,
