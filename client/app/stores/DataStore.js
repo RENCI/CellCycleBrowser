@@ -763,6 +763,7 @@ function selectTrace(trace, selected) {
 function selectAllTraces(trace, selected, selectPhase) {
   var name = trace.name;
   var source = trace.track.source;
+  var isPhase = trace.phases !== null;
 
   if (selectPhase && selected) {
     // Clear phases
@@ -773,7 +774,7 @@ function selectAllTraces(trace, selected, selectPhase) {
     });
   }
 
-  var tracks = selectPhase || !selected ? data.tracks : dataTracks(data.tracks);
+  var tracks = selectPhase || !selected || isPhase ? data.tracks : dataTracks(data.tracks);
 
   tracks.filter(function (track) {
     return track.source === source;

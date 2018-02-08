@@ -1,10 +1,8 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
-var TraceLabels = require("./TraceLabels");
-var TraceToggleButtons = require("./TraceToggleButtons");
+var TraceControls = require("./TraceControls");
 var PhaseMapContainer = require("../containers/PhaseMapContainer");
-var ViewActionCreators = require("../actions/ViewActionCreators");
 
 var rowStyle = {
   margin: 0,
@@ -48,18 +46,20 @@ function PhaseTrackBody(props) {
   var averageHeight = 32;
   var traceHeight = 20;
 
-  function handleTraceButtonClick(trace) {
-    ViewActionCreators.selectPhaseTrace(trace, !trace.selected);
-  }
-
   return (
     <div>
       <div className="row" style={rowStyle}>
         <div className="col-xs-2" style={buttonColumnStyle}>
           <div style={{display: "flex", justifyContent: "space-between"}}>
-            <CollapseButtonContainer
-              targetId={collapseId}
-              track={props.track} />
+            <div style={{flex: 1}}>
+              <CollapseButtonContainer
+                targetId={collapseId}
+                track={props.track} />
+            </div>
+            <TraceControls
+              traces={[props.track.average]}
+              width={traceHeight}
+              height={averageHeight} />
           </div>
         </div>
         <div className="col-xs-10" style={visColumnStyle}>
@@ -75,11 +75,10 @@ function PhaseTrackBody(props) {
       </div>
       <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
         <div className="col-xs-2" style={traceButtonColumnStyle}>
-          <div style={{display: "flex"}}>
-            <TraceLabels
-              traces={props.track.traces}
-              height={traceHeight} />
-          </div>
+          <TraceControls
+            traces={props.track.traces}
+            width={traceHeight}
+            height={traceHeight} />
         </div>
         <div className="col-xs-10" style={collapseColumnStyle}>
           <PhaseMapContainer
