@@ -70,15 +70,15 @@ function TrackBody(props) {
         <div className="row" style={rowStyle}>
           <div className="col-xs-2" style={buttonColumnStyle}>
             <div style={{display: "flex", justifyContent: "space-between"}}>
+              <CollapseButtonContainer
+                targetId={collapseId}
+                track={props.track} />
               <div style={{flex: 1}}>
-                <CollapseButtonContainer
-                  targetId={collapseId}
-                  track={props.track} />
+                <TraceControls
+                  traces={[props.track.average]}
+                  width={traceHeight}
+                  height={averageHeight} />
               </div>
-              <TraceControls
-                traces={[props.track.average]}
-                width={traceHeight}
-                height={averageHeight} />
             </div>
           </div>
           <div className="col-xs-10" style={visColumnStyle}>

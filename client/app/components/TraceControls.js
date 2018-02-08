@@ -3,10 +3,6 @@ var PropTypes = React.PropTypes;
 var TraceControlContainer = require("../containers/TraceControlContainer");
 
 function TraceControls(props) {
-  var divStyle = {
-    display: "flex",
-    height: props.height
-  };
 
   var controlStyle = {
     width: props.width
@@ -23,12 +19,20 @@ function TraceControls(props) {
       flex: "1"
     };
 
+    var divStyle = {
+      display: "flex",
+      height: props.height,
+      borderRadius: "5px",
+      backgroundColor: trace.highlight === "primary" ? "#ccc" :
+                       trace.highlight === "secondary" ? "#f0f0f0" :
+                       null
+    };
+
     return (
       <div key={i} style={divStyle}>
-        {isAverage ? null :
-          <div className="text-right small" style={labelStyle}>
-            {trace.name}
-          </div>}
+        <div className="text-right small" style={labelStyle}>
+          {isAverage ? "" : trace.name}
+        </div>
         <div style={controlStyle}>
           <TraceControlContainer
             trace={trace} />

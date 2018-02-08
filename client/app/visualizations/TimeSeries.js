@@ -136,6 +136,10 @@ module.exports = function() {
       return d.trace.track.color;
     }
 
+    var doHighlight = curves.reduce(function(p, c) {
+      return p || c.trace.highlight !== null;
+    }, false);
+
     drawTitle();
     drawAxes();
     drawCurves(svg.select(".curves"),
@@ -255,10 +259,6 @@ module.exports = function() {
     }
 
     function drawCurves(selection, data) {
-      var doHighlight = data.reduce(function(p, c) {
-        return p || c.trace.highlight !== null;
-      }, false);
-
       // Bind curve data
       var curve = selection.selectAll(".curve")
           .data(data);
@@ -374,7 +374,7 @@ module.exports = function() {
           .attr("x", x)
           .attr("width", width)
           .style("stroke", function(d) {
-            return phaseColorScale(d.trace.name);
+            return phaseColorScale(d.name);
           });
 
       phase.exit().remove();
