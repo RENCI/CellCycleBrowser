@@ -2,6 +2,7 @@ var React = require("react");
 var PropTypes = React.PropTypes;
 
 var style = {
+  height: "100%",
   pointerEvents: "all"
 };
 
