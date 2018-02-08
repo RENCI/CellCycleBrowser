@@ -8,10 +8,11 @@ function TraceControlPopup(props) {
     position: "absolute",
     margin: "auto",
     zIndex: 1,
-    top: 0,
+    top: -1,
     bottom: 0,
     left: "100%",
-    width: 100
+    width: 50,
+    pointerEvents: "none"
   };
 
   return (

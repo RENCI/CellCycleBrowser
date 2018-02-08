@@ -1,11 +1,15 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 
+var style = {
+  pointerEvents: "all"
+};
+
 function UnselectAllButton(props) {
   return (
     <button
-      type="button"
       className="btn btn-xs btn-danger"
+      style={style}
       data-toggle="tooltip"
       data-container="body"
       data-placement="auto top"
