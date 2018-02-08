@@ -1,5 +1,6 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
+var ClusterTracesButton = require("./ClusterTracesButton");
 var ShowPhaseOverlayButton = require("./ShowPhaseOverlayButton");
 var RescaleTracesButton = require("./RescaleTracesButton");
 var TrackColorIcon = require("./TrackColorIcon");
@@ -20,7 +21,7 @@ var featureStyle = {
   fontWeight: "normal"
 };
 
-var showPhasOverlayStyle ={
+var leftButtonStyle ={
   flex: 1
 };
 
@@ -50,9 +51,10 @@ function TrackHeader(props) {
             {props.track.species}
             {featureSpan}
           </div>
-          <div className="text-right" style={showPhasOverlayStyle}>
-            <ShowPhaseOverlayButton {...props} />
+          <div className="text-right" style={leftButtonStyle}>
+            <ClusterTracesButton {...props} />
           </div>
+          <ShowPhaseOverlayButton {...props} />
           <RescaleTracesButton {...props} />
           <div style={sourceStyle}>
             {props.track.source}

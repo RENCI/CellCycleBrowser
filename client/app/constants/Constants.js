@@ -12,6 +12,7 @@ module.exports = keyMirror({
   HIGHLIGHT_TRACE: null,
   SELECT_ALL_TRACES: null,
   SELECT_PHASE_TRACE: null,
+  CLUSTER_TRACES: null,
   SHOW_PHASES: null,
   RESCALE_TRACES: null,
   SELECT_TRAJECTORY: null,

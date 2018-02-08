@@ -66,51 +66,51 @@ function TrackBody(props) {
   }
 
   return (
-      <div>
-        <div className="row" style={rowStyle}>
-          <div className="col-xs-2" style={buttonColumnStyle}>
-            <div style={{display: "flex", justifyContent: "space-between"}}>
-              <CollapseButtonContainer
-                targetId={collapseId}
-                track={props.track} />
-              <div style={{flex: 1}}>
-                <TraceControls
-                  traces={[props.track.average]}
-                  width={traceHeight}
-                  height={averageHeight} />
-              </div>
+    <div>
+      <div className="row" style={rowStyle}>
+        <div className="col-xs-2" style={buttonColumnStyle}>
+          <div style={{display: "flex", justifyContent: "space-between"}}>
+            <CollapseButtonContainer
+              targetId={collapseId}
+              track={props.track} />
+            <div style={{flex: 1}}>
+              <TraceControls
+                traces={[props.track.average]}
+                width={traceHeight}
+                height={averageHeight} />
             </div>
           </div>
-          <div className="col-xs-10" style={visColumnStyle}>
-            <HeatMapContainer
-              data={[props.track.average.values]}
-              dataExtent={averageExtent}
-              phases={[phaseAverage]}
-              timeExtent={props.timeExtent}
-              phaseColorScale={props.phaseColorScale}
-              phaseOverlayOpacity={props.phaseOverlayOpacity}
-              height={averageHeight} />
-          </div>
         </div>
-        <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
-          <div className="col-xs-2" style={traceButtonColumnStyle}>
-            <TraceControls
-              traces={props.track.traces}
-              width={traceHeight}
-              height={traceHeight} />
-          </div>
-          <div className="col-xs-10" style={collapseColumnStyle}>
-            <HeatMapContainer
-              data={props.track.traces.map(function (d) { return d.values; })}
-              dataExtent={dataExtent}
-              phases={phases}
-              timeExtent={props.timeExtent}
-              phaseColorScale={props.phaseColorScale}
-              phaseOverlayOpacity={props.phaseOverlayOpacity}
-              height={props.track.traces.length * traceHeight} />
-          </div>
+        <div className="col-xs-10" style={visColumnStyle}>
+          <HeatMapContainer
+            data={[props.track.average.values]}
+            dataExtent={averageExtent}
+            phases={[phaseAverage]}
+            timeExtent={props.timeExtent}
+            phaseColorScale={props.phaseColorScale}
+            phaseOverlayOpacity={props.phaseOverlayOpacity}
+            height={averageHeight} />
         </div>
       </div>
+      <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
+        <div className="col-xs-2" style={traceButtonColumnStyle}>
+          <TraceControls
+            traces={props.track.traces}
+            width={traceHeight}
+            height={traceHeight} />
+        </div>
+        <div className="col-xs-10" style={collapseColumnStyle}>
+          <HeatMapContainer
+            data={props.track.traces.map(function (d) { return d.values; })}
+            dataExtent={dataExtent}
+            phases={phases}
+            timeExtent={props.timeExtent}
+            phaseColorScale={props.phaseColorScale}
+            phaseOverlayOpacity={props.phaseOverlayOpacity}
+            height={props.track.traces.length * traceHeight} />
+        </div>
+      </div>
+    </div>
   );
 }
 

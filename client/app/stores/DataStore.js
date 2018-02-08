@@ -822,6 +822,74 @@ function selectPhaseTrace(trace, selected) {
   trace.selected = selected;
 }
 
+function clusterTraces(track) {
+  // Initialize distance matrix
+  var n = track.traces.length;
+  var matrix = [];
+  var v = [];
+  for (var i = 0; i < n; i++) v.push(0);
+  for (var i = 0; i < n; i++) matrix.push(v.slice());
+
+  // Time steps for each trace
+  var timeSteps = track.traces.map(function (trace) {
+    var t = trace.values.map(function (value) {
+      return value.start;
+    });
+
+    t.push(trace.values[trace.values.length -1].stop);
+
+    return t;
+  });
+
+  console.log(track);
+
+  // Compute distances
+  track.traces.forEach(function (trace1, i, a) {
+    var v1 = trace1.values;
+
+    for (var j = i + 1; j < n; j++) {
+      var trace2 = a[j];
+      var v2 = trace2.values;
+
+      // Combine time steps
+      var start = Math.max(timeSteps[i][0], timeSteps[j][0]);
+      var stop = Math.min(timeSteps[i][timeSteps[i].length - 1], timeSteps[j][timeSteps[j].length - 1]);
+
+      var t1 = timeSteps[i].filter(function (timeStep) {
+        return timeStep >= start && timeStep <= stop;
+      });
+
+      var t2 = timeSteps[j].filter(function (timeStep) {
+        return timeStep >= start && timeStep <= stop;
+      });
+
+      var t = t1.concat(t2).sort().filter(function (d, i, a) {
+        return i === 0 || d !== a[i - 1];
+      });
+
+      // Loop over combined time time steps
+      var diff = 0;
+      var k1 = 0;
+      var k2 = 0;
+
+      for (kt = 0; kt < t.length; kt++) {
+        while (k1 < v1.length && v1[k1].stop <= t[kt]) k1++;
+        while (k2 < v2.length && v2[k2].stop <= t[kt]) k2++;
+
+        if (k1 === v1.length) break;
+        if (k2 === v2.length) break;
+
+        diff += Math.abs(v1[k1].value - v2[k2].value);
+      }
+
+      matrix[i][j] = diff;
+      matrix[j][i] = diff;
+    }
+  });
+
+  console.log(matrix);
+}
+
 function showPhaseOverlay(track) {
   track.showPhaseOverlay = !track.showPhaseOverlay;
 }
@@ -919,6 +987,11 @@ DataStore.dispatchToken = AppDispatcher.register(function (action) {
 
     case Constants.SELECT_PHASE_TRACE:
       selectPhaseTrace(action.trace, action.selected);
+      DataStore.emitChange();
+      break;
+
+    case Constants.CLUSTER_TRACES:
+      clusterTraces(action.track);
       DataStore.emitChange();
       break;
 

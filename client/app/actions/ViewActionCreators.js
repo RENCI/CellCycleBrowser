@@ -92,6 +92,12 @@ module.exports = {
       selected: selected
     });
   },
+  clusterTraces: function (track) {
+    AppDispatcher.dispatch({
+      actionType: Constants.CLUSTER_TRACES,
+      track: track
+    });
+  },
   showPhaseOverlay: function (track) {
     AppDispatcher.dispatch({
       actionType: Constants.SHOW_PHASE_OVERLAY,
