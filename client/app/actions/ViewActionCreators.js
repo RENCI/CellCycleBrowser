@@ -69,6 +69,13 @@ module.exports = {
       selected: selected
     });
   },
+  selectAllTraces: function (trace, selected) {
+    AppDispatcher.dispatch({
+      actionType: Constants.SELECT_ALL_TRACES,
+      trace: trace,
+      selected: selected
+    });
+  },
   selectPhaseTrace: function (trace, selected) {
     AppDispatcher.dispatch({
       actionType: Constants.SELECT_PHASE_TRACE,

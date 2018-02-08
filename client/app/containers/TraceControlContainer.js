@@ -37,10 +37,10 @@ var TraceControlContainer = React.createClass ({
     ViewActionCreators.selectTrace(this.props.trace, !this.props.trace.selected);
   },
   handleSelectAll: function () {
-    console.log("Select all!");
+    ViewActionCreators.selectAllTraces(this.props.trace, true);
   },
   handleUnselectAll: function () {
-    console.log("Unselect all!");
+    ViewActionCreators.selectAllTraces(this.props.trace, false);
   },
   render: function () {
     return (
