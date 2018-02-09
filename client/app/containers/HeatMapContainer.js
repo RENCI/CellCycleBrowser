@@ -1,8 +1,8 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = React.PropTypes;
-var d3 = require("d3");
 var HeatMap = require("../visualizations/HeatMap");
+var d3 = require("d3");
 
 var HeatMapContainer = React.createClass({
   propTypes: {
@@ -15,7 +15,7 @@ var HeatMapContainer = React.createClass({
     height: PropTypes.number.isRequired
   },
   getInitialState: function() {
-    // Create visualiztion function
+    // Create visualization function
     this.heatMap = HeatMap();
 
     return null;

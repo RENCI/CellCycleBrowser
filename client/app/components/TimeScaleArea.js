@@ -50,12 +50,12 @@ function TimeScale(props) {
       </div>
       <div className="text-left" style={outerStyle}>
         <div className="row" style={rowStyle}>
-          <div className="col-xs-2" style={columnStyle}>
+          <div className="col-xs-3" style={columnStyle}>
             <div style={labelStyle}>
               Time {unit}
             </div>
           </div>
-          <div className="col-xs-10 text-left" style={timeLineStyle}>
+          <div className="col-xs-9 text-left" style={timeLineStyle}>
             <TimeScaleContainer
               timeExtent={props.timeExtent}
               alignment={props.alignment} />

@@ -1,6 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
+var DendrogramContainer = require("../containers/DendrogramContainer");
 var TraceControls = require("./TraceControls");
 var HeatMapContainer = require("../containers/HeatMapContainer");
 
@@ -15,7 +16,11 @@ var buttonColumnStyle = {
   padding: 0
 };
 
-var traceButtonColumnStyle = {
+var dendrogramColumnStyle = {
+  padding: 0
+};
+
+var traceControlColumnStyle = {
   padding: 0,
   marginTop: -1
 };
@@ -65,10 +70,12 @@ function TrackBody(props) {
     return [Math.min.apply(null, values), Math.max.apply(null, values)];
   }
 
+  var collapseHeight = props.track.traces.length * traceHeight;
+
   return (
     <div>
       <div className="row" style={rowStyle}>
-        <div className="col-xs-2" style={buttonColumnStyle}>
+        <div className="col-xs-3" style={buttonColumnStyle}>
           <div style={{display: "flex", justifyContent: "space-between"}}>
             <CollapseButtonContainer
               targetId={collapseId}
@@ -81,7 +88,7 @@ function TrackBody(props) {
             </div>
           </div>
         </div>
-        <div className="col-xs-10" style={visColumnStyle}>
+        <div className="col-xs-9" style={visColumnStyle}>
           <HeatMapContainer
             data={[props.track.average.values]}
             dataExtent={averageExtent}
@@ -93,13 +100,20 @@ function TrackBody(props) {
         </div>
       </div>
       <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
-        <div className="col-xs-2" style={traceButtonColumnStyle}>
+        <div className="col-xs-2" style={dendrogramColumnStyle}>
+          {props.track.cluster ?
+            <DendrogramContainer
+              cluster={props.track.cluster}
+              height={collapseHeight} />
+          : null}
+        </div>
+        <div className="col-xs-1" style={traceControlColumnStyle}>
           <TraceControls
             traces={props.track.traces}
             width={traceHeight}
             height={traceHeight} />
         </div>
-        <div className="col-xs-10" style={collapseColumnStyle}>
+        <div className="col-xs-9" style={collapseColumnStyle}>
           <HeatMapContainer
             data={props.track.traces.map(function (d) { return d.values; })}
             dataExtent={dataExtent}
@@ -107,7 +121,7 @@ function TrackBody(props) {
             timeExtent={props.timeExtent}
             phaseColorScale={props.phaseColorScale}
             phaseOverlayOpacity={props.phaseOverlayOpacity}
-            height={props.track.traces.length * traceHeight} />
+            height={collapseHeight} />
         </div>
       </div>
     </div>

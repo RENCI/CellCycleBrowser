@@ -4,9 +4,9 @@ var TraceControlContainer = require("../containers/TraceControlContainer");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
 function TraceControls(props) {
-
   var controlStyle = {
-    width: props.width
+    width: props.width,
+    minWidth: props.width
   };
 
   var isAverage = props.traces[0].name === "Average";
@@ -17,7 +17,7 @@ function TraceControls(props) {
       verticalAlign: "middle",
       lineHeight: props.height + "px",
       color: trace.selected ? "#000" : "#ccc",
-      flex: "1"
+      overflow: "hidden"
     };
 
     var divStyle = {

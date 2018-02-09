@@ -49,7 +49,7 @@ function PhaseTrackBody(props) {
   return (
     <div>
       <div className="row" style={rowStyle}>
-        <div className="col-xs-2" style={buttonColumnStyle}>
+        <div className="col-xs-3" style={buttonColumnStyle}>
           <div style={{display: "flex", justifyContent: "space-between"}}>
             <CollapseButtonContainer
               targetId={collapseId}
@@ -62,7 +62,7 @@ function PhaseTrackBody(props) {
             </div>
           </div>
         </div>
-        <div className="col-xs-10" style={visColumnStyle}>
+        <div className="col-xs-9" style={visColumnStyle}>
           <PhaseMapContainer
             data={[props.track.average.phases]}
             timeExtent={props.timeExtent}
@@ -74,13 +74,13 @@ function PhaseTrackBody(props) {
         </div>
       </div>
       <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
-        <div className="col-xs-2" style={traceButtonColumnStyle}>
+        <div className="col-xs-3" style={traceButtonColumnStyle}>
           <TraceControls
             traces={props.track.traces}
             width={traceHeight}
             height={traceHeight} />
         </div>
-        <div className="col-xs-10" style={collapseColumnStyle}>
+        <div className="col-xs-9" style={collapseColumnStyle}>
           <PhaseMapContainer
             data={props.track.traces.map(function (d) { return d.phases; })}
             timeExtent={props.timeExtent}

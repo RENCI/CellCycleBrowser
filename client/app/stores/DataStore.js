@@ -251,7 +251,8 @@ function updateData() {
             feature: feature.name,
             source: dataset.name,
             traces: traces,
-            dataExtent: computeDataExtent(traces)
+            dataExtent: computeDataExtent(traces),
+            cluster: null
           });
         }
       }
@@ -847,8 +848,6 @@ function clusterTraces(track) {
     return t;
   });
 
-  console.log(track);
-
   // Compute distances
   track.traces.forEach(function (trace1, i, a) {
     var v1 = trace1.values;
@@ -893,23 +892,23 @@ function clusterTraces(track) {
     }
   });
 
-  console.log(matrix);
-
+  // Perform clustering
   var cluster = hclusterjs()
       .distance("euclidean")
       .linkage("avg")
       .data(matrix);
 
-  console.log(cluster.tree());
-  console.log(cluster.orderedNodes());
-
+  // Copy cluster index to trace
   cluster.orderedNodes().forEach(function (node, i) {
     track.traces[node.indexes[0]].clusterIndex = i;
   });
 
+  // Sort by cluster index
   track.traces.sort(function(a, b) {
     return d3.ascending(a.clusterIndex, b.clusterIndex);
   });
+
+  track.cluster = cluster;
 }
 
 function showPhaseOverlay(track) {
