@@ -17,7 +17,8 @@ function TraceControls(props) {
       verticalAlign: "middle",
       lineHeight: props.height + "px",
       color: trace.selected ? "#000" : "#ccc",
-      overflow: "hidden"
+      overflow: "hidden",
+      flex: 1
     };
 
     var divStyle = {
