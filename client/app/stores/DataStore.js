@@ -825,11 +825,16 @@ function selectPhaseTrace(trace, selected) {
 
 function clusterTraces(track) {
   // Initialize distance matrix
+  // hclusterjs likes an array of objects with a "position" array
   var n = track.traces.length;
   var matrix = [];
   var v = [];
   for (var i = 0; i < n; i++) v.push(0);
-  for (var i = 0; i < n; i++) matrix.push(v.slice());
+  for (var i = 0; i < n; i++) {
+    matrix.push({
+      position: v.slice()
+    });
+  }
 
   // Time steps for each trace
   var timeSteps = track.traces.map(function (trace) {
@@ -883,14 +888,28 @@ function clusterTraces(track) {
         diff += Math.abs(v1[k1].value - v2[k2].value);
       }
 
-      matrix[i][j] = diff;
-      matrix[j][i] = diff;
+      matrix[i].position[j] = diff;
+      matrix[j].position[i] = diff;
     }
   });
 
   console.log(matrix);
 
-  var cluster = hclusterjs();
+  var cluster = hclusterjs()
+      .distance("euclidean")
+      .linkage("avg")
+      .data(matrix);
+
+  console.log(cluster.tree());
+  console.log(cluster.orderedNodes());
+
+  cluster.orderedNodes().forEach(function (node, i) {
+    track.traces[node.indexes[0]].clusterIndex = i;
+  });
+
+  track.traces.sort(function(a, b) {
+    return d3.ascending(a.clusterIndex, b.clusterIndex);
+  });
 }
 
 function showPhaseOverlay(track) {
