@@ -876,6 +876,7 @@ function clusterTraces(track) {
       var diff = 0;
       var k1 = 0;
       var k2 = 0;
+      var m = 0;
 
       for (kt = 0; kt < t.length; kt++) {
         while (k1 < v1.length && v1[k1].stop <= t[kt]) k1++;
@@ -885,7 +886,11 @@ function clusterTraces(track) {
         if (k2 === v2.length) break;
 
         diff += Math.abs(v1[k1].value - v2[k2].value);
+        m++;
       }
+
+      // Normalize
+      diff /= m;
 
       matrix[i].position[j] = diff;
       matrix[j].position[i] = diff;
