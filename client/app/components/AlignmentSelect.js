@@ -17,7 +17,7 @@ function AlignmentSelect(props) {
 
   return (
     <div className="row">
-      <div className="col-xs-10 col-xs-offset-2">
+      <div className="col-xs-9 col-xs-offset-3">
         <div className="btn-group btn-group-justified" data-toggle="buttons">
           <label
             className={classes("left")}
