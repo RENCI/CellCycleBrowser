@@ -848,13 +848,30 @@ function clusterTraces(track) {
     return t;
   });
 
+  console.log(track);
+
+  function getValues(trace) {
+    var scale = track.rescaleTraces ?
+                d3.scaleLinear()
+                    .domain(d3.extent(trace.values, function (v) { return v.value; }))
+                    .range([0, 1]) : null;
+
+    return trace.values.map(function(d) {
+      return {
+        start: d.start,
+        stop: d.stop,
+        value: scale ? scale(d.value) : d.value
+      };
+    });
+  }
+
   // Compute distances
   track.traces.forEach(function (trace1, i, a) {
-    var v1 = trace1.values;
+    var v1 = getValues(trace1);
 
     for (var j = i + 1; j < n; j++) {
       var trace2 = a[j];
-      var v2 = trace2.values;
+      var v2 = getValues(trace2);
 
       // Combine time steps
       var start = Math.max(timeSteps[i][0], timeSteps[j][0]);
