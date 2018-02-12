@@ -2,8 +2,8 @@ var d3 = require("d3");
 
 module.exports = function() {
       // Size
-  var nodeRadius = 0,
-      margin = { top: 0, left: nodeRadius, bottom: 0, right: nodeRadius },
+  var nodeRadius = 1.5,
+      margin = { top: 0, left: nodeRadius + 5, bottom: 0, right: nodeRadius },
       width = 200,
       height = 200,
       innerWidth = function() { return width - margin.left - margin.right; },
@@ -78,33 +78,30 @@ module.exports = function() {
     }
 
     function drawLinks() {
-/*
-      var link = svg.select(".links").selectAll(".link")
-          .data(hierarchy.descendants().slice(1));
+      var c = 20;
 
-      var linkEnter = link.enter().append("line")
-          .attr("class", "link")
-          .style("fill", "none")
-          .style("stroke", "black");
+      var curveElbow = function(d) {
+        var r = d3.min([c, Math.abs(d.parent.x - d.x), Math.abs(d.parent.y - d.y)]),
+            up = d.parent.x > d.x;
 
-      linkEnter.merge(link)
-          .attr("x1", function(d) { return d.y; })
-          .attr("y1", function(d) { return d.x; })
-          .attr("x2", function(d) { return d.parent.y; })
-          .attr("y2", function(d) { return d.parent.x; });
-
-      link.exit().remove();
-*/
-      var elbow = function (d) {
         return "M" + d.y + "," + d.x
-          + "V" + d.parent.x + "H" + d.parent.y;
-      };
+          + "H" + (d.parent.y + r)
+          + "q" + -r + "," + 0 + "," + -r + "," + (up ? r : -r)
+          + "V" + d.parent.x;
+/*
+        var diffx = d.parent.y - d.y,
+            diffy = d.parent.x - d.x,
+            v1 = diffx * c,
+            v1 = Math.abs(diffy) > Math.abs(v1)
+            v2 = diff - v1,
+            v3 = d.parent.x > d.x ? -v2 : v2;
 
-      var elbow2 = d3.linkHorizontal()
-          .source(function(d) { return d; })
-          .target(function(d) { return d.parent; })
-          .x(function(d) { return d.y; })
-          .y(function(d) { return d.x; });
+        return "M" + d.y + "," + d.x
+          + "h" + v1
+          + "q" + v2 + "," + 0 + "," + v2 + "," + v3
+          + "V" + d.parent.x;
+*/
+      };
 
       var link = svg.select(".links").selectAll(".link")
           .data(hierarchy.descendants().slice(1));
@@ -115,7 +112,7 @@ module.exports = function() {
           .style("stroke", color);
 
       linkEnter.merge(link)
-          .attr("d", elbow2);
+          .attr("d", curveElbow);
 
       link.exit().remove();
     }
