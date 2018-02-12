@@ -111,14 +111,16 @@ var BrowserContainer = React.createClass({
               activeTrajectory={this.state.activeTrajectory}
               activePhase={this.state.activePhase}
               colorScale={this.state.phaseColorScale}
-              alignment={this.state.alignment} />
+              alignment={this.state.alignment}
+              shiftRight={this.state.data.hasDendrogram} />
             :
             <Track
               track={track}
               timeExtent={this.state.data.timeExtent}
               phaseColorScale={this.state.phaseColorScale}
               phaseOverlayOpacity={this.state.phaseOverlayOpacity}
-              showPhaseOverlay={this.state.showPhaseOverlay} />}
+              showPhaseOverlay={this.state.showPhaseOverlay}
+              shiftRight={this.state.data.hasDendrogram} />}
         </div>
       );
     }.bind(this));
@@ -131,7 +133,8 @@ var BrowserContainer = React.createClass({
         <BrowserControls />
         <TimeScaleArea
           timeExtent={this.state.data.timeExtent}
-          alignment={this.state.alignment} />
+          alignment={this.state.alignment}
+          shiftRight={this.state.data.hasDendrogram} />
         <TrackSort />
         {trackComponents}
         <TrackDividerContainer

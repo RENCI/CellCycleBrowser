@@ -72,10 +72,17 @@ function TrackBody(props) {
 
   var collapseHeight = props.track.traces.length * traceHeight;
 
+  var averageCol1 = props.shiftRight ? "col-xs-3" : "col-xs-2";
+  var averageCol2 = props.shiftRight ? "col-xs-9" : "col-xs-10";
+
+  var col1 = props.shiftRight ? "col-xs-2" : "col-xs-0";
+  var col2 = props.shiftRight ?"col-xs-1" : "col-xs-2";
+  var col3 = props.shiftRight ? "col-xs-9" : "col-xs-10";
+
   return (
     <div>
       <div className="row" style={rowStyle}>
-        <div className="col-xs-3" style={buttonColumnStyle}>
+        <div className={averageCol1} style={buttonColumnStyle}>
           <div style={{display: "flex", justifyContent: "space-between"}}>
             <CollapseButtonContainer
               targetId={collapseId}
@@ -88,7 +95,7 @@ function TrackBody(props) {
             </div>
           </div>
         </div>
-        <div className="col-xs-9" style={visColumnStyle}>
+        <div className={averageCol2} style={visColumnStyle}>
           <HeatMapContainer
             data={[props.track.average.values]}
             dataExtent={averageExtent}
@@ -100,20 +107,20 @@ function TrackBody(props) {
         </div>
       </div>
       <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
-        <div className="col-xs-2" style={dendrogramColumnStyle}>
-          {props.track.cluster ?
+        <div className={col1} style={dendrogramColumnStyle}>
+          {props.track.showDendrogram ?
             <DendrogramContainer
               cluster={props.track.cluster}
               height={collapseHeight} />
           : null}
         </div>
-        <div className="col-xs-1" style={traceControlColumnStyle}>
+        <div className={col2} style={traceControlColumnStyle}>
           <TraceControls
             traces={props.track.traces}
             width={traceHeight}
             height={traceHeight} />
         </div>
-        <div className="col-xs-9" style={collapseColumnStyle}>
+        <div className={col3} style={collapseColumnStyle}>
           <HeatMapContainer
             data={props.track.traces.map(function (d) { return d.values; })}
             dataExtent={dataExtent}
@@ -133,7 +140,8 @@ TrackBody.propTypes = {
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   phaseColorScale: PropTypes.func.isRequired,
   phaseOverlayOpacity: PropTypes.number.isRequired,
-  showPhaseOverlay: PropTypes.bool.isRequired
+  showPhaseOverlay: PropTypes.bool.isRequired,
+  shiftRight: PropTypes.bool.isRequired
 };
 
 module.exports = TrackBody;

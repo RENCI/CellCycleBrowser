@@ -65,6 +65,12 @@ function updateData() {
   // Link tracks to traces
   linkTracks(data.tracks);
 
+  // Cluster traces
+  data.hasDendrogram = false;
+  data.tracks.forEach(function (track) {
+    if (track.cluster) clusterTraces(track, true);
+  });
+
   // XXX: Switch to generating ids and using that for matching via a selected store?
   function trackId(track) {
     return DataUtils.removeNonWord(
@@ -218,7 +224,7 @@ function updateData() {
 
       function dataTrack(dataset, species, feature) {
         var traces = [];
-        species.cells.forEach(function (cell) {
+        species.cells.forEach(function (cell, i) {
           var featureIndex = cell.features.map(function (d) {
             return d.name;
           }).indexOf(feature.name);
@@ -236,6 +242,7 @@ function updateData() {
           });
 
           traces.push({
+            index: i,
             name: cell.name,
             selected: false,
             highlight: null,
@@ -259,7 +266,7 @@ function updateData() {
 
       function phaseTrack(dataset, species, feature) {
         var traces = [];
-        species.cells.forEach(function (cell) {
+        species.cells.forEach(function (cell, i) {
           var featureIndex = cell.features.map(function (d) {
             return d.name;
           }).indexOf(feature.name);
@@ -289,6 +296,7 @@ function updateData() {
           }
 
           traces.push({
+            index: i,
             name: cell.name,
             selected: false,
             highlight: null,
@@ -340,6 +348,7 @@ function updateData() {
             });
 
             traces.push({
+              index: traces.length,
               name: "Trace " + traces.length + 1,
               selected: false,
               highlight: null,
@@ -824,7 +833,21 @@ function selectPhaseTrace(trace, selected) {
   trace.selected = selected;
 }
 
-function clusterTraces(track) {
+function clusterTraces(track, cluster) {
+  track.cluster = cluster;
+
+  if (!track.cluster) {
+    track.traces.sort(function(a, b) {
+      return d3.ascending(a.index, b.index);
+    });
+
+    track.showDendrogram = false;
+
+    updateDendrogram();
+
+    return;
+  }
+
   // Initialize distance matrix
   // hclusterjs likes an array of objects with a "position" array
   var n = track.traces.length;
@@ -847,8 +870,6 @@ function clusterTraces(track) {
 
     return t;
   });
-
-  console.log(track);
 
   function getValues(trace) {
     var scale = track.rescaleTraces ?
@@ -933,12 +954,22 @@ function clusterTraces(track) {
   track.cluster = cluster;
 }
 
+function showDendrogram(track, show) {
+  track.showDendrogram = show;
+}
+
 function showPhaseOverlay(track) {
   track.showPhaseOverlay = !track.showPhaseOverlay;
 }
 
 function rescaleTraces(track) {
   track.rescaleTraces = !track.rescaleTraces;
+}
+
+function updateDendrogram() {
+  data.hasDendrogram = data.tracks.filter(function (track) {
+    return track.showDendrogram;
+  }).length > 0;
 }
 
 var DataStore = assign({}, EventEmitter.prototype, {
@@ -1034,7 +1065,15 @@ DataStore.dispatchToken = AppDispatcher.register(function (action) {
       break;
 
     case Constants.CLUSTER_TRACES:
-      clusterTraces(action.track);
+      clusterTraces(action.track, action.cluster);
+      showDendrogram(action.track, action.cluster);
+      updateDendrogram();
+      DataStore.emitChange();
+      break;
+
+    case Constants.SHOW_DENDROGRAM:
+      showDendrogram(action.track, action.show);
+      updateDendrogram();
       DataStore.emitChange();
       break;
 

@@ -92,10 +92,18 @@ module.exports = {
       selected: selected
     });
   },
-  clusterTraces: function (track) {
+  clusterTraces: function (track, cluster) {
     AppDispatcher.dispatch({
       actionType: Constants.CLUSTER_TRACES,
-      track: track
+      track: track,
+      cluster: cluster
+    });
+  },
+  showDendrogram: function (track, show) {
+    AppDispatcher.dispatch({
+      actionType: Constants.SHOW_DENDROGRAM,
+      track: track,
+      show: show
     });
   },
   showPhaseOverlay: function (track) {

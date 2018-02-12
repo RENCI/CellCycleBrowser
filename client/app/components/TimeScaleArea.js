@@ -43,19 +43,22 @@ var timeLineStyle = {
 function TimeScale(props) {
   var unit = props.alignment === "justify" ? "(%)" : "(h)";
 
+  var col1 = props.shiftRight ? "col-xs-3" : "col-xs-2";
+  var col2 = props.shiftRight ? "col-xs-9" : "col-xs-10";
+
   return (
     <div>
       <div style={alignmentStyle}>
-        <AlignmentSelectContainer />
+        <AlignmentSelectContainer shiftRight={props.shiftRight} />
       </div>
       <div className="text-left" style={outerStyle}>
         <div className="row" style={rowStyle}>
-          <div className="col-xs-3" style={columnStyle}>
+          <div className={col1} style={columnStyle}>
             <div style={labelStyle}>
               Time {unit}
             </div>
           </div>
-          <div className="col-xs-9 text-left" style={timeLineStyle}>
+          <div className={col2 + " text-left"} style={timeLineStyle}>
             <TimeScaleContainer
               timeExtent={props.timeExtent}
               alignment={props.alignment} />
@@ -68,7 +71,8 @@ function TimeScale(props) {
 
 TimeScale.propTypes = {
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
-  alignment: PropTypes.string.isRequired
+  alignment: PropTypes.string.isRequired,
+  shiftRight: PropTypes.bool.isRequired
 };
 
 module.exports = TimeScale;

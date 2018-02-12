@@ -78,7 +78,9 @@ module.exports = function() {
     }
 
     function drawLinks() {
-      var c = 20;
+      var spacing = Math.abs(hierarchy.leaves()[0].x - hierarchy.leaves()[1].x);
+
+      var c = spacing / 2;
 
       var curveElbow = function(d) {
         var r = d3.min([c, Math.abs(d.parent.x - d.x), Math.abs(d.parent.y - d.y)]),

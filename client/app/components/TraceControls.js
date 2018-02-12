@@ -44,8 +44,11 @@ function TraceControls(props) {
         style={divStyle}
         onMouseOver={trace.selected ? handleMouseOver : null}
         onMouseLeave={trace.selected ? handleMouseLeave : null}>
-          <div className="text-right small" style={labelStyle}>
-            {isAverage ? "" : trace.name}
+          <div
+            className="text-right small"
+            style={labelStyle}
+            title={trace.name}>
+              {isAverage ? "" : trace.name}
           </div>
           <div style={controlStyle}>
             <TraceControlContainer

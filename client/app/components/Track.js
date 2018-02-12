@@ -27,7 +27,8 @@ Track.propTypes = {
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   phaseColorScale: PropTypes.func.isRequired,
   phaseOverlayOpacity: PropTypes.number.isRequired,
-  showPhaseOverlay: PropTypes.bool.isRequired
+  showPhaseOverlay: PropTypes.bool.isRequired,
+  shiftRight: PropTypes.bool.isRequired
 };
 
 module.exports = Track;

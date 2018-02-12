@@ -33,6 +33,7 @@ var DendrogramContainer = React.createClass ({
     return false;
   },
   onResize: function () {
+    console.log("RESIZE");
     this.resize();
   },
   drawVisualization: function (props, state) {

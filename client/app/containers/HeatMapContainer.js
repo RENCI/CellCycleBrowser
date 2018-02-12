@@ -40,6 +40,7 @@ var HeatMapContainer = React.createClass({
   drawVisualization: function (props, state) {
     // Set up heat map
     this.heatMap
+        .width(this.getNode().clientWidth)
         .height(props.height)
         .dataExtent(props.dataExtent)
         .timeExtent(props.timeExtent)
@@ -53,10 +54,6 @@ var HeatMapContainer = React.createClass({
         .call(this.heatMap);
   },
   resize: function () {
-    var width = this.getNode().clientWidth;
-
-    this.heatMap.width(width);
-
     this.drawVisualization(this.props, this.state);
   },
   getNode: function () {

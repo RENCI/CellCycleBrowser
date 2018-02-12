@@ -15,9 +15,11 @@ function AlignmentSelect(props) {
     return "btn btn-default" + (props.alignment === alignment ? " active" : "");
   }
 
+  var col = props.shiftRight ? "col-xs-9 col-xs-offset-3" : "col-xs-10 col-xs-offset-2";
+
   return (
     <div className="row">
-      <div className="col-xs-9 col-xs-offset-3">
+      <div className={col}>
         <div className="btn-group btn-group-justified" data-toggle="buttons">
           <label
             className={classes("left")}
@@ -66,6 +68,7 @@ function AlignmentSelect(props) {
 
 AlignmentSelect.propTypes = {
   alignment: PropTypes.string.isRequired,
+  shiftRight: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired
 };
 

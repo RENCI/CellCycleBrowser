@@ -1,4 +1,5 @@
 var React = require("react");
+var PropTypes = React.PropTypes;
 var AlignmentSelect = require("../components/AlignmentSelect");
 var AlignmentStore = require("../stores/AlignmentStore");
 var ViewActionCreators = require("../actions/ViewActionCreators");
@@ -10,6 +11,9 @@ function getStateFromStore() {
 }
 
 var AlignmentSelectContainer = React.createClass ({
+  propTypes: {
+    shiftRight: PropTypes.bool.isRequired
+  },
   getInitialState: function () {
     return getStateFromStore();
   },
@@ -29,6 +33,7 @@ var AlignmentSelectContainer = React.createClass ({
     return (
       <AlignmentSelect
         alignment={this.state.alignment}
+        shiftRight={this.props.shiftRight}
         onClick={this.handleChangeAlignment} />
     );
   }
