@@ -50,7 +50,7 @@ var TimeSeriesContainer = React.createClass ({
   },
   componentWillUnmount: function () {
     DataStore.removeChangeListener(this.onDataChange);
-    DataStore.addHighlightChangeListener(this.onDataChange);
+    DataStore.removeHighlightChangeListener(this.onDataChange);
     AlignmentStore.removeChangeListener(this.onAlignmentChange);
   },
   componentWillUpdate: function (props, state) {
