@@ -268,31 +268,10 @@ module.exports = function() {
           .attr("class", "curve")
           .attr("data-toggle", "tooltip")
           .on("mouseover", function(d) {
-            svg.selectAll(".curve")
-                .style("stroke-opacity", function(e) {
-                  return e === d ? 1 :
-                         e.trace.track.source === d.trace.track.source &&
-                         e.trace.name === d.trace.name ? 0.5 :
-                         0.05;
-                });
-
-            // Use setTimout to enable above highlighting code to complete
-            // before updating elsewhere
-            // XXX: Experimental
-            window.setTimeout(function() {
-              dispatcher.call("highlightTrace", this, d.trace);
-            });
+            dispatcher.call("highlightTrace", this, d.trace);
           })
           .on("mouseout", function() {
-            svg.selectAll(".curve")
-                .style("stroke-opacity", null);
-
-            // Use setTimout to enable above highlighting code to complete
-            // before updating elsewhere
-            // XXX: Experimental
-            window.setTimeout(function() {
-              dispatcher.call("highlightTrace", this, null);
-            });
+            dispatcher.call("highlightTrace", this, null);
           })
         .merge(curve)
           .style("stroke-opacity", function(d) {

@@ -1,7 +1,7 @@
 var React = require("react");
 var PropTypes = React.PropTypes;
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
-var TraceControls = require("./TraceControls");
+var TraceControlsContainer = require("../containers/TraceControlsContainer");
 var PhaseMapContainer = require("../containers/PhaseMapContainer");
 
 var rowStyle = {
@@ -58,7 +58,7 @@ function PhaseTrackBody(props) {
               targetId={collapseId}
               track={props.track} />
             <div style={{flex: 1}}>
-              <TraceControls
+              <TraceControlsContainer
                 traces={[props.track.average]}
                 width={traceHeight}
                 height={averageHeight} />
@@ -78,7 +78,7 @@ function PhaseTrackBody(props) {
       </div>
       <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
         <div className={col1} style={traceButtonColumnStyle}>
-          <TraceControls
+          <TraceControlsContainer
             traces={props.track.traces}
             width={traceHeight}
             height={traceHeight} />

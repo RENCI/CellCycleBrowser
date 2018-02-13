@@ -10,6 +10,7 @@ var d3 = require("d3");
 var hclusterjs = require("hclusterjs");
 
 var CHANGE_EVENT = "change";
+var HIGHLIGHT_CHANGE_EVENT = "highlight";
 
 // Inputs
 var datasets = [];
@@ -982,6 +983,15 @@ var DataStore = assign({}, EventEmitter.prototype, {
   removeChangeListener: function (callback) {
     this.removeListener(CHANGE_EVENT, callback);
   },
+  emitHighlightChange: function () {
+    this.emit(HIGHLIGHT_CHANGE_EVENT);
+  },
+  addHighlightChangeListener: function (callback) {
+    this.on(HIGHLIGHT_CHANGE_EVENT, callback);
+  },
+  removeHighlightChangeListener: function (callback) {
+    this.removeListener(HIGHLIGHT_CHANGE_EVENT, callback);
+  },
   getData: function () {
     return data;
   }
@@ -1051,7 +1061,7 @@ DataStore.dispatchToken = AppDispatcher.register(function (action) {
 
     case Constants.HIGHLIGHT_TRACE:
       highlightTrace(action.trace);
-      DataStore.emitChange();
+      DataStore.emitHighlightChange();
       break;
 
     case Constants.SELECT_ALL_TRACES:
