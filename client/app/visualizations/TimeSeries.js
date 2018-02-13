@@ -161,11 +161,10 @@ module.exports = function() {
       html: true
     });
 
-    svg.selectAll(".curve").filter(function(d) {
-      return d.trace.highlight === "primary";
-    }).each(function() {
-      $(this).tooltip("show");
-    });
+    svg.selectAll(".curve")
+      .each(function(d) {
+        $(this).tooltip(d.trace.highlight === "primary" ? "show" : "hide");
+      });
 
     function drawTitle() {
       svg.select(".title")

@@ -36,22 +36,21 @@ var TraceControlsContainer = React.createClass ({
     var height = this.props.height;
 
     var buttons = this.props.traces.map(function (trace, i) {
-      var labelStyle = {
-        marginRight: 5,
-        verticalAlign: "middle",
-        lineHeight: height + "px",
-        color: trace.selected ? "#000" : "#ccc",
-        overflow: "hidden",
-        flex: 1
-      };
-
       var divStyle = {
         display: "flex",
-        height: height,
+        height: height
+      };
+
+      var labelStyle = {
+        verticalAlign: "middle",
+        overflow: "hidden",
         borderRadius: "5px",
-        backgroundColor: trace.highlight === "primary" ? "#ccc" :
-                         trace.highlight === "secondary" ? "#f0f0f0" :
-                         null
+        flex: 1,
+        lineHeight: (trace.highlight === "primary" ? (height - 1) : height) + "px",
+        color: trace.selected ? "#000" : "#ccc",
+        paddingRight: trace.highlight === "primary" ? 4 : 5,
+        border: trace.highlight === "primary" ? "1px solid #ccc" : null,
+        backgroundColor: trace.highlight ? "#f0f0f0" : null
       };
 
       function handleMouseOver() {
@@ -66,13 +65,12 @@ var TraceControlsContainer = React.createClass ({
         <div
           key={i}
           style={divStyle}
-          onMouseOver={trace.selected ? handleMouseOver : null}
-          onMouseLeave={trace.selected ? handleMouseLeave : null}>
+          onMouseOver={handleMouseOver}
+          onMouseLeave={handleMouseLeave}>
             <div
               className="text-right small"
-              style={labelStyle}
-              title={trace.name}>
-                {isAverage ? "" : trace.name}
+              style={labelStyle}>
+                <span title={trace.name}>{isAverage ? "" : trace.name}</span>
             </div>
             <div style={controlStyle}>
               <TraceControlContainer
