@@ -40,6 +40,19 @@ function ModelFit(props) {
   var simulationValue = props.modelFit.simulationTrack ? props.modelFit.simulationTrack.species : noOption.value;
   var dataValue = props.modelFit.dataTrack ? dataTrackValue(props.modelFit.dataTrack) : noOption.value;
 
+  var fit = props.modelFit.fit;
+  var fitSpan = fit ?
+    (
+      <span
+        className={"alert " + (fit < 0.6 ? "alert-danger" : fit < 0.8 ? "alert-warning" : "alert-success")}
+        style={{
+          padding: 5
+        }}>
+          {fit.toFixed(3)}
+      </span>
+    )
+  : null;
+
   return (
     <Collapsible
       id="modelFit"
@@ -63,7 +76,7 @@ function ModelFit(props) {
             label="Compute"
             disabled={!props.modelFit.simulationTrack || !props.modelFit.dataTrack}
             onClick={props.onComputeModel} />
-          <strong> Fit: </strong>{props.modelFit.fit ? props.modelFit.fit.toFixed(3) : null}
+          <strong> Fit: </strong>{fitSpan}
         </div>
     </Collapsible>
   );
