@@ -350,7 +350,7 @@ function updateData() {
 
             traces.push({
               index: traces.length,
-              name: "Trace " + traces.length + 1,
+              name: "Trace " + (traces.length + 1),
               selected: false,
               highlight: null,
               values: values,
@@ -407,7 +407,7 @@ function updateData() {
           });
 
           return {
-            name: "Trace " + i,
+            name: "Trace " + (i + 1),
             selected: false,
             highlight: null,
             phases: phases,

@@ -76,7 +76,7 @@ function ModelFit(props) {
             label="Compute"
             disabled={!props.modelFit.simulationTrack || !props.modelFit.dataTrack}
             onClick={props.onComputeModel} />
-          <strong> Fit: </strong>{fitSpan}
+          <strong style={{marginLeft: 10}}>Fit: </strong>{fitSpan}
         </div>
     </Collapsible>
   );
