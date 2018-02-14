@@ -1013,7 +1013,7 @@ DataStore.dispatchToken = AppDispatcher.register(function (action) {
       datasets = DatasetStore.getDatasets();
       updateData();
       DataStore.emitChange();
-    break;
+      break;
 
     case Constants.SELECT_DATASET:
       AppDispatcher.waitFor([DatasetStore.dispatchToken]);

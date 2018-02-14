@@ -7,6 +7,7 @@ var SimulationParameterSliders = require("../components/SimulationParameterSlide
 var DegradationSliders = require("../components/DegradationSliders");
 var SpeciesPhaseSliders = require("../components/SpeciesPhaseSliders");
 var SpeciesSpeciesSliders = require("../components/SpeciesSpeciesSliders");
+var ModelFitContainer = require("./ModelFitContainer");
 var PhaseColorStore = require("../stores/PhaseColorStore");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var WebAPIUtils = require("../utils/WebAPIUtils");
@@ -138,6 +139,7 @@ var ControlsContainer = React.createClass ({
           activePhase={this.state.activePhase}
           onChange={this.handleSpeciesSpeciesSliderChange}
           onCollapse={this.handleCollapse} />
+        <ModelFitContainer />
       </div>
     );
   }

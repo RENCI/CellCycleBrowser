@@ -193,5 +193,17 @@ module.exports = {
       downstream: downstream,
       value: value
     });
+  },
+  changeModelFitSpecies: function (simulationSpecies, datasetSpecies) {
+    AppDispatcher.dispatch({
+      actionType: Constants.CHANGE_MODEL_FIT_SPECIES,
+      simulationSpecies: simulationSpecies,
+      datasetSpecies: datasetSpecies
+    });
+  },
+  computeModelFit: function () {
+    AppDispatcher.dispatch({
+      actionType: Constants.COMPUTE_MODEL_FIT
+    });
   }
 };
