@@ -45,7 +45,7 @@ module.exports = keyMirror({
   SIMULATION_OUTPUT_INVALID: null,
   SIMULATION_OUTPUT_VALID: null,
 
-  CHANGE_MODEL_FIT_SPECIES: null,
+  CHANGE_MODEL_FIT_TRACKS: null,
   COMPUTE_MODEL_FIT: null,
 
   // Must be lowercase for drag and drop data types

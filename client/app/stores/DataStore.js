@@ -997,6 +997,8 @@ var DataStore = assign({}, EventEmitter.prototype, {
   }
 });
 
+DataStore.setMaxListeners(0);
+
 DataStore.dispatchToken = AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_WORKSPACE:

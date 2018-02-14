@@ -3,6 +3,7 @@ var PropTypes = React.PropTypes;
 var ModelFit = require("../components/ModelFit");
 var ModelFitStore = require("../stores/ModelFitStore");
 var ViewActionCreators = require("../actions/ViewActionCreators");
+var DataUtils = require("../utils/DataUtils");
 
 function getStateFromStore() {
   return {
@@ -24,15 +25,28 @@ var ModelFitContainer = React.createClass ({
     this.setState(getStateFromStore());
   },
   handleChangeSimulationSpecies: function (simulationSpecies) {
-    ViewActionCreators.changeModelFitSpecies(
-      simulationSpecies,
-      this.state.modelFit.datasetSpecies,
+    var simulationTrack = DataUtils.find(this.state.modelFit.simulationTracks, "species", simulationSpecies);
+
+    ViewActionCreators.changeModelFitTracks(
+      simulationTrack,
+      this.state.modelFit.dataTrack,
     );
   },
-  handleChangeDatasetSpecies: function (datasetSpecies) {
-    ViewActionCreators.changeModelFitSpecies(
-      datasetSpecies,
-      this.state.modelFit.simulationSpecies,
+  handleChangeDatasetSpecies: function (dataSpecies) {
+    var s = dataSpecies.split(":");
+
+    var source = s[0].trim();
+    var species = s[1].trim();
+
+    var dataTrack = this.state.modelFit.dataTracks.filter(function(d) {
+      return d.source === source && d.species === species;
+    });
+
+    dataTrack = dataTrack.length === 1 ? dataTrack[0] : null;
+
+    ViewActionCreators.changeModelFitTracks(
+      this.state.modelFit.simulationTrack,
+      dataTrack
     );
   },
   handleComputeModelFit: function () {
@@ -43,7 +57,7 @@ var ModelFitContainer = React.createClass ({
       <ModelFit
         modelFit={this.state.modelFit}
         onChangeSimulationSpecies={this.handleChangeSimulationSpecies}
-        onChangeDatasetSpecies={this.handleChangeDatasetSpecies}
+        onChangeDataSpecies={this.handleChangeDatasetSpecies}
         onComputeModel={this.handleComputeModelFit} />
     );
   }

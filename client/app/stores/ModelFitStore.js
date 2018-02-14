@@ -3,29 +3,114 @@ var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
 var Constants = require("../constants/Constants");
 var DataStore = require("./DataStore");
+var d3 = require("d3");
 
 var CHANGE_EVENT = "change";
 
-var data = null;
+var simulationTracks = [];
+var dataTracks = [];
+var simulationTrack = null;
+var dataTrack = null;
+var fit = null;
 
-var modelFit = {
-  allSimulationSpecies: [],
-  allDatasetSpecies: [],
-  simulationSpecies: null,
-  datasetSpecies: null,
-  fit: null
-};
+function updateData(data) {
+  simulationTracks = data.tracks.filter(function (track) {
+    return track.source === "Simulation" && !track.phaseTrack;
+  });
 
-function updateData() {
-  console.log(data);
+  dataTracks = data.tracks.filter(function (track) {
+    return track.source !== "Simulation" && !track.phaseTrack;
+  });
+
+  var i;
+
+  i = simulationTracks.indexOf(simulationTrack);
+  if (i === -1 && simulationTracks.length > 0) simulationTrack = simulationTracks[0];
+
+  i = dataTracks.indexOf(dataTrack);
+  if (i === -1 && dataTracks.length > 0) dataTrack = dataTracks[0];
 }
 
-function updateSpecies(simulationSpecies, datasetSpecies) {
-  console.log(simulationSpecies, datasetSpecies);
+function updateTracks(newSimulationTrack, newDataTrack) {
+  simulationTrack = newSimulationTrack;
+  dataTrack = newDataTrack;
 }
 
 function computeModelFit() {
-  console.log("FIT");
+  // XXX: Modified from clustering code in DataStore. Should refactor and put
+  // relevant functions in DataUtils
+
+  // Get rescaled values and times for average trace
+  var v1 = getValues(simulationTrack.average);
+  var v2 = getValues(dataTrack.average);
+
+  // Get time steps
+  var t1 = getTimeSteps(v1);
+  var t2 = getTimeSteps(v2);
+
+  // Combine time steps
+  var start = Math.max(t1[0], t2[0]);
+  var stop = Math.min(t1[t1.length - 1], t2[t2.length - 1]);
+
+  t1 = t1.filter(function (t) {
+    return t >= start && t <= stop;
+  });
+
+  t2 = t2.filter(function (t) {
+    return t >= start && t <= stop;
+  });
+
+  var t = t1.concat(t2).sort().filter(function (d, i, a) {
+    return i === 0 || d !== a[i - 1];
+  });
+
+  // Loop over combined time time steps
+  var diff = 0;
+  var i1 = 0;
+  var i2 = 0;
+  var n = 0;
+
+  for (i = 0; i < t.length; i++) {
+    while (i1 < v1.length && v1[i1].stop <= t[i]) i1++;
+    while (i2 < v2.length && v2[i2].stop <= t[i]) i2++;
+
+    if (i1 === v1.length) break;
+    if (i2 === v2.length) break;
+
+    diff += Math.abs(v1[i1].value - v2[i2].value);
+    n++;
+  }
+
+  // Normalize
+  fit = 1 - diff / n;
+
+  function getValues(trace) {
+    var timeScale = d3.scaleLinear()
+        .domain([trace.values[0].start, trace.values[trace.values.length - 1].stop])
+        .range([0, 1]);
+
+    var valueScale = d3.scaleLinear()
+        .domain(d3.extent(trace.values, function (v) { return v.value; }))
+        .range([0, 1]);
+
+    return trace.values.map(function(d) {
+      return {
+        start: timeScale(d.start),
+        stop: timeScale(d.stop),
+        value: valueScale(d.value)
+      };
+    });
+  }
+
+  function getTimeSteps(values) {
+    var t = values.map(function (value) {
+      return value.start;
+    });
+
+    t.push(values[values.length - 1].stop);
+
+    return t;
+  }
 }
 
 var ModelFitStore = assign({}, EventEmitter.prototype, {
@@ -39,7 +124,13 @@ var ModelFitStore = assign({}, EventEmitter.prototype, {
     this.removeListener(CHANGE_EVENT, callback);
   },
   getModelFit: function() {
-    return modelFit;
+    return {
+      simulationTracks: simulationTracks,
+      dataTracks: dataTracks,
+      simulationTrack: simulationTrack,
+      dataTrack: dataTrack,
+      fit: fit
+    };
   }
 });
 
@@ -49,14 +140,14 @@ AppDispatcher.register(function (action) {
     case Constants.RECEIVE_DATASET:
     case Constants.SELECT_DATASET:
     case Constants.SELECT_FEATURE:
+    case Constants.RECEIVE_SIMULATION_OUTPUT:
       AppDispatcher.waitFor([DataStore.dispatchToken]);
       updateData(DataStore.getData());
       ModelFitStore.emitChange();
       break;
 
-    case Constants.CHANGE_MODEL_FIT_SPECIES:
-      updateSpecies(action.modelSpecies,
-                    action.datasetSpecies);
+    case Constants.CHANGE_MODEL_FIT_TRACKS:
+      updateTracks(action.simulationTrack, action.dataTrack);
       ModelFitStore.emitChange();
       break;
 

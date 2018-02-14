@@ -194,11 +194,11 @@ module.exports = {
       value: value
     });
   },
-  changeModelFitSpecies: function (simulationSpecies, datasetSpecies) {
+  changeModelFitTracks: function (simulationTrack, dataTrack) {
     AppDispatcher.dispatch({
-      actionType: Constants.CHANGE_MODEL_FIT_SPECIES,
-      simulationSpecies: simulationSpecies,
-      datasetSpecies: datasetSpecies
+      actionType: Constants.CHANGE_MODEL_FIT_TRACKS,
+      simulationTrack: simulationTrack,
+      dataTrack: dataTrack
     });
   },
   computeModelFit: function () {

@@ -15,7 +15,7 @@ function ItemSelect(props) {
     return (
       <li key={i}>
         <a
-          href="#"
+          href="javascript:;"
           data-name={option.name}
           data-value={option.value}
           onClick={handleClick}>
