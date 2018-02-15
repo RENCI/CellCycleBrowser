@@ -21,7 +21,8 @@
     "react": "^15.2.0",
     "react-dom": "^15.2.0",
     "science": "^1.9.3",
-    "seedrandom": "^2.4.3"
+    "seedrandom": "^2.4.3",
+    "simple-statistics": "^5.2.1"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",

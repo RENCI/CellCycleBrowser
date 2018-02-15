@@ -49,6 +49,9 @@ var ModelFitContainer = React.createClass ({
       dataTrack
     );
   },
+  handleChangeMethod: function (method) {
+    ViewActionCreators.changeModelFitMethod(method);
+  },
   handleComputeModelFit: function () {
     ViewActionCreators.computeModelFit();
   },
@@ -58,6 +61,7 @@ var ModelFitContainer = React.createClass ({
         modelFit={this.state.modelFit}
         onChangeSimulationSpecies={this.handleChangeSimulationSpecies}
         onChangeDataSpecies={this.handleChangeDatasetSpecies}
+        onChangeMethod={this.handleChangeMethod}
         onComputeModel={this.handleComputeModelFit} />
     );
   }

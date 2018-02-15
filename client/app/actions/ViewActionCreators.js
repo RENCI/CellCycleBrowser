@@ -201,6 +201,12 @@ module.exports = {
       dataTrack: dataTrack
     });
   },
+  changeModelFitMethod: function (method) {
+    AppDispatcher.dispatch({
+      actionType: Constants.CHANGE_MODEL_FIT_METHOD,
+      method: method
+    });
+  },
   computeModelFit: function () {
     AppDispatcher.dispatch({
       actionType: Constants.COMPUTE_MODEL_FIT

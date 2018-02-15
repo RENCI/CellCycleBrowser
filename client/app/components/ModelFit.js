@@ -29,6 +29,16 @@ function ModelFit(props) {
     };
   });
 
+  var methodOptions = props.modelFit.methods.map(function (method) {
+    // Make first letter uppercase
+    var name = method.charAt(0).toUpperCase() + method.slice(1);
+
+    return {
+      name: name,
+      value: method
+    };
+  });
+
   var noOption = {
     name: "NA",
     value: ""
@@ -41,10 +51,15 @@ function ModelFit(props) {
   var dataValue = props.modelFit.dataTrack ? dataTrackValue(props.modelFit.dataTrack) : noOption.value;
 
   var fit = props.modelFit.fit;
+  var thresholds = props.modelFit.difference ? [0.6, 0.8] : [0.2, 0.6];
   var fitSpan = fit ?
     (
       <span
-        className={"alert " + (fit < 0.6 ? "alert-danger" : fit < 0.8 ? "alert-warning" : "alert-success")}
+        className={"alert " + (
+          fit < thresholds[0] ? "alert-danger" :
+          fit < thresholds[1] ? "alert-warning" :
+          "alert-success"
+        )}
         style={{
           padding: 5
         }}>
@@ -72,6 +87,13 @@ function ModelFit(props) {
             onChange={props.onChangeDataSpecies} />
         </div>
         <div style={style}>
+          <ItemSelect
+            label="Method: "
+            options={methodOptions}
+            activeValue={props.modelFit.method}
+            onChange={props.onChangeMethod} />
+        </div>
+        <div style={style}>
           <ComputeModelFitButton
             label="Compute"
             disabled={!props.modelFit.simulationTrack || !props.modelFit.dataTrack}
@@ -86,6 +108,7 @@ ModelFit.propTypes = {
   modelFit: PropTypes.object.isRequired,
   onChangeSimulationSpecies: PropTypes.func.isRequired,
   onChangeDataSpecies: PropTypes.func.isRequired,
+  onChangeMethod: PropTypes.func.isRequired,
   onComputeModel: PropTypes.func.isRequired
 };
 

@@ -4,6 +4,7 @@ var assign = require("object-assign");
 var Constants = require("../constants/Constants");
 var DataStore = require("./DataStore");
 var d3 = require("d3");
+var simpleStatistics = require("simple-statistics");
 
 var CHANGE_EVENT = "change";
 
@@ -11,6 +12,8 @@ var simulationTracks = [];
 var dataTracks = [];
 var simulationTrack = null;
 var dataTrack = null;
+var methods = ["difference", "correlation"];
+var method = methods[0];
 var fit = null;
 
 function updateData(data) {
@@ -68,7 +71,8 @@ function computeModelFit() {
   var diff = 0;
   var i1 = 0;
   var i2 = 0;
-  var n = 0;
+  var s1 = [];
+  var s2 = [];
 
   for (i = 0; i < t.length; i++) {
     while (i1 < v1.length && v1[i1].stop <= t[i]) i1++;
@@ -77,12 +81,22 @@ function computeModelFit() {
     if (i1 === v1.length) break;
     if (i2 === v2.length) break;
 
-    diff += Math.abs(v1[i1].value - v2[i2].value);
-    n++;
+    s1.push(v1[i1].value);
+    s2.push(v2[i2].value);
   }
 
-  // Normalize
-  fit = 1 - diff / n;
+  switch (method) {
+    case "difference":
+      // 1 - average absolute difference
+      fit = 1 - s1.reduce(function(p, c, i) {
+        return p + Math.abs(c - s2[i]);
+      }) / s1.length;
+      break;
+
+    case "correlation":
+      fit = simpleStatistics.sampleCorrelation(s1, s2);
+      break;
+  }
 
   function getValues(trace) {
     var timeScale = d3.scaleLinear()
@@ -129,6 +143,8 @@ var ModelFitStore = assign({}, EventEmitter.prototype, {
       dataTracks: dataTracks,
       simulationTrack: simulationTrack,
       dataTrack: dataTrack,
+      methods: methods,
+      method: method,
       fit: fit
     };
   }
@@ -148,6 +164,11 @@ AppDispatcher.register(function (action) {
 
     case Constants.CHANGE_MODEL_FIT_TRACKS:
       updateTracks(action.simulationTrack, action.dataTrack);
+      ModelFitStore.emitChange();
+      break;
+
+    case Constants.CHANGE_MODEL_FIT_METHOD:
+      method = action.method;
       ModelFitStore.emitChange();
       break;
 
