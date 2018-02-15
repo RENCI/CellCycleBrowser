@@ -20,11 +20,12 @@ module.exports = function(element) {
     var styles = "",
         SVGSources = getSources(element, styles);
 
-    if (SVGSources.length > 1) {
-      createPopover(SVGSources);
-    } else if (SVGSources.length > 0) {
-      download(SVGSources[0]);
-    } else {
+    if (SVGSources.length > 0) {
+      SVGSources.forEach(function(svg) {
+        download(svg);
+      });
+    }
+    else {
       alert("The Crowbar couldn’t find any SVG nodes.");
     }
 /*
