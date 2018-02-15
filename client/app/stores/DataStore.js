@@ -198,7 +198,7 @@ function updateData() {
       var tracks = [];
 
       function isPhaseFeature(feature) {
-        return feature.name.indexOf("SphaseClassification") !== -1;
+        return feature.name.toLowerCase().indexOf("phaseclassification") !== -1;
       }
 
       datasets.filter(function(d) {
