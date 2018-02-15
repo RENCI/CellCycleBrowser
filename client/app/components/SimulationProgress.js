@@ -22,13 +22,7 @@ function SimulationProgress(props) {
 
   var trajectoryProgress = trajectory / props.numTrajectories * 100 + "%";
   var phaseIndex = phases.indexOf(phase);
-
-  var colors = [
-    "progress-bar-success",
-    "progress-bar-info",
-    "progress-bar-warning"
-  ];
-
+  
   var phaseBars = props.subphases.map(function (sub, i) {
     var n = i < phaseIndex ? sub.subphases.length : i > phaseIndex ? 0 :
             sub.subphases.indexOf(subphase) + 1;
