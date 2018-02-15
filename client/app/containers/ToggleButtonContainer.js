@@ -4,11 +4,6 @@ var ToggleButton = require("../components/ToggleButton");
 var SelectAllButton = require("../components/SelectAllButton");
 var UnselectAllButton = require("../components/UnselectAllButton");
 
-var divStyle = {
-  width: "100%",
-  height: "100%"
-};
-
 var ToggleButtonContainer = React.createClass ({
   propTypes: {
     selected: PropTypes.bool,
