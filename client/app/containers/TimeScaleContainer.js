@@ -37,6 +37,7 @@ var TimeScaleContainer = React.createClass ({
     if (!props.timeExtent) return;
 
     this.timeScale
+        .width(this.getNode().clientWidth)
         .alignment(props.alignment);
 
     // Draw time scale
@@ -45,10 +46,6 @@ var TimeScaleContainer = React.createClass ({
         .call(this.timeScale);
   },
   resize: function () {
-    var width = this.getNode().clientWidth;
-
-    this.timeScale.width(width);
-
     this.drawVisualization(this.props);
   },
   getNode: function () {
