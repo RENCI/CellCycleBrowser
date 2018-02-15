@@ -93,8 +93,8 @@ module.exports = function() {
     // Get the active tracks
     var activeTracks = curves.reduce(function(p, c) {
       if (p.map(function(d) {
-        return d.track;
-      }).indexOf(c.track) === -1) {
+        return d.trace.track;
+      }).indexOf(c.trace.track) === -1) {
         p.push(c);
       }
 
