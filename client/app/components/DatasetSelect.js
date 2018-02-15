@@ -62,26 +62,11 @@ function DatasetSelect(props) {
               href={'/cell_data_meta/' + option.fileName + '/'}
               target="_blank">
               <span
-                className="glyphicon glyphicon-question-sign"
+                className="glyphicon glyphicon-new-window"
                 data-toggle="tooltip"
                 data-container="body"
                 data-placement="auto top"
-                title="Metadata">
-              </span>
-            </a>
-          : null}
-        </td>
-        <td style={tdStyle}>
-          {option.active ?
-            <a
-              style ={iconStyle}
-              href={'/download/' + option.fileName + '/'}>
-              <span
-                className="glyphicon glyphicon-download-alt"
-                data-toggle="tooltip"
-                data-container="body"
-                data-placement="auto top"
-                title="Download dataset">
+                title="Information">
               </span>
             </a>
           : null}
