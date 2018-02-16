@@ -5,6 +5,8 @@
 .DS_Store
 .idea
 /server/celery
+server/celerybeat-schedule
+server/celerybeat.pid
 /server/cellcycle/local_settings.py
 /server/data
 /server/cc_core/static/cc_core/js/index*

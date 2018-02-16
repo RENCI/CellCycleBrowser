@@ -45,6 +45,7 @@ def index(request, session=''):
     #import pydevd
     #pydevd.settrace('172.17.0.1', port=21000, suspend=False)
 
+
     storage = messages.get_messages(request)
     storage.used = True
     # make sure session messages and species messages are removed
@@ -174,7 +175,7 @@ def add_user_workspace(request):
     cell_data_names, model_data_names = utils.get_all_cell_and_model_file_names(
         profiles=profiles)
     context = {
-        'guest_session': True,
+        'guest_session_id': uuid4().hex,
         'cell_data_names': cell_data_names,
         'model_data_names': model_data_names
     }
@@ -205,7 +206,7 @@ def add_or_delete_profile_request(request):
         cell_data_names, model_data_names = utils.get_all_cell_and_model_file_names(
             profiles=profiles)
         context = {
-            'guest_session': False,
+            'guest_session_id': '',
             'cell_data_names': cell_data_names,
             'model_data_names': model_data_names
         }
@@ -243,17 +244,15 @@ def delete_profile_from_server(request):
 def add_profile_to_server(request):
     # create profile data to write to profile json file
     data = {}
-    guest_sess = True if request.POST.get('guest_session') == 'true' else False
-    sess_id = ''
-    if guest_sess:
-        # create a guest session id
-        sess_id = uuid4().hex
+    sess_id = request.POST.get('guest_session_id', '')
+    if sess_id:
         messages.info(request, guest_sess_prefix_str + sess_id)
         ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_id)
-        os.makedirs(os.path.join(ws_path, settings.CELL_DATA_PATH))
-        os.makedirs(os.path.join(ws_path, settings.MODEL_INPUT_PATH))
-        os.makedirs(os.path.join(ws_path, settings.MODEL_OUTPUT_PATH))
-        os.makedirs(os.path.join(ws_path, settings.WORKSPACE_CONFIG_PATH))
+        if not os.path.exists(ws_path):
+            os.makedirs(os.path.join(ws_path, settings.CELL_DATA_PATH))
+            os.makedirs(os.path.join(ws_path, settings.MODEL_INPUT_PATH))
+            os.makedirs(os.path.join(ws_path, settings.MODEL_OUTPUT_PATH))
+            os.makedirs(os.path.join(ws_path, settings.WORKSPACE_CONFIG_PATH))
     else:
         ws_path = settings.WORKSPACE_PATH
 
@@ -313,10 +312,11 @@ def add_profile_to_server(request):
 
         for cdselname in cdselnames:
             cell_data_list.append({'fileName': cdselname})
-            # copy the selected data set from system workspace to guest workspace
-            source = os.path.join(settings.WORKSPACE_PATH, settings.CELL_DATA_PATH, cdselname)
-            target = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_id, settings.CELL_DATA_PATH, cdselname)
-            shutil.copy(source, target)
+            if sess_id:
+                # copy the selected data set from system workspace to guest workspace
+                source = os.path.join(settings.WORKSPACE_PATH, settings.CELL_DATA_PATH, cdselname)
+                target = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_id, settings.CELL_DATA_PATH, cdselname)
+                shutil.copy(source, target)
             filename_to_idx[cdselname] = idx
             idx += 1
 
@@ -373,10 +373,11 @@ def add_profile_to_server(request):
         mdselnames = request.POST.getlist('model_sel_names')
         for mdselname in mdselnames:
             model_data_list.append({'fileName': mdselname})
-            # copy the selected model from system workspace to guest workspace
-            source = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, mdselname)
-            target = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_id, settings.MODEL_INPUT_PATH, mdselname)
-            shutil.copy(source, target)
+            if sess_id:
+                # copy the selected model from system workspace to guest workspace
+                source = os.path.join(settings.WORKSPACE_PATH, settings.MODEL_INPUT_PATH, mdselname)
+                target = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_id, settings.MODEL_INPUT_PATH, mdselname)
+                shutil.copy(source, target)
             filename_to_idx[mdselname] = idx
             idx += 1
 
@@ -515,9 +516,14 @@ def create_sbml_model(request):
     rate_g2m = request.POST.get('rate_G2M', None)
     sbml_fname = request.POST.get('sbml_file_name', '')
 
-    sess_str = get_guest_session(request)
+    sess_str = request.POST.get('sess_id', '')
     if sess_str:
         ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+        if not os.path.exists(ws_path):
+            os.makedirs(os.path.join(ws_path, settings.CELL_DATA_PATH))
+            os.makedirs(os.path.join(ws_path, settings.MODEL_INPUT_PATH))
+            os.makedirs(os.path.join(ws_path, settings.MODEL_OUTPUT_PATH))
+            os.makedirs(os.path.join(ws_path, settings.WORKSPACE_CONFIG_PATH))
     else:
         ws_path = settings.WORKSPACE_PATH
 
@@ -542,10 +548,10 @@ def create_sbml_model(request):
     return HttpResponse(json.dumps(response_data), content_type='application/json')
 
 
-def delete_sbml_model(request, filename):
+def delete_sbml_model(request, filename, sess_id = ''):
     response_data = {}
 
-    sess_str = get_guest_session(request)
+    sess_str = sess_id
     if sess_str:
         ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
     else:

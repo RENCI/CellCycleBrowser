@@ -4,7 +4,7 @@
 {% block content %}
   <div class="container">
     <div class="row">
-      <h2>Create a new{% if guest_session %} guest {% endif %} workspace for cell cycle browser</h2>
+      <h2>Create a new{% if guest_session_id %} guest {% endif %} workspace for cell cycle browser</h2>
       <ul>
         <li>Select existing or upload new dataset and model data to be included in the new workspace.</li>
         <li>Input name and description for each dataset and model data included in the new workspace.</li>
@@ -12,7 +12,7 @@
       </ul>
       <form class="form-horizontal" role="form" action="/add_profile_to_server/" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="hidden" name="guest_session" id="guest_session" {% if guest_session %} value='true'/> {% else %} value='false'/> {% endif %}
+        <input type="hidden" name="guest_session_id" id="guest_session_id" value="{{ guest_session_id }}"/>
         <div class="form-group">
             <label for="id_pname">Workspace Name: *</label>
             <input id="pname" class="form-control" name="pname" placeholder="Workspace name" value="" type="text" required/>
@@ -82,7 +82,7 @@
         </div>
         <div class="form-group">
           <div class="col-sm-offset-6 col-sm-6">
-            <button type="submit" class="btn btn-primary btn-lg btn-block">Create New {% if guest_session %}guest {% endif %}Workspace</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Create New {% if guest_session_id %}guest {% endif %}Workspace</button>
           </div>
           {% if messages %}
             <ul class="messages">
@@ -115,6 +115,7 @@
                         The SBML model will be created follwing a sequential model where each subphase
                         follows over each other.
                     </p>
+                    <input type='hidden' id="sess_id" name="sess_id" value="{{ guest_session_id }}" />
                     <div class="form-group">
                         <label for="num_G1">Number of subphases in G1:</label>
                         <input id="num_G1" class="form-control" type="text" name="num_G1" placeholder="Number of subphases in G1" value="" />
@@ -174,6 +175,8 @@
         // files selected from multiple select list which are appended to display name and description boxes for placeholder input
         var cell_name_sel_str='';
         var model_name_sel_str='';
+        var created_model_str='';
+
         $('#cell_sel_files').on('change', function (e) {
             if (this.value.length > 0) {
                 var i;
@@ -259,10 +262,11 @@
             if ($.inArray('', selected) == -1) {
                 // if None is not selected
                 var i;
-                model_name_sel_str = '';
+                model_name_sel_str = created_model_str;
+
                 for (i=0; i<selected.length; i++) {
-                    if (i==0)
-                        model_name_sel_str += selected[i] + ":" + selected[i];
+                    if (model_name_sel_str.length <= 0)
+                        model_name_sel_str = selected[i] + ":" + selected[i];
                     else
                         model_name_sel_str += ";" + selected[i] + ":" + selected[i];
                 }
@@ -277,15 +281,28 @@
             }
             else {
                 // Nothing is selected
-                model_name_sel_str = '';
-                $('#mdname').val(model_file_sel_str);
-                $('#mddesc').val(model_file_sel_str);
+                model_name_sel_str = created_model_str;
+                default_str = '';
+                if (model_name_sel_str.length > 0 && model_file_sel_str.length > 0) {
+                    default_str = model_file_sel_str + ';' + model_name_sel_str;
+                }
+                else if (model_name_sel_str.length > 0) {
+                    default_str = model_name_sel_str;
+                }
+                else {
+                    default_str = model_file_sel_str;
+                }
+                $('#mdname').val(default_str);
+                $('#mddesc').val(default_str);
             }
         });
         $('#delete-sbml-model-btn').on('click', function(event) {
             event.preventDefault();
+            myurl = "/delete_sbml_model/" + $('#new_sbml_model_file_name').val() + '/';
+            if ($('#sess_id').val().length > 0)
+                myurl = myurl + $('#sess_id').val();
             $.ajax({
-                url: "/delete_sbml_model/" + $('#new_sbml_model_file_name').val(),
+                url: myurl,
                 type: "POST",
                 data: {
                     csrfmiddlewaretoken: '{{ csrf_token }}'
@@ -311,6 +328,7 @@
                             else if (idx > 0)
                                 model_name_sel_str = model_name_sel_str.substr(0, idx) + model_name_sel_str.substr(idx + search_str.length);
                         }
+                        created_model_str = '';
                         if (model_file_sel_str.length > 0 && model_name_sel_str.length > 0) {
                             $('#mdname').val(model_file_sel_str + ";" + model_name_sel_str);
                             $('#mddesc').val(model_file_sel_str + ";" + model_name_sel_str);
@@ -341,6 +359,7 @@
                 url: "/create_sbml_model/",
                 type: "POST",
                 data: {
+                    sess_id: $('#sess_id').val(),
                     num_G1: $('#num_G1').val(),
                     rate_G1: $('#rate_G1').val(),
                     num_S: $('#num_S').val(),
@@ -364,7 +383,11 @@
                         $('#new_sbml_model_file_name').val(json.new_model_filename);
                         $('#delete-sbml-model').show();
                         $('#delete-sbml-model-help-block').show();
-                        model_name_sel_str += json.new_model_filename + ":" + json.new_model_filename;
+                        created_model_str = json.new_model_filename + ":" + json.new_model_filename;
+                        if (model_name_sel_str.length <= 0)
+                            model_name_sel_str = created_model_str;
+                        else
+                            model_name_sel_str += ";" + created_model_str;
                         if (model_file_sel_str.length > 0) {
                             $('#mdname').val(model_file_sel_str + ";" + model_name_sel_str);
                             $('#mddesc').val(model_file_sel_str + ";" + model_name_sel_str);
