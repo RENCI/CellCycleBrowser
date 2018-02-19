@@ -140,6 +140,9 @@ module.exports = function() {
       return p || c.trace.highlight !== null;
     }, false);
 
+    // Update tooltips
+    $(".timeSeries .curve").tooltip("hide");
+
     drawTitle();
     drawAxes();
     drawCurves(svg.select(".curves"),
