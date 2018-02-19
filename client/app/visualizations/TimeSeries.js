@@ -265,6 +265,10 @@ module.exports = function() {
       var curve = selection.selectAll(".curve")
           .data(data);
 
+      var sortScale = d3.scaleOrdinal()
+          .domain(["none", "secondary", "primary"])
+          .range([0, 1, 2]);
+
       // Enter + update
       curve.enter().append("g")
           .attr("class", "curve")
@@ -276,11 +280,24 @@ module.exports = function() {
             dispatcher.call("highlightTrace", this, null);
           })
         .merge(curve)
+          .sort(function(a, b) {
+            var v1 = a.trace.highlight ? a.trace.highlight : sortScale.domain()[0],
+                v2 = b.trace.highlight ? b.trace.highlight : sortScale.domain()[0];
+
+            return d3.ascending(sortScale(v1), sortScale(v2));
+          })
+          .style("stroke-dasharray", function(d) {
+            if (doHighlight) {
+              return d.trace.highlight === "primary" ? null :
+                     d.trace.highlight === "secondary" ? "5 5" :
+                     null;
+            }
+          })
           .style("stroke-opacity", function(d) {
             if (doHighlight) {
               return d.trace.highlight === "primary" ? 1 :
-                     d.trace.highlight === "secondary" ? 0.5 :
-                     0.05;
+                     d.trace.highlight === "secondary" ? 1 :
+                     0.1;
             }
             else {
               return null;
