@@ -1,11 +1,11 @@
 import json
 import os
+import zipfile
+from shutil import make_archive
 import csv
 from collections import OrderedDict
 
 from libsbml import *
-
-import simplesbml
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -65,6 +65,28 @@ def read_metadata_from_csv_data(file_base_name, csv_data, required_md_elems=[]):
                                       ' does not have required metadata element: ' + req_elem)
 
     return first_data_row, mdict
+
+
+def zip_all_data(zip_path, zip_filename):
+    ds_zip_file = os.path.join(zip_path, 'datasets')
+    model_zip_file = os.path.join(zip_path, 'models')
+    ds_path = os.path.join(zip_path, settings.CELL_DATA_PATH)
+    model_path = os.path.join(zip_path, settings.MODEL_INPUT_PATH)
+
+    make_archive(ds_zip_file, 'zip', ds_path)
+    make_archive(model_zip_file, 'zip', model_path)
+
+    model_zip_file += '.zip'
+    ds_zip_file += '.zip'
+
+    zip_path_file = os.path.join(zip_path, zip_filename)
+    with zipfile.ZipFile(zip_path_file, 'w') as zfile:
+        zfile.write(model_zip_file, 'models.zip')
+        zfile.write(ds_zip_file, 'datasets.zip')
+
+    # remove intermediate zip files
+    os.remove(model_zip_file)
+    os.remove(ds_zip_file)
 
 
 # cell_data_filename input has to be the full path that can be directly opened by the server

@@ -101,6 +101,49 @@ def cell_data_meta(request, filename):
     return HttpResponse(template.render(context, request))
 
 
+def download_all_data(request):
+    sess_str = get_guest_session(request)
+    if sess_str:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+    else:
+        ws_path = settings.WORKSPACE_PATH
+
+    prof_conf_name = os.path.join(ws_path, settings.WORKSPACE_CONFIG_PATH, settings.WORKSPACE_CONFIG_FILENAME)
+    profs = utils.get_profile_list(prof_conf_name)
+
+    context = {'dataset_list': utils.get_dataset_list(profs),
+               'model_list': utils.get_model_list(profs),
+               "download_url": "/download/"
+               }
+    template = loader.get_template('cc_core/download_all_data.html')
+    return HttpResponse(template.render(context, request))
+
+
+def download_all(request):
+    sess_str = get_guest_session(request)
+    if sess_str:
+        ws_path = os.path.join(settings.GUEST_WORKSPACE_PATH, sess_str)
+    else:
+        ws_path = settings.WORKSPACE_PATH
+
+    filename = settings.DATA_ZIP_FILENAME
+    full_path_filename = os.path.join(ws_path, filename)
+    if not os.path.isfile(full_path_filename):
+        # create the zipped file that contain all data
+        utils.zip_all_data(ws_path, filename)
+
+    # obtain mime_type to set content_type
+    mtype = 'application/zip'
+    # obtain file size
+    stat_info = os.stat(full_path_filename)
+    flen = stat_info.st_size
+    f = open(full_path_filename, 'r')
+    response = FileResponse(f, content_type=mtype)
+    response['Content-Disposition'] = 'attachment; filename="{name}"'.format(name=filename)
+    response['Content-Lengtsh'] = flen
+    return response
+
+
 def download(request, filename):
     _, ext = os.path.splitext(filename)
     sess_str = get_guest_session(request)

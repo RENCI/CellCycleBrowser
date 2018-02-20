@@ -210,6 +210,8 @@ WORKSPACE_CONFIG_PATH = 'config'
 WORKSPACE_CONFIG_FILENAME = 'profile_list.json'
 DATASET_CONFIG_NAME = 'dataset_config.json'
 
+DATA_ZIP_FILENAME = 'all_data.zip'
+
 ####################
 # LOGGING SETTINGS #
 ####################
