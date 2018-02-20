@@ -94,7 +94,9 @@ def cell_data_meta(request, filename):
     else:
         mdict = {}
 
-    context = {'metadata_dict': mdict}
+    context = {'metadata_dict': mdict,
+               "download_url": "/download/" + filename + "/"
+               }
     template = loader.get_template('cc_core/cell_meta.html')
     return HttpResponse(template.render(context, request))
 

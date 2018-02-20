@@ -5,7 +5,12 @@
 {% block content %}
     <div class="container">
         <div class="row">
-            <h2>Dataset Information</h2>
+            <h3 class="meta-title">Dataset Information</h3>
+            <a href={{download_url}}>
+                <span class="glyphicon glyphicon-download-alt" data-toggle="tooltip"
+                      data-placement="auto top" title="Download dataset" style="margin-left: 4px">
+                </span>
+            </a>
         </div>
         {% if metadata_dict %}
             <div class="row">
