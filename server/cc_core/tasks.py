@@ -5,6 +5,8 @@ import sys
 import logging
 import json
 import shutil
+import time
+import datetime
 
 import stochpy
 
@@ -19,11 +21,25 @@ logger = logging.getLogger('django')
 
 @periodic_task(ignore_result=True, run_every=crontab(minute=0, hour=0))
 def delete_guest_workspaces():
+    # only delete guest workspaces when the workspaces have existed for over 12 hours
+    to_delete = False
+
     for dirName, subdirList, fileList in os.walk(settings.GUEST_WORKSPACE_PATH):
         for sdn in subdirList:
-            shutil.rmtree(os.path.join(dirName, sdn))
+            spath = os.path.join(dirName, sdn)
+            if not to_delete:
+                ctime = os.path.getctime(spath)
+                ctime_dt = datetime.datetime.strptime(time.ctime(ctime), "%a %b %d %H:%M:%S %Y")
+                ctime_now = datetime.datetime.now()
+                time_delta = ctime_now - ctime_dt
+                time_delta_hrs = int(str(time_delta).split(':')[0])
+                if time_delta_hrs > 12:
+                    to_delete = True
+            if to_delete:
+                shutil.rmtree(spath)
         for fname in fileList:
-            os.remove(os.path.join(dirName, fname))
+            if to_delete:
+                os.remove(os.path.join(dirName, fname))
 
 
 @shared_task(bind=True)

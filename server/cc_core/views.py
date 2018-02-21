@@ -60,7 +60,7 @@ def index(request, session=''):
             messages.info(request, guest_sess_prefix_str + session)
             status_msg = 'You are in your temporary guest playground where you can explore your own data in conjunction ' \
                          'with system-provided data as specified in the guest workspace you created. The guest data will ' \
-                         'be cleaned up nightly from the system.'
+                         'exist on the server for at least 12 hours, then will be cleaned up nightly from the system.'
         else:
             status_msg = ''
     else:
