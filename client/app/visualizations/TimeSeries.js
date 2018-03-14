@@ -16,6 +16,9 @@ module.exports = function() {
       phases,
       alignment = "left",
 
+      // Appearance
+      minDistance = 4,
+
       // Scales
       phaseColorScale = d3.scaleOrdinal(),
 
@@ -289,7 +292,7 @@ module.exports = function() {
           .style("stroke-dasharray", function(d) {
             if (doHighlight) {
               return d.trace.highlight === "primary" ? null :
-                     d.trace.highlight === "secondary" ? "5 5" :
+                     d.trace.highlight === "secondary" ? "4 8" :
                      null;
             }
           })
@@ -309,6 +312,23 @@ module.exports = function() {
       curve.exit().remove();
 
       function drawCurve(d) {
+        var curveData = [d.curve[0]];
+        d.curve.forEach(function(d, i) {
+          if (i === 0) return;
+
+          var previous = curveData[curveData.length - 1];
+
+          var x0 = xScale(previous[0]),
+              y0 = yScale(previous[1]),
+              x1 = xScale(d[0]),
+              y1 = yScale(d[1]),
+              x = x1 - x0,
+              y = y1 - y0;
+              distance = Math.sqrt(x * x + y * y);
+
+          if (distance >= minDistance) curveData.push(d);
+        });
+
         var g = d3.select(this)
             .attr("data-original-title",
               d.trace.track.source + ": " +
@@ -329,7 +349,7 @@ module.exports = function() {
         // Curve background
         if (d.trace.name === "Average") {
           var curve = g.selectAll(".background")
-              .data([d.curve]);
+              .data([curveData]);
 
           curve.enter().append("path")
               .attr("class", "background")
@@ -342,11 +362,12 @@ module.exports = function() {
 
         // Curve
         var curve = g.selectAll(".foreground")
-            .data([d.curve]);
+            .data([curveData]);
 
         curve.enter().append("path")
             .attr("class", "foreground")
             .style("fill", "none")
+            .style("pointer-events", d.trace.name === "Average" ? "none" : null)
           .merge(curve)
             .attr("d", line)
             .style("stroke", curveColor(d))
