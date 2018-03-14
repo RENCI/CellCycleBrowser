@@ -5,29 +5,26 @@
 {% block content %}
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3>Dataset Information</h3>          
+            <h3 class="meta-title">Dataset Information</h3>
         </div>
-        <div class="panel-body">
-            {% if metadata_dict %}
+        {% if metadata_dict %}
+            <table class="table table-bordered">
                 {% for key, value in metadata_dict.items %}
-                    <div class="row">
-                        <label class = "col-sm-4">{{ key }}</label>
-                        <div class="col-sm-8">
-                            {{ value }}
-                        </div>
-                    </div>
+                    <tr>
+                        <td><strong>{{ key }}</strong></td>
+                        <td>{{ value }}</td>
+                    </tr>
                 {% endfor %}
-            {% else %}
-                <div class="row">
-                    <h3>The dataset you selected does not have any metadata.</h3>
-                </div>
-            {% endif %}
-        </div>
-        <div class="panel-footer">
-            Download: <a href={{download_url}}>
-                <span class="glyphicon glyphicon-download-alt" data-toggle="tooltip"
-                      data-placement="auto top" title="Download dataset" style="margin-left: 4px">
-                </span>
+            </table>
+        {% else %}
+            <div class="panel-body">
+                <h3>The dataset you selected does not have any metadata.</h3>
+            </div>
+        {% endif %}
+        <div class="panel-footer text-center">
+            Download:
+            <a href={{download_url}}>
+                <span class="glyphicon glyphicon-download-alt" style="margin-left: 4px"></span>
             </a>
         </div>
     </div>

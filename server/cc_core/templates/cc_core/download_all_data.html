@@ -3,40 +3,38 @@
 {% block title %}Data Download{% endblock %}
 
 {% block content %}
-    <div class="container">
-        <div class="row">
-            <h3 class="meta-title">Download a zip file that contains all datasets and models:</h3>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="meta-title">Download a zip file containing all datasets and models:</h3>
             <a href={{download_url}}>
-                <span class="glyphicon glyphicon-download-alt" data-toggle="tooltip"
-                      data-placement="auto top" title="Download all data in a zip file" style="margin-left: 4px">
-                </span>
+                <span class="glyphicon glyphicon-download-alt" style="margin-left: 4px"></span>
             </a>
         </div>
-        {% if dataset_list %}
-            <div class="row">
-                <h3>Below is list of all datasets being included in the download:</h3>
-            </div>
-            {% for dataset in dataset_list %}
-                <div class="row">
-                    <label class = "col-sm-4">{{ dataset.fileName }}</label>
-                    <div class="col-sm-8">
-                        {{ dataset.name }}:{{ dataset.description }}
-                    </div>
-                </div>
-            {% endfor %}
-        {% endif %}
-        {% if model_list %}
-            <div class="row">
-                <h3>Below is list of all models being included in the download:</h3>
-            </div>
-            {% for model in model_list %}
-                <div class="row">
-                    <label class = "col-sm-4">{{ model.fileName }}</label>
-                    <div class="col-sm-8">
-                        {{ model.name }}:{{ model.description }}
-                    </div>
-                </div>
-            {% endfor %}
-        {% endif %}
+        <div class="panel-body">
+          {% if dataset_list %}
+              <table class="table table-bordered table-striped">
+                <caption>
+                    <h3>All datasets included in the download:</h3>
+                </caption>
+                {% for dataset in dataset_list %}
+                    <tr>
+                        <td><strong>{{ dataset.fileName }}</strong></td>
+                        <td>{{ dataset.name }}:{{ dataset.description }}</td>
+                    </tr>
+                {% endfor %}
+          {% endif %}
+          {% if model_list %}
+              <table class="table table-bordered table-striped">
+              <caption>
+                  <h3>All models included in the download:</h3>
+              </caption>
+              {% for model in model_list %}
+                  <tr>
+                      <td><strong>{{ model.fileName }}</strong></td>
+                      <td>{{ model.name }}:{{ model.description }}</td>
+                  </tr>
+              {% endfor %}
+          {% endif %}
+        </div>
     </div>
 {% endblock %}
