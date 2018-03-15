@@ -17,7 +17,7 @@ phases = ['G1', 'S', 'G2M']
 
 
 def read_metadata_from_csv_data(file_base_name, csv_data, required_md_elems=[]):
-    mdict = {}
+    mdict = OrderedDict()
     md_begin = False
     md_end = False
     first_data_row = ''
