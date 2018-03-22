@@ -13,7 +13,7 @@ class InformationHoverContainer extends React.Component {
     var content = trigger.next().first();
 
     trigger.popover({
-       content: content.html()
+      content: content.html()
     });
   }
 
