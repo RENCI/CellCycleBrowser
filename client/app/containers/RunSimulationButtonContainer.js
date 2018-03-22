@@ -1,5 +1,5 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var SimulationOutputStore = require("../stores/SimulationOutputStore");
 var RunSimulationButton = require("../components/RunSimulationButton");
 var SimulationError = require("../components/SimulationError");
@@ -17,30 +17,35 @@ function getStateFromStore() {
 
 var defaultLabel = "Run simulation";
 
-var RunSimulationButtonContainer = React.createClass ({
-  propTypes: {
-    subphases: PropTypes.arrayOf(PropTypes.object).isRequired,
-    numTrajectories: PropTypes.number.isRequired,
-    phaseColorScale: PropTypes.func.isRequired
-  },
-  getInitialState: function () {
-    return {
+class RunSimulationButtonContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
       label: defaultLabel,
       outputState: SimulationOutputStore.getState(),
       error: SimulationOutputStore.getError(),
       progress: SimulationOutputStore.getProgress()
-    }
-  },
-  componentDidMount: function () {
+    };
+
+    // Need to bind this to callback functions here
+    this.onSimulationOutputStoreChange = this.onSimulationOutputStoreChange.bind(this);
+    this.handleButtonClick = this.handleButtonClick.bind(this);
+  }
+
+  componentDidMount() {
     SimulationOutputStore.addChangeListener(this.onSimulationOutputStoreChange);
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     SimulationOutputStore.removeChangeListener(this.onSimulationOutputStoreChange);
-  },
-  onSimulationOutputStoreChange: function () {
+  }
+
+  onSimulationOutputStoreChange() {
     this.setState(getStateFromStore());
-  },
-  handleButtonClick: function () {
+  }
+
+  handleButtonClick() {
     // Create timer for label
     var count = 0;
     (function timer() {
@@ -65,11 +70,13 @@ var RunSimulationButtonContainer = React.createClass ({
     }.bind(this))();
 
     ViewActionCreators.runSimulation();
-  },
-  handleCancel: function () {
+  }
+
+  handleCancel() {
     ViewActionCreators.cancelSimulation();
-  },
-  render: function () {
+  }
+
+  render() {
     var disabled = this.state.outputState === Constants.SIMULATION_OUTPUT_INVALID;
 
     return (
@@ -91,6 +98,12 @@ var RunSimulationButtonContainer = React.createClass ({
       </div>
     );
   }
-});
+}
+
+RunSimulationButtonContainer.propTypes = {
+  subphases: PropTypes.arrayOf(PropTypes.object).isRequired,
+  numTrajectories: PropTypes.number.isRequired,
+  phaseColorScale: PropTypes.func.isRequired
+};
 
 module.exports = RunSimulationButtonContainer;

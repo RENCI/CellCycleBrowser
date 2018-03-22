@@ -1,47 +1,50 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var ToggleButton = require("../components/ToggleButton");
 var SelectAllButton = require("../components/SelectAllButton");
 var UnselectAllButton = require("../components/UnselectAllButton");
 
-var ToggleButtonContainer = React.createClass ({
-  propTypes: {
-    selected: PropTypes.bool,
-    onClick: PropTypes.func
-  },
-  getDefaultProps: function () {
-    return {
-      selected: false,
-      onClick: null
-    }
-  },
-  getInitialState: function () {
-    return {
+class ToggleButtonContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
       mouseOver: false,
       mouseDown: false
     };
-  },
-  handleMouseOver: function () {
+
+    // Need to bind this to callback functions here
+    this.handleMouseOver = this.handleMouseOver.bind(this);
+    this.handleMouseOut = this.handleMouseOut.bind(this);
+    this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.handleMouseUp = this.handleMouseUp.bind(this);
+  }
+
+  handleMouseOver() {
     this.setState({
       mouseOver: true
     });
-  },
-  handleMouseOut: function () {
+  }
+
+  handleMouseOut() {
     this.setState({
       mouseOver: false
     });
-  },
-  handleMouseDown: function () {
+  }
+
+  handleMouseDown() {
     this.setState({
       mouseDown: true
     });
-  },
-  handleMouseUp: function () {
+  }
+
+  handleMouseUp() {
     this.setState({
       mouseDown: false
     });
-  },
-  render: function () {
+  }
+
+  render() {
     return (
       <ToggleButton
         selected={this.props.selected}
@@ -54,6 +57,16 @@ var ToggleButtonContainer = React.createClass ({
         onClick={this.props.onClick} />
     );
   }
-});
+}
+
+ToggleButtonContainer.propTypes = {
+  selected: PropTypes.bool,
+  onClick: PropTypes.func
+};
+
+ToggleButtonContainer.defaultProps = {
+  selected: false,
+  onClick: null
+};
 
 module.exports = ToggleButtonContainer;

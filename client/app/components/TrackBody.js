@@ -1,5 +1,5 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
 var DendrogramContainer = require("../containers/DendrogramContainer");
 var TraceControlsContainer = require("../containers/TraceControlsContainer");

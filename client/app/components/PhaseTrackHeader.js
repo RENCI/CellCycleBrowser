@@ -1,5 +1,5 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var TrackColorIcon = require("./TrackColorIcon");
 var Constants = require("../constants/Constants");
 

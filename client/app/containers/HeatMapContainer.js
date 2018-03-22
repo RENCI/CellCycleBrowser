@@ -1,43 +1,42 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var HeatMap = require("../visualizations/HeatMap");
 var d3 = require("d3");
 
-var HeatMapContainer = React.createClass({
-  propTypes: {
-    data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
-    dataExtent: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
-    phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
-    timeExtent: PropTypes.arrayOf(PropTypes.number),
-    phaseColorScale: PropTypes.func.isRequired,
-    phaseOverlayOpacity: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired
-  },
-  getInitialState: function() {
+class HeatMapContainer extends React.Component {
+  constructor() {
+    super();
+
     // Create visualization function
     this.heatMap = HeatMap();
 
-    return null;
-  },
-  componentDidMount: function () {
+    // Need to bind this to callback functions here
+    this.onResize = this.onResize.bind(this);
+  }
+
+  componentDidMount() {
     this.resize();
 
     // Resize on window resize
     window.addEventListener("resize", this.onResize);
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     window.removeEventListener("resize", this.onResize);
-  },
-  componentWillUpdate: function (props, state) {
+  }
+
+  componentWillUpdate(props, state) {
     this.drawVisualization(props, state);
 
     return false;
-  },
-  onResize: function () {
+  }
+
+  onResize() {
     this.resize();
-  },
-  drawVisualization: function (props, state) {
+  }
+
+  drawVisualization(props, state) {
     // Set up heat map
     this.heatMap
         .width(this.getNode().clientWidth)
@@ -52,14 +51,17 @@ var HeatMapContainer = React.createClass({
     d3.select(this.getNode())
         .datum(props.data)
         .call(this.heatMap);
-  },
-  resize: function () {
+  }
+
+  resize() {
     this.drawVisualization(this.props, this.state);
-  },
-  getNode: function () {
+  }
+
+  getNode() {
     return ReactDOM.findDOMNode(this);
-  },
-  render: function() {
+  }
+
+  render() {
     // Create style here to update height and avoid mutated style warning
     var style = {
       backgroundColor: "#eee",
@@ -68,6 +70,16 @@ var HeatMapContainer = React.createClass({
 
     return <div style={style}></div>
   }
-});
+}
+
+HeatMapContainer.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  dataExtent: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+  phases: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  timeExtent: PropTypes.arrayOf(PropTypes.number),
+  phaseColorScale: PropTypes.func.isRequired,
+  phaseOverlayOpacity: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired
+};
 
 module.exports = HeatMapContainer;

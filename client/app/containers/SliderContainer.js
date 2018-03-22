@@ -1,43 +1,34 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var Slider = require("../components/Slider");
 
-var SliderContainer = React.createClass ({
-  propTypes: {
-    label: PropTypes.string,
-    min: PropTypes.number,
-    max: PropTypes.number,
-    step: PropTypes.number,
-    initialValue: PropTypes.number,
-    onChange: PropTypes.func.isRequired
-  },
-  getDefaultProps: function () {
-    return {
-      label: "",
-      min: 0,
-      max: 1,
-      step: 0.1,
-      initialValue: 0.5
+class SliderContainer extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      value: props.initialValue
     };
-  },
-  getInitialState: function () {
-    return {
-      value: this.props.initialValue
-    };
-  },
-  handleChange: function (value) {
+
+    // Need to bind this to callback functions here
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(value) {
     this.setState({
       value: value
     });
 
     this.props.onChange(value);
-  },
-  componentWillReceiveProps: function (nextProps) {
+  }
+
+  componentWillReceiveProps(nextProps) {
     this.setState({
       value: nextProps.initialValue
     });
-  },
-  render: function () {
+  }
+
+  render() {
     return (
       <Slider
         label={this.props.label}
@@ -48,6 +39,23 @@ var SliderContainer = React.createClass ({
         onChange={this.handleChange} />
     );
   }
-});
+}
+
+SliderContainer.propTypes = {
+  label: PropTypes.string,
+  min: PropTypes.number,
+  max: PropTypes.number,
+  step: PropTypes.number,
+  initialValue: PropTypes.number,
+  onChange: PropTypes.func.isRequired
+};
+
+SliderContainer.defaultProps = {
+  label: "",
+  min: 0,
+  max: 1,
+  step: 0.1,
+  initialValue: 0.5
+};
 
 module.exports = SliderContainer;

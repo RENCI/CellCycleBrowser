@@ -1,48 +1,45 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var PhaseMap = require("../visualizations/PhaseMap");
 var d3 = require("d3");
 
-var PhaseMapContainer = React.createClass({
-  propTypes: {
-    data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
-    timeExtent: PropTypes.arrayOf(PropTypes.number),
-    activeIndex: PropTypes.string.isRequired,
-    colorScale: PropTypes.func.isRequired,
-    height: PropTypes.number.isRequired,
-    isAverage: PropTypes.bool,
-    alignment: PropTypes.string.isRequired
-  },
-  getDefautProps: {
-    isAverage: false
-  },
-  getInitialState: function () {
+class PhaseMapContainer extends React.Component {
+  constructor() {
+    super();
+
     // Create visualization function
     this.phaseMap = PhaseMap()
         .on("selectTrajectory", this.handleSelectTrajectory);
 
-    return null;
-  },
-  componentDidMount: function () {
+    // Need to bind this to callback functions here
+    this.onResize = this.onResize.bind(this);
+    this.handleSelectTrajectory = this.handleSelectTrajectory.bind(this);
+  }
+
+  componentDidMount() {
     this.resize();
 
     // Resize on window resize
     window.addEventListener("resize", this.onResize);
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     window.removeEventListener("resize", this.onResize);
-  },
-  componentWillUpdate: function (props, state) {
+  }
+
+  componentWillUpdate(props, state) {
     this.drawVisualization(props, state);
 
     return false;
-  },
-  onResize: function () {
+  }
+
+  onResize() {
     this.resize();
-  },
-  drawVisualization: function (props, state) {
+  }
+
+  drawVisualization(props, state) {
     // Set up phase map
     this.phaseMap
         .height(props.height)
@@ -56,25 +53,29 @@ var PhaseMapContainer = React.createClass({
     d3.select(this.getNode())
         .datum(props.data)
         .call(this.phaseMap);
-  },
-  resize: function () {
+  }
+
+  resize() {
     var width = this.getNode().clientWidth;
 
     this.phaseMap.width(width);
 
     this.drawVisualization(this.props, this.state);
-  },
-  getNode: function () {
+  }
+
+  getNode() {
     return ReactDOM.findDOMNode(this);
-  },
-  handleSelectTrajectory: function(trajectory) {
+  }
+
+  handleSelectTrajectory(trajectory) {
     if (trajectory && this.props.isAverage) {
       trajectory = "average";
     }
 
     ViewActionCreators.selectTrajectory(trajectory);
-  },
-  render: function() {
+  }
+
+  render() {
     // Create style here to update height and avoid mutated style warning
     var style = {
       backgroundColor: "#eee",
@@ -83,6 +84,20 @@ var PhaseMapContainer = React.createClass({
 
     return <div style={style}></div>
   }
-});
+}
+
+PhaseMapContainer.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.object)).isRequired,
+  timeExtent: PropTypes.arrayOf(PropTypes.number),
+  activeIndex: PropTypes.string.isRequired,
+  colorScale: PropTypes.func.isRequired,
+  height: PropTypes.number.isRequired,
+  isAverage: PropTypes.bool,
+  alignment: PropTypes.string.isRequired
+};
+
+PhaseMapContainer.defaultProps = {
+  isAverage: false
+};
 
 module.exports = PhaseMapContainer;

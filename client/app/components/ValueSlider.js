@@ -1,5 +1,5 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 
 function ValueSlider(props) {
   var strokeWidth = 2;

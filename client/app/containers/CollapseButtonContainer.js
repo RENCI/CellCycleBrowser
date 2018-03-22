@@ -1,18 +1,20 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var CollapseButton = require("../components/CollapseButton");
 
-var CollapseButtonContainer = React.createClass ({
-  propTypes: {
-    targetId: PropTypes.string.isRequired,
-    track: PropTypes.object.isRequired,
-  },
-  getInitialState: function () {
-    return {
+class CollapseButtonContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
       toggle: false
     };
-  },
-  handleClick: function () {
+
+    // Need to bind this to callback functions here
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick() {
     // Store collapse with track. No need to go through DataStore, as no other
     // component cares about this
     this.props.track.collapse = !this.props.track.collapse;
@@ -21,8 +23,9 @@ var CollapseButtonContainer = React.createClass ({
     this.setState({
       toggle: !this.state.collapse
     });
-  },
-  render: function () {
+  }
+
+  render() {
     return (
       <CollapseButton
         targetId={this.props.targetId}
@@ -30,6 +33,11 @@ var CollapseButtonContainer = React.createClass ({
         onClick={this.handleClick} />
     );
   }
-});
+}
+
+CollapseButtonContainer.propTypes = {
+  targetId: PropTypes.string.isRequired,
+  track: PropTypes.object.isRequired
+};
 
 module.exports = CollapseButtonContainer;

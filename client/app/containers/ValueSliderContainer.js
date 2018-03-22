@@ -1,62 +1,56 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var ValueSlider = require("../components/ValueSlider");
 
-var ValueSliderContainer = React.createClass ({
-  propTypes: {
-    min: PropTypes.number,
-    max: PropTypes.number,
-    step: PropTypes.number,
-    initialValue: PropTypes.number,
-    value: PropTypes.number,
-    handleRadius: PropTypes.number,
-    handleColorScale: PropTypes.func,
-    onChange: PropTypes.func
-  },
-  getDefaultProps: function () {
-    return {
-      min: 0,
-      max: 1,
-      step: 0.1,
-      initialValue: 0.5,
-      value: 0.5,
-      handleRadius: 8,
-      handleColorScale: null
-    };
-  },
-  getInitialState: function () {
+class ValueSliderContainer extends React.Component {
+  constructor() {
+    super();
+
     this.trackClick = true;
 
-    return {
+    this.state = {
       width: 200
     };
-  },
-  componentDidMount: function () {
+
+    // Need to bind this to callback functions here
+    this.onResize = this.onResize.bind(this);
+    this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+    this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.handleMouseUp = this.handleMouseUp.bind(this);
+  }
+
+  componentDidMount() {
     this.resize();
 
     // Resize on window resize
     window.addEventListener("resize", this.onResize);
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     window.removeEventListener("resize", this.onResize);
 
     // Unregister mouse events
     this.unregisterMouseCallbacks();
-  },
-  componentDidUpdate: function () {
+  }
+
+  componentDidUpdate() {
     if (this.state.width !== this.refs.wrapper.clientWidth) {
       this.resize();
     }
-  },
-  onResize: function () {
+  }
+
+  onResize() {
     this.resize();
-  },
-  resize: function () {
+  }
+
+  resize() {
     this.setState({
       width: this.refs.wrapper.clientWidth
     });
-  },
-  updateSVG: function (e, sliderMin, sliderMax) {
+  }
+
+  updateSVG(e, sliderMin, sliderMax) {
     // Save svg element and create an svg point for transforming coordinates
     // XXX: Get this after rendering?
     this.svg = e.currentTarget;
@@ -67,16 +61,18 @@ var ValueSliderContainer = React.createClass ({
       var v = this.props.min + (x - sliderMin) / (sliderMax - sliderMin) * (this.props.max - this.props.min);
       return Math.min(Math.max(this.props.min, v), this.props.max);
     }
-  },
-  transformPoint: function (e) {
+  }
+
+  transformPoint(e) {
     this.svgPoint.x = e.clientX;
     this.svgPoint.y = e.clientY;
 
     var point = this.svgPoint.matrixTransform(this.svg.getScreenCTM().inverse());
 
     return this.toValue(point.x);
-  },
-  handleMouseDown: function (e, sliderMin, sliderMax) {
+  }
+
+  handleMouseDown(e, sliderMin, sliderMax) {
     e.preventDefault();
 
     this.updateSVG(e, sliderMin, sliderMax);
@@ -85,8 +81,9 @@ var ValueSliderContainer = React.createClass ({
     this.registerMouseCallbacks();
 
     this.trackClick = false;
-  },
-  handleClick: function (e, sliderMin, sliderMax) {
+  }
+
+  handleClick(e, sliderMin, sliderMax) {
     if (this.trackClick) {
       this.updateSVG(e, sliderMin, sliderMax);
 
@@ -96,8 +93,9 @@ var ValueSliderContainer = React.createClass ({
     }
 
     this.trackClick = true;
-  },
-  handleMouseMove: function (e) {
+  }
+
+  handleMouseMove(e) {
     e.stopPropagation();
 
     var value = this.transformPoint(e);
@@ -109,26 +107,32 @@ var ValueSliderContainer = React.createClass ({
     }
 
     this.props.onChange(value);
-  },
-  handleMouseUp: function () {
+  }
+
+  handleMouseUp() {
     // Unregister mouse events
     this.unregisterMouseCallbacks();
-  },
-  handleDoubleClick: function (e) {
+  }
+
+  handleDoubleClick(e) {
     e.preventDefault();
 
     this.props.onChange(this.props.initialValue);
-  },
-  registerMouseCallbacks: function () {
+  }
+
+  registerMouseCallbacks() {
     document.addEventListener("mousemove", this.handleMouseMove);
     document.addEventListener("mouseup", this.handleMouseUp);
-  },
-  unregisterMouseCallbacks: function () {
+  }
+
+  unregisterMouseCallbacks() {
     document.removeEventListener("mousemove", this.handleMouseMove);
     document.removeEventListener("mouseup", this.handleMouseUp);
-  },
-  render: function () {
-    var handleColor = initialValueColor = "white";
+  }
+
+  render() {
+    var initialValueColor = "white";
+    var handleColor = initialValueColor;
 
     if (this.props.handleColorScale) {
       handleColor = this.props.handleColorScale(this.props.value);
@@ -153,6 +157,27 @@ var ValueSliderContainer = React.createClass ({
       </div>
     );
   }
-});
+}
+
+ValueSliderContainer.propTypes = {
+  min: PropTypes.number,
+  max: PropTypes.number,
+  step: PropTypes.number,
+  initialValue: PropTypes.number,
+  value: PropTypes.number,
+  handleRadius: PropTypes.number,
+  handleColorScale: PropTypes.func,
+  onChange: PropTypes.func
+};
+
+ValueSliderContainer.defaultProps = {
+  min: 0,
+  max: 1,
+  step: 0.1,
+  initialValue: 0.5,
+  value: 0.5,
+  handleRadius: 8,
+  handleColorScale: null
+};
 
 module.exports = ValueSliderContainer;

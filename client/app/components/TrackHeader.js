@@ -1,5 +1,5 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var ClusterTracesButtons = require("./ClusterTracesButtons");
 var ShowPhaseOverlayButton = require("./ShowPhaseOverlayButton");
 var RescaleTracesButton = require("./RescaleTracesButton");

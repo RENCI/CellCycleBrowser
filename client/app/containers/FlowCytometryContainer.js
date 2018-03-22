@@ -1,6 +1,6 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var FlowCytometry = require("../visualizations/FlowCytometry");
 var DataStore = require("../stores/DataStore");
 var NucleiDistributionStore = require("../stores/NucleiDistributionStore");
@@ -85,49 +85,56 @@ function createCells(phaseTracks, distributions) {
   });
 }
 
-var FlowCytometryContainer = React.createClass ({
-  // Don't make propsTypes required, as a warning is given for the first render
-  // if using React.cloneElement, as  in VisualizationContainer
-  propTypes: {
-    width: PropTypes.number
-  },
-  getInitialState: function () {
+class FlowCytometryContainer extends React.Component {
+  constructor() {
+    super();
+
     // Create visualization function
     this.flowCytometry = FlowCytometry();
 
-    return {
+    this.state = {
       tracks: getStateFromDataStore().tracks,
       nucleiDistributions: getStateFromNucleiDistributionStore().nucleiDistributions
     };
-  },
-  componentDidMount: function () {
+
+    // Need to bind this to callback functions here
+    this.onDataStoreChange = this.onDataStoreChange.bind(this);
+    this.onNucleiDistributionStoreChange = this.onNucleiDistributionStoreChange.bind(this);
+  }
+
+  componentDidMount() {
     DataStore.addChangeListener(this.onDataStoreChange);
     NucleiDistributionStore.addChangeListener(this.onNucleiDistributionStoreChange);
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     DataStore.removeChangeListener(this.onDataStoreChange);
     NucleiDistributionStore.removeChangeListener(this.onNucleiDistributionStoreChange);
-  },
-  componentWillUpdate: function (props, state) {
+  }
+
+  componentWillUpdate(props, state) {
     this.drawVisualization(props, state);
 
     return false;
-  },
-  onDataStoreChange: function () {
+  }
+
+  onDataStoreChange() {
     // Use a ref to see if we are still mounted, as the change listener
     // can still be fired after unmounting due to an asynchronous ajax request
     if (this.refs[refName]) {
       this.setState(getStateFromDataStore());
     }
-  },
-  onNucleiDistributionStoreChange: function () {
+  }
+
+  onNucleiDistributionStoreChange() {
     // Use a ref to see if we are still mounted, as the change listener
     // can still be fired after unmounting due to an asynchronous ajax request
     if (this.refs[refName]) {
       this.setState(getStateFromNucleiDistributionStore());
     }
-  },
-  drawVisualization: function (props, state) {
+  }
+
+  drawVisualization(props, state) {
     var cells = createCells(state.tracks, state.nucleiDistributions);
 
     var vis = this.flowCytometry
@@ -144,10 +151,17 @@ var FlowCytometryContainer = React.createClass ({
         });
 
     plot.exit().remove();
-  },
-  render: function () {
+  }
+  
+  render() {
     return <div ref={refName}></div>
   }
-});
+}
+
+// Don't make propsTypes required, as a warning is given for the first render
+// if using React.cloneElement, as  in VisualizationContainer
+FlowCytometryContainer.propTypes = {
+  width: PropTypes.number
+};
 
 module.exports = FlowCytometryContainer;

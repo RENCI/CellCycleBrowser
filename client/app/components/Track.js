@@ -1,5 +1,5 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var TrackHeader = require("../components/TrackHeader");
 var TrackBody = require("../components/TrackBody");
 

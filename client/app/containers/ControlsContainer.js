@@ -39,70 +39,89 @@ function getStateFromPhaseStore() {
   };
 }
 
-var ControlsContainer = React.createClass ({
-  getInitialState: function () {
-    return {
+class ControlsContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
       controls: SimulationControlStore.getControls(),
       phaseColorScale: PhaseColorStore.getColorScale(),
       activePhase: PhaseStore.getPhase(),
       collapseToggle: false
     };
-  },
-  componentDidMount: function () {
+
+    // Need to bind this to callback functions here
+    this.onSimulationControlChange = this.onSimulationControlChange.bind(this);
+    this.onPhaseColorChange = this.onPhaseColorChange.bind(this);
+    this.onPhaseChange = this.onPhaseChange.bind(this);
+    this.handleCollapse = this.handleCollapse.bind(this);
+  }
+
+  componentDidMount() {
     SimulationControlStore.addChangeListener(this.onSimulationControlChange);
     PhaseColorStore.addChangeListener(this.onPhaseColorChange);
     PhaseStore.addChangeListener(this.onPhaseChange);
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     SimulationControlStore.removeChangeListener(this.onSimulationControlChange);
     PhaseColorStore.removeChangeListener(this.onPhaseColorChange);
     PhaseStore.removeChangeListener(this.onPhaseChange);
-  },
-  onSimulationControlChange: function () {
+  }
+
+  onSimulationControlChange() {
     this.setState(getStateFromSimulationControlStore());
-  },
-  onPhaseColorChange: function () {
+  }
+
+  onPhaseColorChange() {
     this.setState(getStateFromPhaseColorStore());
-  },
-  onPhaseChange: function () {
+  }
+
+  onPhaseChange() {
     this.setState(getStateFromPhaseStore());
-  },
-  handleCollapse: function () {
+  }
+
+  handleCollapse() {
     this.setState({
       collapseToggle: !this.state.collapseToggle
     });
-  },
-  handleSimulationParameterChange: function (data) {
+  }
+
+  handleSimulationParameterChange(data) {
     ViewActionCreators.changeSimulationParameter(
       data.parameter, data.value
     );
-  },
+  }
 /*
-  handleExpressionLevelSliderChange: function (data) {
+  handleExpressionLevelSliderChange(data) {
     ViewActionCreators.changeSpeciesExpressionLevel(
       data.species, data.value
     );
-  },
+  }
 */
-  handleDegradationSliderChange: function (data) {
+  handleDegradationSliderChange(data) {
     ViewActionCreators.changeSpeciesDegradation(
       data.species, data.value
     );
-  },
-  handleSpeciesPhaseSliderChange: function (data) {
+  }
+
+  handleSpeciesPhaseSliderChange(data) {
     ViewActionCreators.changeSpeciesPhaseInteraction(
       data.species, data.phase, data.value
     );
-  },
-  handleSpeciesSpeciesSliderChange: function (data) {
+  }
+
+  handleSpeciesSpeciesSliderChange(data) {
     ViewActionCreators.changeSpeciesSpeciesInteraction(
       data.phase, data.upstream, data.downstream, data.value
     );
-  },
-  handleButtonClick: function () {
+  }
+
+  handleButtonClick() {
     WebAPIUtils.runSimulation();
-  },
-  render: function () {
+  }
+
+  render() {
     if (!this.state.controls) return null;
 
     var numCells = DataUtils.find(this.state.controls.parameters, "name", "numCells").value;
@@ -143,6 +162,6 @@ var ControlsContainer = React.createClass ({
       </div>
     );
   }
-});
+}
 
 module.exports = ControlsContainer;

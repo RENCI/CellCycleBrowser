@@ -48,9 +48,11 @@ function getStateFromPhaseOverlayStore() {
   };
 }
 
-var BrowserContainer = React.createClass({
-  getInitialState: function () {
-    return {
+class BrowserContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
       data: DataStore.getData(),
       alignment: AlignmentStore.getAlignment(),
       activeTrajectory: TrajectoryStore.getTrajectory(),
@@ -58,42 +60,57 @@ var BrowserContainer = React.createClass({
       showPhaseOverlay: PhaseOverlayStore.getShow(),
       phaseOverlayOpacity: PhaseOverlayStore.getOpacity()
     };
-  },
-  componentDidMount: function () {
+
+    // Need to bind this to callback functions here
+    this.onDataChange = this.onDataChange.bind(this);
+    this.onAlignmentChange = this.onAlignmentChange.bind(this);
+    this.onTrajectoryChange = this.onTrajectoryChange.bind(this);
+    this.onPhaseColorChange = this.onPhaseColorChange.bind(this);
+    this.onPhaseOverlayChange = this.onPhaseOverlayChange.bind(this);
+  }
+
+  componentDidMount() {
     DataStore.addChangeListener(this.onDataChange);
     AlignmentStore.addChangeListener(this.onAlignmentChange);
     TrajectoryStore.addChangeListener(this.onTrajectoryChange);
     PhaseColorStore.addChangeListener(this.onPhaseColorChange);
     PhaseOverlayStore.addChangeListener(this.onPhaseOverlayChange);
-  },
-  componentWillUnmount: function() {
+  }
+
+  componentWillUnmount() {
     DataStore.removeChangeListener(this.onDataChange);
     AlignmentStore.removeChangeListener(this.onAlignmentChange);
     TrajectoryStore.removeChangeListener(this.onTrajectoryChange);
     PhaseColorStore.removeChangeListener(this.onPhaseColorChange);
     PhaseOverlayStore.removeChangeListener(this.onPhaseOverlayChange);
-  },
-  onDataChange: function () {
+  }
+
+  onDataChange() {
     // XXX: I think this is necessary because we are getting state from a store
     // here that is already being retrieved in a parent component. Try passing
     // down that state instead?
     if (this.refs[refName]) {
       this.setState(getStateFromDataStore());
     }
-  },
-  onAlignmentChange: function () {
+  }
+
+  onAlignmentChange() {
     this.setState(getStateFromAlignmentStore());
-  },
-  onTrajectoryChange: function () {
+  }
+
+  onTrajectoryChange() {
     this.setState(getStateFromTrajectoryStore());
-  },
-  onPhaseColorChange: function () {
+  }
+
+  onPhaseColorChange() {
     this.setState(getStateFromPhaseColorStore());
-  },
-  onPhaseOverlayChange: function () {
+  }
+
+  onPhaseOverlayChange() {
     this.setState(getStateFromPhaseOverlayStore());
-  },
-  render: function() {
+  }
+
+  render() {
     var tracks = this.state.data.tracks;
 
     if (tracks.length < 1) return null;
@@ -142,6 +159,6 @@ var BrowserContainer = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = BrowserContainer;

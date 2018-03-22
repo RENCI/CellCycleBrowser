@@ -1,5 +1,5 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var AlignmentSelect = require("../components/AlignmentSelect");
 var AlignmentStore = require("../stores/AlignmentStore");
 var ViewActionCreators = require("../actions/ViewActionCreators");
@@ -10,26 +10,33 @@ function getStateFromStore() {
   };
 }
 
-var AlignmentSelectContainer = React.createClass ({
-  propTypes: {
-    shiftRight: PropTypes.bool.isRequired
-  },
-  getInitialState: function () {
-    return getStateFromStore();
-  },
-  componentDidMount: function () {
+class AlignmentSelectContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = getStateFromStore();
+
+    // Need to bind this to callback functions here
+    this.onAlignmentChange = this.onAlignmentChange.bind(this);
+  }
+
+  componentDidMount() {
     AlignmentStore.addChangeListener(this.onAlignmentChange);
-  },
-  componentWillUnmount: function() {
+  }
+
+  componentWillUnmount() {
     AlignmentStore.removeChangeListener(this.onAlignmentChange);
-  },
-  onAlignmentChange: function () {
+  }
+
+  onAlignmentChange() {
     this.setState(getStateFromStore());
-  },
-  handleChangeAlignment: function (alignment) {
+  }
+
+  handleChangeAlignment(alignment) {
     ViewActionCreators.selectAlignment(alignment);
-  },
-  render: function () {
+  }
+
+  render() {
     return (
       <AlignmentSelect
         alignment={this.state.alignment}
@@ -37,6 +44,10 @@ var AlignmentSelectContainer = React.createClass ({
         onClick={this.handleChangeAlignment} />
     );
   }
-});
+}
+
+AlignmentSelectContainer.propTypes = {
+  shiftRight: PropTypes.bool.isRequired
+};
 
 module.exports = AlignmentSelectContainer;

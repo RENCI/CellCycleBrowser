@@ -20,23 +20,33 @@ function workspaceOption(workspace, i) {
   };
 }
 
-var WorkspaceSelectContainer = React.createClass ({
-  getInitialState: function () {
-    return getStateFromStore();
-  },
-  componentDidMount: function () {
+class WorkspaceSelectContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = getStateFromStore();;
+
+    // Need to bind this to callback functions here
+    this.onWorkspaceChange = this.onWorkspaceChange.bind(this);
+  }
+
+  componentDidMount() {
     WorkspaceStore.addChangeListener(this.onWorkspaceChange);
-  },
-  componentWillUnmount: function() {
+  }
+
+  componentWillUnmount() {
     WorkspaceStore.removeChangeListener(this.onWorkspaceChange);
-  },
-  onWorkspaceChange: function () {
+  }
+
+  onWorkspaceChange() {
     this.setState(getStateFromStore());
-  },
-  handleChangeWorkspace: function (value) {
+  }
+
+  handleChangeWorkspace(value) {
     ViewActionCreators.selectWorkspace(+value);
-  },
-  render: function () {
+  }
+
+  render() {
     return (
       <ItemSelect
         label="Workspace: "
@@ -45,6 +55,6 @@ var WorkspaceSelectContainer = React.createClass ({
         onChange={this.handleChangeWorkspace} />
     );
   }
-});
+}
 
 module.exports = WorkspaceSelectContainer;

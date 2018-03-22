@@ -1,5 +1,5 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var ReactDOM = require("react-dom");
 var ToggleButtonContainer = require("./ToggleButtonContainer");
 var TraceControlPopup = require("../components/TraceControlPopup");
@@ -11,41 +11,56 @@ var divStyle = {
   position: "relative"
 };
 
-var TraceControlContainer = React.createClass ({
-  propTypes: {
-    trace: PropTypes.object.isRequired
-  },
-  getInitialState: function () {
-    return {
+class TraceControlContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
       mouseOver: false
     };
-  },
-  componentDidUpdate: function () {
+
+    // Need to bind this to callback functions here
+    this.handleMouseOver = this.handleMouseOver.bind(this);
+    this.handleMouseLeave = this.handleMouseLeave.bind(this);
+    this.handleToggle = this.handleToggle.bind(this);
+    this.handleSelectAll = this.handleSelectAll.bind(this);
+    this.handleUnselectAll = this.handleUnselectAll.bind(this);
+    this.handleSelectAllAndPhase = this.handleSelectAllAndPhase.bind(this);
+  }
+
+  componentDidUpdate() {
     $(ReactDOM.findDOMNode(this)).find("[data-toggle='tooltip']").tooltip();
-  },
-  handleMouseOver: function () {
+  }
+
+  handleMouseOver() {
     this.setState({
       mouseOver: true
     });
-  },
-  handleMouseLeave: function () {
+  }
+
+  handleMouseLeave() {
     this.setState({
       mouseOver: false
     });
-  },
-  handleToggle: function () {
+  }
+
+  handleToggle() {
     ViewActionCreators.selectTrace(this.props.trace, !this.props.trace.selected);
-  },
-  handleSelectAll: function () {
+  }
+
+  handleSelectAll() {
     ViewActionCreators.selectAllTraces(this.props.trace, true);
-  },
-  handleUnselectAll: function () {
+  }
+
+  handleUnselectAll() {
     ViewActionCreators.selectAllTraces(this.props.trace, false);
-  },
-  handleSelectAllAndPhase: function () {
+  }
+
+  handleSelectAllAndPhase() {
     ViewActionCreators.selectAllTraces(this.props.trace, true, true);
-  },
-  render: function () {
+  }
+
+  render() {
     var trace = this.props.trace;
     var isPhase = trace.hasOwnProperty("phases");
     var hasPhase = !isPhase && trace.track.phases.length > 0;
@@ -68,6 +83,10 @@ var TraceControlContainer = React.createClass ({
       </div>
     );
   }
-});
+}
+
+TraceControlContainer.propTypes = {
+  trace: PropTypes.object.isRequired
+};
 
 module.exports = TraceControlContainer;

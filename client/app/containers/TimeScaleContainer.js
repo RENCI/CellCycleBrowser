@@ -1,39 +1,43 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var TimeScale = require("../visualizations/TimeScale");
 var d3 = require("d3");
 
-var TimeScaleContainer = React.createClass ({
-  propTypes: {
-    timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
-    alignment: PropTypes.string.isRequired
-  },
-  getInitialState: function () {
+class TimeScaleContainer extends React.Component {
+  constructor() {
+    super();
+
     // Create visualization function
     this.timeScale = TimeScale()
         .height(25);
 
-    return null;
-  },
-  componentDidMount: function () {
+    // Need to bind this to callback functions here
+    this.onResize = this.onResize.bind(this);
+  }
+
+  componentDidMount() {
     this.resize();
 
     // Resize on window resize
     window.addEventListener("resize", this.onResize);
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     window.removeEventListener("resize", this.onResize);
-  },
-  componentWillUpdate: function (props, state) {
+  }
+
+  componentWillUpdate(props, state) {
     this.drawVisualization(props);
 
     return false;
-  },
-  onResize: function () {
+  }
+
+  onResize() {
     this.resize();
-  },
-  drawVisualization: function (props) {
+  }
+
+  drawVisualization(props) {
     if (!props.timeExtent) return;
 
     this.timeScale
@@ -44,16 +48,24 @@ var TimeScaleContainer = React.createClass ({
     d3.select(this.getNode())
         .datum(props.timeExtent)
         .call(this.timeScale);
-  },
-  resize: function () {
+  }
+
+  resize() {
     this.drawVisualization(this.props);
-  },
-  getNode: function () {
+  }
+
+  getNode() {
     return ReactDOM.findDOMNode(this);
-  },
-  render: function () {
+  }
+
+  render() {
     return <div></div>
   }
-});
+}
+
+TimeScaleContainer.propTypes = {
+  timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
+  alignment: PropTypes.string.isRequired
+};
 
 module.exports = TimeScaleContainer;

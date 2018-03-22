@@ -2,11 +2,16 @@ var React = require("react");
 var TrackSort = require("../components/TrackSort");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
-var TrackSortContainer = React.createClass ({
-  handleButtonClick: function (sortMethod) {
+class TrackSortContainer extends React.Component {
+  constructor() {
+    super();
+  }
+
+  handleButtonClick(sortMethod) {
     ViewActionCreators.sortTracks(sortMethod);
-  },
-  render: function () {
+  }
+
+  render() {
     return <TrackSort onClick={this.handleButtonClick} />;
   }
 });

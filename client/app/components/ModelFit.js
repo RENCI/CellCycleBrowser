@@ -1,5 +1,5 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var Collapsible = require("./Collapsible");
 var ItemSelect = require("./ItemSelect");
 var ComputeModelFitButton = require("./ComputeModelFitButton");

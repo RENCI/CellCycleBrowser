@@ -15,21 +15,31 @@ var style = {
   width: "100%"
 };
 
-var ResizeContainer = React.createClass({
-  componentDidMount: function () {
+class ResizeContainer extends React.Component {
+  constructor() {
+    super();
+
+    // Need to bind this to callback functions here
+    this.onResize = this.onResize.bind(this);
+  }
+
+  componentDidMount() {
     this.refs.frame.contentWindow.addEventListener("resize", this.onResize, false);
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     this.refs.frame.contentWindow.removeEventListener("resize", this.onResize);
-  },
-  onResize: function () {
+  }
+
+  onResize() {
     try {
       window.dispatchEvent(new UIEvent("resize"));
     } catch (d) {}
-  },
-  render: function () {
+  }
+
+  render() {
     return <iframe ref="frame" style={style} />
   }
-});
+}
 
 module.exports = ResizeContainer;

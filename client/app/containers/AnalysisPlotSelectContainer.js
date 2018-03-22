@@ -19,26 +19,36 @@ function option(plot) {
   };
 }
 
-var AnalysisPlotSelectContainer = React.createClass ({
-  getInitialState: function () {
-    return getStateFromStore();
-  },
-  componentDidMount: function () {
+class AnalysisPlotSelectContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = getStateFromStore();
+
+    // Need to bind this to callback functions here
+    this.onAnalysisPlotChange = this.onAnalysisPlotChange.bind(this);
+  }
+
+  componentDidMount() {
     AnalysisPlotStore.addChangeListener(this.onAnalysisPlotChange);
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     AnalysisPlotStore.removeChangeListener(this.onAnalysisPlotChange);
-  },
-  onAnalysisPlotChange: function () {
+  }
+
+  onAnalysisPlotChange() {
     this.setState(getStateFromStore());
-  },
-  handleChangeAnalysisPlot: function (e) {
+  }
+
+  handleChangeAnalysisPlot(e) {
     ViewActionCreators.selectAnalysisPlot({
       name: e.currentTarget.dataset.value,
       selected: e.currentTarget.checked
     });
-  },
-  render: function () {
+  }
+
+  render() {
     return (
       <MultiSelect
         label="Analysis Plots: "
@@ -48,6 +58,6 @@ var AnalysisPlotSelectContainer = React.createClass ({
         onChange={this.handleChangeAnalysisPlot} />
     );
   }
-});
+}
 
 module.exports = AnalysisPlotSelectContainer;

@@ -1,42 +1,44 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var Dendrogram = require("../visualizations/Dendrogram");
 var d3 = require("d3");
 
-var DendrogramContainer = React.createClass ({
-  // Don't make propsTypes required, as a warning is given for the first render
-  // if using React.cloneElement, as  in VisualizationContainer
-  propTypes: {
-    cluster: PropTypes.func,
-    height: PropTypes.number
-  },
-  getInitialState: function () {
+class DendrogramContainer extends React.Component {
+  constructor() {
+    super();
+
     // Create visualization function
     this.dendrogram = Dendrogram();
 
-    return null;
-  },
-  componentDidMount: function () {
+    // Need to bind this to callback functions here
+    this.onResize = this.onResize.bind(this);
+  }
+
+  componentDidMount() {
     this.resize();
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     // Resize on window resize
     window.addEventListener("resize", this.onResize);
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     window.removeEventListener("resize", this.onResize);
-  },
-  componentWillUpdate: function (props, state) {
+  }
+
+  componentWillUpdate(props, state) {
     this.drawVisualization(props, state);
 
     return false;
-  },
-  onResize: function () {
-    console.log("RESIZE");
+  }
+
+  onResize() {
     this.resize();
-  },
-  drawVisualization: function (props, state) {
+  }
+
+  drawVisualization(props, state) {
     // Set up dendrogram
     this.dendrogram
         .height(props.height)
@@ -45,18 +47,21 @@ var DendrogramContainer = React.createClass ({
     // Draw dendrogram
     d3.select(this.getNode())
         .call(this.dendrogram);
-  },
-  resize: function () {
+  }
+
+  resize() {
     var width = this.getNode().clientWidth;
 
     this.dendrogram.width(width);
 
     this.drawVisualization(this.props, this.state);
-  },
-  getNode: function () {
+  }
+
+  getNode() {
     return ReactDOM.findDOMNode(this);
-  },
-  render: function() {
+  }
+
+  render() {
     // Create style here to update height and avoid mutated style warning
     var style = {
       height: this.props.height
@@ -64,6 +69,11 @@ var DendrogramContainer = React.createClass ({
 
     return <div style={style}></div>
   }
-});
+}
+
+DendrogramContainer.propTypes = {
+  cluster: PropTypes.func.isRequired,
+  height: PropTypes.number.isRequired
+};
 
 module.exports = DendrogramContainer;

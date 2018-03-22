@@ -9,38 +9,49 @@ var divStyle = {
   borderRadius: 5
 };
 
-var VisualizationContainer = React.createClass ({
-  getInitialState: function () {
-    return {
+class VisualizationContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
       width: 100,
       height: 100
     };
-  },
-  componentDidMount: function () {
+
+    // Need to bind this to callback functions here
+    this.onResize = this.onResize.bind(this);
+  }
+
+  componentDidMount() {
     // Resize on window resize
     window.addEventListener("resize", this.onResize);
 
     this.onResize();
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     // Resize on window resize
     window.removeEventListener("resize", this.onResize);
-  },
-  componentWillReceiveProps: function () {
+  }
+
+  componentWillReceiveProps() {
     this.onResize();
-  },
-  getSize: function () {
+  }
+
+  getSize() {
     var node = ReactDOM.findDOMNode(this);
 
     return {
       width: node.clientWidth,
       height: node.clientHeight
     };
-  },
-  onResize: function () {
+  }
+
+  onResize() {
     this.setState(this.getSize());
-  },
-  render: function () {
+  }
+
+  render() {
     var props = {
       width: this.state.width,
       height: this.state.height
@@ -52,6 +63,6 @@ var VisualizationContainer = React.createClass ({
       </div>
     );
   }
-});
+}
 
 module.exports = VisualizationContainer;

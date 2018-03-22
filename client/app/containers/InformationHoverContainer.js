@@ -2,8 +2,12 @@ var React = require("react");
 var ReactDOM = require("react-dom");
 var InformationHover = require("../components/InformationHover");
 
-var InformationHoverContainer = React.createClass ({
-  componentDidMount: function () {
+class InformationHoverContainer extends React.Component {
+  constructor() {
+    super();
+  }
+
+  componentDidMount() {
     // Activate information hover
     var trigger = $(ReactDOM.findDOMNode(this)).find("[data-toggle='popover']").first();
     var content = trigger.next().first();
@@ -11,14 +15,15 @@ var InformationHoverContainer = React.createClass ({
     trigger.popover({
        content: content.html()
     });
-  },
-  render: function () {
+  }
+
+  render() {
     return (
       <InformationHover>
         {this.props.children}
       </InformationHover>
     );
   }
-});
+}
 
 module.exports = InformationHoverContainer;

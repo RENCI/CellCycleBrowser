@@ -1,6 +1,6 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var SimulationControlStore = require("../stores/SimulationControlStore");
 var PhaseColorStore = require("../stores/PhaseColorStore");
 var InteractionColorStore = require("../stores/InteractionColorStore");
@@ -76,54 +76,58 @@ function getStateFromPhaseStore() {
   };
 }
 
-var MapVisualizationContainer = React.createClass ({
-  // Don't make propsTypes required, as a warning is given for the first render
-  // if using React.cloneElement, as  in VisualizationContainer
-  propTypes: {
-    width: PropTypes.number
-  },
-  getInitialState: function () {
+class MapVisualizationContainer extends React.Component {
+  constructor() {
+    super();
+
     // Create visualization function
-/*
-    this.networkMap = NetworkMap()
-        .on("selectPhase", this.handleSelectPhase)
-        .on("selectSpecies", this.handleSelectSpecies);
-*/
     this.linearNetworkMap = LinearNetworkMap2()
         .on("selectPhase", this.handleSelectPhase)
         .on("selectSpecies", this.handleSelectSpecies);
 
-    return {
+    this.state = {
       model: createModel(SimulationControlStore.getControls()),
       phase: PhaseStore.getPhase(),
       phaseColorScale: PhaseColorStore.getColorScale()
     };
-  },
-  componentDidMount: function() {
+
+    // Need to bind this to callback functions here
+    this.onSimulationControlChange = this.onSimulationControlChange.bind(this);
+    this.onPhaseColorChange = this.onPhaseColorChange.bind(this);
+    this.onPhaseChange = this.onPhaseChange.bind(this);
+  }
+
+  componentDidMount() {
     SimulationControlStore.addChangeListener(this.onSimulationControlChange);
     PhaseColorStore.addChangeListener(this.onPhaseColorChange);
     PhaseStore.addChangeListener(this.onPhaseChange);
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     SimulationControlStore.removeChangeListener(this.onSimulationControlChange);
     PhaseColorStore.removeChangeListener(this.onPhaseColorChange);
     PhaseStore.removeChangeListener(this.onPhaseChange);
-  },
-  componentWillUpdate: function (props, state) {
+  }
+
+  componentWillUpdate(props, state) {
     this.drawVisualization(props, state);
 
     return false;
-  },
-  onSimulationControlChange: function () {
+  }
+
+  onSimulationControlChange() {
     this.setState(getStateFromSimulationControlStore());
-  },
-  onPhaseColorChange: function () {
+  }
+
+  onPhaseColorChange() {
     this.setState(getStateFromPhaseColorStore());
-  },
-  onPhaseChange: function () {
+  }
+
+  onPhaseChange() {
     this.setState(getStateFromPhaseStore());
-  },
-  drawVisualization: function (props, state) {
+  }
+
+  drawVisualization(props, state) {
     if (!state.model) return;
 
     this.linearNetworkMap
@@ -136,27 +140,25 @@ var MapVisualizationContainer = React.createClass ({
     d3.select(ReactDOM.findDOMNode(this))
         .datum(state.model)
         .call(this.linearNetworkMap);
-/*
-    this.networkMap
-        .width(props.width)
-        .height(props.width)
-        .phaseColorScale(state.phaseColorScale)
-        .selectPhase(state.phase);
+  }
 
-    d3.select(ReactDOM.findDOMNode(this))
-        .datum(state.model)
-        .call(this.networkMap);
-*/
-  },
-  handleSelectPhase: function (phase) {
+  handleSelectPhase(phase) {
     ViewActionCreators.selectPhase(phase);
-  },
-  handleSelectSpecies: function (species) {
+  }
+
+  handleSelectSpecies(species) {
     networkMap.selectSpecies(species);
-  },
-  render: function () {
+  }
+
+  render() {
     return <div></div>
   }
-});
+}
+
+// Don't make propsTypes required, as a warning is given for the first render
+// if using React.cloneElement, as  in VisualizationContainer
+MapVisualizationContainer.propTypes = {
+  width: PropTypes.number
+};
 
 module.exports = MapVisualizationContainer;

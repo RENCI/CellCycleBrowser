@@ -8,22 +8,31 @@ function getStateFromStore() {
   };
 }
 
-var AnalysisPlotsContainer = React.createClass({
-  getInitialState: function () {
-    return getStateFromStore();
-  },
-  componentDidMount: function () {
+class AnalysisPlotsContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = getStateFromStore();
+
+    // Need to bind this to callback functions here
+    this.onAnalysisPlotChange = this.onAnalysisPlotChange.bind(this);
+  }
+
+  componentDidMount() {
     AnalysisPlotStore.addChangeListener(this.onAnalysisPlotChange);
-  },
-  componentWillUnmount: function() {
+  }
+
+  componentWillUnmount() {
     AnalysisPlotStore.removeChangeListener(this.onAnalysisPlotChange);
-  },
-  onAnalysisPlotChange: function () {
+  }
+
+  onAnalysisPlotChange() {
     this.setState(getStateFromStore());
-  },
-  render: function() {
+  }
+
+  render() {
     return <AnalysisPlots plots={this.state.AnalysisPlots}/>
   }
-});
+}
 
 module.exports = AnalysisPlotsContainer;

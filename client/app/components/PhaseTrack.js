@@ -1,5 +1,5 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var PhaseTrackHeader = require("./PhaseTrackHeader");
 var PhaseTrackBody = require("./PhaseTrackBody");
 

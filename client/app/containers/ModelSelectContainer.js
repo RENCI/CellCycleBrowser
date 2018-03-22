@@ -24,23 +24,33 @@ function modelOption(model) {
   };
 }
 
-var ModelSelectContainer = React.createClass ({
-  getInitialState: function () {
-    return getStateFromStore();
-  },
-  componentDidMount: function () {
+class ModelSelectContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = getStateFromStore();
+
+    // Need to bind this to callback functions here
+    this.onModelChange = this.onModelChange.bind(this);
+  }
+
+  componentDidMount() {
     ModelStore.addChangeListener(this.onModelChange);
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     ModelStore.removeChangeListener(this.onModelChange);
-  },
-  onModelChange: function () {
+  }
+
+  onModelChange() {
     this.setState(getStateFromStore());
-  },
-  handleChangeModel: function (id) {
+  }
+
+  handleChangeModel(id) {
     ViewActionCreators.selectModel(id);
-  },
-  render: function () {
+  }
+
+  render() {
     // Add a None option
     var options = [{
       value: "",
@@ -56,6 +66,6 @@ var ModelSelectContainer = React.createClass ({
         onChange={this.handleChangeModel} />
     );
   }
-});
+}
 
 module.exports = ModelSelectContainer;

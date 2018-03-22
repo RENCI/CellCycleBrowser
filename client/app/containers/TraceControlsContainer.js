@@ -1,32 +1,36 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var TraceControlContainer = require("./TraceControlContainer");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 var DataStore = require("../stores/DataStore");
 
-var TraceControlsContainer = React.createClass ({
-  propTypes: {
-    traces: PropTypes.arrayOf(PropTypes.object).isRequired,
-    width: PropTypes.number.isRequired,
-    height: PropTypes.number.isRequired
-  },
-  getInitialState: function () {
-    return {
+class TraceControlsContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
       higlightChange: false
     };
-  },
-  componentDidMount: function () {
+
+    // Need to bind this to callback functions here
+    this.onHighlightChange = this.onHighlightChange.bind(this);
+  }
+
+  componentDidMount() {
     DataStore.addHighlightChangeListener(this.onHighlightChange);
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     DataStore.removeHighlightChangeListener(this.onHighlightChange);
-  },
-  onHighlightChange: function () {
+  }
+
+  onHighlightChange() {
     this.setState({
       higlightChange: !this.state.highlightChange
     });
-  },
-  render: function () {
+  }
+
+  render() {
     var controlStyle = {
       width: this.props.width,
       minWidth: this.props.width
@@ -86,7 +90,12 @@ var TraceControlsContainer = React.createClass ({
       </div>
     );
   }
-});
+}
 
+TraceControlsContainer.propTypes = {
+  traces: PropTypes.arrayOf(PropTypes.object).isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired
+};
 
 module.exports = TraceControlsContainer;

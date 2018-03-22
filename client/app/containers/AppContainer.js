@@ -29,15 +29,23 @@ function getStateFromDataStore() {
   };
 }
 
-var AppContainer = React.createClass({
-  getInitialState: function () {
-    return {
+class AppContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
       workspace: WorkspaceStore.getWorkspace(),
       model: ModelStore.getModel(),
       data: DataStore.getData()
     };
-  },
-  componentDidMount: function () {
+
+    // Need to bind this to callback functions here
+    this.onWorkspaceChange = this.onWorkspaceChange.bind(this);
+    this.onModelChange = this.onModelChange.bind(this);
+    this.onDataChange = this.onDataChange.bind(this);
+  }
+
+  componentDidMount() {
     WorkspaceStore.addChangeListener(this.onWorkspaceChange);
     ModelStore.addChangeListener(this.onModelChange);
     DataStore.addChangeListener(this.onDataChange);
@@ -49,29 +57,36 @@ var AppContainer = React.createClass({
     WebAPIUtils.getNuclei();
 
     this.enableTooltips();
-  },
-  componentDidUpdate: function () {
+  }
+
+  componentDidUpdate() {
     this.enableTooltips();
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     WorkspaceStore.removeChangeListener(this.onWorkspaceChange);
     ModelStore.removeChangeListener(this.onModelChange);
     DataStore.removeChangeListener(this.onDataChange);
-  },
-  onWorkspaceChange: function () {
+  }
+
+  onWorkspaceChange() {
     this.setState(getStateFromWorkspaceStore());
-  },
-  onModelChange: function () {
+  }
+
+  onModelChange() {
     this.setState(getStateFromModelStore());
-  },
-  onDataChange: function () {
+  }
+
+  onDataChange() {
     this.setState(getStateFromDataStore());
-  },
-  enableTooltips: function () {
+  }
+
+  enableTooltips() {
     $("[data-toggle='tooltip']").tooltip("hide");
     $("[data-toggle='tooltip']").tooltip();
-  },
-  render: function () {
+  }
+
+  render() {
     var hasWorkspace = this.state.workspace.name !== undefined;
     var hasModel = this.state.model.name !== undefined;
     var hasTracks = this.state.data.tracks.length > 0;
@@ -94,6 +109,6 @@ var AppContainer = React.createClass({
       </div>
     );
   }
-});
+}
 
 module.exports = AppContainer;

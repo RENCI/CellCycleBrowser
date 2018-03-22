@@ -12,25 +12,35 @@ function getStateFromStore() {
   };
 }
 
-var DatasetSelectContainer = React.createClass ({
-  getInitialState: function () {
+class DatasetSelectContainer extends React.Component {
+  constructor() {
+    super();
+
     this.popover = null;
 
-    return {
+    this.state = {
       popoverActive: false,
       datasetList: DatasetStore.getDatasetList(),
       renderAgain: false
     };
-  },
-  componentDidMount: function () {
+
+    // Need to bind this to callback functions here
+    this.onDatasetChange = this.onDatasetChange.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+    this.handleDocumentClick = this.handleDocumentClick.bind(this);
+  }
+
+  componentDidMount() {
     DatasetStore.addChangeListener(this.onDatasetChange);
-  },
-  componentWillUnmount: function () {
+  }
+
+  componentWillUnmount() {
     DatasetStore.removeChangeListener(this.onDatasetChange);
 
     document.removeEventListener("click", this.handleDocumentClick);
-  },
-  componentDidUpdate: function () {
+  }
+
+  componentDidUpdate() {
     // Do some jQuery to get popovers working
     // We're using React to render the content of the popover, then jQuery clones the DOM for positioning correctly.
     // This works, but breaks the React way of doing things, as jQuery is directly manipulating the DOM.
@@ -115,11 +125,13 @@ var DatasetSelectContainer = React.createClass ({
         });
       }
     }
-  },
-  onDatasetChange: function () {
+  }
+
+  onDatasetChange() {
     this.setState(getStateFromStore);
-  },
-  handleClick: function () {
+  }
+
+  handleClick() {
     if (!this.state.popoverActive){
       document.addEventListener("click", this.handleDocumentClick);
     }
@@ -130,8 +142,9 @@ var DatasetSelectContainer = React.createClass ({
     this.setState({
       popoverActive: !this.state.popoverActive
     });
-  },
-  handleDocumentClick: function (e) {
+  }
+
+  handleDocumentClick(e) {
     for (var i = 0; i < e.path.length; i++) {
       if (e.path[i].className === "popover-content") {
         // Should be child of the DatasetSelect, so ignore
@@ -145,8 +158,9 @@ var DatasetSelectContainer = React.createClass ({
     this.setState({
       popoverActive: false
     });
-  },
-  render: function () {
+  }
+
+  render() {
     return (
       <div>
         <DatasetSelect
@@ -155,6 +169,6 @@ var DatasetSelectContainer = React.createClass ({
       </div>
     );
   }
-});
+}
 
 module.exports = DatasetSelectContainer;

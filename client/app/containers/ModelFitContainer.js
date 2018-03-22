@@ -1,5 +1,5 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var ModelFit = require("../components/ModelFit");
 var ModelFitStore = require("../stores/ModelFitStore");
 var ViewActionCreators = require("../actions/ViewActionCreators");
@@ -11,28 +11,40 @@ function getStateFromStore() {
   };
 }
 
-var ModelFitContainer = React.createClass ({
-  getInitialState: function () {
-    return getStateFromStore();
-  },
-  componentDidMount: function () {
+class ModelFitContainer extends React.Component {
+  constructor() {
+    super();
+
+    this.state = getStateFromStore();
+
+    // Need to bind this to callback functions here
+    this.onModelFitChange = this.onModelFitChange.bind(this);
+    this.handleChangeSimulationSpecies = this.handleChangeSimulationSpecies.bind(this);
+    this.handleChangeDatasetSpecies = this.handleChangeDatasetSpecies.bind(this);
+  }
+
+  componentDidMount() {
     ModelFitStore.addChangeListener(this.onModelFitChange);
-  },
-  componentWillUnmount: function() {
+  }
+
+  componentWillUnmount() {
     ModelFitStore.removeChangeListener(this.onModelFitChange);
-  },
-  onModelFitChange: function () {
+  }
+
+  onModelFitChange() {
     this.setState(getStateFromStore());
-  },
-  handleChangeSimulationSpecies: function (simulationSpecies) {
+  }
+
+  handleChangeSimulationSpecies(simulationSpecies) {
     var simulationTrack = DataUtils.find(this.state.modelFit.simulationTracks, "species", simulationSpecies);
 
     ViewActionCreators.changeModelFitTracks(
       simulationTrack,
       this.state.modelFit.dataTrack,
     );
-  },
-  handleChangeDatasetSpecies: function (dataSpecies) {
+  }
+
+  handleChangeDatasetSpecies(dataSpecies) {
     var s = dataSpecies.split(":");
 
     var source = s[0].trim();
@@ -48,14 +60,17 @@ var ModelFitContainer = React.createClass ({
       this.state.modelFit.simulationTrack,
       dataTrack
     );
-  },
-  handleChangeMethod: function (method) {
+  }
+
+  handleChangeMethod(method) {
     ViewActionCreators.changeModelFitMethod(method);
-  },
-  handleComputeModelFit: function () {
+  }
+
+  handleComputeModelFit() {
     ViewActionCreators.computeModelFit();
-  },
-  render: function () {
+  }
+
+  render() {
     return (
       <ModelFit
         modelFit={this.state.modelFit}
@@ -65,6 +80,6 @@ var ModelFitContainer = React.createClass ({
         onComputeModel={this.handleComputeModelFit} />
     );
   }
-});
+}
 
 module.exports = ModelFitContainer;

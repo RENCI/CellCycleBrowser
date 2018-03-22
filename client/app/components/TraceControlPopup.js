@@ -1,5 +1,5 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var SelectAllButton = require("../components/SelectAllButton");
 var SelectAllAndPhaseButton = require("../components/SelectAllAndPhaseButton");
 var UnselectAllButton = require("../components/UnselectAllButton");

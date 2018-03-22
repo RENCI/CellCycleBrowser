@@ -1,5 +1,5 @@
 var React = require("react");
-var PropTypes = React.PropTypes;
+var PropTypes = require("prop-types");
 var Collapsible = require("../components/Collapsible");
 var PhaseTabs = require("../components/PhaseTabs");
 var ValueSliderContainer = require("../containers/ValueSliderContainer");
