@@ -108,8 +108,6 @@ var kdeSampler = function() {
     if (!arguments.length) return sample;
     sample = x;
     pointSampler = d3.randomUniform(sample.length);
-    minX = d3.min(sample, function(d) { return d.x; });
-    minY = d3.min(sample, function(d) { return d.y; });
     updateKernels();
     return kde;
   };

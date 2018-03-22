@@ -23,7 +23,7 @@ module.exports = function() {
       phaseColorScale = d3.scaleOrdinal(),
 
       // Start with empty selection
-      svg = d3.select()
+      svg = d3.select(),
 
       // Event dispatcher
       dispatcher = d3.dispatch("highlightTrace");
@@ -323,7 +323,7 @@ module.exports = function() {
               x1 = xScale(d[0]),
               y1 = yScale(d[1]),
               x = x1 - x0,
-              y = y1 - y0;
+              y = y1 - y0,
               distance = Math.sqrt(x * x + y * y);
 
           if (distance >= minDistance) curveData.push(d);
