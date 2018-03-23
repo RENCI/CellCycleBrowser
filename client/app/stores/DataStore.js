@@ -917,7 +917,7 @@ function clusterTraces(track, cluster) {
       var k2 = 0;
       var m = 0;
 
-      for (kt = 0; kt < t.length; kt++) {
+      for (var kt = 0; kt < t.length; kt++) {
         while (k1 < v1.length && v1[k1].stop <= t[kt]) k1++;
         while (k2 < v2.length && v2[k2].stop <= t[kt]) k2++;
 
