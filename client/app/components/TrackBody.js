@@ -5,9 +5,12 @@ var DendrogramContainer = require("../containers/DendrogramContainer");
 var TraceControlsContainer = require("../containers/TraceControlsContainer");
 var HeatMapContainer = require("../containers/HeatMapContainer");
 
-var rowStyle = {
-  margin: 0,
-  border: "1px solid #ccc",
+var border = "1px solid #ccc";
+
+var averageRowStyle = {
+  marginLeft: 0,
+  marginRight: -1,
+  border: border,
   borderTopLeftRadius: 5,
   borderBottomLeftRadius: 5
 };
@@ -25,21 +28,20 @@ var traceControlColumnStyle = {
   marginTop: -1
 };
 
-var visColumnStyle = {
+var averageColumnStyle = {
   padding: 0,
-  borderLeft: "1px solid #ccc"
+  borderLeft: border
 };
 
 var collapseRowStyle = {
-  // Make up for border in rowStyle
+  // Make up for border in averageRowStyle
   marginLeft: 1,
-  marginRight: 0,
-  borderRight: "1px solid #ccc"
+  marginRight: 0
 };
 
 var collapseColumnStyle = {
   padding: 0,
-  borderLeft: "1px solid #ccc"
+  borderLeft: border
 };
 
 function TrackBody(props) {
@@ -81,7 +83,7 @@ function TrackBody(props) {
 
   return (
     <div>
-      <div className="row" style={rowStyle}>
+      <div className="row" style={averageRowStyle}>
         <div className={averageCol1} style={buttonColumnStyle}>
           <div style={{display: "flex", justifyContent: "space-between"}}>
             <CollapseButtonContainer
@@ -95,7 +97,7 @@ function TrackBody(props) {
             </div>
           </div>
         </div>
-        <div className={averageCol2} style={visColumnStyle}>
+        <div className={averageCol2} style={averageColumnStyle}>
           <HeatMapContainer
             data={[props.track.average.values]}
             dataExtent={averageExtent}
