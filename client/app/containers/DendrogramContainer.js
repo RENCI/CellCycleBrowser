@@ -28,7 +28,7 @@ class DendrogramContainer extends React.Component {
     window.removeEventListener("resize", this.onResize);
   }
 
-  componentWillUpdate(props, state) {
+  shouldComponentUpdate(props, state) {
     this.drawVisualization(props, state);
 
     return false;

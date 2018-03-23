@@ -112,7 +112,7 @@ class FlowCytometryContainer extends React.Component {
     NucleiDistributionStore.removeChangeListener(this.onNucleiDistributionStoreChange);
   }
 
-  componentWillUpdate(props, state) {
+  shouldComponentUpdate(props, state) {
     this.drawVisualization(props, state);
 
     return false;
@@ -152,7 +152,7 @@ class FlowCytometryContainer extends React.Component {
 
     plot.exit().remove();
   }
-  
+
   render() {
     return <div ref={refName}></div>
   }

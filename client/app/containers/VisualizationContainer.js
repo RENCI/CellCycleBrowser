@@ -38,6 +38,18 @@ class VisualizationContainer extends React.Component {
     this.onResize();
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    var node = ReactDOM.findDOMNode(this);
+
+    if (this.state.width !== node.clientWidth ||
+        this.state.height !== node.clientHeight) {
+      this.setState({
+        width: node.clientWidth,
+        height: node.clientHeight
+      });
+    }
+  }
+
   getSize() {
     var node = ReactDOM.findDOMNode(this);
 

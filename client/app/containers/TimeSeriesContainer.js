@@ -57,7 +57,7 @@ class TimeSeriesContainer extends React.Component {
     AlignmentStore.removeChangeListener(this.onAlignmentChange);
   }
 
-  componentWillUpdate(props, state) {
+  shouldComponentUpdate(props, state) {
     if (hasData(state.data)) {
       this.drawVisualization(props, state);
     };

@@ -34,7 +34,7 @@ class GrowthCurveContainer extends React.Component {
     DataStore.removeChangeListener(this.onDataChange);
   }
 
-  componentWillUpdate(props, state) {
+  shouldComponentUpdate(props, state) {
     if (state.tracks.length > 0) {
       this.drawVisualization(props, state);
     };

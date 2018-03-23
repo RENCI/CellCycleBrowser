@@ -109,7 +109,7 @@ class MapVisualizationContainer extends React.Component {
     PhaseStore.removeChangeListener(this.onPhaseChange);
   }
 
-  componentWillUpdate(props, state) {
+  shouldComponentUpdate(props, state) {
     this.drawVisualization(props, state);
 
     return false;
