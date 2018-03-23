@@ -26,13 +26,13 @@ var data = {
 function dataTracks(tracks) {
   return tracks.filter(function (track) {
     return !track.phaseTrack;
-  })
+  });
 }
 
 function phaseTracks(tracks) {
   return tracks.filter(function (track) {
     return track.phaseTrack;
-  })
+  });
 }
 
 function updateData() {
