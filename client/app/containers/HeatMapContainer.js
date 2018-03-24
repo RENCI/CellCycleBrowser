@@ -11,6 +11,10 @@ class HeatMapContainer extends React.Component {
     // Create visualization function
     this.heatMap = HeatMap();
 
+    this.state = {
+      toggle: false
+    };
+
     // Need to bind this to callback functions here
     this.onResize = this.onResize.bind(this);
   }
@@ -26,12 +30,26 @@ class HeatMapContainer extends React.Component {
     window.removeEventListener("resize", this.onResize);
   }
 
-  shouldComponentUpdate(props, state) {
+  componentWillUpdate(props, state) {
     this.drawVisualization(props, state);
 
     return false;
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (this.getNode().clientWidth !== this.heatMap.width()) {
+      this.setState({
+        toggle: !this.state.toggle
+      });
+    }
+  }
+/*
+  shouldComponentUpdate(props, state) {
+    this.drawVisualization(props, state);
+
+    return false;
+  }
+*/
   onResize() {
     this.resize();
   }
