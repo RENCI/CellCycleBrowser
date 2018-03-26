@@ -8,46 +8,16 @@ class ValueSliderContainer extends React.Component {
 
     this.trackClick = true;
 
-    this.state = {
-      width: 200
-    };
-
     // Need to bind this to callback functions here
-    this.onResize = this.onResize.bind(this);
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleClick = this.handleClick.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
   }
 
-  componentDidMount() {
-    this.resize();
-
-    // Resize on window resize
-    window.addEventListener("resize", this.onResize);
-  }
-
   componentWillUnmount() {
-    window.removeEventListener("resize", this.onResize);
-
     // Unregister mouse events
     this.unregisterMouseCallbacks();
-  }
-
-  componentDidUpdate() {
-    if (this.state.width !== this.refs.wrapper.clientWidth) {
-      this.resize();
-    }
-  }
-
-  onResize() {
-    this.resize();
-  }
-
-  resize() {
-    this.setState({
-      width: this.refs.wrapper.clientWidth
-    });
   }
 
   updateSVG(e, sliderMin, sliderMax) {
@@ -147,7 +117,7 @@ class ValueSliderContainer extends React.Component {
           step={this.props.step}
           initialValue={this.props.initialValue}
           value={this.props.value}
-          width={this.state.width}
+          width={this.props.width}
           handleRadius={this.props.handleRadius}
           handleColor={handleColor}
           initialValueColor={initialValueColor}
@@ -167,7 +137,8 @@ ValueSliderContainer.propTypes = {
   value: PropTypes.number,
   handleRadius: PropTypes.number,
   handleColorScale: PropTypes.func,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
+  width: PropTypes.number
 };
 
 ValueSliderContainer.defaultProps = {

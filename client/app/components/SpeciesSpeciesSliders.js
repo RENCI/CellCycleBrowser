@@ -2,6 +2,7 @@ var React = require("react");
 var PropTypes = require("prop-types");
 var Collapsible = require("../components/Collapsible");
 var PhaseTabs = require("../components/PhaseTabs");
+var VisualizationContainer = require("../containers/VisualizationContainer");
 var ValueSliderContainer = require("../containers/ValueSliderContainer");
 var InteractionColorStore = require("../stores/InteractionColorStore");
 
@@ -64,13 +65,15 @@ function SpeciesSpeciesSliders(props) {
         sliders.push(
           <div key={j * props.species.length + k} style={{display: "flex"}}>
             <div style={{flex: 1}}>
-              <ValueSliderContainer
-                min={value.min}
-                max={value.max}
-                initialValue={value.initialValue}
-                value={value.value}
-                handleColorScale={interactionColorScale}
-                onChange={handleChange} />
+              <VisualizationContainer>
+                <ValueSliderContainer
+                  min={value.min}
+                  max={value.max}
+                  initialValue={value.initialValue}
+                  value={value.value}
+                  handleColorScale={interactionColorScale}
+                  onChange={handleChange} />
+              </VisualizationContainer>
             </div>
             <div className="text-left" style={labelStyle}>
               <label>{downstream + ":"}</label>

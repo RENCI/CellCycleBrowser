@@ -1,6 +1,7 @@
 var React = require("react");
 var PropTypes = require("prop-types");
 var Collapsible = require("../components/Collapsible");
+var VisualizationContainer = require("../containers/VisualizationContainer");
 var ValueSliderContainer = require("../containers/ValueSliderContainer");
 
 var divStyle = {
@@ -51,12 +52,14 @@ function ExpressionLevelSliders(props) {
           <label>{species}</label>
         </div>
         <div style={{flex: 1}}>
-          <ValueSliderContainer
-            min={value.min}
-            max={value.max}
-            initialValue={0}
-            value={value.exponent}
-            onChange={handleChange} />
+          <VisualizationContainer>
+            <ValueSliderContainer
+              min={value.min}
+              max={value.max}
+              initialValue={0}
+              value={value.exponent}
+              onChange={handleChange} />
+          </VisualizationContainer>
         </div>
         <div className="text-right" style={valueStyle}>
           <label>{valueLabel(value)}</label>
