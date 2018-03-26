@@ -3,6 +3,7 @@ var PropTypes = require("prop-types");
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
 var DendrogramContainer = require("../containers/DendrogramContainer");
 var TraceControlsContainer = require("../containers/TraceControlsContainer");
+var VisualizationContainer = require("../containers/VisualizationContainer");
 var HeatMapContainer = require("../containers/HeatMapContainer");
 
 var border = "1px solid #ccc";
@@ -72,8 +73,6 @@ function TrackBody(props) {
     return [Math.min.apply(null, values), Math.max.apply(null, values)];
   }
 
-  var collapseHeight = props.track.traces.length * traceHeight;
-
   var averageCol1 = props.shiftRight ? "col-xs-3" : "col-xs-2";
   var averageCol2 = props.shiftRight ? "col-xs-9" : "col-xs-10";
 
@@ -98,14 +97,16 @@ function TrackBody(props) {
           </div>
         </div>
         <div className={averageCol2} style={averageColumnStyle}>
-          <HeatMapContainer
-            data={[props.track.average.values]}
-            dataExtent={averageExtent}
-            phases={[phaseAverage]}
-            timeExtent={props.timeExtent}
-            phaseColorScale={props.phaseColorScale}
-            phaseOverlayOpacity={props.phaseOverlayOpacity}
-            height={averageHeight} />
+          <VisualizationContainer>
+            <HeatMapContainer
+              data={[props.track.average.values]}
+              dataExtent={averageExtent}
+              phases={[phaseAverage]}
+              timeExtent={props.timeExtent}
+              phaseColorScale={props.phaseColorScale}
+              phaseOverlayOpacity={props.phaseOverlayOpacity}
+              rowHeight={averageHeight} />
+            </VisualizationContainer>
         </div>
       </div>
       <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
@@ -123,14 +124,16 @@ function TrackBody(props) {
             height={traceHeight} />
         </div>
         <div className={col3} style={collapseColumnStyle}>
-          <HeatMapContainer
-            data={props.track.traces.map(function (d) { return d.values; })}
-            dataExtent={dataExtent}
-            phases={phases}
-            timeExtent={props.timeExtent}
-            phaseColorScale={props.phaseColorScale}
-            phaseOverlayOpacity={props.phaseOverlayOpacity}
-            height={collapseHeight} />
+          <VisualizationContainer>
+            <HeatMapContainer
+              data={props.track.traces.map(function (d) { return d.values; })}
+              dataExtent={dataExtent}
+              phases={phases}
+              timeExtent={props.timeExtent}
+              phaseColorScale={props.phaseColorScale}
+              phaseOverlayOpacity={props.phaseOverlayOpacity}
+              rowHeight={traceHeight} />
+          </VisualizationContainer>
         </div>
       </div>
     </div>

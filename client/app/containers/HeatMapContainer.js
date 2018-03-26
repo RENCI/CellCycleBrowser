@@ -4,30 +4,16 @@ var PropTypes = require("prop-types");
 var HeatMap = require("../visualizations/HeatMap");
 var d3 = require("d3");
 
+function height(props) {
+  return props.rowHeight * props.data.length;
+}
+
 class HeatMapContainer extends React.Component {
   constructor() {
     super();
 
     // Create visualization function
     this.heatMap = HeatMap();
-
-    this.state = {
-      toggle: false
-    };
-
-    // Need to bind this to callback functions here
-    this.onResize = this.onResize.bind(this);
-  }
-
-  componentDidMount() {
-    this.resize();
-
-    // Resize on window resize
-    window.addEventListener("resize", this.onResize);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.onResize);
   }
 
   componentWillUpdate(props, state) {
@@ -36,29 +22,17 @@ class HeatMapContainer extends React.Component {
     return false;
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.getNode().clientWidth !== this.heatMap.width()) {
-      this.setState({
-        toggle: !this.state.toggle
-      });
-    }
-  }
-/*
   shouldComponentUpdate(props, state) {
     this.drawVisualization(props, state);
 
     return false;
   }
-*/
-  onResize() {
-    this.resize();
-  }
 
   drawVisualization(props, state) {
     // Set up heat map
     this.heatMap
-        .width(this.getNode().clientWidth)
-        .height(props.height)
+        .width(props.width)
+        .height(height(props))
         .dataExtent(props.dataExtent)
         .timeExtent(props.timeExtent)
         .phases(props.phases)
@@ -66,24 +40,16 @@ class HeatMapContainer extends React.Component {
         .phaseOverlayOpacity(props.phaseOverlayOpacity);
 
     // Draw heat map
-    d3.select(this.getNode())
+    d3.select(ReactDOM.findDOMNode(this))
         .datum(props.data)
         .call(this.heatMap);
-  }
-
-  resize() {
-    this.drawVisualization(this.props, this.state);
-  }
-
-  getNode() {
-    return ReactDOM.findDOMNode(this);
   }
 
   render() {
     // Create style here to update height and avoid mutated style warning
     var style = {
       backgroundColor: "#eee",
-      height: this.props.height
+      height: height(this.props)
     };
 
     return <div style={style}></div>
@@ -97,7 +63,8 @@ HeatMapContainer.propTypes = {
   timeExtent: PropTypes.arrayOf(PropTypes.number),
   phaseColorScale: PropTypes.func.isRequired,
   phaseOverlayOpacity: PropTypes.number.isRequired,
-  height: PropTypes.number.isRequired
+  rowHeight: PropTypes.number.isRequired,
+  width: PropTypes.number
 };
 
 module.exports = HeatMapContainer;

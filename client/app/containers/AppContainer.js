@@ -43,6 +43,7 @@ class AppContainer extends React.Component {
     this.onWorkspaceChange = this.onWorkspaceChange.bind(this);
     this.onModelChange = this.onModelChange.bind(this);
     this.onDataChange = this.onDataChange.bind(this);
+    this.onResize = this.onResize.bind(this);
   }
 
   componentDidMount() {
@@ -81,6 +82,10 @@ class AppContainer extends React.Component {
     this.setState(getStateFromDataStore());
   }
 
+  onResize() {
+    this.forceUpdate();
+  }
+
   enableTooltips() {
     $("[data-toggle='tooltip']").tooltip("hide");
     $("[data-toggle='tooltip']").tooltip();
@@ -93,7 +98,8 @@ class AppContainer extends React.Component {
 
     return (
       <div className="container-fluid">
-        <ResizeContainer />
+        <ResizeContainer
+          onResize={this.onResize} />
         <HeaderSection />
         {hasWorkspace ?
           <DataSelectionSection

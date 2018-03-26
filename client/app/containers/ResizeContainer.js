@@ -1,8 +1,9 @@
-// Throw a window resize event whenever this iframe changes width, which
+// Invoke the supplied callback whenever the iframe changes width, which
 // accounts for scrollbars being added/removed.
 // Adapted from: https://gist.github.com/AdamMcCormick/d5f718d2e9569acdf7def25e8266bb2a
 
 var React = require("react");
+var PropTypes = require("prop-types");
 
 var style = {
   height: 0,
@@ -18,28 +19,22 @@ var style = {
 class ResizeContainer extends React.Component {
   constructor() {
     super();
-
-    // Need to bind this to callback functions here
-    this.onResize = this.onResize.bind(this);
   }
 
   componentDidMount() {
-    this.refs.frame.contentWindow.addEventListener("resize", this.onResize, false);
+    this.refs.frame.contentWindow.addEventListener("resize", this.props.onResize, false);
   }
 
   componentWillUnmount() {
-    this.refs.frame.contentWindow.removeEventListener("resize", this.onResize);
+    this.refs.frame.contentWindow.removeEventListener("resize", this.props.onResize);
   }
-
-  onResize() {
-    try {
-      window.dispatchEvent(new UIEvent("resize"));
-    } catch (d) {}
-  }
-
   render() {
     return <iframe ref="frame" style={style} />
   }
 }
+
+ResizeContainer.propTypes = {
+  onResize: PropTypes.func.isRequired
+};
 
 module.exports = ResizeContainer;

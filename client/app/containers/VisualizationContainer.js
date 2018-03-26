@@ -9,28 +9,17 @@ class VisualizationContainer extends React.Component {
       width: 100,
       height: 100
     };
-
-    // Need to bind this to callback functions here
-    this.onResize = this.onResize.bind(this);
   }
 
   componentDidMount() {
-    // Resize on window resize
-    window.addEventListener("resize", this.onResize);
-
-    this.onResize();
-  }
-
-  componentWillUnmount() {
-    // Resize on window resize
-    window.removeEventListener("resize", this.onResize);
-  }
-
-  componentWillReceiveProps() {
-    this.onResize();
+    this.checkSize();
   }
 
   componentDidUpdate(prevProps, prevState) {
+    this.checkSize();
+  }
+
+  checkSize() {
     var node = ReactDOM.findDOMNode(this);
 
     if (this.state.width !== node.clientWidth ||
@@ -40,19 +29,6 @@ class VisualizationContainer extends React.Component {
         height: node.clientHeight
       });
     }
-  }
-
-  getSize() {
-    var node = ReactDOM.findDOMNode(this);
-
-    return {
-      width: node.clientWidth,
-      height: node.clientHeight
-    };
-  }
-
-  onResize() {
-    this.setState(this.getSize());
   }
 
   render() {
