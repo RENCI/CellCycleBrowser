@@ -11,20 +11,6 @@ class TimeScaleContainer extends React.Component {
     // Create visualization function
     this.timeScale = TimeScale()
         .height(25);
-
-    // Need to bind this to callback functions here
-    this.onResize = this.onResize.bind(this);
-  }
-
-  componentDidMount() {
-    this.resize();
-
-    // Resize on window resize
-    window.addEventListener("resize", this.onResize);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.onResize);
   }
 
   shouldComponentUpdate(props, state) {
@@ -33,29 +19,17 @@ class TimeScaleContainer extends React.Component {
     return false;
   }
 
-  onResize() {
-    this.resize();
-  }
-
   drawVisualization(props) {
     if (!props.timeExtent) return;
 
     this.timeScale
-        .width(this.getNode().clientWidth)
+        .width(props.width)
         .alignment(props.alignment);
 
     // Draw time scale
-    d3.select(this.getNode())
+    d3.select(ReactDOM.findDOMNode(this))
         .datum(props.timeExtent)
         .call(this.timeScale);
-  }
-
-  resize() {
-    this.drawVisualization(this.props);
-  }
-
-  getNode() {
-    return ReactDOM.findDOMNode(this);
   }
 
   render() {
@@ -65,7 +39,8 @@ class TimeScaleContainer extends React.Component {
 
 TimeScaleContainer.propTypes = {
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
-  alignment: PropTypes.string.isRequired
+  alignment: PropTypes.string.isRequired,
+  width: PropTypes.number
 };
 
 module.exports = TimeScaleContainer;

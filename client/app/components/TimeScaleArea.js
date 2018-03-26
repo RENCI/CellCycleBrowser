@@ -1,6 +1,7 @@
 var React = require("react");
 var PropTypes = require("prop-types");
 var AlignmentSelectContainer = require("../containers/AlignmentSelectContainer");
+var VisualizationContainer = require("../containers/VisualizationContainer");
 var TimeScaleContainer = require("../containers/TimeScaleContainer");
 
 var outerStyle = {
@@ -59,9 +60,11 @@ function TimeScale(props) {
             </div>
           </div>
           <div className={col2 + " text-left"} style={timeLineStyle}>
-            <TimeScaleContainer
-              timeExtent={props.timeExtent}
-              alignment={props.alignment} />
+            <VisualizationContainer>
+              <TimeScaleContainer
+                timeExtent={props.timeExtent}
+                alignment={props.alignment} />
+            </VisualizationContainer>
           </div>
         </div>
       </div>
