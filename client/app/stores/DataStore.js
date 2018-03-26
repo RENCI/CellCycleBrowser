@@ -66,11 +66,13 @@ function updateData() {
   // Link tracks to traces
   linkTracks(data.tracks);
 
-  // Cluster traces
+  // Update dendrogram
+  // XXX: This recalculates the clustering, which we may not want?
   data.hasDendrogram = false;
   data.tracks.forEach(function (track) {
     if (track.cluster) clusterTraces(track, true);
   });
+  updateDendrogram();
 
   // XXX: Switch to generating ids and using that for matching via a selected store?
   function trackId(track) {
@@ -88,6 +90,8 @@ function updateData() {
       var s = {};
 
       s.collapse = track.collapse;
+      s.cluster = track.cluster;
+      s.showDendrogram = track.showDendrogram;
 
       s.selectedTraces = {};
       [track.average].concat(track.traces).forEach(function (trace) {
@@ -111,6 +115,12 @@ function updateData() {
 
       track.collapse = !s || typeof s.collapse === "undefined" ?
                        false : s.collapse;
+
+      track.cluster = !s || typeof s.cluster === "undefined" ?
+                      null : s.cluster;
+
+      track.showDendrogram = !s || typeof s.showDendrogram === "undefined" ?
+                             false : s.showDendrogram;
 
       if (s) {
         [track.average].concat(track.traces).forEach(function (trace) {
