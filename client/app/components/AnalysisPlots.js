@@ -1,5 +1,9 @@
 var React = require("react");
 var PropTypes = require("prop-types");
+var VisualizationWrapper = require("./VisualizationWrapper");
+var InformationHoverContainer = require("../containers/InformationHoverContainer");
+var SaveSvgButtonContainer = require("../containers/SaveSvgButtonContainer");
+var VisualizationContainer = require("../containers/VisualizationContainer");
 
 var areaStyle = {
   marginBottom: 10
@@ -8,7 +12,15 @@ var areaStyle = {
 function component(plot, i, a) {
   return (
     <div key={i} style={i < a.length - 1 ? areaStyle : null}>
-      {plot.component}
+      <VisualizationWrapper>
+        <InformationHoverContainer>
+          {plot.info}
+        </InformationHoverContainer>
+        <SaveSvgButtonContainer />
+        <VisualizationContainer>
+          {plot.component}
+        </VisualizationContainer>
+      </VisualizationWrapper>
     </div>
   );
 }

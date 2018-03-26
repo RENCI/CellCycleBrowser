@@ -1,5 +1,6 @@
 var React = require("react");
 var MapControls = require("./MapControls");
+var VisualizationWrapper = require("./VisualizationWrapper");
 var VisualizationContainer = require("../containers/VisualizationContainer");
 var MapVisualizationContainer = require("../containers/MapVisualizationContainer");
 var InformationHoverContainer = require("../containers/InformationHoverContainer");
@@ -10,7 +11,7 @@ function MapArea() {
   return (
     <div>
       <MapControls />
-      <div>
+      <VisualizationWrapper>
         <InformationHoverContainer>
           <MapInformation />
         </InformationHoverContainer>
@@ -18,7 +19,7 @@ function MapArea() {
         <VisualizationContainer>
           <MapVisualizationContainer />
         </VisualizationContainer>
-      </div>
+      </VisualizationWrapper>
     </div>
   );
 }

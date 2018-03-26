@@ -1,14 +1,6 @@
 var React = require("react");
 var ReactDOM = require("react-dom");
 
-var divStyle = {
-  backgroundColor: "white",
-  borderColor: "#ccc",
-  borderStyle: "solid",
-  borderWidth: 1,
-  borderRadius: 5
-};
-
 class VisualizationContainer extends React.Component {
   constructor() {
     super();
@@ -69,11 +61,7 @@ class VisualizationContainer extends React.Component {
       height: this.state.height
     };
 
-    return (
-      <div style={divStyle}>
-        {React.cloneElement(this.props.children, props)}
-      </div>
-    );
+    return React.cloneElement(this.props.children, props);
   }
 }
 

@@ -4,9 +4,12 @@ var EventEmitter = require("events").EventEmitter;
 var assign = require("object-assign");
 var Constants = require("../constants/Constants");
 var DataUtils = require("../utils/DataUtils");
-var TimeSeriesArea = require("../components/TimeSeriesArea");
-var GrowthCurveArea = require("../components/GrowthCurveArea");
-var FlowCytometryArea = require("../components/FlowCytometryArea");
+var TimeSeriesContainer = require("../containers/TimeSeriesContainer");
+var TimeSeriesInformation = require("../components/TimeSeriesInformation");
+var GrowthCurveContainer = require("../containers/GrowthCurveContainer");
+var GrowthCurveInformation = require("../components/GrowthCurveInformation");
+var FlowCytometryContainer = require("../containers/FlowCytometryContainer");
+var FlowCytometryInformation = require("../components/FlowCytometryInformation");
 var DataStore = require("./DataStore");
 
 var CHANGE_EVENT = "change";
@@ -15,7 +18,8 @@ var CHANGE_EVENT = "change";
 var plots = [
   {
     name: "Time Series",
-    component: <TimeSeriesArea />,
+    component: <TimeSeriesContainer />,
+    info: <TimeSeriesInformation />,
     selected: true,
     hasInput: function () {
       return hasTracks();
@@ -23,7 +27,8 @@ var plots = [
   },
   {
     name: "Growth Curve",
-    component: <GrowthCurveArea />,
+    component: <GrowthCurveContainer />,
+    info: <GrowthCurveInformation />,
     selected: true,
     hasInput: function () {
       return hasTracks();
@@ -31,7 +36,8 @@ var plots = [
   },
   {
     name: "Cell Cycle Analysis",
-    component: <FlowCytometryArea />,
+    component: <FlowCytometryContainer />,
+    info: <FlowCytometryInformation />,
     selected: true,
     hasInput: function () {
       return hasPhaseTracks();
