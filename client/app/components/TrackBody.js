@@ -112,9 +112,11 @@ function TrackBody(props) {
       <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
         <div className={col1} style={dendrogramColumnStyle}>
           {props.track.showDendrogram ?
-            <DendrogramContainer
-              cluster={props.track.cluster}
-              height={collapseHeight} />
+            <VisualizationContainer>
+              <DendrogramContainer
+                cluster={props.track.cluster}
+                rowHeight={traceHeight} />
+            </VisualizationContainer>
           : null}
         </div>
         <div className={col2} style={traceControlColumnStyle}>

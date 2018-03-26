@@ -4,28 +4,16 @@ var PropTypes = require("prop-types");
 var Dendrogram = require("../visualizations/Dendrogram");
 var d3 = require("d3");
 
+function height(props) {
+  return props.rowHeight * props.cluster.orderedNodes().length;
+}
+
 class DendrogramContainer extends React.Component {
   constructor() {
     super();
 
     // Create visualization function
     this.dendrogram = Dendrogram();
-
-    // Need to bind this to callback functions here
-    this.onResize = this.onResize.bind(this);
-  }
-
-  componentDidMount() {
-    this.resize();
-  }
-
-  componentWillUnmount() {
-    // Resize on window resize
-    window.addEventListener("resize", this.onResize);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.onResize);
   }
 
   shouldComponentUpdate(props, state) {
@@ -34,37 +22,22 @@ class DendrogramContainer extends React.Component {
     return false;
   }
 
-  onResize() {
-    this.resize();
-  }
-
   drawVisualization(props, state) {
     // Set up dendrogram
     this.dendrogram
-        .height(props.height)
+        .width(props.width)
+        .height(height(props))
         .cluster(props.cluster);
 
     // Draw dendrogram
-    d3.select(this.getNode())
+    d3.select(ReactDOM.findDOMNode(this))
         .call(this.dendrogram);
-  }
-
-  resize() {
-    var width = this.getNode().clientWidth;
-
-    this.dendrogram.width(width);
-
-    this.drawVisualization(this.props, this.state);
-  }
-
-  getNode() {
-    return ReactDOM.findDOMNode(this);
   }
 
   render() {
     // Create style here to update height and avoid mutated style warning
     var style = {
-      height: this.props.height
+      height: height(this.props)
     };
 
     return <div style={style}></div>
@@ -73,7 +46,8 @@ class DendrogramContainer extends React.Component {
 
 DendrogramContainer.propTypes = {
   cluster: PropTypes.func.isRequired,
-  height: PropTypes.number.isRequired
+  rowHeight: PropTypes.number.isRequired,
+  width: PropTypes.number
 };
 
 module.exports = DendrogramContainer;
