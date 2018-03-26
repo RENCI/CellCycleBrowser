@@ -2,6 +2,7 @@ var React = require("react");
 var PropTypes = require("prop-types");
 var CollapseButtonContainer = require("../containers/CollapseButtonContainer");
 var TraceControlsContainer = require("../containers/TraceControlsContainer");
+var VisualizationContainer = require("../containers/VisualizationContainer");
 var PhaseMapContainer = require("../containers/PhaseMapContainer");
 
 var border = "1px solid #ccc";
@@ -68,14 +69,16 @@ function PhaseTrackBody(props) {
           </div>
         </div>
         <div className={col2} style={averageColumnStyle}>
-          <PhaseMapContainer
-            data={[props.track.average.phases]}
-            timeExtent={props.timeExtent}
-            activeIndex={props.activeTrajectory === "average" ? "0" : "-1"}
-            colorScale={props.colorScale}
-            height={averageHeight}
-            isAverage={true}
-            alignment={props.alignment} />
+          <VisualizationContainer>
+            <PhaseMapContainer
+              data={[props.track.average.phases]}
+              timeExtent={props.timeExtent}
+              activeIndex={props.activeTrajectory === "average" ? "0" : "-1"}
+              colorScale={props.colorScale}
+              isAverage={true}
+              alignment={props.alignment}
+              rowHeight={averageHeight} />
+          </VisualizationContainer>
         </div>
       </div>
       <div className={collapseClasses} id={collapseId} style={collapseRowStyle}>
@@ -86,14 +89,16 @@ function PhaseTrackBody(props) {
             height={traceHeight} />
         </div>
         <div className={col2} style={collapseColumnStyle}>
-          <PhaseMapContainer
-            data={props.track.traces.map(function (d) { return d.phases; })}
-            timeExtent={props.timeExtent}
-            activeIndex={props.activeTrajectory && props.activeTrajectory !== "average" ?
-                         props.activeTrajectory : "-1"}
-            colorScale={props.colorScale}
-            height={props.track.traces.length * traceHeight}
-            alignment={props.alignment}  />
+          <VisualizationContainer>
+            <PhaseMapContainer
+              data={props.track.traces.map(function (d) { return d.phases; })}
+              timeExtent={props.timeExtent}
+              activeIndex={props.activeTrajectory && props.activeTrajectory !== "average" ?
+                           props.activeTrajectory : "-1"}
+              colorScale={props.colorScale}
+              alignment={props.alignment}
+              rowHeight={traceHeight} />
+          </VisualizationContainer>
         </div>
       </div>
     </div>

@@ -16,12 +16,6 @@ class HeatMapContainer extends React.Component {
     this.heatMap = HeatMap();
   }
 
-  componentWillUpdate(props, state) {
-    this.drawVisualization(props, state);
-
-    return false;
-  }
-
   shouldComponentUpdate(props, state) {
     this.drawVisualization(props, state);
 

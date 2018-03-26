@@ -5,6 +5,10 @@ var ViewActionCreators = require("../actions/ViewActionCreators");
 var PhaseMap = require("../visualizations/PhaseMap");
 var d3 = require("d3");
 
+function height(props) {
+  return props.rowHeight * props.data.length;
+}
+
 class PhaseMapContainer extends React.Component {
   constructor() {
     super();
@@ -14,19 +18,7 @@ class PhaseMapContainer extends React.Component {
         .on("selectTrajectory", this.handleSelectTrajectory);
 
     // Need to bind this to callback functions here
-    this.onResize = this.onResize.bind(this);
     this.handleSelectTrajectory = this.handleSelectTrajectory.bind(this);
-  }
-
-  componentDidMount() {
-    this.resize();
-
-    // Resize on window resize
-    window.addEventListener("resize", this.onResize);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener("resize", this.onResize);
   }
 
   shouldComponentUpdate(props, state) {
@@ -35,14 +27,11 @@ class PhaseMapContainer extends React.Component {
     return false;
   }
 
-  onResize() {
-    this.resize();
-  }
-
   drawVisualization(props, state) {
     // Set up phase map
     this.phaseMap
-        .height(props.height)
+        .width(props.width)
+        .height(height(props))
         .colorScale(props.colorScale)
         .timeExtent(props.timeExtent)
         .activeIndex(props.activeIndex)
@@ -50,21 +39,9 @@ class PhaseMapContainer extends React.Component {
         .alignment(props.alignment);
 
     // Draw phase map
-    d3.select(this.getNode())
+    d3.select(ReactDOM.findDOMNode(this))
         .datum(props.data)
         .call(this.phaseMap);
-  }
-
-  resize() {
-    var width = this.getNode().clientWidth;
-
-    this.phaseMap.width(width);
-
-    this.drawVisualization(this.props, this.state);
-  }
-
-  getNode() {
-    return ReactDOM.findDOMNode(this);
   }
 
   handleSelectTrajectory(trajectory) {
@@ -79,7 +56,7 @@ class PhaseMapContainer extends React.Component {
     // Create style here to update height and avoid mutated style warning
     var style = {
       backgroundColor: "#eee",
-      height: this.props.height
+      height: height(this.props)
     };
 
     return <div style={style}></div>
@@ -91,9 +68,10 @@ PhaseMapContainer.propTypes = {
   timeExtent: PropTypes.arrayOf(PropTypes.number),
   activeIndex: PropTypes.string.isRequired,
   colorScale: PropTypes.func.isRequired,
-  height: PropTypes.number.isRequired,
   isAverage: PropTypes.bool,
-  alignment: PropTypes.string.isRequired
+  alignment: PropTypes.string.isRequired,
+  rowHeight: PropTypes.number.isRequired,
+  width: PropTypes.number
 };
 
 PhaseMapContainer.defaultProps = {
