@@ -20,13 +20,11 @@ class VisualizationContainer extends React.Component {
   }
 
   checkSize() {
-    var node = ReactDOM.findDOMNode(this);
-
-    if (this.state.width !== node.clientWidth ||
-        this.state.height !== node.clientHeight) {
+    if (this.state.width !== this.div.clientWidth ||
+        this.state.height !== this.div.clientHeight) {
       this.setState({
-        width: node.clientWidth,
-        height: node.clientHeight
+        width: this.div.clientWidth,
+        height: this.div.clientHeight
       });
     }
   }
@@ -37,7 +35,11 @@ class VisualizationContainer extends React.Component {
       height: this.state.height
     };
 
-    return React.cloneElement(this.props.children, props);
+    return (
+      <div ref={(div => this.div = div)}>
+        {React.cloneElement(this.props.children, props)}
+      </div>
+    );
   }
 }
 

@@ -8,8 +8,6 @@ var d3 = require("d3");
 var TimeSeries = require("../visualizations/TimeSeries");
 var ViewActionCreators = require("../actions/ViewActionCreators");
 
-var refName = "ref";
-
 function getStateFromDataStore() {
   return {
     data: DataStore.getData()
@@ -69,7 +67,7 @@ class TimeSeriesContainer extends React.Component {
     // XXX: I think this is necessary because we are getting state from a store
     // here that is already being retrieved in a parent component. Try passing
     // down that state instead?
-    if (this.refs[refName]) {
+    if (this.div) {
       this.setState(getStateFromDataStore());
     }
   }
@@ -84,7 +82,7 @@ class TimeSeriesContainer extends React.Component {
         .alignment(state.alignment)
         .phaseColorScale(state.phaseColorScale);
 
-    d3.select(ReactDOM.findDOMNode(this))
+    d3.select(this.div)
         .datum(state.data)
         .call(this.timeSeries);
   }
@@ -94,7 +92,7 @@ class TimeSeriesContainer extends React.Component {
   }
 
   render() {
-    return <div ref={refName}></div>
+    return <div ref={div => this.div = div}></div>
   }
 }
 

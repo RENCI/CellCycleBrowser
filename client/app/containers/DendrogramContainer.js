@@ -30,7 +30,7 @@ class DendrogramContainer extends React.Component {
         .cluster(props.cluster);
 
     // Draw dendrogram
-    d3.select(ReactDOM.findDOMNode(this))
+    d3.select(this.div)
         .call(this.dendrogram);
   }
 
@@ -40,7 +40,7 @@ class DendrogramContainer extends React.Component {
       height: height(this.props)
     };
 
-    return <div style={style}></div>
+    return <div ref={div => this.div = div} style={style}></div>
   }
 }
 

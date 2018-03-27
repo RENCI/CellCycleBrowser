@@ -15,8 +15,6 @@ var TrackDividerContainer = require("../containers/TrackDividerContainer");
 var InformationHoverContainer = require("./InformationHoverContainer");
 var BrowserInformation = require("../components/BrowserInformation");
 
-var refName = "ref";
-
 function getStateFromDataStore() {
   return {
     data: DataStore.getData()
@@ -89,7 +87,7 @@ class BrowserContainer extends React.Component {
     // XXX: I think this is necessary because we are getting state from a store
     // here that is already being retrieved in a parent component. Try passing
     // down that state instead?
-    if (this.refs[refName]) {
+    if (this.div) {
       this.setState(getStateFromDataStore());
     }
   }
@@ -143,7 +141,7 @@ class BrowserContainer extends React.Component {
     }.bind(this));
 
     return (
-      <div ref={refName}>
+      <div ref={div => this.div = div}>
         <InformationHoverContainer>
           <BrowserInformation />
         </InformationHoverContainer>

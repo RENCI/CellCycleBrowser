@@ -137,7 +137,7 @@ class MapVisualizationContainer extends React.Component {
         .interactionColorScale(interactionColorScale)
         .selectPhase(state.phase);
 
-    d3.select(ReactDOM.findDOMNode(this))
+    d3.select(this.div)
         .datum(state.model)
         .call(this.linearNetworkMap);
   }
@@ -151,7 +151,7 @@ class MapVisualizationContainer extends React.Component {
   }
 
   render() {
-    return <div></div>
+    return <div ref={div => this.div = div} ></div>
   }
 }
 

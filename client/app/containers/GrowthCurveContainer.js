@@ -5,8 +5,6 @@ var DataStore = require("../stores/DataStore");
 var d3 = require("d3");
 var GrowthCurve = require("../visualizations/GrowthCurve");
 
-var refName = "ref";
-
 function getStateFromStore() {
   return {
     tracks: DataStore.getData().tracks
@@ -46,7 +44,7 @@ class GrowthCurveContainer extends React.Component {
     // XXX: I think this is necessary because we are getting state from a store
     // here that is already being retrieved in a parent component. Try passing
     // down that state instead?
-    if (this.refs[refName]) {
+    if (this.div) {
       this.setState(getStateFromStore());
     }
   }
@@ -55,13 +53,13 @@ class GrowthCurveContainer extends React.Component {
     this.growthCurve
         .width(props.width);
 
-    d3.select(ReactDOM.findDOMNode(this))
+    d3.select(this.div)
         .datum(state.tracks)
         .call(this.growthCurve);
   }
 
   render() {
-    return <div ref={refName}></div>
+    return <div ref={div => this.div = div}></div>
   }
 }
 

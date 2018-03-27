@@ -39,7 +39,7 @@ class PhaseMapContainer extends React.Component {
         .alignment(props.alignment);
 
     // Draw phase map
-    d3.select(ReactDOM.findDOMNode(this))
+    d3.select(this.div)
         .datum(props.data)
         .call(this.phaseMap);
   }
@@ -59,7 +59,7 @@ class PhaseMapContainer extends React.Component {
       height: height(this.props)
     };
 
-    return <div style={style}></div>
+    return <div ref={div => this.div = div} style={style}></div>
   }
 }
 

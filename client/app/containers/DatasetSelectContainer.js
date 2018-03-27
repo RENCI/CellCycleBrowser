@@ -49,7 +49,7 @@ class DatasetSelectContainer extends React.Component {
     // In the future, look into how react-bootstrap and other handle popovers.
 
     // Get the trigger button and the content, assuming the content is in a hidden div which is a sibling of the trigger
-    var trigger = $(ReactDOM.findDOMNode(this)).find("[data-toggle='popover']");
+    var trigger = $(this.div).find("[data-toggle='popover']");
     var content = trigger.next().first();
 
     if (!this.state.popoverActive) {
@@ -162,7 +162,7 @@ class DatasetSelectContainer extends React.Component {
 
   render() {
     return (
-      <div>
+      <div ref={div => this.div = div}>
         <DatasetSelect
           options={this.state.datasetList}
           onClick={this.handleClick} />

@@ -12,11 +12,15 @@ class SaveSvgButtonContainer extends React.Component {
   }
 
   handleButtonClick() {
-    SvgCrowbar(ReactDOM.findDOMNode(this).parentNode);
+    SvgCrowbar(this.div.parentNode);
   }
 
   render() {
-    return <SaveSvgButton onClick={this.handleButtonClick} />
+    return (
+      <div ref={div => this.div = div}>
+        <SaveSvgButton onClick={this.handleButtonClick} />
+      </div>
+    );
   }
 }
 

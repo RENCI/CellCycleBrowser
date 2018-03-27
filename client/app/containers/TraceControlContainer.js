@@ -29,7 +29,7 @@ class TraceControlContainer extends React.Component {
   }
 
   componentDidUpdate() {
-    $(ReactDOM.findDOMNode(this)).find("[data-toggle='tooltip']").tooltip();
+    $(this.div).find("[data-toggle='tooltip']").tooltip();
   }
 
   handleMouseOver() {
@@ -68,6 +68,7 @@ class TraceControlContainer extends React.Component {
 
     return (
       <div
+        ref={div => this.div = div}
         style={divStyle}
         onMouseOver={this.handleMouseOver}
         onMouseLeave={this.handleMouseLeave}>

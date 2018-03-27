@@ -7,8 +7,6 @@ var NucleiDistributionStore = require("../stores/NucleiDistributionStore");
 var d3 = require("d3");
 require("seedrandom");
 
-var refName = "ref";
-
 function getStateFromDataStore() {
   return {
     tracks: DataStore.getData().tracks.filter(function (track) {
@@ -121,7 +119,7 @@ class FlowCytometryContainer extends React.Component {
   onDataStoreChange() {
     // Use a ref to see if we are still mounted, as the change listener
     // can still be fired after unmounting due to an asynchronous ajax request
-    if (this.refs[refName]) {
+    if (this.div) {
       this.setState(getStateFromDataStore());
     }
   }
@@ -129,7 +127,7 @@ class FlowCytometryContainer extends React.Component {
   onNucleiDistributionStoreChange() {
     // Use a ref to see if we are still mounted, as the change listener
     // can still be fired after unmounting due to an asynchronous ajax request
-    if (this.refs[refName]) {
+    if (this.div) {
       this.setState(getStateFromNucleiDistributionStore());
     }
   }
@@ -140,7 +138,7 @@ class FlowCytometryContainer extends React.Component {
     var vis = this.flowCytometry
         .width(props.width);
 
-    var plot = d3.select(ReactDOM.findDOMNode(this)).selectAll("div")
+    var plot = d3.select(this.div).selectAll("div")
         .data(cells);
 
     plot.enter().append("div").merge(plot)
@@ -154,7 +152,7 @@ class FlowCytometryContainer extends React.Component {
   }
 
   render() {
-    return <div ref={refName}></div>
+    return <div ref={div => this.div = div}></div>
   }
 }
 

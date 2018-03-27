@@ -27,13 +27,13 @@ class TimeScaleContainer extends React.Component {
         .alignment(props.alignment);
 
     // Draw time scale
-    d3.select(ReactDOM.findDOMNode(this))
+    d3.select(this.div)
         .datum(props.timeExtent)
         .call(this.timeScale);
   }
 
   render() {
-    return <div></div>
+    return <div ref={div => this.div = div}></div>
   }
 }
 

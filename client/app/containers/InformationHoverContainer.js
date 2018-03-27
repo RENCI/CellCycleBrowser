@@ -9,7 +9,7 @@ class InformationHoverContainer extends React.Component {
 
   componentDidMount() {
     // Activate information hover
-    var trigger = $(ReactDOM.findDOMNode(this)).find("[data-toggle='popover']").first();
+    var trigger = $(this.div).find("[data-toggle='popover']").first();
     var content = trigger.next().first();
 
     trigger.popover({
@@ -19,9 +19,11 @@ class InformationHoverContainer extends React.Component {
 
   render() {
     return (
-      <InformationHover>
-        {this.props.children}
-      </InformationHover>
+      <div ref={div => this.div = div}>
+        <InformationHover >
+          {this.props.children}
+        </InformationHover>
+      </div>
     );
   }
 }
