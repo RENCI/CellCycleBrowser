@@ -121,10 +121,10 @@ module.exports = function() {
         xMax = curves.length > 0 ? d3.max(curves, function(d) { return d.curve[d.curve.length - 1][0]; }) : 0;
 
     if (phases.length > 0) {
-      phaseMin = phases[0].start;
+      var phaseMin = phases[0].start;
       if (phaseMin < xMin) xMin = phaseMin;
 
-      phaseMax = phases[phases.length -1].stop;
+      var phaseMax = phases[phases.length -1].stop;
       if (phaseMax > xMax) xMax = phaseMax;
     }
 
