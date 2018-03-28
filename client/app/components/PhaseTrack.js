@@ -13,15 +13,25 @@ var outerStyle = {
   borderBottomLeftRadius: 5
 };
 
-function PhaseTrack(props) {
-  return (
-    <div className="text-left" style={outerStyle}>
-      <PhaseTrackHeader
-        track={props.track}
-        showPhaseOverlay={props.showPhaseOverlay} />
-      <PhaseTrackBody {...props} />
-    </div>
-  );
+class PhaseTrack extends React.Component {
+  constructor() {
+    super();
+  }
+
+  shouldComponentUpdate(props) {
+    return !props.processing;
+  }
+
+  render() {
+    return (
+      <div className="text-left" style={outerStyle}>
+        <PhaseTrackHeader
+          track={this.props.track}
+          showPhaseOverlay={this.props.showPhaseOverlay} />
+        <PhaseTrackBody {...this.props} />
+      </div>
+    );
+  }
 }
 
 PhaseTrack.propTypes = {
@@ -30,7 +40,8 @@ PhaseTrack.propTypes = {
   activeTrajectory: PropTypes.string,
   colorScale: PropTypes.func.isRequired,
   alignment: PropTypes.string.isRequired,
-  shiftRight: PropTypes.bool.isRequired
+  shiftRight: PropTypes.bool.isRequired,
+  processing: PropTypes.bool.isRequired
 };
 
 module.exports = PhaseTrack;

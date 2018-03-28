@@ -13,13 +13,23 @@ var outerStyle = {
   borderBottomLeftRadius: 5
 };
 
-function Track(props) {
-  return (
-    <div className="text-left" style={outerStyle}>
-      <TrackHeader track={props.track} />
-      <TrackBody {...props} />
-    </div>
-  );
+class Track extends React.Component {
+  constructor() {
+    super();
+  }
+
+  shouldComponentUpdate(props) {
+    return !props.processing;
+  }
+
+  render() {
+    return (
+      <div className="text-left" style={outerStyle}>
+        <TrackHeader track={this.props.track} />
+        <TrackBody {...this.props} />
+      </div>
+    );
+  }
 }
 
 Track.propTypes = {
@@ -28,7 +38,8 @@ Track.propTypes = {
   phaseColorScale: PropTypes.func.isRequired,
   phaseOverlayOpacity: PropTypes.number.isRequired,
   showPhaseOverlay: PropTypes.bool.isRequired,
-  shiftRight: PropTypes.bool.isRequired
+  shiftRight: PropTypes.bool.isRequired,
+  processing: PropTypes.bool.isRequired
 };
 
 module.exports = Track;

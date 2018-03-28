@@ -6,6 +6,7 @@ var AlignmentStore = require("../stores/AlignmentStore");
 var TrajectoryStore = require("../stores/TrajectoryStore");
 var PhaseColorStore = require("../stores/PhaseColorStore");
 var PhaseOverlayStore = require("../stores/PhaseOverlayStore");
+var ProcessingPopup = require("../components/ProcessingPopup");
 var BrowserControls = require("../components/BrowserControls");
 var TimeScaleArea = require("../components/TimeScaleArea");
 var TrackSort = require("../components/TrackSort");
@@ -56,7 +57,8 @@ class BrowserContainer extends React.Component {
       activeTrajectory: TrajectoryStore.getTrajectory(),
       phaseColorScale: PhaseColorStore.getColorScale(),
       showPhaseOverlay: PhaseOverlayStore.getShow(),
-      phaseOverlayOpacity: PhaseOverlayStore.getOpacity()
+      phaseOverlayOpacity: PhaseOverlayStore.getOpacity(),
+      processing: false
     };
 
     // Need to bind this to callback functions here
@@ -83,29 +85,47 @@ class BrowserContainer extends React.Component {
     PhaseOverlayStore.removeChangeListener(this.onPhaseOverlayChange);
   }
 
+  componentWillReceiveProps() {
+    this.updateState();
+  }
+
   onDataChange() {
     // XXX: I think this is necessary because we are getting state from a store
     // here that is already being retrieved in a parent component. Try passing
     // down that state instead?
     if (this.div) {
-      this.setState(getStateFromDataStore());
+      this.updateState(getStateFromDataStore());
     }
   }
 
   onAlignmentChange() {
-    this.setState(getStateFromAlignmentStore());
+    this.updateState(getStateFromAlignmentStore());
   }
 
   onTrajectoryChange() {
-    this.setState(getStateFromTrajectoryStore());
+    this.updateState(getStateFromTrajectoryStore());
   }
 
   onPhaseColorChange() {
-    this.setState(getStateFromPhaseColorStore());
+    this.updateState(getStateFromPhaseColorStore());
   }
 
   onPhaseOverlayChange() {
-    this.setState(getStateFromPhaseOverlayStore());
+    this.updateState(getStateFromPhaseOverlayStore());
+  }
+
+  updateState(state) {
+    this.setState({
+      processing: true
+    }, function () {
+      setTimeout(function () {
+        this.setState({
+          processing: false
+        });
+
+        if (state) this.setState(state);
+      }.bind(this), 0);
+    });
   }
 
   render() {
@@ -127,7 +147,8 @@ class BrowserContainer extends React.Component {
               activePhase={this.state.activePhase}
               colorScale={this.state.phaseColorScale}
               alignment={this.state.alignment}
-              shiftRight={this.state.data.hasDendrogram} />
+              shiftRight={this.state.data.hasDendrogram}
+              processing={this.state.processing} />
             :
             <Track
               track={track}
@@ -135,13 +156,15 @@ class BrowserContainer extends React.Component {
               phaseColorScale={this.state.phaseColorScale}
               phaseOverlayOpacity={this.state.phaseOverlayOpacity}
               showPhaseOverlay={this.state.showPhaseOverlay}
-              shiftRight={this.state.data.hasDendrogram} />}
+              shiftRight={this.state.data.hasDendrogram}
+              processing={this.state.processing} />}
         </div>
       );
     }.bind(this));
 
     return (
       <div ref={div => this.div = div}>
+        {this.state.processing ? <ProcessingPopup /> : null}
         <InformationHoverContainer>
           <BrowserInformation />
         </InformationHoverContainer>
