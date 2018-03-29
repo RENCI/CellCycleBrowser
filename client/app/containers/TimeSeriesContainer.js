@@ -14,12 +14,6 @@ function getStateFromDataStore() {
   };
 }
 
-function getStateFromAlignmentStore() {
-  return {
-    alignment: AlignmentStore.getAlignment()
-  };
-}
-
 function hasData(data) {
   return data.tracks.length > 0;
 }
@@ -32,28 +26,26 @@ class TimeSeriesContainer extends React.Component {
     this.timeSeries = TimeSeries()
         .on("highlightTrace", this.handleHighlightTrace);
 
+    // XXX: Moving alignment from state because we will always also get
+    // a data update with alignment
     this.state = {
       data: DataStore.getData(),
-      alignment: AlignmentStore.getAlignment(),
       phaseColorScale: PhaseColorStore.getColorScale(),
       processing: false
     };
 
     // Need to bind this to callback functions here
     this.onDataChange = this.onDataChange.bind(this);
-    this.onAlignmentChange = this.onAlignmentChange.bind(this);
   }
 
   componentDidMount() {
     DataStore.addChangeListener(this.onDataChange);
     DataStore.addHighlightChangeListener(this.onDataChange);
-    AlignmentStore.addChangeListener(this.onAlignmentChange);
   }
 
   componentWillUnmount() {
     DataStore.removeChangeListener(this.onDataChange);
     DataStore.removeHighlightChangeListener(this.onDataChange);
-    AlignmentStore.removeChangeListener(this.onAlignmentChange);
   }
 
   shouldComponentUpdate(props, state) {
@@ -73,10 +65,6 @@ class TimeSeriesContainer extends React.Component {
     }
   }
 
-  onAlignmentChange() {
-    this.updateState(getStateFromAlignmentStore());
-  }
-
   // XXX: Need to look at data flow again, passing all data down from
   // AppContainer, and doing checks where necessary for updating
   updateState(state) {
@@ -87,7 +75,7 @@ class TimeSeriesContainer extends React.Component {
     }, function () {
       setTimeout(function () {
         if (!this.div) return;
-        
+
         this.setState({
           processing: false
         });
@@ -100,7 +88,7 @@ class TimeSeriesContainer extends React.Component {
   drawVisualization(props, state) {
     this.timeSeries
         .width(props.width)
-        .alignment(state.alignment)
+        .alignment(AlignmentStore.getAlignment())
         .phaseColorScale(state.phaseColorScale);
 
     d3.select(this.div)
