@@ -90,12 +90,7 @@ class BrowserContainer extends React.Component {
   }
 
   onDataChange() {
-    // XXX: I think this is necessary because we are getting state from a store
-    // here that is already being retrieved in a parent component. Try passing
-    // down that state instead?
-    if (this.div) {
-      this.updateState(getStateFromDataStore());
-    }
+    this.updateState(getStateFromDataStore());
   }
 
   onAlignmentChange() {
@@ -115,10 +110,17 @@ class BrowserContainer extends React.Component {
   }
 
   updateState(state) {
+    // XXX: I think this is necessary because we are getting state from a store
+    // here that is already being retrieved in a parent component. Try passing
+    // down that state instead?
+    if (!this.div) return;
+
     this.setState({
       processing: true
     }, function () {
       setTimeout(function () {
+        if (!this.div) return;
+
         this.setState({
           processing: false
         });

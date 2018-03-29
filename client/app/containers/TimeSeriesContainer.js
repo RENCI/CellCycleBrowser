@@ -35,7 +35,8 @@ class TimeSeriesContainer extends React.Component {
     this.state = {
       data: DataStore.getData(),
       alignment: AlignmentStore.getAlignment(),
-      phaseColorScale: PhaseColorStore.getColorScale()
+      phaseColorScale: PhaseColorStore.getColorScale(),
+      processing: false
     };
 
     // Need to bind this to callback functions here
@@ -56,7 +57,7 @@ class TimeSeriesContainer extends React.Component {
   }
 
   shouldComponentUpdate(props, state) {
-    if (hasData(state.data)) {
+    if (hasData(state.data) && !this.processing) {
       this.drawVisualization(props, state);
     };
 
@@ -68,12 +69,32 @@ class TimeSeriesContainer extends React.Component {
     // here that is already being retrieved in a parent component. Try passing
     // down that state instead?
     if (this.div) {
-      this.setState(getStateFromDataStore());
+      this.updateState(getStateFromDataStore());
     }
   }
 
   onAlignmentChange() {
-    this.setState(getStateFromAlignmentStore());
+    this.updateState(getStateFromAlignmentStore());
+  }
+
+  // XXX: Need to look at data flow again, passing all data down from
+  // AppContainer, and doing checks where necessary for updating
+  updateState(state) {
+    if (!this.div) return;
+
+    this.setState({
+      processing: true
+    }, function () {
+      setTimeout(function () {
+        if (!this.div) return;
+        
+        this.setState({
+          processing: false
+        });
+
+        if (state) this.setState(state);
+      }.bind(this), 0);
+    });
   }
 
   drawVisualization(props, state) {
