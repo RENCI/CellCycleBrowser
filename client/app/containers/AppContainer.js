@@ -60,14 +60,14 @@ class AppContainer extends React.Component {
     this.enableTooltips();
   }
 
-  componentDidUpdate() {
-    this.enableTooltips();
-  }
-
   componentWillUnmount() {
     WorkspaceStore.removeChangeListener(this.onWorkspaceChange);
     ModelStore.removeChangeListener(this.onModelChange);
     DataStore.removeChangeListener(this.onDataChange);
+  }
+
+  componentDidUpdate() {
+    this.enableTooltips();
   }
 
   onWorkspaceChange() {

@@ -1,20 +1,21 @@
 // Controller-view for the browser area
 
 var React = require("react");
+var ReactDOM = require("react-dom");
 var DataStore = require("../stores/DataStore");
 var AlignmentStore = require("../stores/AlignmentStore");
 var TrajectoryStore = require("../stores/TrajectoryStore");
 var PhaseColorStore = require("../stores/PhaseColorStore");
 var PhaseOverlayStore = require("../stores/PhaseOverlayStore");
-var ProcessingPopup = require("../components/ProcessingPopup");
 var BrowserControls = require("../components/BrowserControls");
 var TimeScaleArea = require("../components/TimeScaleArea");
 var TrackSort = require("../components/TrackSort");
-var PhaseTrack = require("../components/PhaseTrack");
-var Track = require("../components/Track");
+var PhaseTrackContainer = require("../containers/PhaseTrackContainer");
+var TrackContainer = require("../containers/TrackContainer");
 var TrackDividerContainer = require("../containers/TrackDividerContainer");
 var InformationHoverContainer = require("./InformationHoverContainer");
 var BrowserInformation = require("../components/BrowserInformation");
+var RenderUtils = require("../utils/RenderUtils");
 
 function getStateFromDataStore() {
   return {
@@ -75,6 +76,8 @@ class BrowserContainer extends React.Component {
     TrajectoryStore.addChangeListener(this.onTrajectoryChange);
     PhaseColorStore.addChangeListener(this.onPhaseColorChange);
     PhaseOverlayStore.addChangeListener(this.onPhaseOverlayChange);
+
+    RenderUtils.hideAlert();
   }
 
   componentWillUnmount() {
@@ -83,6 +86,14 @@ class BrowserContainer extends React.Component {
     TrajectoryStore.removeChangeListener(this.onTrajectoryChange);
     PhaseColorStore.removeChangeListener(this.onPhaseColorChange);
     PhaseOverlayStore.removeChangeListener(this.onPhaseOverlayChange);
+  }
+
+  shouldComponentUpdate(props, state) {
+    return !state.processing;
+  }
+
+  componentDidUpdate() {
+    RenderUtils.hideAlert();
   }
 
   componentWillReceiveProps() {
@@ -115,6 +126,8 @@ class BrowserContainer extends React.Component {
     // down that state instead?
     if (!this.div) return;
 
+    RenderUtils.showAlert("Processing Data...");
+
     this.setState({
       processing: true
     }, function () {
@@ -142,7 +155,7 @@ class BrowserContainer extends React.Component {
           <TrackDividerContainer
             index={track.index} />
           {track.phaseTrack ?
-            <PhaseTrack
+            <PhaseTrackContainer
               track={track}
               timeExtent={this.state.data.timeExtent}
               activeTrajectory={this.state.activeTrajectory}
@@ -150,23 +163,22 @@ class BrowserContainer extends React.Component {
               colorScale={this.state.phaseColorScale}
               alignment={this.state.alignment}
               shiftRight={this.state.data.hasDendrogram}
-              processing={this.state.processing} />
+              processing={false} />
             :
-            <Track
+            <TrackContainer
               track={track}
               timeExtent={this.state.data.timeExtent}
               phaseColorScale={this.state.phaseColorScale}
               phaseOverlayOpacity={this.state.phaseOverlayOpacity}
               showPhaseOverlay={this.state.showPhaseOverlay}
               shiftRight={this.state.data.hasDendrogram}
-              processing={this.state.processing} />}
+              processing={false} />}
         </div>
       );
     }.bind(this));
 
     return (
       <div ref={div => this.div = div}>
-        {this.state.processing ? <ProcessingPopup /> : null}
         <InformationHoverContainer>
           <BrowserInformation />
         </InformationHoverContainer>

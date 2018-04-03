@@ -4,9 +4,9 @@ var PropTypes = require("prop-types");
 var DataStore = require("../stores/DataStore");
 var AlignmentStore = require("../stores/AlignmentStore");
 var PhaseColorStore = require("../stores/PhaseColorStore");
-var d3 = require("d3");
 var TimeSeries = require("../visualizations/TimeSeries");
 var ViewActionCreators = require("../actions/ViewActionCreators");
+var d3 = require("d3");
 
 function getStateFromDataStore() {
   return {
@@ -49,7 +49,7 @@ class TimeSeriesContainer extends React.Component {
   }
 
   shouldComponentUpdate(props, state) {
-    if (hasData(state.data) && !this.processing) {
+    if (hasData(state.data) && !state.processing) {
       this.drawVisualization(props, state);
     };
 

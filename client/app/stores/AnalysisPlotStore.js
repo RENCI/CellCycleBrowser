@@ -91,11 +91,6 @@ var AnalysisPlotStore = assign({}, EventEmitter.prototype, {
 AppDispatcher.register(function (action) {
   switch (action.actionType) {
     case Constants.RECEIVE_WORKSPACE:
-      AppDispatcher.waitFor([DataStore.dispatchToken]);
-      checkAvailability();
-      AnalysisPlotStore.emitChange();
-      break;
-
     case Constants.RECEIVE_DATASET:
     case Constants.SELECT_DATASET:
     case Constants.RECEIVE_SIMULATION_OUTPUT:

@@ -13,15 +13,15 @@ var outerStyle = {
   borderBottomLeftRadius: 5
 };
 
-class Track extends React.Component {
+class TrackContainer extends React.Component {
   constructor() {
     super();
   }
-
+/*
   shouldComponentUpdate(props) {
     return !props.processing;
   }
-
+*/
   render() {
     return (
       <div className="text-left" style={outerStyle}>
@@ -32,7 +32,7 @@ class Track extends React.Component {
   }
 }
 
-Track.propTypes = {
+TrackContainer.propTypes = {
   track: PropTypes.object.isRequired,
   timeExtent: PropTypes.arrayOf(PropTypes.number).isRequired,
   phaseColorScale: PropTypes.func.isRequired,
@@ -42,4 +42,4 @@ Track.propTypes = {
   processing: PropTypes.bool.isRequired
 };
 
-module.exports = Track;
+module.exports = TrackContainer;
