@@ -9,6 +9,7 @@ var WorkspaceStore = require("../stores/WorkspaceStore");
 var ModelStore = require("../stores/ModelStore");
 var DataStore = require("../stores/DataStore");
 var WebAPIUtils = require("../utils/WebAPIUtils");
+var RenderUtils = require("../utils/RenderUtils");
 
 // Retrieve the current state from stores
 function getStateFromWorkspaceStore() {
@@ -52,6 +53,7 @@ class AppContainer extends React.Component {
     DataStore.addChangeListener(this.onDataChange);
 
     // Bootstrap the application by getting initial data here
+    RenderUtils.showAlert("Loading Workspace...");
     WebAPIUtils.getWorkspaceList();
     WebAPIUtils.getModelList();
     WebAPIUtils.getDatasetList();

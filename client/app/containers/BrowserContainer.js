@@ -92,12 +92,12 @@ class BrowserContainer extends React.Component {
     return !state.processing;
   }
 
-  componentDidUpdate() {
-    RenderUtils.hideAlert();
-  }
-
   componentWillReceiveProps() {
     this.updateState();
+  }
+
+  componentDidUpdate() {
+    RenderUtils.hideAlert();
   }
 
   onDataChange() {

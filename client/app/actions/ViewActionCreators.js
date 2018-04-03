@@ -1,16 +1,19 @@
 var AppDispatcher = require("../dispatcher/AppDispatcher");
 var Constants = require("../constants/Constants");
 var WebAPIUtils = require("../utils/WebAPIUtils");
+var RenderUtils = require("../utils/RenderUtils");
 var ModelStore = require("../stores/ModelStore");
 var DatasetStore = require("../stores/DatasetStore");
 
 module.exports = {
   selectWorkspace: function (id) {
+    RenderUtils.showAlert("Loading Workspace...");
     WebAPIUtils.getWorkspace(id);
   },
   selectModel: function (id) {
     if (!ModelStore.hasModel(id) && ModelStore.validModel(id)) {
       // Model is valid, but need to get it from the server
+      RenderUtils.showAlert("Loading Model...");
       WebAPIUtils.getModel(id);
     }
     else {
@@ -28,6 +31,7 @@ module.exports = {
       });
     }
     else if (dataset.active) {
+      RenderUtils.showAlert("Loading Dataset...");
       WebAPIUtils.getDataset(dataset.id);
     }
   },
