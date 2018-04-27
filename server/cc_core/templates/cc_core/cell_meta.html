@@ -12,7 +12,7 @@
                 {% for key, value in metadata_dict.items %}
                     <tr>
                         <td><strong>{{ key }}</strong></td>
-                        <td>{{ value }}</td>
+                        <td>{{ value|safe }}</td>
                     </tr>
                 {% endfor %}
             </table>

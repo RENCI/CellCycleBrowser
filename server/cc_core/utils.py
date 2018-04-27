@@ -3,6 +3,7 @@ import os
 import zipfile
 from shutil import make_archive
 import csv
+import re
 from collections import OrderedDict
 
 from libsbml import *
@@ -14,6 +15,16 @@ from .models import CellMetadata
 
 
 phases = ['G1', 'S', 'G2M']
+
+
+def replace_func(matchObj):
+    href_tag, url = matchObj.groups()
+    if href_tag:
+        # Since it has an href tag, this isn't what we want to change,
+        # so return the whole match.
+        return matchObj.group(0)
+    else:
+        return '<a href="{0}">{0}</a>'.format(url)
 
 
 def read_metadata_from_csv_data(file_base_name, csv_data, required_md_elems=[]):
@@ -51,6 +62,20 @@ def read_metadata_from_csv_data(file_base_name, csv_data, required_md_elems=[]):
                 for idx in range(2, len(row)-1):
                     if row[idx]:
                         val += row[idx]
+            key = key.strip()
+            val = val.strip()
+            if 'http://' in val or 'https://' in val:
+                pattern = re.compile(
+                    r'((?:<a href[^>]+>)|(?:<a href="))?'
+                    r'((?:https?):(?:(?://)|(?:\\\\))+'
+                    r"(?:[\w\d:#@%/;$()~_?\+\-=\\\.&](?:#!)?)*)",
+                    flags=re.IGNORECASE
+                )
+                val = re.sub(pattern, replace_func, val)
+            elif key.upper() == 'PMID' and val.isdigit():
+                # make PMID clickable on metadata page
+                val = 'https://www.ncbi.nlm.nih.gov/pubmed/' + val
+                val = '<a href="{0}">{0}</a>'.format(val)
             mdict[key] = val
 
     if md_begin and not md_end:
@@ -657,11 +682,11 @@ def add_reaction(model=None, reactants=[], products=[], modifiers=[], expression
     r1.setReversible(False)
     r1.setFast(False)
 
-    for re in reactants:
-        re_split = re.split()
+    for rea in reactants:
+        re_split = rea.split()
         if len(re_split) == 1:
             sto = 1.0
-            re_id = re
+            re_id = rea
         elif len(re_split) == 2 and re_split[0].isdigit():
             sto = float(re_split[0])
             re_id = re_split[1]
@@ -709,7 +734,7 @@ def add_reaction(model=None, reactants=[], products=[], modifiers=[], expression
         if r1 != LIBSBML_OPERATION_SUCCESS:
             print str(r1) + ':' + OperationReturnValue_toString(r1).strip()
     elif not r1:
-        print "Reaction is not created for phase transition from " + r + " to " + p
+        print "Reaction is not created for phase transition from " + str(r1) + " to " + str(p)
 
     return r1
 
