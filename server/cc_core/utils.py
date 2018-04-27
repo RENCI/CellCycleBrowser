@@ -74,8 +74,8 @@ def read_metadata_from_csv_data(file_base_name, csv_data, required_md_elems=[]):
                 val = re.sub(pattern, replace_func, val)
             elif key.upper() == 'PMID' and val.isdigit():
                 # make PMID clickable on metadata page
-                val = 'https://www.ncbi.nlm.nih.gov/pubmed/' + val
-                val = '<a href="{0}">{0}</a>'.format(val)
+                http_val = 'https://www.ncbi.nlm.nih.gov/pubmed/' + val
+                val = '<a href="{0}">{1}</a>'.format(http_val, val)
             mdict[key] = val
 
     if md_begin and not md_end:
