@@ -74,7 +74,7 @@ function computeModelFit() {
   var s1 = [];
   var s2 = [];
 
-  for (i = 0; i < t.length; i++) {
+  for (var i = 0; i < t.length; i++) {
     while (i1 < v1.length && v1[i1].stop <= t[i]) i1++;
     while (i2 < v2.length && v2[i2].stop <= t[i]) i2++;
 
