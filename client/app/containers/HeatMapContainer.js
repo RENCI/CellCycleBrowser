@@ -2,6 +2,7 @@ var React = require("react");
 var ReactDOM = require("react-dom");
 var PropTypes = require("prop-types");
 var HeatMap = require("../visualizations/HeatMap");
+var HeatMapCanvas = require("../visualizations/HeatMapCanvas");
 var d3 = require("d3");
 
 function height(props) {

@@ -156,7 +156,6 @@ module.exports = function () {
             .attr("data-container", "body")
             .attr("data-placement", "auto top")
             .attr("data-animation", false)
-            .style("stroke-width", 2)
             .on("mouseover", function(d, i) {
               var rect = d3.select(this);
 
