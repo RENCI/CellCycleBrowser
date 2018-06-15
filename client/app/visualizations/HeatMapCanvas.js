@@ -148,22 +148,28 @@ module.exports = function () {
 
       data.forEach(function(row, i) {
         context.beginPath();
-        context.rect(x(row), yScale(i), width(row), yScale.bandwidth());
+        context.rect(x(row), yScale(i), width(row), Math.ceil(yScale.bandwidth()));
         context.strokeStyle = "#ccc";
         context.stroke();
         context.closePath();
       });
 
       function x(d) {
-        return xScale(d[0].start);
+        return Math.floor(xScale(d[0].start));
       }
 
       function y(i) {
-        return yScale(i);
+        return Math.floor(yScale(i));
       }
 
       function width(d) {
-        return xScale(d[d.length -1].stop) - xScale(d[0].start);
+        var first = d[0],
+            last = d[d.length - 1];
+
+        var x1 = Math.floor(xScale(first.start)),
+            x2 = Math.floor(xScale(last.start)) + Math.ceil(xScale(last.stop) - xScale(last.start));
+
+        return x2 - x1;
       }
     }
 
@@ -205,7 +211,7 @@ module.exports = function () {
       }
 
       function y(d) {
-        return yScale.bandwidth() - heightScale(d.value);
+        return Math.floor(yScale.bandwidth() - heightScale(d.value));
       }
 
       function width(d) {
@@ -213,7 +219,7 @@ module.exports = function () {
       }
 
       function height(d) {
-        return heightScale(d.value);
+        return Math.ceil(heightScale(d.value));
       }
 
       function color(d) {
