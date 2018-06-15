@@ -126,6 +126,7 @@ class BrowserContainer extends React.Component {
     // down that state instead?
     if (!this.div) return;
 
+/*
     RenderUtils.showAlert("Processing Data...");
 
     this.setState({
@@ -141,6 +142,7 @@ class BrowserContainer extends React.Component {
         if (state) this.setState(state);
       }.bind(this), 0);
     });
+*/    
   }
 
   render() {
