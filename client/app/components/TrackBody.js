@@ -55,7 +55,9 @@ function TrackBody(props) {
   var traceHeight = 20;
 
   var phaseAverage = props.track.showPhaseOverlay ? props.track.phaseAverage : [];
-  var phases = props.track.showPhaseOverlay ? props.track.phases : [];
+  var phases = props.track.showPhaseOverlay ? props.track.traces.map(function (trace) {
+    return props.track.phases[trace.index];
+  }) : [];
 
   var averageExtent = !props.track.rescaleTraces ? [props.track.dataExtent] :
     [extent(props.track.average.values.map(function(v) { return v.value; }))];
