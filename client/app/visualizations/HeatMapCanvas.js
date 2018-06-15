@@ -7,6 +7,7 @@ module.exports = function () {
 
       // Data
       data,
+      scaled,
       dataExtent,
       timeExtent,
       phases,
@@ -22,6 +23,46 @@ module.exports = function () {
     selection.each(function(d) {
       data = d;
 
+      // Use highlight rectangle for tooltip anchor
+      var anchor = d3.select(this).selectAll(".anchor")
+          .data([data]);
+
+      var anchorEnter = anchor.enter().append("div")
+          .attr("class", "anchor")
+          .style("position", "absolute")
+          .style("pointer-events", "none")
+          .style("border-style", "solid")
+          .style("border-width", "2px")
+          .style("visibility", "hidden");
+
+      anchor = anchorEnter.merge(anchor);
+
+      $(anchor.node()).tooltip({
+        trigger: "manual",
+        title: "SUP",
+        animation: false
+      });
+
+      function showHighlight(cell) {
+        anchor
+            .style("visibility", "visible")
+            .style("left", cell.x + "px")
+            .style("top", cell.y + "px")
+            .style("width", cell.width + "px")
+            .style("height", cell.height + "px")
+            .style("border-color", cell.highlightColor);
+
+        $(anchor.node())
+            .attr("data-original-title", cell.string)
+            .tooltip("show");
+      }
+
+      function hideHighlight() {
+        anchor.style("visibility", "hidden");
+
+        $(anchor.node()).tooltip("hide");
+      }
+
       // Create skeletal chart
       canvas = d3.select(this).selectAll("canvas")
           .data([data]);
@@ -31,49 +72,45 @@ module.exports = function () {
           .on("mousedown", function() {
             // Stop text highlighting
             d3.event.preventDefault();
-          });
+          })
+          .on("mousemove", function() {
+            var m = d3.mouse(this),
+                x = m[0], y = m[1];
+
+            // Find cell
+            var cell = null;
+            for (var i = 0; i < scaled.length; i++) {
+              var row = scaled[i],
+                  y1 = row[0].y,
+                  y2 = y1 + row[0].height;
+
+              if (y >= y1 && y <= y2) {
+                for (var j = 0; j < row.length; j++) {
+                  var c = row[j],
+                      x1 = c.x,
+                      x2 = x1 + c.width;
+
+                  if (x >= x1 && x <= x2) {
+                    cell = c;
+                    break;
+                  }
+                }
+
+                break;
+              }
+            }
+
+            if (cell) {
+              showHighlight(cell);
+            }
+            else {
+              hideHighlight();
+            }
+          })
+          .on("mouseout", hideHighlight);
 
       canvas = canvasEnter.merge(canvas);
-/*
-      // Defs section for clipping paths
-      var defs = svgEnter.append("defs");
 
-      defs.append("clipPath")
-          .attr("id", "clipLeft")
-          .attr("clipPathUnits", "objectBoundingBox")
-        .append("rect")
-          .attr("x", 0.5)
-          .attr("y", -0.1)
-          .attr("width", 0.6)
-          .attr("height", 1.2);
-
-      defs.append("clipPath")
-          .attr("id", "clipRight")
-          .attr("clipPathUnits", "objectBoundingBox")
-        .append("rect")
-          .attr("x", -0.1)
-          .attr("y", -0.1)
-          .attr("width", 0.6)
-          .attr("height", 1.2);
-
-      var g = svgEnter.append("g");
-
-      // Groups for layout
-      g.append("g").attr("class", "borders");
-      g.append("g").attr("class", "rows");
-      g.append("g").attr("class", "phaseRows");
-      g.append("g").attr("class", "phaseLines");
-
-      g.append("rect")
-          .attr("class", "highlight")
-          .style("shape-rendering", "crispEdges")
-          .style("pointer-events", "none")
-          .style("fill", "none")
-          .style("stroke", "none")
-          .style("stroke-width", 2);
-
-      svg = svgEnter.merge(svg);
-*/
       draw();
     });
   }
@@ -106,9 +143,6 @@ module.exports = function () {
     drawHeatMap();
     drawPhaseLines();
 
-    // Update tooltips
-//    $(".heatMap .cell").tooltip();
-
     function drawBorders() {
       context.lineWidth = 2;
 
@@ -134,16 +168,33 @@ module.exports = function () {
     }
 
     function drawHeatMap() {
-      data.forEach(function(row, i) {
+      scaled = data.map(function(row, i) {
         heightScale.domain(dataExtent[i]);
         colorScale.domain(dataExtent[i]);
 
         var rowY = yScale(i);
 
+        return row.map(function(d) {
+          return {
+            x: x(d),
+            y: rowY + y(d),
+            width: width(d),
+            height: height(d),
+            value: d.value,
+            color: color(d),
+            highlightColor: highlightColor(d),
+            string: toString(d.value)
+          };
+        });
+      });
+
+      scaled.forEach(function(row, i) {
+        colorScale.domain(dataExtent[i]);
+
         row.forEach(function(d) {
           context.beginPath();
-          context.rect(x(d), rowY + y(d), width(d), height(d));
-          context.fillStyle = color(d);
+          context.rect(d.x, d.y, d.width, d.height);
+          context.fillStyle = d.color;
           context.fill();
           context.closePath();
         });
@@ -167,6 +218,13 @@ module.exports = function () {
 
       function color(d) {
         return colorScale(d.value);
+      }
+
+      function highlightColor(d) {
+        var hcl = d3.hcl(colorScale(d.value));
+        var l = hcl.l > 50 ? hcl.l - 25 : hcl.l + 25;
+
+        return d3.hcl(0, 0, l);
       }
 
       function toString(d) {
