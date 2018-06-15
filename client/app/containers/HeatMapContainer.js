@@ -14,7 +14,7 @@ class HeatMapContainer extends React.Component {
     super();
 
     // Create visualization function
-    this.heatMap = HeatMap();
+    this.heatMap = HeatMapCanvas();
   }
 
   shouldComponentUpdate(props, state) {

@@ -110,18 +110,18 @@ module.exports = function () {
 //    $(".heatMap .cell").tooltip();
 
     function drawBorders() {
-      context.lineWidth(2);
+      context.lineWidth = 2;
 
       data.forEach(function(row, i) {
         context.beginPath();
-        context.rect(x(d), yScale(i), width(d), yScale.bandwidth());
+        context.rect(x(row), yScale(i), width(row), yScale.bandwidth());
         context.strokeStyle = "#ccc";
         context.stroke();
         context.closePath();
       });
 
       function x(d) {
-        return Math.floor(xScale(d[0].start));
+        return xScale(d[0].start);
       }
 
       function y(i) {
@@ -129,7 +129,7 @@ module.exports = function () {
       }
 
       function width(d) {
-        return Math.ceil(xScale(d[d.length -1].stop) - xScale(d[0].start));
+        return xScale(d[d.length -1].stop) - xScale(d[0].start);
       }
     }
 
