@@ -104,7 +104,7 @@ module.exports = function () {
     // Draw the visualization
     drawBorders();
     drawHeatMap();
-//    drawPhaseLines();
+    drawPhaseLines();
 
     // Update tooltips
 //    $(".heatMap .cell").tooltip();
@@ -181,6 +181,8 @@ module.exports = function () {
     }
 
     function drawPhaseLines() {
+      var lineWidth = 2;
+
       // Create an array per phase
       var phaseData = [];
       phases.forEach(function(row) {
@@ -213,24 +215,12 @@ module.exports = function () {
         });
       });
 
-      var lineShape = d3.line();
-          //.curve(d3.curveCardinal.tension(0.9));
-          //.curve(d3.curveCatmullRom.alpha(0.5));
-          //.curve(d3.curveMonotoneY);
+      context.lineWidth = lineWidth;
 
-      // Bind phase data
-      var phase = svg.select(".phaseLines").selectAll(".phase")
-          .data(phaseData);
-
-      phase.enter().append("g")
-          .attr("class", "phase")
-        .merge(phase)
-          .each(drawPhase);
-
-      phase.exit().remove();
+      phaseData.forEach(drawPhase);
 
       function drawPhase(phase) {
-        var lineWidth = 2;
+        context.strokeStyle = phaseColorScale(phase.name);
 
         // Generate two lines per phase
         function lineData(xKey) {
@@ -277,21 +267,19 @@ module.exports = function () {
           }
         });
 
-        // Bind line data
-        var line = d3.select(this).selectAll(".line")
-            .data([startLine, stopLine]);
+        drawLine(startLine);
+        drawLine(stopLine);
 
-        // Enter + update
-        line.enter().append("path")
-            .attr("class", "line")
-            .style("fill", "none")
-          .merge(line)
-            .attr("d", lineShape)
-            .style("stroke", phaseColor(phase))
-            .style("stroke-width", lineWidth);
+        function drawLine(d) {
+          context.beginPath();
+          context.moveTo(d[0][0], d[0][1]);
 
-        function phaseColor(d) {
-          return phaseColorScale(d.name);
+          for (var i = 1; i < d.length; i++) {
+            context.lineTo(d[i][0], d[i][1]);
+          }
+
+          context.stroke();
+          context.closePath();
         }
       }
     }
