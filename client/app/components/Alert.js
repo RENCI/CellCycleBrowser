@@ -4,7 +4,6 @@ var PropTypes = require("prop-types");
 var style = {
   position: "fixed",
   top: "30%",
-  height: "10%",
   left: "50%",
   width: "50%",
   marginLeft: "-25%",
