@@ -70,6 +70,9 @@ class TimeSeriesContainer extends React.Component {
   updateState(state) {
     if (!this.div) return;
 
+    this.setState(state);
+
+/*
     this.setState({
       processing: true
     }, function () {
@@ -83,6 +86,7 @@ class TimeSeriesContainer extends React.Component {
         if (state) this.setState(state);
       }.bind(this), 0);
     });
+*/
   }
 
   drawVisualization(props, state) {

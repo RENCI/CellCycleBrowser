@@ -105,6 +105,7 @@ class BrowserContainer extends React.Component {
   }
 
   onAlignmentChange() {
+    console.log(getStateFromAlignmentStore());
     this.updateState(getStateFromAlignmentStore());
   }
 
@@ -126,6 +127,8 @@ class BrowserContainer extends React.Component {
     // down that state instead?
     if (!this.div) return;
 
+    this.setState(state);
+
 /*
     RenderUtils.showAlert("Processing Data...");
 
@@ -142,7 +145,7 @@ class BrowserContainer extends React.Component {
         if (state) this.setState(state);
       }.bind(this), 0);
     });
-*/    
+*/
   }
 
   render() {
