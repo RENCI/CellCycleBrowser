@@ -1,4 +1,4 @@
-FROM cc_base
+FROM renci/ccb_docker_base:1.0
 MAINTAINER Hong Yi <hongyi@renci.org>
 
 # install StochPy
