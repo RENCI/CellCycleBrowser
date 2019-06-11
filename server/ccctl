@@ -26,6 +26,7 @@ if [[ $USE_NGINX = 'true' ]]; then
     cp docker-compose-production.yml docker-compose.yml
 else
     cp docker-compose-dev.yml docker-compose.yml
+    sed -i 's!CC_PATH!'${CC_PATH}'!g' docker-compose.yml
 fi
 cd $HOME_DIR
 

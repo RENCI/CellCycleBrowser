@@ -1,10 +1,10 @@
-db:
+cc-db:
   image: postgres:9.4
   container_name: cc-db
-redis:
+cc-redis:
   image: redis:2.8
   container_name: cc-redis
-rabbitmq:
+cc-rabbitmq:
   image: rabbitmq:3.5
   container_name: cc-rabbitmq
 cellcycle:
@@ -18,10 +18,11 @@ cellcycle:
     REDIS_PORT: 6379
   volumes:
     # cellcycle repository
-    - "/home/ccbuild/CellCycleBrowser/server:/home/docker/cellcycle"
-    - "/home/ccbuild/CellCycleBrowser/server/Stochpy:/home/docker/Stochpy"
+    - "CC_PATH:/home/docker/cellcycle"
+    - "CC_PATH/Stochpy:/home/docker/Stochpy"
     # log files
-    - "/home/ccbuild/CellCycleBrowser/server/log:/home/docker/cellcycle/log"
+    - "CC_PATH/log:/home/docker/cellcycle/log"
+    # - "/home/hongyi/pycharm-debug:/home/docker/pycharm-debug"
     # shared location for uwsgi.sock between containers
     - "/var/run"
     # temp directory shared with celery workers
@@ -30,11 +31,11 @@ cellcycle:
     - "1338:22"
     - "8000:8000"
   links:
-    - db:db
-    - redis:redis
-    - rabbitmq:rabbitmq
+    - cc-db:cc-db
+    - cc-redis:cc-redis
+    - cc-rabbitmq:cc-rabbitmq
   command: /bin/bash init
-defaultworker:
+cc-defaultworker:
   build: .
   container_name: cc-defaultworker
   environment:
@@ -48,7 +49,7 @@ defaultworker:
   volumes:
     - "/var/run/docker.sock:/docker.sock"
   links:
-    - db:db
-    - redis:redis
-    - rabbitmq:rabbitmq
+    - cc-db:cc-db
+    - cc-redis:cc-redis
+    - cc-rabbitmq:cc-rabbitmq
   command: /bin/bash init-defaultworker
