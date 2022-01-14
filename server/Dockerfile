@@ -7,7 +7,7 @@ RUN pip install python-libsbml==5.15.0
 RUN pip install simplesbml==1.2.2
 WORKDIR /usr/src
 # RUN wget https://sourceforge.net/projects/stochpy/files/StochPy-2.3/StochPy-2.3.zip
-RUN wget http://distribution.hydroshare.org/hongyi/StochPy-2.3.zip
+RUN  wget --no-check-certificate https://people.renci.org/~hongyi/StochPy-2.3.zip
 RUN unzip StochPy-2.3.zip
 WORKDIR /usr/src/StochPy-2.3
 RUN python setup.py install
