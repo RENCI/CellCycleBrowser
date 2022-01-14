@@ -1,6 +1,8 @@
 db:
   image: postgres:9.4
   container_name: cc-db
+  environment:
+    POSTGRES_HOST_AUTH_METHOD: "trust"
 redis:
   image: redis:2.8
   container_name: cc-redis
