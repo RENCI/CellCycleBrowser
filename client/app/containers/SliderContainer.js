@@ -22,7 +22,7 @@ class SliderContainer extends React.Component {
     this.props.onChange(value);
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState({
       value: nextProps.initialValue
     });

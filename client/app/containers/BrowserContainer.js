@@ -92,7 +92,7 @@ class BrowserContainer extends React.Component {
     return !state.processing;
   }
 
-  componentWillReceiveProps() {
+  UNSAFE_componentWillReceiveProps() {
     this.updateState();
   }
 
