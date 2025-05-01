@@ -1,0 +1,34 @@
+replicaCount: 1
+
+image:
+  repository: nginx
+  tag: stable
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx  # or whatever ingress class you are using
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    cert-manager.io/cluster-issuer: letsencrypt
+  hosts:
+    - host: cellcycle.apps.renci.org
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+   - secretName: cellcycle.apps.renci.org-tls
+     hosts:
+       - cellcycle.apps.renci.org        
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

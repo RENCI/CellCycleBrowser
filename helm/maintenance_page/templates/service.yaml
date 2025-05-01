@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "maintenance-page.fullname" . }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ include "maintenance-page.fullname" . }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 80
