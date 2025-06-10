@@ -8,4 +8,5 @@ spec:
     app: {{ include "maintenance-page.fullname" . }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: 80
+      targetPort: 8080
+      name: http

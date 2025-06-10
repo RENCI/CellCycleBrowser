@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: nginx
+  repository: nginxinc/nginx-unprivileged
   tag: stable
   pullPolicy: IfNotPresent
 
@@ -13,17 +13,18 @@ ingress:
   enabled: true
   className: nginx  # or whatever ingress class you are using
   annotations:
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     cert-manager.io/cluster-issuer: letsencrypt
   hosts:
-    - host: cellcycle.apps.renci.org
+    - host: cellcycle.renci.org
       paths:
         - path: /
           pathType: ImplementationSpecific
   tls:
-   - secretName: cellcycle.apps.renci.org-tls
+   - secretName: cellcycle.renci.org-tls
      hosts:
-       - cellcycle.apps.renci.org        
+       - cellcycle.renci.org        
 
 resources: {}
 
