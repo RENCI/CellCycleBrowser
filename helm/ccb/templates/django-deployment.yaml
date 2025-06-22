@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-django
+  labels:
+    app: cellcyclebrowser-django
+spec:
+  replicas: {{ .Values.django.replicaCount }}
+  selector:
+    matchLabels:
+      app: cellcyclebrowser-django
+  template:
+    metadata:
+      labels:
+        app: cellcyclebrowser-django
+    spec:
+      securityContext:
+        runAsUser: {{ .Values.securityContext.runAsUser }}
+        runAsGroup: {{ .Values.securityContext.runAsGroup }}
+        fsGroup: {{ .Values.securityContext.fsGroup }}
+      containers:
+      - name: django
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-config
+        - secretRef:
+            name: {{ .Release.Name }}-secret
+        resources:
+          {{ toYaml .Values.django.resources | nindent 10 }}

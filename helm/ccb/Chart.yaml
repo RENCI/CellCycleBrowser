@@ -1,0 +1,8 @@
+apiVersion: v2
+name: cellcyclebrowser
+description: Helm chart for CellCycleBrowser Django web app deployment
+
+type: application
+
+version: 0.1.0
+appVersion: "1.0"

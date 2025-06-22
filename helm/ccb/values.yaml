@@ -1,0 +1,112 @@
+image:
+  repository: renci/cellcyclebrowser
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+securityContext:
+  runAsUser: 1001
+  runAsGroup: 1001
+  fsGroup: 1001
+
+django:
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: "1"
+      memory: "5Gi"
+    requests:
+      cpu: "1"
+      memory: "5Gi"
+
+celery:
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: "1"
+      memory: "4Gi"
+    requests:
+      cpu: "1"
+      memory: "4Gi"
+
+rabbitmq:
+  image: rabbitmq:3.5
+  port: 5672
+  user: guest
+  password: guest
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
+
+redis:
+  image: redis:2.8
+  port: 6379
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
+
+postgres:
+  image: postgres:9.4
+  port: 5432
+  database: "postgres"
+  user: "postgres"
+  password: "postgres"
+  authMethod: "trust"
+  resources:
+    limits:
+      cpu: "1"
+      memory: "3Gi"
+    requests:
+      cpu: "1"
+      memory: "3Gi"
+  storage:
+    size: 5Gi
+    storageClass: standard
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  hosts:
+    - host: cellcycle.apps.renci.org
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+          port: 80
+  tls:
+    - secretName: cellcycle.apps.renci.org-tls
+      hosts:
+        - cellcycle.apps.renci.org
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    cert-manager.io/cluster-issuer: letsencrypt
+
+env:
+  DJANGO_SETTINGS_MODULE: "cellcycle.settings"
+  DEBUG: "False"
+  ALLOWED_HOSTS: "*"
+  CELERY_BROKER_URL: "amqp://{{ .Values.rabbitmq.user }}:{{ .Values.rabbitmq.password }}@{{ .Release.Name }}-rabbitmq:{{ .Values.rabbitmq.port }}//"
+  REDIS_HOST: "{{ .Release.Name }}-redis"
+  REDIS_PORT: "{{ .Values.redis.port }}"
+  DATABASE_URL: "postgres://{{ .Values.postgres.user }}:{{ .Values.postgres.password }}@{{ .Release.Name }}-postgres:{{ .Values.postgres.port }}/{{ .Values.postgres.database }}"
+
+initDbJob:
+  image:
+    repository: renci/cellcyclebrowser
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+  sqlDumpFile: "/app/dump.sql"
+  siteDomain: "cellcycle.apps.renci.org"
+
+celeryVolume:
+  schedulePath: "/app/celery/celerybeat-schedule"

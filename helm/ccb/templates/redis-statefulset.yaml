@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-redis
+  labels:
+    app: cellcyclebrowser-redis
+spec:
+  serviceName: {{ .Release.Name }}-redis
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cellcyclebrowser-redis
+  template:
+    metadata:
+      labels:
+        app: cellcyclebrowser-redis
+    spec:
+      containers:
+      - name: redis
+        image: {{ .Values.redis.image }}
+        ports:
+        - containerPort: {{ .Values.redis.port }}
+        resources:
+          {{ toYaml .Values.redis.resources | nindent 14 }}
