@@ -18,10 +18,24 @@ spec:
         runAsUser: {{ .Values.securityContext.runAsUser }}
         runAsGroup: {{ .Values.securityContext.runAsGroup }}
         fsGroup: {{ .Values.securityContext.fsGroup }}
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox:1.36
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          until nc -z {{ .Release.Name }}-postgres {{ .Values.postgres.port }}; do
+            echo "Waiting for PostgreSQL...";
+            sleep 2;
+          done        
       containers:
       - name: django
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          gunicorn cellcycle.wsgi:application --name=cellcycle --workers=3 --bind 0.0.0.0:8000 --log-level=debug --log-file=/app/log/gunicorn.log --timeout=300
         ports:
         - containerPort: 8000
         envFrom:
