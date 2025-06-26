@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-celery
+  labels:
+    app: cellcyclebrowser-celery
+spec:
+  replicas: {{ .Values.celery.replicaCount }}
+  selector:
+    matchLabels:
+      app: cellcyclebrowser-celery
+  template:
+    metadata:
+      labels:
+        app: cellcyclebrowser-celery
+    spec:
+      securityContext:
+        runAsUser: {{ .Values.securityContext.runAsUser }}
+        runAsGroup: {{ .Values.securityContext.runAsGroup }}
+        fsGroup: {{ .Values.securityContext.fsGroup }}
+      containers:
+      - name: celery
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          cd /app && \
+          python -m celery beat -A cellcycle -s {{ .Values.celeryVolume.schedulePath }} --logfile=/app/log/celery_beat.log & \
+          python -m celery worker -A cellcycle -E -Q default --logfile=/app/log/celery_worker.log
+        env:
+        - name: C_FORCE_ROOT
+          value: "1"
+        envFrom:
+        - configMapRef:
+            name: {{ .Release.Name }}-config
+        - secretRef:
+            name: {{ .Release.Name }}-secret
+        volumeMounts:
+        - name: celery-schedule
+          mountPath: {{ .Values.celeryVolume.schedulePath | dir }}
+        resources:
+          {{ toYaml .Values.celery.resources | nindent 10 }}
+      volumes:
+      - name: celery-schedule
+        emptyDir: {}

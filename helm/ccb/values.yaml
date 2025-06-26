@@ -1,0 +1,118 @@
+image:
+  repository: renci/cellcyclebrowser
+  tag: "1.0.0"
+  pullPolicy: Always
+
+securityContext:
+  runAsUser: 1001
+  runAsGroup: 1001
+  fsGroup: 1001
+
+django:
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: "1"
+      memory: "5Gi"
+    requests:
+      cpu: "1"
+      memory: "5Gi"
+
+celery:
+  replicaCount: 1
+  resources:
+    limits:
+      cpu: "1"
+      memory: "4Gi"
+    requests:
+      cpu: "1"
+      memory: "4Gi"
+
+rabbitmq:
+  image: rabbitmq:3.5
+  port: 5672
+  user: guest
+  password: guest
+  resources:
+    limits:
+      cpu: "200m"
+      memory: "512Mi"
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
+
+redis:
+  image: redis:6.2
+  port: 6379
+  resources:
+    limits:
+      cpu: "200m"
+      memory: "512Mi"
+    requests:
+      cpu: "200m"
+      memory: "256Mi"
+
+postgres:
+  image: postgres:9.4
+  port: 5432
+  database: "postgres"
+  user: "postgres"
+  password: "postgres"
+  authMethod: "trust"
+  resources:
+    limits:
+      cpu: "500m"
+      memory: "3Gi"
+    requests:
+      cpu: "500m"
+      memory: "3Gi"
+  storage:
+    size: 5Gi
+    storageClass: basic
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+ingress:
+  hosts:
+    - host: cellcycle.renci.org
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+          port: 80
+        - path: /static/
+          pathType: ImplementationSpecific
+          port: 80
+  tls:
+    - secretName: cellcycle.renci.org-tls
+      hosts:
+        - cellcycle.renci.org
+  annotations:
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"      
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    cert-manager.io/cluster-issuer: letsencrypt
+
+env:
+  DJANGO_SETTINGS_MODULE: "cellcycle.settings"
+  ALLOWED_HOSTS: "cellcycle.apps.renci.org,localhost"
+  CELERY_BROKER_URL: "amqp://guest:guest@cellcyclebrowser-rabbitmq:5672//"
+  REDIS_HOST: "cellcyclebrowser-redis"
+  REDIS_PORT: "6379"
+  DATABASE_USER: "fill_in_user_name"
+  DATABASE_NAME: "fill_in_database_name"
+  DATABASE_PASSWORD: "fill_in_database_password"
+  DATABASE_HOST: "cellcyclebrowser-postgres"
+
+initDbJob:
+  image:
+    repository: renci/cellcyclebrowser
+    tag: "1.0.0"
+    pullPolicy: Always
+  sqlDumpFile: "/app/dump.sql"
+  siteDomain: "cellcycle.apps.renci.org"
+
+celeryVolume:
+  schedulePath: "/app/celery/celerybeat-schedule"

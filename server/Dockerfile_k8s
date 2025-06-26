@@ -1,0 +1,34 @@
+FROM renci/cc_base:latest
+MAINTAINER Hong Yi <hongyi@renci.org>
+
+# install StochPy
+RUN pip install scipy==1.0.0
+RUN pip install python-libsbml==5.15.0
+RUN pip install simplesbml==1.2.2
+RUN pip install whitenoise==3.3.0
+WORKDIR /usr/src
+RUN  wget --no-check-certificate https://stars.renci.org/var/data_services/ccb/StochPy-2.3.zip && \ 
+     unzip StochPy-2.3.zip && \
+     cd /usr/src/StochPy-2.3 && \ 
+     python setup.py install && \
+     cd .. && \
+     rm -rf StochPy-2.3.zip StochPy-2.3
+
+# Cleanup
+RUN apt-get clean
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN groupadd -g 1001 appuser && \
+    useradd -u 1001 -g 1001 -m -d /app -s /bin/bash appuser
+
+WORKDIR /app
+COPY . /app
+RUN chown -R appuser:appuser /app
+
+ENV DJANGO_SETTINGS_MODULE=cellcycle.settings
+ENV PYTHONPATH=/app:$PYTHONPATH
+
+EXPOSE 8000
+
+USER appuser
+CMD ["exec \"$@\""]

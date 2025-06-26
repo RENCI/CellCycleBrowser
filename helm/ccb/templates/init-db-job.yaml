@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-init-db
+spec:
+  template:
+    spec:
+      securityContext:
+        runAsUser: {{ .Values.securityContext.runAsUser }}
+        runAsGroup: {{ .Values.securityContext.runAsGroup }}
+        fsGroup: {{ .Values.securityContext.fsGroup }}
+      containers:
+      - name: init-db
+        image: {{ .Values.initDbJob.image.repository }}:{{ .Values.initDbJob.image.tag }}
+        imagePullPolicy: {{ .Values.initDbJob.image.pullPolicy }}
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          psql -h {{ .Release.Name }}-postgres -U {{ .Values.postgres.user }} -d {{ .Values.postgres.database }} < {{ .Values.initDbJob.sqlDumpFile }} &&
+          psql -h {{ .Release.Name }}-postgres -U {{ .Values.postgres.user }} -d {{ .Values.postgres.database }} -c "$(cat /sql/update-site.sql)"
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-secret
+              key: POSTGRES_PASSWORD
+        volumeMounts:
+        - name: sql-files
+          mountPath: /sql
+      volumes:
+      - name: sql-files
+        configMap:
+          name: {{ .Release.Name }}-config
+          items:
+          - key: update-site.sql
+            path: update-site.sql
+      restartPolicy: OnFailure
