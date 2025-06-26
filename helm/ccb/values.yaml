@@ -77,7 +77,7 @@ service:
 
 ingress:
   hosts:
-    - host: cellcycle.apps.renci.org
+    - host: cellcycle.renci.org
       paths:
         - path: /
           pathType: ImplementationSpecific
@@ -86,10 +86,11 @@ ingress:
           pathType: ImplementationSpecific
           port: 80
   tls:
-    - secretName: cellcycle.apps.renci.org-tls
+    - secretName: cellcycle.renci.org-tls
       hosts:
-        - cellcycle.apps.renci.org
+        - cellcycle.renci.org
   annotations:
+    nginx.ingress.kubernetes.io/whitelist-source-range: "0.0.0.0/0,::/0"      
     nginx.ingress.kubernetes.io/proxy-body-size: "100m"
     nginx.ingress.kubernetes.io/enable-cors: "true"
     cert-manager.io/cluster-issuer: letsencrypt
@@ -100,7 +101,7 @@ env:
   CELERY_BROKER_URL: "amqp://guest:guest@cellcyclebrowser-rabbitmq:5672//"
   REDIS_HOST: "cellcyclebrowser-redis"
   REDIS_PORT: "6379"
-  DATABASE_USER: "fill_in_database_user"
+  DATABASE_USER: "fill_in_user_name"
   DATABASE_NAME: "fill_in_database_name"
   DATABASE_PASSWORD: "fill_in_database_password"
   DATABASE_HOST: "cellcyclebrowser-postgres"
